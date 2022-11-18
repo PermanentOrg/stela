@@ -1,19 +1,12 @@
-name: unit tests
+name: lint
 on: [push, workflow_dispatch]
 jobs:
-    run_tests:
+    lint:
         runs-on: ubuntu-latest
-        services:
-            postgres:
-                image: postgres:14
-                env:
-                    POSTGRES_PASSWORD: permanent
-                ports:
-                    - 5432:5432
         steps:
             - uses: actions/checkout@v2
             - uses: actions/setup-node@v1
               with:
                   node-version: "18"
             - run: npm install --production=false
-            - run: npm run test-ci
+            - run: npm run lint
