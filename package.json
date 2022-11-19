@@ -13,7 +13,7 @@
     "create-database": "psql postgresql://postgres:permanent@localhost:5432 -c 'CREATE DATABASE test_permanent;'",
     "set-up-database": "psql postgresql://postgres:permanent@localhost:5432/test_permanent -f database/base.sql",
     "test": "npm run start-database && npm run clear-database && npm run create-database && npm run set-up-database && jest",
-    "test-ci": "npm run clear-database && npm run create-database && npm run set-up-database && jest",
+    "test-ci": "npm run clear-database && npm run create-database && npm run set-up-database && jest --coverage",
     "start": "ts-node --transpile-only src/index.ts"
   },
   "jest": {

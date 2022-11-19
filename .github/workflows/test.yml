@@ -16,5 +16,5 @@ jobs:
               with:
                   node-version: "18"
             - run: npm install --production=false
-            - run: npm run lint
-            - run: npm run test-ci
+            - run: npm run test-ci --coverage
+            - uses: codecov/codecov-action@v2
