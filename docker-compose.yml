@@ -1,0 +1,11 @@
+version: "3.7"
+services:
+  database:
+    image: postgres:14
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: permanent
+    healthcheck:
+      test: pg_isready -d permanent
+    ports:
+      - "5432:5432"
