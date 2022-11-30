@@ -14,7 +14,8 @@
     "set-up-database": "psql postgresql://postgres:permanent@localhost:5432/test_permanent -f database/base.sql",
     "test": "npm run start-database && npm run clear-database && npm run create-database && npm run set-up-database && jest",
     "test-ci": "npm run clear-database && npm run create-database && npm run set-up-database && jest --coverage",
-    "start": "ts-node --transpile-only src/index.ts"
+    "start:dev": "ts-node --transpile-only src/index.ts",
+    "start:watch": "nodemon src/index.ts"
   },
   "jest": {
     "silent": true,
@@ -23,7 +24,9 @@
     "transform": {
       "^.+\\.ts?$": "ts-jest"
     },
-    "transformIgnorePatterns": ["./node_modules/"]
+    "transformIgnorePatterns": [
+      "./node_modules/"
+    ]
   },
   "repository": {
     "type": "git",
@@ -51,7 +54,7 @@
   "devDependencies": {
     "@tsconfig/node18-strictest": "^1.0.0",
     "@types/express": "^4.17.8",
-    "@types/jest": "^26.0.23",
+    "@types/jest": "26.0.23",
     "@types/node": "^12.20.7",
     "@types/pg": "^7.14.10",
     "@types/supertest": "^2.0.10",
@@ -63,10 +66,11 @@
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-import": "^2.22.0",
     "eslint-plugin-prettier": "^4.2.1",
-    "jest": "^27.0.3",
+    "jest": "27.0.3",
+    "nodemon": "^2.0.20",
     "prettier": "^2.7.1",
     "supertest": "^5.0.0",
-    "ts-jest": "^27.0.2",
+    "ts-jest": "27.0.2",
     "ts-node": "^10.9.1",
     "typescript": "^4.8.4"
   }
