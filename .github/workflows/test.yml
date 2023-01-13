@@ -9,5 +9,6 @@ jobs:
               with:
                   node-version: "18"
             - run: npm install --production=false
-            - run: npm run test --coverage
+            - run: npm run start-database
+            - run: npm run test-ci --coverage
             - uses: codecov/codecov-action@v2
