@@ -1,5 +1,10 @@
 name: unit tests
-on: [push, workflow_dispatch]
+on:
+    push:
+        branches-ignore:
+            - main
+    workflow_dispatch:
+    workflow_call:
 jobs:
     run_tests:
         runs-on: ubuntu-20.04
