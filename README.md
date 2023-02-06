@@ -40,8 +40,13 @@ Note that the database tests run against is dropped and recreated at the beginni
 
 ## Running Locally
 
-Run the project locally with
+Preferred method: From the `devenv` repo, run
 
+```bash
+docker compose up -d
+```
+
+Outside a container: Run
 ```bash
 npm run start
 ```

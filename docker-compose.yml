@@ -9,3 +9,10 @@ services:
       test: pg_isready -d permanent
     ports:
       - "5432:5432"
+  stela:
+    build: 
+      context: ./
+      dockerfile: Dockerfile.test
+    depends_on:
+      database:
+        condition: service_healthy

@@ -8,13 +8,16 @@
     "check-format": "prettier --check src",
     "eslint": "eslint --max-warnings 0 ./src --ext .ts",
     "lint": "npm run check-format && npm run check-types && npm run eslint",
-    "start-database": "docker-compose up -d",
+    "start-containers": "docker compose up -d",
     "clear-database": "psql postgresql://postgres:permanent@localhost:5432 -c 'DROP DATABASE IF EXISTS test_permanent;'",
     "create-database": "psql postgresql://postgres:permanent@localhost:5432 -c 'CREATE DATABASE test_permanent;'",
     "set-up-database": "psql postgresql://postgres:permanent@localhost:5432/test_permanent -f database/base.sql",
-    "test": "npm run start-database && npm run clear-database && npm run create-database && npm run set-up-database && jest",
-    "test-ci": "npm run clear-database && npm run create-database && npm run set-up-database && jest --coverage",
-    "start:dev": "ts-node --transpile-only src/index.ts",
+    "clear-database-ci": "psql postgresql://postgres:permanent@database:5432 -c 'DROP DATABASE IF EXISTS test_permanent;'",
+    "create-database-ci": "psql postgresql://postgres:permanent@database:5432 -c 'CREATE DATABASE test_permanent;'",
+    "set-up-database-ci": "psql postgresql://postgres:permanent@database:5432/test_permanent -f database/base.sql",
+    "test": "npm run start-containers && npm run clear-database && npm run create-database && npm run set-up-database && docker-compose run stela jest",
+    "test-ci": "npm run clear-database-ci && npm run create-database-ci && npm run set-up-database-ci && jest --coverage",
+    "start": "ts-node --transpile-only src/index.ts",
     "start:watch": "nodemon src/index.ts"
   },
   "jest": {
@@ -24,9 +27,7 @@
     "transform": {
       "^.+\\.ts?$": "ts-jest"
     },
-    "transformIgnorePatterns": [
-      "./node_modules/"
-    ]
+    "transformIgnorePatterns": ["./node_modules/"]
   },
   "repository": {
     "type": "git",
@@ -49,10 +50,11 @@
     "pg": "^8.5.1",
     "require-env-variable": "^3.1.2",
     "tinypg": "^7.0.0",
-    "winston": "^3.3.3"
+    "winston": "^3.3.3",
+    "ts-node": "^10.9.1",
+    "@tsconfig/node18-strictest": "^1.0.0"
   },
   "devDependencies": {
-    "@tsconfig/node18-strictest": "^1.0.0",
     "@types/express": "^4.17.8",
     "@types/jest": "26.0.23",
     "@types/node": "^12.20.7",
@@ -71,7 +73,6 @@
     "prettier": "^2.7.1",
     "supertest": "^5.0.0",
     "ts-jest": "27.0.2",
-    "ts-node": "^10.9.1",
     "typescript": "^4.8.4"
   }
 }
