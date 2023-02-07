@@ -12,6 +12,7 @@ ENV PATH=/usr/local/apps/stela/node_modules/.bin:$PATH
 COPY tsconfig.json ./
 COPY src ./src
 
-EXPOSE 8080
+ENV PORT=80
+EXPOSE 80
 
 CMD npm run start
