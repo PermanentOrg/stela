@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
   push:
     branches:
-        - main
+      - main
 jobs:
   run_tests:
     uses: ./.github/workflows/test.yml
@@ -52,6 +52,6 @@ jobs:
         run: terraform validate -no-color
       - name: Terraform Plan
         id: plan
-        run: terraform plan -no-color -input=false
+        run: terraform plan -no-color -input=false -var="stela_image=$IMAGE_TAG"
       - name: Terraform Apply
         run: terraform apply -auto-approve -input=false -var="stela_image=$IMAGE_TAG"
