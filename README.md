@@ -24,19 +24,25 @@ npm install
 
 ## Environment Variables
 
-| Variable                          | Default                                                     | Notes                                                                  |
-| --------------------------------- | ----------------------------------------------------------- | ---------------------------------------------------------------------- |
-| DATABASE_URL                      | postgres://postgres:permanent@localhost:5432/test_permanent | Run tests to generate default database                                 |
-| PORT                              | 8080                                                        | Tells stela what port to run on                                        |
-| FUSIONAUTH_HOST                   | none                                                        | Can be found in `back-end`'s library/base/constants/base.constants.php |
-| FUSIONAUTH_API_KEY                | none                                                        | Can be found in `back-end`'s library/base/constants/base.constants.php |
-| FUSIONAUTH_TENANT                 | none                                                        | Can be found in `back-end`'s library/base/constants/base.constants.php |
-| FUSIONAUTH_BACKEND_APPLICATION_ID | none                                                        | Can be found in `back-end`'s library/base/constants/base.constants.php |
-| FUSIONAUTH_ADMIN_APPLICATION_ID   | none                                                        | Can be found in the FusionAuth Admin application                       |
+| Variable                          | Default                                               | Notes                                                                  |
+| --------------------------------- | ----------------------------------------------------- | ---------------------------------------------------------------------- |
+| DATABASE_URL                      | postgres://postgres:permanent@database:5432/permanent | Run tests to generate default database                                 |
+| PORT                              | 8080                                                  | Tells stela what port to run on                                        |
+| FUSIONAUTH_HOST                   | none                                                  | Can be found in `back-end`'s library/base/constants/base.constants.php |
+| FUSIONAUTH_API_KEY                | none                                                  | Can be found in `back-end`'s library/base/constants/base.constants.php |
+| FUSIONAUTH_TENANT                 | none                                                  | Can be found in `back-end`'s library/base/constants/base.constants.php |
+| FUSIONAUTH_BACKEND_APPLICATION_ID | none                                                  | Can be found in `back-end`'s library/base/constants/base.constants.php |
+| FUSIONAUTH_ADMIN_APPLICATION_ID   | none                                                  | Can be found in the FusionAuth Admin application                       |
 
 ## Testing
 
-Run tests with
+Make sure the local database from `devenv`'s docker compose is running
+
+```bash
+docker compose up -d
+```
+
+then run tests with
 
 ```bash
 npm run test

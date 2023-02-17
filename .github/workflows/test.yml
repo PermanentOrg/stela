@@ -10,10 +10,28 @@ jobs:
         runs-on: ubuntu-20.04
         steps:
             - uses: actions/checkout@v3
+              with:
+                  path: ./stela
             - uses: actions/setup-node@v1
               with:
                   node-version: "18"
-            - run: npm install --production=false
-            - run: npm run start-containers
-            - run: docker compose run stela npm run test-ci --coverage
+            - name: Checkout back-end
+              uses: actions/checkout@v3
+              with:
+                  ssh-key: ${{ secrets.BACKEND_ACCESS_PRIVATE_SSH_KEY }}
+                  repository: PermanentOrg/back-end
+                  ref: main
+                  path: ./back-end
+            - name: Checkout devenv
+              uses: actions/checkout@v3
+              with:
+                  ssh-key: ${{ secrets.DEVENV_ACCESS_PRIVATE_SSH_KEY }}
+                  repository: PermanentOrg/devenv
+                  ref: main
+                  path: ./devenv
+            - run: (cd stela; npm install --production=false)
+            - run: touch stela/.env
+            - run: (cd devenv; docker compose up database_setup -d; docker logs devenv-database_setup-1)
+            - run: (cd stela; npm run start-containers)
+            - run: (cd stela; docker compose run stela npm run test-ci --coverage)
             - uses: codecov/codecov-action@v2

@@ -1,0 +1,1 @@
+export { directiveController } from "./controller";
