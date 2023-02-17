@@ -1,6 +1,8 @@
 import {
   validateCreateDirectiveRequest,
   validateTriggerAdminDirectivesParams,
+  validateGetDirectivesByArchiveIdParams,
+  validateBodyFromAuthentication,
 } from "./validators";
 
 describe("validateCreateDirectiveRequest", () => {
@@ -254,7 +256,9 @@ describe("validateCreateDirectiveRequest", () => {
         archiveId: 1,
         stewardAccountId: 1,
         type: "transfer",
-        trigger: "admin",
+        trigger: {
+          type: "admin",
+        },
       });
     } catch (err) {
       error = err;
@@ -270,7 +274,27 @@ describe("validateCreateDirectiveRequest", () => {
         archiveId: 1,
         stewardAccountId: 1,
         type: "transfer",
-        trigger: "admin",
+        trigger: {
+          type: "admin",
+        },
+      });
+    } catch (err) {
+      error = err;
+    } finally {
+      expect(error).not.toBeNull();
+    }
+  });
+  test("should raise an error if emailFromAuthToken is wrong type", () => {
+    let error = null;
+    try {
+      validateCreateDirectiveRequest({
+        emailFromAuthToken: 1,
+        archiveId: 1,
+        stewardAccountId: 1,
+        type: "transfer",
+        trigger: {
+          type: "admin",
+        },
       });
     } catch (err) {
       error = err;
@@ -320,6 +344,104 @@ describe("validateTriggerAdminDirectivesParams", () => {
     try {
       validateTriggerAdminDirectivesParams({
         accountId: 0,
+      });
+    } catch (err) {
+      error = err;
+    } finally {
+      expect(error).not.toBeNull();
+    }
+  });
+});
+
+describe("validateGetDirectivesByArchiveIdParams", () => {
+  test("should find no errors in valid parameter set", () => {
+    let error = null;
+    try {
+      validateGetDirectivesByArchiveIdParams({
+        archiveId: 1,
+      });
+    } catch (err) {
+      error = err;
+    } finally {
+      expect(error).toBeNull();
+    }
+  });
+  test("should raise an error if archiveId is missing", () => {
+    let error = null;
+    try {
+      validateGetDirectivesByArchiveIdParams({});
+    } catch (err) {
+      error = err;
+    } finally {
+      expect(error).not.toBeNull();
+    }
+  });
+  test("should raise an error if archiveId is the wrong type", () => {
+    let error = null;
+    try {
+      validateGetDirectivesByArchiveIdParams({
+        archiveId: "one",
+      });
+    } catch (err) {
+      error = err;
+    } finally {
+      expect(error).not.toBeNull();
+    }
+  });
+  test("should raise an error if archiveId is an invalid value", () => {
+    let error = null;
+    try {
+      validateGetDirectivesByArchiveIdParams({
+        archiveId: 0,
+      });
+    } catch (err) {
+      error = err;
+    } finally {
+      expect(error).not.toBeNull();
+    }
+  });
+});
+
+describe("validateBodyFromAuthentication", () => {
+  test("should find no errors in valid parameter set", () => {
+    let error = null;
+    try {
+      validateBodyFromAuthentication({
+        emailFromAuthToken: "test@permanent.org",
+      });
+    } catch (err) {
+      error = err;
+    } finally {
+      expect(error).toBeNull();
+    }
+  });
+  test("should raise an error if emailFromAuthToken is missing", () => {
+    let error = null;
+    try {
+      validateBodyFromAuthentication({});
+    } catch (err) {
+      error = err;
+    } finally {
+      expect(error).not.toBeNull();
+    }
+  });
+  test("should raise an error if emailFromAuthToken is the wrong type", () => {
+    let error = null;
+    try {
+      validateBodyFromAuthentication({
+        emailFromAuthToken: 1,
+      });
+    } catch (err) {
+      error = err;
+    } finally {
+      expect(error).not.toBeNull();
+    }
+  });
+  test("should raise an error if emailFromAuthToken is an invalid value", () => {
+    let error = null;
+    try {
+      validateBodyFromAuthentication({
+        emailFromAuthToken: "not_an_email",
       });
     } catch (err) {
       error = err;
