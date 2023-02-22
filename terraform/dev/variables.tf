@@ -31,3 +31,32 @@ variable "security_group_id" {
   type        = string
   default     = "sg-eca0e789"
 }
+
+variable "fusionauth_api_key" {
+  description = "API key for the FusionAuth API"
+  type        = string
+}
+
+variable "fusionauth_host" {
+  description = "Host URL for the FusionAuth API"
+  type        = string
+  default     = "https://permanent-dev.fusionauth.io/"
+}
+
+variable "fusionauth_tenant" {
+  description = "ID of the FusionAuth tenant used by this application"
+  type        = string
+  default     = "45586253-3e3b-448c-a27a-44eae469ec35"
+}
+
+variable "fusionauth_backend_application_id" {
+  description = "ID of the FusionAuth application that manages authentication to the web-app's backend"
+  type        = string
+  default     = "0853df7b-d5eb-48d6-bec8-9ec48533b008"
+}
+
+variable "fusionauth_admin_application_id" {
+  description = "ID of the FusionAuth application that manages authentication to the admin portal"
+  type        = string
+  default     = "f2043bfb-9886-4df8-a0f0-7cd1d75651a0"
+}

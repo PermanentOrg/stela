@@ -35,6 +35,36 @@ resource "kubernetes_deployment" "stela" {
             }
           }
 
+          env {
+            name = "FUSIONAUTH_API_KEY"
+            value_from {
+              secret_key_ref {
+                name     = "dev-secrets"
+                key      = "FUSIONAUTH_API_KEY"
+                optional = false
+              }
+            }
+          }
+
+          env {
+            name  = "FUSIONAUTH_HOST"
+            value = var.fusionauth_host
+          }
+
+          env {
+            name  = "FUSIONAUTH_TENANT"
+            value = var.fusionauth_tenant
+          }
+
+          env {
+            name  = "FUSIONAUTH_BACKEND_APPLICATION_ID"
+            value = var.fusionauth_backend_application_id
+          }
+
+          env {
+            name  = "FUSIONAUTH_ADMIN_APPLICATION_ID"
+            value = var.fusionauth_admin_application_id
+          }
 
           port {
             container_port = 80
