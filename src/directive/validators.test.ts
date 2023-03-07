@@ -1,4 +1,7 @@
-import { validateCreateDirectiveRequest } from "./validators";
+import {
+  validateCreateDirectiveRequest,
+  validateTriggerAdminDirectivesParams,
+} from "./validators";
 
 describe("validateCreateDirectiveRequest", () => {
   test("should find no errors in a valid request", () => {
@@ -268,6 +271,55 @@ describe("validateCreateDirectiveRequest", () => {
         stewardAccountId: 1,
         type: "transfer",
         trigger: "admin",
+      });
+    } catch (err) {
+      error = err;
+    } finally {
+      expect(error).not.toBeNull();
+    }
+  });
+});
+
+describe("validateTriggerAdminDirectivesParams", () => {
+  test("should find no errors in valid parameter set", () => {
+    let error = null;
+    try {
+      validateTriggerAdminDirectivesParams({
+        accountId: 1,
+      });
+    } catch (err) {
+      error = err;
+    } finally {
+      expect(error).toBeNull();
+    }
+  });
+  test("should raise an error if accountId is missing", () => {
+    let error = null;
+    try {
+      validateTriggerAdminDirectivesParams({});
+    } catch (err) {
+      error = err;
+    } finally {
+      expect(error).not.toBeNull();
+    }
+  });
+  test("should raise an error if accountId is the wrong type", () => {
+    let error = null;
+    try {
+      validateTriggerAdminDirectivesParams({
+        accountId: "one",
+      });
+    } catch (err) {
+      error = err;
+    } finally {
+      expect(error).not.toBeNull();
+    }
+  });
+  test("should raise an error if accountId is an invalid value", () => {
+    let error = null;
+    try {
+      validateTriggerAdminDirectivesParams({
+        accountId: 0,
       });
     } catch (err) {
       error = err;

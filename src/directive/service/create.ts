@@ -3,19 +3,19 @@ import type {
   CreateDirectiveRequest,
   Directive,
   DirectiveTrigger,
-} from "./model";
-import { db } from "../database";
+} from "../model";
+import { db } from "../../database";
 import {
   isInvalidEnumError,
   getInvalidValueFromInvalidEnumMessage,
-} from "../database_util";
-import { logger } from "../log";
+} from "../../database_util";
+import { logger } from "../../log";
 
 interface HasAccessResult {
   hasAccess: boolean;
 }
 
-const createDirective = async (
+export const createDirective = async (
   requestBody: CreateDirectiveRequest
 ): Promise<Directive> => {
   const accessResult = await db.sql<HasAccessResult>(
@@ -85,8 +85,4 @@ const createDirective = async (
   });
 
   return directiveToReturn;
-};
-
-export const directiveService = {
-  createDirective,
 };

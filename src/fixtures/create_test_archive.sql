@@ -1,4 +1,4 @@
 INSERT INTO
-  archive (archiveId)
+  archive (archiveId, archiveNbr)
 VALUES
-  (1);
+  (1, '0001-0001');

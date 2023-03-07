@@ -1,9 +1,9 @@
 import { NotFound, BadRequest, InternalServerError } from "http-errors";
-import { db } from "../database";
-import { directiveService } from "./service";
-import type { Directive, DirectiveTrigger } from "./model";
+import { db } from "../../database";
+import { directiveService } from "./index";
+import type { Directive, DirectiveTrigger } from "../model";
 
-jest.mock("../database");
+jest.mock("../../database");
 
 const loadFixtures = async (): Promise<void> => {
   await db.sql("fixtures.create_test_accounts");
@@ -19,6 +19,7 @@ const clearDatabase = async (): Promise<void> => {
 
 describe("createDirective", () => {
   beforeEach(async () => {
+    await clearDatabase();
     await loadFixtures();
   });
   afterEach(async () => {

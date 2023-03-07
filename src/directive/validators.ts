@@ -27,3 +27,17 @@ export const validateCreateDirectiveRequest = (
   }
   return true;
 };
+
+export const validateTriggerAdminDirectivesParams = (
+  data: unknown
+): data is { accountId: number } => {
+  const validation = Joi.object()
+    .keys({
+      accountId: Joi.number().integer().min(1).required(),
+    })
+    .validate(data);
+  if (validation.error) {
+    throw validation.error;
+  }
+  return true;
+};

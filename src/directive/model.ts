@@ -10,15 +10,15 @@ export interface CreateDirectiveRequest {
 }
 
 export interface DirectiveTrigger {
-  directiveTriggerId: number;
-  directiveId: number;
+  directiveTriggerId: string;
+  directiveId: string;
   type: string;
   createdDt: Date;
   updatedDt: Date;
 }
 
 export interface Directive {
-  directiveId: number;
+  directiveId: string;
   archiveId: number;
   type: string;
   createdDt: Date;
@@ -27,4 +27,11 @@ export interface Directive {
   stewardAccountId?: number;
   note?: string;
   executionDt?: Date;
+}
+
+export interface DirectiveExecutionResult {
+  archiveId: number;
+  directiveId: string;
+  outcome: "error" | "success";
+  errorMessage?: string;
 }
