@@ -1,14 +1,20 @@
 import { Router } from "express";
 import type { Request, Response, NextFunction } from "express";
 import { directiveService } from "./service";
-import { verifyUserAuthentication } from "../middleware";
-import { validateCreateDirectiveRequest } from "./validators";
+import {
+  verifyUserAuthentication,
+  verifyAdminAuthentication,
+} from "../middleware";
+import {
+  validateCreateDirectiveRequest,
+  validateTriggerAdminDirectivesParams,
+} from "./validators";
 import { isValidationError } from "../validator_util";
 
 export const directiveController = Router();
-directiveController.use(verifyUserAuthentication);
 directiveController.post(
   "/",
+  verifyUserAuthentication,
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       validateCreateDirectiveRequest(req.body);
@@ -23,6 +29,34 @@ directiveController.post(
       try {
         const directive = await directiveService.createDirective(req.body);
         res.json(directive);
+      } catch (err) {
+        next(err);
+      }
+    }
+  }
+);
+
+directiveController.post(
+  "/trigger/account/:accountId",
+  verifyAdminAuthentication,
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      validateTriggerAdminDirectivesParams(req.params);
+    } catch (err) {
+      if (isValidationError(err)) {
+        res.status(400).json({ error: err });
+        return;
+      }
+      next(err);
+    }
+
+    if (validateTriggerAdminDirectivesParams(req.params)) {
+      try {
+        const responseBody =
+          await directiveService.triggerAccountAdminDirectives(
+            req.params.accountId
+          );
+        res.json(responseBody);
       } catch (err) {
         next(err);
       }
