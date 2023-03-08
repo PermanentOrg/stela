@@ -22,28 +22,33 @@ const buildAuthenticationVerifier =
     }
     const authenticationToken = authorizationHeaderParts[1];
 
-    const introspectionResponse = await fusionAuthClient.introspectAccessToken(
-      applicationId,
-      authenticationToken ?? ""
-    );
-    if (!introspectionResponse.wasSuccessful()) {
-      next(
-        new createError.Unauthorized(
-          `Token validation failed: ${introspectionResponse.exception.message}`
-        )
-      );
-      return;
-    }
-    if (
-      introspectionResponse.response["active"] !== true ||
-      typeof introspectionResponse.response["email"] !== "string" ||
-      introspectionResponse.response["email"] === ""
-    ) {
-      next(new createError.Unauthorized("Invalid token"));
-      return;
-    }
+    try {
+      const introspectionResponse =
+        await fusionAuthClient.introspectAccessToken(
+          applicationId,
+          authenticationToken ?? ""
+        );
+      if (!introspectionResponse.wasSuccessful()) {
+        next(
+          new createError.Unauthorized(
+            `Token validation failed: ${introspectionResponse.exception.message}`
+          )
+        );
+        return;
+      }
+      if (
+        introspectionResponse.response["active"] !== true ||
+        typeof introspectionResponse.response["email"] !== "string" ||
+        introspectionResponse.response["email"] === ""
+      ) {
+        next(new createError.Unauthorized("Invalid token"));
+        return;
+      }
 
-    req.body.emailFromAuthToken = introspectionResponse.response["email"];
+      req.body.emailFromAuthToken = introspectionResponse.response["email"];
+    } catch (err) {
+      next(err);
+    }
     next();
   };
 
