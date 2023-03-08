@@ -4,7 +4,8 @@ resource "kubernetes_secret" "dev-secrets" {
   }
 
   data = {
-    "DATABASE_URL"       = var.database_url
-    "FUSIONAUTH_API_KEY" = var.fusionauth_api_key
+    "DATABASE_URL"                 = var.database_url
+    "FUSIONAUTH_API_KEY"           = var.fusionauth_api_key
+    "LEGACY_BACKEND_SHARED_SECRET" = var.legacy_backend_shared_secret
   }
 }

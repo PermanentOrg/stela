@@ -52,11 +52,22 @@ variable "fusionauth_tenant" {
 variable "fusionauth_backend_application_id" {
   description = "ID of the FusionAuth application that manages authentication to the web-app's backend"
   type        = string
-  default     = "0853df7b-d5eb-48d6-bec8-9ec48533b008"
+  default     = "8048057e-4f77-406a-a77d-2962a81cea21"
 }
 
 variable "fusionauth_admin_application_id" {
   description = "ID of the FusionAuth application that manages authentication to the admin portal"
   type        = string
   default     = "f2043bfb-9886-4df8-a0f0-7cd1d75651a0"
+}
+
+variable "legacy_backend_host_url" {
+  description = "Host URL of the legacy PHP backend"
+  type        = string
+  default     = "https://dev.permanent.org/api"
+}
+
+variable "legacy_backend_shared_secret" {
+  description = "Shared secret for authenticating calls to the legacy backend"
+  type        = string
 }
