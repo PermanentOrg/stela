@@ -12,6 +12,10 @@ import {
 import { logger } from "../../log";
 import { confirmArchiveOwnership } from "./utils";
 
+interface AccountResult {
+  stewardAccountId: string;
+}
+
 export const createDirective = async (
   requestBody: CreateDirectiveRequest
 ): Promise<Directive> => {
@@ -19,6 +23,20 @@ export const createDirective = async (
     requestBody.archiveId,
     requestBody.emailFromAuthToken
   );
+
+  const accountResult = await db.sql<AccountResult>(
+    "directive.queries.check_account_by_email",
+    {
+      email: requestBody.stewardEmail,
+    }
+  );
+
+  if (
+    requestBody.type === "transfer" &&
+    (!accountResult.rows[0] || !accountResult.rows[0].stewardAccountId)
+  ) {
+    throw new createError.NotFound("Steward account not found");
+  }
 
   const directiveToReturn = await db.transaction(async (transactionDb) => {
     const directive = await (async (): Promise<Directive> => {
@@ -28,7 +46,7 @@ export const createDirective = async (
           {
             archiveId: requestBody.archiveId,
             type: requestBody.type,
-            stewardAccountId: requestBody.stewardAccountId ?? null,
+            stewardEmail: requestBody.stewardEmail ?? null,
             note: requestBody.note ?? null,
           }
         );

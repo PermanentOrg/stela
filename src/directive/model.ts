@@ -5,7 +5,7 @@ export interface CreateDirectiveRequest {
   trigger: {
     type: string;
   };
-  stewardAccountId?: string;
+  stewardEmail?: string;
   note?: string;
 }
 
