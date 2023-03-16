@@ -14,7 +14,7 @@ describe("validateCreateDirectiveRequest", () => {
       validateCreateDirectiveRequest({
         emailFromAuthToken: "test@permanent.org",
         archiveId: "1",
-        stewardAccountId: "1",
+        stewardEmail: "test+1@permanent.org",
         type: "transfer",
         trigger: {
           type: "admin",
@@ -31,7 +31,7 @@ describe("validateCreateDirectiveRequest", () => {
     try {
       validateCreateDirectiveRequest({
         emailFromAuthToken: "test@permanent.org",
-        stewardAccountId: "1",
+        stewardEmail: "test+1@permanent.org",
         type: "transfer",
         trigger: {
           type: "admin",
@@ -43,7 +43,7 @@ describe("validateCreateDirectiveRequest", () => {
       expect(error).not.toBeNull();
     }
   });
-  test("should raise an error if stewardAccountId is missing", () => {
+  test("should raise an error if stewardEmail is missing", () => {
     let error = null;
     try {
       validateCreateDirectiveRequest({
@@ -66,7 +66,7 @@ describe("validateCreateDirectiveRequest", () => {
       validateCreateDirectiveRequest({
         emailFromAuthToken: "test@permanent.org",
         archiveId: "1",
-        stewardAccountId: "1",
+        stewardEmail: "test+1@permanent.org",
         trigger: {
           type: "admin",
         },
@@ -83,7 +83,7 @@ describe("validateCreateDirectiveRequest", () => {
       validateCreateDirectiveRequest({
         emailFromAuthToken: "test@permanent.org",
         archiveId: "1",
-        stewardAccountId: "1",
+        stewardEmail: "test+1@permanent.org",
         type: "transfer",
         trigger: {},
       });
@@ -99,7 +99,7 @@ describe("validateCreateDirectiveRequest", () => {
       validateCreateDirectiveRequest({
         emailFromAuthToken: "test@permanent.org",
         archiveId: "1",
-        stewardAccountId: "1",
+        stewardEmail: "test+1@permanent.org",
         type: "transfer",
       });
     } catch (err) {
@@ -114,7 +114,7 @@ describe("validateCreateDirectiveRequest", () => {
       validateCreateDirectiveRequest({
         emailFromAuthToken: "test@permanent.org",
         archiveId: 1,
-        stewardAccountId: "1",
+        stewardEmail: "test+1@permanent.org",
         type: "transfer",
         trigger: {
           type: "admin",
@@ -126,13 +126,13 @@ describe("validateCreateDirectiveRequest", () => {
       expect(error).not.toBeNull();
     }
   });
-  test("should raise an error if stewardAccountId type is invalid", () => {
+  test("should raise an error if stewardEmail value is invalid", () => {
     let error = null;
     try {
       validateCreateDirectiveRequest({
         emailFromAuthToken: "test@permanent.org",
         archiveId: "1",
-        stewardAccountId: 1,
+        stewardEmail: "test+1",
         type: "transfer",
         trigger: {
           type: "admin",
@@ -150,7 +150,7 @@ describe("validateCreateDirectiveRequest", () => {
       validateCreateDirectiveRequest({
         emailFromAuthToken: "test@permanent.org",
         archiveId: "1",
-        stewardAccountId: "1",
+        stewardEmail: "test+1@permanent.org",
         type: 1,
         trigger: {
           type: "admin",
@@ -168,7 +168,7 @@ describe("validateCreateDirectiveRequest", () => {
       validateCreateDirectiveRequest({
         emailFromAuthToken: "test@permanent.org",
         archiveId: "1",
-        stewardAccountId: "1",
+        stewardEmail: "test+1@permanent.org",
         type: "transfer",
         note: 1,
         trigger: {
@@ -187,8 +187,8 @@ describe("validateCreateDirectiveRequest", () => {
       validateCreateDirectiveRequest({
         emailFromAuthToken: "test@permanent.org",
         archiveId: "1",
-        stewardAccountId: "1",
         type: "transfer",
+        stewardEmail: "test+1@permanent.org",
         trigger: {
           type: 1,
         },
@@ -205,7 +205,7 @@ describe("validateCreateDirectiveRequest", () => {
       validateCreateDirectiveRequest({
         emailFromAuthToken: "test@permanent.org",
         archiveId: "1",
-        stewardAccountId: "1",
+        stewardEmail: "test+1@permanent.org",
         type: "transfer",
         trigger: "admin",
       });
@@ -220,7 +220,7 @@ describe("validateCreateDirectiveRequest", () => {
     try {
       validateCreateDirectiveRequest({
         archiveId: "1",
-        stewardAccountId: "1",
+        stewardEmail: "test+1@permanent.org",
         type: "transfer",
         trigger: {
           type: "admin",
@@ -238,7 +238,7 @@ describe("validateCreateDirectiveRequest", () => {
       validateCreateDirectiveRequest({
         emailFromAuthToken: "not_an_email",
         archiveId: "1",
-        stewardAccountId: "1",
+        stewardEmail: "test+1@permanent.org",
         type: "transfer",
         trigger: {
           type: "admin",
@@ -256,7 +256,7 @@ describe("validateCreateDirectiveRequest", () => {
       validateCreateDirectiveRequest({
         emailFromAuthToken: 1,
         archiveId: 1,
-        stewardAccountId: 1,
+        stewardEmail: "test+1@permanent.org",
         type: "transfer",
         trigger: {
           type: "admin",

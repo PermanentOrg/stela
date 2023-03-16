@@ -30,7 +30,7 @@ describe("createDirective", () => {
     await directiveService.createDirective({
       emailFromAuthToken: "test@permanent.org",
       archiveId: "1",
-      stewardAccountId: "2",
+      stewardEmail: "test@permanent.org",
       type: "transfer",
       trigger: {
         type: "admin",
@@ -77,7 +77,7 @@ describe("createDirective", () => {
       await directiveService.createDirective({
         emailFromAuthToken: "test+1@permanent.org",
         archiveId: "1",
-        stewardAccountId: "2",
+        stewardEmail: "test@permanent.org",
         type: "transfer",
         trigger: {
           type: "admin",
@@ -96,7 +96,7 @@ describe("createDirective", () => {
       await directiveService.createDirective({
         emailFromAuthToken: "test@permanent.org",
         archiveId: "1",
-        stewardAccountId: "2",
+        stewardEmail: "test@permanent.org",
         type: "not_a_type",
         trigger: {
           type: "admin",
@@ -115,7 +115,7 @@ describe("createDirective", () => {
       await directiveService.createDirective({
         emailFromAuthToken: "test@permanent.org",
         archiveId: "1",
-        stewardAccountId: "2",
+        stewardEmail: "test@permanent.org",
         type: "transfer",
         trigger: {
           type: "date",
@@ -140,12 +140,18 @@ describe("createDirective", () => {
             } as object)) as unknown as typeof db.sql
         )
         .mockImplementationOnce(
+          (async () =>
+            ({
+              rows: [{ stewardAccountId: 1 }],
+            } as object)) as unknown as typeof db.sql
+        )
+        .mockImplementationOnce(
           (async () => ({ rows: [] } as object)) as unknown as typeof db.sql
         );
       await directiveService.createDirective({
         emailFromAuthToken: "test@permanent.org",
         archiveId: "1",
-        stewardAccountId: "2",
+        stewardEmail: "test@permanent.org",
         type: "transfer",
         trigger: {
           type: "admin",
@@ -172,6 +178,12 @@ describe("createDirective", () => {
         .mockImplementationOnce(
           (async () =>
             ({
+              rows: [{ stewardAccountId: 1 }],
+            } as object)) as unknown as typeof db.sql
+        )
+        .mockImplementationOnce(
+          (async () =>
+            ({
               rows: [
                 {
                   directiveId: 1,
@@ -185,7 +197,7 @@ describe("createDirective", () => {
       await directiveService.createDirective({
         emailFromAuthToken: "test@permanent.org",
         archiveId: "1",
-        stewardAccountId: "2",
+        stewardEmail: "test@permanent.org",
         type: "transfer",
         trigger: {
           type: "admin",
