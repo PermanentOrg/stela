@@ -47,6 +47,17 @@ resource "kubernetes_deployment" "stela" {
           }
 
           env {
+            name = "LEGACY_BACKEND_SHARED_SECRET"
+            value_from {
+              secret_key_ref {
+                name     = "dev-secrets"
+                key      = "LEGACY_BACKEND_SHARED_SECRET"
+                optional = false
+              }
+            }
+          }
+
+          env {
             name  = "FUSIONAUTH_HOST"
             value = var.fusionauth_host
           }
@@ -64,6 +75,11 @@ resource "kubernetes_deployment" "stela" {
           env {
             name  = "FUSIONAUTH_ADMIN_APPLICATION_ID"
             value = var.fusionauth_admin_application_id
+          }
+
+          env {
+            name  = "LEGACY_BACKEND_HOST_URL"
+            value = var.legacy_backend_host_url
           }
 
           port {
