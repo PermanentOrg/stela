@@ -41,10 +41,10 @@ describe("triggerAccountAdminDirectives", () => {
     expect(response[0]?.outcome).toBe("success");
 
     const directiveResult = await db.query<Directive>(
-      "SELECT * FROM directive WHERE directive_id = :testDirectiveId",
+      'SELECT execution_dt "executionDt" FROM directive WHERE directive_id = :testDirectiveId',
       { testDirectiveId }
     );
-    expect(directiveResult.rows[0]?.executionDt).not.toBeNull();
+    expect(directiveResult.rows[0]?.executionDt).toBeTruthy();
   });
 
   test("should respond with error when transfer directive fails to execute", async () => {
@@ -54,6 +54,14 @@ describe("triggerAccountAdminDirectives", () => {
     const response = await directiveService.triggerAccountAdminDirectives(2);
     expect(response.length).toBe(1);
     expect(response[0]?.outcome).toBe("error");
+  });
+
+  test("should not try to execute an already executed directive", async () => {
+    await db.sql("directive.queries.mark_directives_executed", {
+      directiveIds: [testDirectiveId],
+    });
+    const response = await directiveService.triggerAccountAdminDirectives(2);
+    expect(response.length).toBe(0);
   });
 
   test("should respond with error when transfer directive has unsupported type", async () => {
