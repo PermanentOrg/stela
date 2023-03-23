@@ -5,7 +5,7 @@ import { directiveService } from "./index";
 jest.mock("../../database");
 
 const testDirectiveId = "39b2a5fa-3508-4030-91b6-21dc6ec7a1ab";
-const testArchiveId = 1;
+const testArchiveId = "1";
 const testEmail = "test@permanent.org";
 
 const loadFixtures = async (): Promise<void> => {
@@ -43,7 +43,7 @@ describe("getDirectivesByArchiveId", () => {
   test("should throw not found if archive doesn't exist", async () => {
     let error = null;
     try {
-      await directiveService.getDirectivesByArchiveId(9999, testEmail);
+      await directiveService.getDirectivesByArchiveId("9999", testEmail);
     } catch (err) {
       error = err;
     } finally {

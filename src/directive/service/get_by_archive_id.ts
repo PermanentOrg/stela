@@ -3,7 +3,7 @@ import type { Directive } from "../model";
 import { confirmArchiveOwnership } from "./utils";
 
 export const getDirectivesByArchiveId = async (
-  archiveId: number,
+  archiveId: string,
   emailFromAuthToken: string
 ): Promise<Directive[]> => {
   await confirmArchiveOwnership(archiveId, emailFromAuthToken);

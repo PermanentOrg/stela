@@ -6,7 +6,7 @@ interface HasAccessResult {
 }
 
 export const confirmArchiveOwnership = async (
-  archiveId: number,
+  archiveId: string,
   email: string
 ): Promise<void> => {
   const accessResult = await db.sql<HasAccessResult>(
