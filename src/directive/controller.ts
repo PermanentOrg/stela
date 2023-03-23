@@ -8,6 +8,8 @@ import {
 import {
   validateCreateDirectiveRequest,
   validateTriggerAdminDirectivesParams,
+  validateGetDirectivesByArchiveIdParams,
+  validateBodyFromAuthentication,
 } from "./validators";
 import { isValidationError } from "../validator_util";
 
@@ -56,6 +58,38 @@ directiveController.post(
           await directiveService.triggerAccountAdminDirectives(
             req.params.accountId
           );
+        res.json(responseBody);
+      } catch (err) {
+        next(err);
+      }
+    }
+  }
+);
+
+directiveController.get(
+  "/archive/:archiveId",
+  verifyUserAuthentication,
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      validateGetDirectivesByArchiveIdParams(req.params);
+      validateBodyFromAuthentication(req.body);
+    } catch (err) {
+      if (isValidationError(err)) {
+        res.status(400).json({ error: err });
+        return;
+      }
+      next(err);
+    }
+
+    if (
+      validateGetDirectivesByArchiveIdParams(req.params) &&
+      validateBodyFromAuthentication(req.body)
+    ) {
+      try {
+        const responseBody = await directiveService.getDirectivesByArchiveId(
+          req.params.archiveId,
+          req.body.emailFromAuthToken
+        );
         res.json(responseBody);
       } catch (err) {
         next(err);

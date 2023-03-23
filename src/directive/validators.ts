@@ -41,3 +41,29 @@ export const validateTriggerAdminDirectivesParams = (
   }
   return true;
 };
+
+export const validateGetDirectivesByArchiveIdParams = (
+  data: unknown
+): data is { archiveId: number } => {
+  const validation = Joi.object()
+    .keys({
+      archiveId: Joi.number().integer().min(1).required(),
+    })
+    .validate(data);
+  if (validation.error) {
+    throw validation.error;
+  }
+  return true;
+};
+
+export const validateBodyFromAuthentication = (
+  data: unknown
+): data is { emailFromAuthToken: string } => {
+  const validation = Joi.object()
+    .keys({ emailFromAuthToken: Joi.string().email().required() })
+    .validate(data);
+  if (validation.error) {
+    throw validation.error;
+  }
+  return true;
+};

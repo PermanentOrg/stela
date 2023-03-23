@@ -10,4 +10,5 @@ SELECT EXISTS (
     archiveId = :archiveId
     AND account.primaryEmail = :email
     AND account_archive.accessRole = 'access.role.owner'
+    AND account_archive.status = 'status.generic.ok'
 ) "hasAccess";

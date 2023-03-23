@@ -10,24 +10,15 @@ import {
   getInvalidValueFromInvalidEnumMessage,
 } from "../../database_util";
 import { logger } from "../../log";
-
-interface HasAccessResult {
-  hasAccess: boolean;
-}
+import { confirmArchiveOwnership } from "./utils";
 
 export const createDirective = async (
   requestBody: CreateDirectiveRequest
 ): Promise<Directive> => {
-  const accessResult = await db.sql<HasAccessResult>(
-    "directive.queries.check_archive_ownership",
-    {
-      archiveId: requestBody.archiveId,
-      email: requestBody.emailFromAuthToken,
-    }
+  await confirmArchiveOwnership(
+    requestBody.archiveId,
+    requestBody.emailFromAuthToken
   );
-  if (!accessResult.rows[0] || !accessResult.rows[0].hasAccess) {
-    throw new createError.NotFound("Archive not found");
-  }
 
   const directiveToReturn = await db.transaction(async (transactionDb) => {
     const directive = await (async (): Promise<Directive> => {
