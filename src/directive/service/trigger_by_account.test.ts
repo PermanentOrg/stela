@@ -36,7 +36,7 @@ describe("triggerAccountAdminDirectives", () => {
     jest
       .spyOn(legacyClient, "transferArchiveOwnership")
       .mockResolvedValue(Promise.resolve({ status: 200 } as Response));
-    const response = await directiveService.triggerAccountAdminDirectives(2);
+    const response = await directiveService.triggerAccountAdminDirectives("2");
     expect(response.length).toBe(1);
     expect(response[0]?.outcome).toBe("success");
 
@@ -51,7 +51,7 @@ describe("triggerAccountAdminDirectives", () => {
     jest
       .spyOn(legacyClient, "transferArchiveOwnership")
       .mockResolvedValue(Promise.resolve({ status: 500 } as Response));
-    const response = await directiveService.triggerAccountAdminDirectives(2);
+    const response = await directiveService.triggerAccountAdminDirectives("2");
     expect(response.length).toBe(1);
     expect(response[0]?.outcome).toBe("error");
   });
@@ -60,7 +60,7 @@ describe("triggerAccountAdminDirectives", () => {
     await db.sql("directive.queries.mark_directives_executed", {
       directiveIds: [testDirectiveId],
     });
-    const response = await directiveService.triggerAccountAdminDirectives(2);
+    const response = await directiveService.triggerAccountAdminDirectives("2");
     expect(response.length).toBe(0);
   });
 
@@ -70,7 +70,7 @@ describe("triggerAccountAdminDirectives", () => {
       row_count: 1,
       rows: [{ type: "not_a_type" }],
     });
-    const response = await directiveService.triggerAccountAdminDirectives(2);
+    const response = await directiveService.triggerAccountAdminDirectives("2");
     expect(response.length).toBe(1);
     expect(response[0]?.outcome).toBe("error");
   });

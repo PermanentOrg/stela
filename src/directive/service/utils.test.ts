@@ -4,7 +4,7 @@ import { confirmArchiveOwnership } from "./utils";
 
 jest.mock("../../database");
 
-const testArchiveId = 1;
+const testArchiveId = "1";
 const testEmail = "test@permanent.org";
 
 const loadFixtures = async (): Promise<void> => {
@@ -51,7 +51,7 @@ describe("confirmArchiveOwnership", () => {
   test("should return NotFound error if archive doesn't exist", async () => {
     let error = null;
     try {
-      await confirmArchiveOwnership(9999, testEmail);
+      await confirmArchiveOwnership("9999", testEmail);
     } catch (err) {
       error = err;
     } finally {

@@ -1,5 +1,5 @@
 import Joi from "joi";
-import type { CreateDirectiveRequest } from "./model";
+import type { CreateDirectiveRequest, UpdateDirectiveRequest } from "./model";
 
 export const validateCreateDirectiveRequest = (
   data: unknown
@@ -7,10 +7,10 @@ export const validateCreateDirectiveRequest = (
   const validation = Joi.object()
     .keys({
       emailFromAuthToken: Joi.string().email().required(),
-      archiveId: Joi.number().integer().min(1).required(),
+      archiveId: Joi.string().required(),
       stewardAccountId: Joi.when("type", {
-        is: Joi.string().valid("transfer"),
-        then: Joi.number().integer().min(1).required(),
+        is: Joi.string().valid("transfer").required(),
+        then: Joi.string().required(),
         otherwise: Joi.valid(null),
       }),
       type: Joi.string().required(),
@@ -28,12 +28,50 @@ export const validateCreateDirectiveRequest = (
   return true;
 };
 
-export const validateTriggerAdminDirectivesParams = (
+export const validateUpdateDirectiveParams = (
   data: unknown
-): data is { accountId: number } => {
+): data is { directiveId: string } => {
   const validation = Joi.object()
     .keys({
-      accountId: Joi.number().integer().min(1).required(),
+      directiveId: Joi.string().uuid().required(),
+    })
+    .validate(data);
+  if (validation.error) {
+    throw validation.error;
+  }
+  return true;
+};
+
+export const validateUpdateDirectiveRequest = (
+  data: unknown
+): data is UpdateDirectiveRequest => {
+  const validation = Joi.object()
+    .keys({
+      emailFromAuthToken: Joi.string().email().required(),
+      stewardEmail: Joi.when("type", {
+        is: Joi.string().valid("transfer"),
+        then: Joi.string().email(),
+        otherwise: Joi.valid(null),
+      }),
+      type: Joi.string(),
+      note: Joi.string(),
+      trigger: Joi.object().keys({
+        type: Joi.string(),
+      }),
+    })
+    .validate(data);
+  if (validation.error) {
+    throw validation.error;
+  }
+  return true;
+};
+
+export const validateTriggerAdminDirectivesParams = (
+  data: unknown
+): data is { accountId: string } => {
+  const validation = Joi.object()
+    .keys({
+      accountId: Joi.string().required(),
     })
     .validate(data);
   if (validation.error) {
@@ -44,10 +82,10 @@ export const validateTriggerAdminDirectivesParams = (
 
 export const validateGetDirectivesByArchiveIdParams = (
   data: unknown
-): data is { archiveId: number } => {
+): data is { archiveId: string } => {
   const validation = Joi.object()
     .keys({
-      archiveId: Joi.number().integer().min(1).required(),
+      archiveId: Joi.string().required(),
     })
     .validate(data);
   if (validation.error) {

@@ -6,13 +6,13 @@ const directiveExecutionOutcomeSuccess = "success";
 const directiveExecutionOutcomeError = "error";
 
 export const triggerAccountAdminDirectives = async (
-  accountId: number
+  accountId: string
 ): Promise<DirectiveExecutionResult[]> => {
   const adminDirectives = await db.sql<{
     archiveSlug: string;
     stewardEmail: string;
     directiveId: string;
-    archiveId: number;
+    archiveId: string;
     directiveType: string;
   }>("directive.queries.get_admin_directive_execution_data_by_account", {
     accountId,

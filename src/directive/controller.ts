@@ -6,6 +6,8 @@ import {
   verifyAdminAuthentication,
 } from "../middleware";
 import {
+  validateUpdateDirectiveParams,
+  validateUpdateDirectiveRequest,
   validateCreateDirectiveRequest,
   validateTriggerAdminDirectivesParams,
   validateGetDirectivesByArchiveIdParams,
@@ -30,6 +32,37 @@ directiveController.post(
     if (validateCreateDirectiveRequest(req.body)) {
       try {
         const directive = await directiveService.createDirective(req.body);
+        res.json(directive);
+      } catch (err) {
+        next(err);
+      }
+    }
+  }
+);
+
+directiveController.put(
+  "/:directiveId",
+  verifyUserAuthentication,
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      validateUpdateDirectiveParams(req.params);
+      validateUpdateDirectiveRequest(req.body);
+    } catch (err) {
+      if (isValidationError(err)) {
+        res.status(400).json({ error: err });
+        return;
+      }
+      next(err);
+    }
+    if (
+      validateUpdateDirectiveParams(req.params) &&
+      validateUpdateDirectiveRequest(req.body)
+    ) {
+      try {
+        const directive = await directiveService.updateDirective(
+          req.params.directiveId,
+          req.body
+        );
         res.json(directive);
       } catch (err) {
         next(err);
