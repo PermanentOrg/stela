@@ -7,14 +7,11 @@ import type {
 import { db } from "../../database";
 import {
   isInvalidEnumError,
+  isMissingStewardAccountError,
   getInvalidValueFromInvalidEnumMessage,
 } from "../../database_util";
 import { logger } from "../../log";
 import { confirmArchiveOwnership } from "./utils";
-
-interface AccountResult {
-  stewardAccountId: string;
-}
 
 export const createDirective = async (
   requestBody: CreateDirectiveRequest
@@ -23,20 +20,6 @@ export const createDirective = async (
     requestBody.archiveId,
     requestBody.emailFromAuthToken
   );
-
-  const accountResult = await db.sql<AccountResult>(
-    "directive.queries.check_account_by_email",
-    {
-      email: requestBody.stewardEmail,
-    }
-  );
-
-  if (
-    requestBody.type === "transfer" &&
-    (!accountResult.rows[0] || !accountResult.rows[0].stewardAccountId)
-  ) {
-    throw new createError.NotFound("Steward account not found");
-  }
 
   const directiveToReturn = await db.transaction(async (transactionDb) => {
     const directive = await (async (): Promise<Directive> => {
@@ -60,6 +43,10 @@ export const createDirective = async (
             `${getInvalidValueFromInvalidEnumMessage(
               err.message
             )} is not a valid value for "type"`
+          );
+        } else if (isMissingStewardAccountError(err)) {
+          throw new createError.BadRequest(
+            "Steward email must have an account"
           );
         }
         logger.error(err);

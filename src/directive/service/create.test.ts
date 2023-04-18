@@ -131,21 +131,16 @@ describe("createDirective", () => {
   test("should error if steward account not found", async () => {
     let error = null;
     try {
-      jest
-        .spyOn(db, "sql")
-        .mockImplementationOnce(
-          (async () =>
-            ({
-              rows: [{ hasAccess: true }],
-            } as object)) as unknown as typeof db.sql
-        )
-        .mockImplementationOnce(
-          (async () => ({ rows: [] } as object)) as unknown as typeof db.sql
-        );
+      jest.spyOn(db, "sql").mockImplementationOnce(
+        (async () =>
+          ({
+            rows: [{ hasAccess: true }],
+          } as object)) as unknown as typeof db.sql
+      );
       await directiveService.createDirective({
         emailFromAuthToken: "test@permanent.org",
         archiveId: "1",
-        stewardEmail: "test@permanent.org",
+        stewardEmail: "nobody@permanent.org",
         type: "transfer",
         trigger: {
           type: "admin",
@@ -154,7 +149,7 @@ describe("createDirective", () => {
     } catch (err) {
       error = err;
     } finally {
-      expect(error instanceof NotFound).toBe(true);
+      expect(error instanceof BadRequest).toBe(true);
     }
   });
 
@@ -167,12 +162,6 @@ describe("createDirective", () => {
           (async () =>
             ({
               rows: [{ hasAccess: true }],
-            } as object)) as unknown as typeof db.sql
-        )
-        .mockImplementationOnce(
-          (async () =>
-            ({
-              rows: [{ stewardAccountId: 1 }],
             } as object)) as unknown as typeof db.sql
         )
         .mockImplementationOnce(
@@ -203,12 +192,6 @@ describe("createDirective", () => {
           (async () =>
             ({
               rows: [{ hasAccess: true }],
-            } as object)) as unknown as typeof db.sql
-        )
-        .mockImplementationOnce(
-          (async () =>
-            ({
-              rows: [{ stewardAccountId: 1 }],
             } as object)) as unknown as typeof db.sql
         )
         .mockImplementationOnce(
