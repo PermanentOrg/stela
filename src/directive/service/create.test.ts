@@ -30,7 +30,7 @@ describe("createDirective", () => {
     await directiveService.createDirective({
       emailFromAuthToken: "test@permanent.org",
       archiveId: "1",
-      stewardAccountId: "2",
+      stewardEmail: "test@permanent.org",
       type: "transfer",
       trigger: {
         type: "admin",
@@ -77,7 +77,7 @@ describe("createDirective", () => {
       await directiveService.createDirective({
         emailFromAuthToken: "test+1@permanent.org",
         archiveId: "1",
-        stewardAccountId: "2",
+        stewardEmail: "test@permanent.org",
         type: "transfer",
         trigger: {
           type: "admin",
@@ -96,7 +96,7 @@ describe("createDirective", () => {
       await directiveService.createDirective({
         emailFromAuthToken: "test@permanent.org",
         archiveId: "1",
-        stewardAccountId: "2",
+        stewardEmail: "test@permanent.org",
         type: "not_a_type",
         trigger: {
           type: "admin",
@@ -115,10 +115,35 @@ describe("createDirective", () => {
       await directiveService.createDirective({
         emailFromAuthToken: "test@permanent.org",
         archiveId: "1",
-        stewardAccountId: "2",
+        stewardEmail: "test@permanent.org",
         type: "transfer",
         trigger: {
           type: "date",
+        },
+      });
+    } catch (err) {
+      error = err;
+    } finally {
+      expect(error instanceof BadRequest).toBe(true);
+    }
+  });
+
+  test("should error if steward account not found", async () => {
+    let error = null;
+    try {
+      jest.spyOn(db, "sql").mockImplementationOnce(
+        (async () =>
+          ({
+            rows: [{ hasAccess: true }],
+          } as object)) as unknown as typeof db.sql
+      );
+      await directiveService.createDirective({
+        emailFromAuthToken: "test@permanent.org",
+        archiveId: "1",
+        stewardEmail: "nobody@permanent.org",
+        type: "transfer",
+        trigger: {
+          type: "admin",
         },
       });
     } catch (err) {
@@ -145,7 +170,7 @@ describe("createDirective", () => {
       await directiveService.createDirective({
         emailFromAuthToken: "test@permanent.org",
         archiveId: "1",
-        stewardAccountId: "2",
+        stewardEmail: "test@permanent.org",
         type: "transfer",
         trigger: {
           type: "admin",
@@ -185,7 +210,7 @@ describe("createDirective", () => {
       await directiveService.createDirective({
         emailFromAuthToken: "test@permanent.org",
         archiveId: "1",
-        stewardAccountId: "2",
+        stewardEmail: "test@permanent.org",
         type: "transfer",
         trigger: {
           type: "admin",

@@ -7,6 +7,7 @@ import type {
 import { db } from "../../database";
 import {
   isInvalidEnumError,
+  isMissingStewardAccountError,
   getInvalidValueFromInvalidEnumMessage,
 } from "../../database_util";
 import { logger } from "../../log";
@@ -28,7 +29,7 @@ export const createDirective = async (
           {
             archiveId: requestBody.archiveId,
             type: requestBody.type,
-            stewardAccountId: requestBody.stewardAccountId ?? null,
+            stewardEmail: requestBody.stewardEmail ?? null,
             note: requestBody.note ?? null,
           }
         );
@@ -42,6 +43,10 @@ export const createDirective = async (
             `${getInvalidValueFromInvalidEnumMessage(
               err.message
             )} is not a valid value for "type"`
+          );
+        } else if (isMissingStewardAccountError(err)) {
+          throw new createError.BadRequest(
+            "Steward email must have an account"
           );
         }
         logger.error(err);

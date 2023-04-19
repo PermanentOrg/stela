@@ -8,9 +8,9 @@ export const validateCreateDirectiveRequest = (
     .keys({
       emailFromAuthToken: Joi.string().email().required(),
       archiveId: Joi.string().required(),
-      stewardAccountId: Joi.when("type", {
-        is: Joi.string().valid("transfer").required(),
-        then: Joi.string().required(),
+      stewardEmail: Joi.when("type", {
+        is: Joi.string().valid("transfer"),
+        then: Joi.string().email().required(),
         otherwise: Joi.valid(null),
       }),
       type: Joi.string().required(),
