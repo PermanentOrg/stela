@@ -1,9 +1,11 @@
-name: Deploy to dev
+name: Deploy to staging
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - main
+  release:
+    # branches:
+    #   - main
+    tags:
+      - v[0-9].[0-9]+.[0-9]+-staging
 jobs:
   run_tests:
     uses: ./.github/workflows/test.yml
@@ -26,7 +28,8 @@ jobs:
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }} - name: Publish Image to ECR
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      - name: Publish Image to ECR
         run: docker push $IMAGE_TAG
   deploy:
     needs:
@@ -51,10 +54,10 @@ jobs:
       - name: Terraform Validate
         id: validate
         run: terraform validate -no-color
-      # Note that while we do pass a value of stela_staging_image below, it won't be used because the -target option
-      # restricts terraform to just updating the dev deployment
+      # Note that while we do pass a value of stela__image below, it won't be used because the -target option
+      # restricts terraform to just updating the staging deployment
       - name: Terraform Plan
         id: plan
-        run: terraform plan -no-color -input=false -var="stela_dev_image=$IMAGE_TAG" -var="stela_staging_image=$IMAGE_TAG" -target=kubernetes_deployment.stela_dev
+        run: terraform plan -no-color -input=false -var="stela_dev_image=$IMAGE_TAG" -var="stela_staging_image=$IMAGE_TAG" -target=kubernetes_deployment.stela_staging
       - name: Terraform Apply
-        run: terraform apply -auto-approve -input=false -var="stela_dev_image=$IMAGE_TAG" -var="stela_staging_image=$IMAGE_TAG" -target=kubernetes_deployment.stela_dev
+        run: terraform apply -auto-approve -input=false -var="stela_dev_image=$IMAGE_TAG" -var="stela_staging_image=$IMAGE_TAG" -target=kubernetes_deployment.stela_staging
