@@ -1,9 +1,11 @@
-name: Deploy to dev
+name: Deploy to staging
 on:
   workflow_dispatch:
-  push:
+  release:
     branches:
       - main
+    tags:
+      - v[0-9].[0-9]+.[0-9]+-staging
 jobs:
   run_tests:
     uses: ./.github/workflows/test.yml
@@ -52,10 +54,10 @@ jobs:
       - name: Terraform Validate
         id: validate
         run: terraform validate -no-color
-      # Note that while Terraform requires us to pass a value of stela_staging_image below, it won't be used because the
-      # -target option restricts terraform to just updating the dev deployment
+      # Note that while Terraform requires us to pass a value of stela_dev_image below, it won't be used because the
+      # -target option restricts terraform to just updating the staging deployment
       - name: Terraform Plan
         id: plan
-        run: terraform plan -no-color -input=false -var="stela_dev_image=$IMAGE_TAG" -var="stela_staging_image=$IMAGE_TAG" -target=kubernetes_deployment.stela_dev
+        run: terraform plan -no-color -input=false -var="stela_dev_image=$IMAGE_TAG" -var="stela_staging_image=$IMAGE_TAG" -target=kubernetes_deployment.stela_staging
       - name: Terraform Apply
-        run: terraform apply -auto-approve -input=false -var="stela_dev_image=$IMAGE_TAG" -var="stela_staging_image=$IMAGE_TAG" -target=kubernetes_deployment.stela_dev
+        run: terraform apply -auto-approve -input=false -var="stela_dev_image=$IMAGE_TAG" -var="stela_staging_image=$IMAGE_TAG" -target=kubernetes_deployment.stela_staging

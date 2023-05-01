@@ -1,8 +1,9 @@
-resource "kubernetes_deployment" "stela" {
+resource "kubernetes_deployment" "stela_staging" {
   metadata {
-    name = "stela"
+    name = "stela-staging"
     labels = {
-      App = "stela"
+      App         = "stela"
+      Environment = "staging"
     }
   }
 
@@ -21,14 +22,14 @@ resource "kubernetes_deployment" "stela" {
       }
       spec {
         container {
-          image = var.stela_image
-          name  = "stela"
+          image = var.stela_staging_image
+          name  = "stela-staging"
 
           env {
             name = "DATABASE_URL"
             value_from {
               secret_key_ref {
-                name     = "dev-secrets"
+                name     = "staging-secrets"
                 key      = "DATABASE_URL"
                 optional = false
               }
@@ -39,7 +40,7 @@ resource "kubernetes_deployment" "stela" {
             name = "FUSIONAUTH_API_KEY"
             value_from {
               secret_key_ref {
-                name     = "dev-secrets"
+                name     = "staging-secrets"
                 key      = "FUSIONAUTH_API_KEY"
                 optional = false
               }
@@ -50,7 +51,7 @@ resource "kubernetes_deployment" "stela" {
             name = "LEGACY_BACKEND_SHARED_SECRET"
             value_from {
               secret_key_ref {
-                name     = "dev-secrets"
+                name     = "staging-secrets"
                 key      = "LEGACY_BACKEND_SHARED_SECRET"
                 optional = false
               }
@@ -64,22 +65,22 @@ resource "kubernetes_deployment" "stela" {
 
           env {
             name  = "FUSIONAUTH_TENANT"
-            value = var.fusionauth_tenant
+            value = var.staging_fusionauth_tenant
           }
 
           env {
             name  = "FUSIONAUTH_BACKEND_APPLICATION_ID"
-            value = var.fusionauth_backend_application_id
+            value = var.staging_fusionauth_backend_application_id
           }
 
           env {
             name  = "FUSIONAUTH_ADMIN_APPLICATION_ID"
-            value = var.fusionauth_admin_application_id
+            value = var.staging_fusionauth_admin_application_id
           }
 
           env {
             name  = "LEGACY_BACKEND_HOST_URL"
-            value = var.legacy_backend_host_url
+            value = var.legacy_backend_dev_host_url
           }
 
           port {
@@ -103,13 +104,13 @@ resource "kubernetes_deployment" "stela" {
   }
 }
 
-resource "kubernetes_service" "stela" {
+resource "kubernetes_service" "stela_staging" {
   metadata {
-    name = "stela"
+    name = "stela-staging"
   }
   spec {
     selector = {
-      App = kubernetes_deployment.stela.spec.0.template.0.metadata[0].labels.App
+      App = kubernetes_deployment.stela_staging.spec.0.template.0.metadata[0].labels.App
     }
     port {
       port        = 80
