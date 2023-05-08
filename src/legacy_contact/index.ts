@@ -1,0 +1,1 @@
+export { legacyContactController } from "./controller";
