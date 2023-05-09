@@ -2,6 +2,18 @@
 
 - Path: `<host>/api/v2`
 
+## Errors
+Errors that can be foreseen, including any errors intended to be part of client control flow, will come with a JSON
+response body, of the form
+```
+{
+  "error": <error object>
+}
+```
+
+For most errors, the error object will include at least a "message" field describing the error. Validation errors will
+instead return a [Joi ValidationError object](https://joi.dev/api/?v=17.9.1#validationerror).
+
 ## Directives
 
 ### POST `/directive`
