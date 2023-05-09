@@ -8,7 +8,7 @@ module "eks" {
   vpc_id                         = var.vpc_id
   subnet_ids                     = var.subnet_ids
   cluster_endpoint_public_access = true
-  cluster_security_group_id      = var.security_group_id
+  cluster_security_group_id      = var.dev_security_group_id
   aws_auth_users = [
     {
       userarn  = "arn:aws:iam::364159549467:user/liam"
@@ -36,7 +36,7 @@ module "eks" {
     one = {
       name = "node-group-1"
 
-      vpc_security_group_ids = [var.security_group_id]
+      vpc_security_group_ids = [var.dev_security_group_id, var.staging_security_group_id]
 
       instance_types = ["t3.small"]
 

@@ -2,7 +2,7 @@ resource "kubernetes_deployment" "stela_staging" {
   metadata {
     name = "stela-staging"
     labels = {
-      App         = "stela"
+      App         = "stela-staging"
       Environment = "staging"
     }
   }
@@ -11,13 +11,13 @@ resource "kubernetes_deployment" "stela_staging" {
     replicas = 2
     selector {
       match_labels = {
-        App = "stela"
+        App = "stela-staging"
       }
     }
     template {
       metadata {
         labels = {
-          App = "stela"
+          App = "stela-staging"
         }
       }
       spec {

@@ -36,10 +36,16 @@ variable "stela_staging_image" {
   type        = string
 }
 
-variable "security_group_id" {
-  description = "ID of the security group the cluster should exist in"
+variable "dev_security_group_id" {
+  description = "ID of the Development security group"
   type        = string
   default     = "sg-eca0e789"
+}
+
+variable "staging_security_group_id" {
+  description = "ID of the Staging security group"
+  type        = string
+  default     = "sg-fea0e79b"
 }
 
 variable "dev_fusionauth_api_key" {
