@@ -4,6 +4,12 @@ export interface CreateLegacyContactRequest {
   name: string;
 }
 
+export interface UpdateLegacyContactRequest {
+  emailFromAuthToken: string;
+  email?: string;
+  name?: string;
+}
+
 export interface LegacyContact {
   legacyContactId: string;
   accountId: string;

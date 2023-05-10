@@ -22,7 +22,7 @@ const clearDatabase = async (): Promise<void> => {
   );
 };
 
-describe("createDirective", () => {
+describe("updateDirective", () => {
   beforeEach(async () => {
     await clearDatabase();
     await loadFixtures();
