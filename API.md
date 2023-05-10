@@ -102,6 +102,7 @@
 
 - Headers: Authorization: Bearer \<JWT from FusionAuth>
 - Response
+
 ```
 [
   {
@@ -120,6 +121,51 @@
     stewardAccountId: string,
     note: string,
     executionDt: string (date)
+  }
+]
+```
+
+## Legacy Contacts
+
+### POST `/legacy-contact`
+
+- Headers: Content-Type: application/json, Authorization: Bearer \<JWT from FusionAuth>
+- Request Body
+
+```
+{
+  email: string (email format),
+  name: string
+}
+```
+
+- Response
+
+```
+{
+  legacyContactId: string,
+  accountId: string,
+  name: string,
+  email: string,
+  createdDt: string (date),
+  updatedDt: string (date),
+}
+```
+
+### GET `/legacy-contact`
+
+- Headers Authorization: Bearer \<JWT from FusionAuth>
+- Response
+
+```
+[
+  {
+    legacyContactId: string,
+    accountId: string,
+    name: string,
+    email: string,
+    createdDt: string (date),
+    updatedDt: string (date),
   }
 ]
 ```

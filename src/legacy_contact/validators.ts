@@ -1,5 +1,8 @@
 import Joi from "joi";
 import type { CreateLegacyContactRequest } from "./model";
+import { validateBodyFromAuthentication } from "../validators";
+
+export { validateBodyFromAuthentication };
 
 export const validateCreateLegacyContactRequest = (
   data: unknown

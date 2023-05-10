@@ -13,7 +13,7 @@ import {
   validateGetDirectivesByArchiveIdParams,
   validateBodyFromAuthentication,
 } from "./validators";
-import { isValidationError } from "../validator_util";
+import { isValidationError } from "../validators/validator_util";
 
 export const directiveController = Router();
 directiveController.post(
