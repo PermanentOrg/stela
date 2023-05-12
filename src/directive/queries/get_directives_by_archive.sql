@@ -4,7 +4,8 @@ SELECT
   directive.type,
   directive.created_dt "createdDt",
   directive.updated_dt "updatedDt",
-  directive.steward_account_id "stewardAccountId",
+  account.primaryEmail "stewardEmail",
+  account.fullName "stewardName",
   directive.note,
   directive.execution_dt "executionDt",
   jsonb_build_object(
@@ -24,5 +25,8 @@ FROM
 JOIN
   directive_trigger
   ON directive.directive_id = directive_trigger.directive_id
+JOIN
+  account
+  ON directive.steward_account_id = account.accountId
 WHERE
   directive.archive_id = :archiveId;
