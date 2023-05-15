@@ -1,5 +1,8 @@
 import Joi from "joi";
 import type { CreateDirectiveRequest, UpdateDirectiveRequest } from "./model";
+import { validateBodyFromAuthentication } from "../validators";
+
+export { validateBodyFromAuthentication };
 
 export const validateCreateDirectiveRequest = (
   data: unknown
@@ -87,18 +90,6 @@ export const validateGetDirectivesByArchiveIdParams = (
     .keys({
       archiveId: Joi.string().required(),
     })
-    .validate(data);
-  if (validation.error) {
-    throw validation.error;
-  }
-  return true;
-};
-
-export const validateBodyFromAuthentication = (
-  data: unknown
-): data is { emailFromAuthToken: string } => {
-  const validation = Joi.object()
-    .keys({ emailFromAuthToken: Joi.string().email().required() })
     .validate(data);
   if (validation.error) {
     throw validation.error;
