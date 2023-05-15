@@ -181,3 +181,28 @@ instead return a [Joi ValidationError object](https://joi.dev/api/?v=17.9.1#vali
   }
 ]
 ```
+
+### PUT `/legacyContact/:legacyContactId`
+
+- Headers: Content-Type: application/json, Authorization: Bearer \<JWT from FusionAuth>
+- Request Body
+
+```
+{
+  email: string (email format) (optional),
+  name: string (optional)
+}
+```
+
+- Response
+
+```
+{
+  legacyContactId: string,
+  accountId: string,
+  name: string,
+  email: string,
+  createdDt: string (date),
+  updatedDt: string (date),
+}
+```
