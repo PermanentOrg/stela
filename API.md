@@ -49,7 +49,10 @@ instead return a [Joi ValidationError object](https://joi.dev/api/?v=17.9.1#vali
     createdDt: string (date),
     updatedDt: string (date),
   },
-  stewardEmail: string,
+  steward {
+    email: string,
+    name: string,
+  }
   note: string,
   executionDt: string (date)
 }
@@ -104,7 +107,10 @@ instead return a [Joi ValidationError object](https://joi.dev/api/?v=17.9.1#vali
     createdDt: string (date),
     updatedDt: string (date),
   },
-  stewardEmail: string,
+  steward {
+    email: string,
+    name: string,
+  }
   note: string,
   executionDt: string (date)
 }
@@ -130,8 +136,10 @@ instead return a [Joi ValidationError object](https://joi.dev/api/?v=17.9.1#vali
       createdDt: string (date),
       updatedDt: string (date),
     },
-    stewardEmail: string,
-    stewardName: string,
+    steward: {
+      email: string,
+      name: string,
+    },
     note: string,
     executionDt: string (date)
   }

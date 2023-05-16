@@ -24,11 +24,16 @@ RETURNING
   updated_dt "updatedDt",
   (
     SELECT
-      primaryEmail
+    jsonb_build_object(
+      'email',
+      primaryEmail,
+      'name',
+      fullName
+    )
     FROM
       account
     WHERE
       accountId = steward_account_id
-  ) "stewardEmail",
+  ) "steward",
   note,
   execution_dt "executionDt";

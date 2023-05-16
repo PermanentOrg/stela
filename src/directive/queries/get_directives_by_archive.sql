@@ -4,8 +4,12 @@ SELECT
   directive.type,
   directive.created_dt "createdDt",
   directive.updated_dt "updatedDt",
-  account.primaryEmail "stewardEmail",
-  account.fullName "stewardName",
+  jsonb_build_object(
+    'email',
+    account.primaryEmail,
+    'name',
+    account.fullName
+  ) "steward",
   directive.note,
   directive.execution_dt "executionDt",
   jsonb_build_object(
