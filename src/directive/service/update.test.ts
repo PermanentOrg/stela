@@ -45,7 +45,19 @@ describe("updateDirective", () => {
         type,
         created_dt "createdDt",
         updated_dt "updatedDt",
-        steward_account_id "stewardAccountId",
+        (
+          SELECT
+          jsonb_build_object(
+            'email',
+            primaryEmail,
+            'name',
+            fullName
+          )
+          FROM
+            account
+          WHERE
+            accountId = steward_account_id
+        ) "steward",
         note,
         execution_dt "executionDt"
       FROM
@@ -55,7 +67,9 @@ describe("updateDirective", () => {
       { archiveId: 1 }
     );
     expect(directiveResult.rows.length).toBe(1);
-    expect(directiveResult.rows[0]?.stewardAccountId).toBe("4");
+    expect(directiveResult.rows[0]?.steward?.email).toBe(
+      "test+2@permanent.org"
+    );
     expect(directiveResult.rows[0]?.note).toBe(testNote);
     expect(directiveResult.rows[0]?.type).toBe("transfer");
 
