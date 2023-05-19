@@ -34,7 +34,7 @@ export interface Directive {
   createdDt: Date;
   updatedDt: Date;
   trigger: DirectiveTrigger;
-  stewardAccountId?: string;
+  steward?: DirectiveSteward;
   note?: string;
   executionDt?: Date;
 }
@@ -44,4 +44,9 @@ export interface DirectiveExecutionResult {
   directiveId: string;
   outcome: "error" | "success";
   errorMessage?: string;
+}
+
+export interface DirectiveSteward {
+  email: string;
+  name: string;
 }
