@@ -1,12 +1,12 @@
-name: Deploy to staging
+name: Deploy to prod
 on:
   workflow_dispatch:
   release:
     types: [published]
-    branches:
-      - main
+    # branches:
+    #   - main
     tags:
-      - v[0-9].[0-9]+.[0-9]+-staging
+      - v[0-9].[0-9]+.[0-9]+
 jobs:
   run_tests:
     uses: ./.github/workflows/test.yml
@@ -32,7 +32,7 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       - name: Publish Image to ECR
         run: docker push $IMAGE_TAG
-  deploy:
+  deploy_staging:
     needs:
       - build
     runs-on: ubuntu-20.04
@@ -62,3 +62,33 @@ jobs:
         run: terraform plan -no-color -input=false -var="stela_dev_image=$IMAGE_TAG" -var="stela_staging_image=$IMAGE_TAG" -target=kubernetes_deployment.stela_staging
       - name: Terraform Apply
         run: terraform apply -auto-approve -input=false -var="stela_dev_image=$IMAGE_TAG" -var="stela_staging_image=$IMAGE_TAG" -target=kubernetes_deployment.stela_staging
+  deploy_prod:
+    needs:
+      - build
+      - deploy_staging
+    runs-on: ubuntu-20.04
+    environment: prod
+    defaults:
+      run:
+        working-directory: ./terraform/prod_cluster
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v1
+        with:
+          cli_config_credentials_token: ${{ secrets.TERRAFORM_API_TOKEN }}
+      - name: Generate Image Tag
+        run: echo "IMAGE_TAG=364159549467.dkr.ecr.$AWS_REGION.amazonaws.com/stela:$([[ ${GITHUB_REF##*/} = main ]] && echo main || echo feature)-$(git rev-parse --short $GITHUB_SHA)" >> $GITHUB_ENV
+        env:
+          AWS_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+      - name: Terraform Init
+        id: init
+        run: terraform init
+      - name: Terraform Validate
+        id: validate
+        run: terraform validate -no-color
+      - name: Terraform Plan
+        id: plan
+        run: terraform plan -no-color -input=false -var="stela_image=$IMAGE_TAG"
+      - name: Terraform Apply
+        run: terraform apply -auto-approve -input=false -var="stela_image=$IMAGE_TAG"
