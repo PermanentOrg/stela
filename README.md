@@ -71,3 +71,22 @@ Outside a container: Run
 ```bash
 npm run start
 ```
+
+## Deployment
+
+### To `dev`
+`stela` deploys to `dev` automatically upon any merge to `main`.
+
+### Beyond `dev`
+To deploy to `staging` and `prod`, create a Release with a tag of the form `vX.X.X` (this should conform to semantic
+versioning). This will trigger a deploy to staging. If that is successful, the workflow will pause and wait for manual
+approval to deploy to prod. Given manual approval, it will deploy to prod.
+
+### To `staging` Only
+To deploy to `staging` without deploying to prod, create a Release with a tag of the form `vX.X.X-staging`
+
+### Updating Test Cluster Infrastructure
+Because `dev` and `staging` run on the same EKS cluster, deploys to each of these environments just target the `stela`
+deployments and won't update the underlying infrastructure they run on. To update that infrastructure, manually trigger
+the "Deploy to all test envs" workflow from the Actions tab in Github. This will deploy the current `main` branch to
+`dev` and `staging` in addition to updating the test cluster infrastructure.
