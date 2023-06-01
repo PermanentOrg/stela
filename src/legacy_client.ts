@@ -7,6 +7,8 @@ const authenticationSecret = process.env["LEGACY_BACKEND_SHARED_SECRET"] ?? "";
 const transferArchiveOwnership = async (
   recipientEmail: string,
   archiveSlug: string,
+  message?: string,
+  isLegacyAction?: boolean,
   storageGiftInMB?: number
 ): Promise<Response> => {
   const response = await fetch(`${hostUrl}/archive/transferOwnership`, {
@@ -20,6 +22,8 @@ const transferArchiveOwnership = async (
       recipientEmail,
       archiveNbr: archiveSlug,
       storageGiftInMB: storageGiftInMB ?? 0,
+      isLegacyAction: isLegacyAction ?? false,
+      message: message ?? null,
     }),
   });
 
