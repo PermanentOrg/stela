@@ -26,6 +26,7 @@ npm install
 
 | Variable                          | Default                                               | Notes                                                                  |
 | --------------------------------- | ----------------------------------------------------- | ---------------------------------------------------------------------- |
+| ENV                               | local                                                 | Tells stela what environment it's running in                           |
 | DATABASE_URL                      | postgres://postgres:permanent@database:5432/permanent | Run tests to generate default database                                 |
 | PORT                              | 8080                                                  | Tells stela what port to run on                                        |
 | FUSIONAUTH_HOST                   | none                                                  | Can be found in `back-end`'s library/base/constants/base.constants.php |
