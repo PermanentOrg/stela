@@ -18,6 +18,7 @@
     "test": "npm run start-containers && npm run clear-database && npm run create-database && npm run set-up-database && docker-compose run stela node --experimental-vm-modules node_modules/jest/bin/jest.js -i",
     "test-ci": "npm run clear-database-ci && npm run create-database-ci && npm run set-up-database-ci && node --experimental-vm-modules node_modules/jest/bin/jest.js -i --coverage",
     "start": "ts-node --transpile-only src/index.ts",
+    "start:debug": "node --no-lazy -r ts-node/register/transpile-only --inspect-brk=0.0.0.0 src/index.ts",
     "start:watch": "nodemon src/index.ts"
   },
   "jest": {
@@ -46,6 +47,7 @@
   },
   "dependencies": {
     "@fusionauth/typescript-client": "^1.42.0",
+    "@mailchimp/mailchimp_marketing": "^3.0.80",
     "@tsconfig/node18-strictest": "^1.0.0",
     "@types/http-errors": "^2.0.1",
     "body-parser": "^1.19.0",
@@ -58,6 +60,7 @@
     "pg": "^8.5.1",
     "require-env-variable": "^3.1.2",
     "tinypg": "^7.0.0",
+    "ts-md5": "^1.3.1",
     "ts-node": "^10.9.1",
     "winston": "^3.3.3"
   },
@@ -75,6 +78,7 @@
     "eslint-config-airbnb-typescript": "^17.0.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-import": "^2.22.0",
+    "eslint-plugin-jest": "^27.2.1",
     "eslint-plugin-prettier": "^4.2.1",
     "jest": "27.0.3",
     "nodemon": "^2.0.20",

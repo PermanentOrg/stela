@@ -35,6 +35,9 @@ npm install
 | FUSIONAUTH_ADMIN_APPLICATION_ID   | none                                                  | Can be found in the FusionAuth Admin application                       |
 | LEGACY_BACKEND_HOST_URL           | http://load_balancer:80/api                           |
 | LEGACY_BACKEND_SHARED_SECRET      | none                                                  | Can be found in `back-end`'s library/base/constants/base.constants.php |
+| MAILCHIMP_API_KEY                 | none                                                  | Can be found in `back-end`'s library/base/constants/base.constants.php |
+| MAILCHIMP_DATACENTER              | us12                                                  |
+| MAILCHIMP_COMMUNITY_LIST_ID       | 2736f796db                                            | The default value corresponds to the `dev` list                        |
 
 ## Testing
 

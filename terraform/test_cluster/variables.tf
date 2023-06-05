@@ -121,3 +121,26 @@ variable "staging_legacy_backend_shared_secret" {
   description = "Shared secret for authenticating calls to the legacy backend in the staging environment"
   type        = string
 }
+
+variable "mailchimp_api_key" {
+  description = "API key for Mailchimp"
+  type        = string
+}
+
+variable "mailchimp_datacenter" {
+  description = "The identifier for the Mailchimp datacenter where our account is hosted"
+  type        = string
+  default     = "us12"
+}
+
+variable "dev_mailchimp_community_list_id" {
+  description = "The ID of the Mailchimp audience we use in the dev environment"
+  type        = string
+  default     = "2736f796db"
+}
+
+variable "staging_mailchimp_community_list_id" {
+  description = "The ID of the Mailchimp audience we use in the staging environment"
+  type        = string
+  default     = "757be72121"
+}

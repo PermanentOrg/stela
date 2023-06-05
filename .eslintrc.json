@@ -10,6 +10,16 @@
     "airbnb-typescript/base",
     "prettier"
   ],
+  "overrides": [
+    {
+      "files": ["**/*.test.ts"],
+      "plugins": ["jest"],
+      "rules": {
+        "@typescript-eslint/unbound-method": "off",
+        "jest/unbound-method": "error"
+      }
+    }
+  ],
   "rules": {
     "import/prefer-default-export": "off",
     "import/no-default-export": "error",

@@ -5,3 +5,4 @@ tags
 .terraform.lock.hcl
 .terraform/
 aws-iam-authenticator
+.vimspector.json
