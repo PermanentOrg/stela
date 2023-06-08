@@ -17,7 +17,7 @@ export const validateCreateDirectiveRequest = (
         otherwise: Joi.valid(null),
       }),
       type: Joi.string().required(),
-      note: Joi.string(),
+      note: Joi.string().allow(""),
       trigger: Joi.object()
         .keys({
           type: Joi.string().required(),
@@ -57,7 +57,7 @@ export const validateUpdateDirectiveRequest = (
         otherwise: Joi.valid(null),
       }),
       type: Joi.string(),
-      note: Joi.string(),
+      note: Joi.string().allow(""),
       trigger: Joi.object().keys({
         type: Joi.string(),
       }),
