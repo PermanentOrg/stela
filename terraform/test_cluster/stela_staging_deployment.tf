@@ -26,6 +26,11 @@ resource "kubernetes_deployment" "stela_staging" {
           name  = "stela-staging"
 
           env {
+            name  = "ENV"
+            value = var.staging_env
+          }
+
+          env {
             name = "DATABASE_URL"
             value_from {
               secret_key_ref {

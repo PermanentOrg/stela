@@ -4,6 +4,18 @@ variable "region" {
   default     = "us-west-2"
 }
 
+variable "dev_env" {
+  description = "Name of the dev environment"
+  type        = string
+  default     = "dev"
+}
+
+variable "staging_env" {
+  description = "Name of the staging environment"
+  type        = string
+  default     = "staging"
+}
+
 variable "dev_database_url" {
   description = "Dev database URL"
   type        = string

@@ -3,6 +3,7 @@ import { requireEnv } from "require-env-variable";
 
 config();
 
+requireEnv("ENV");
 requireEnv("DATABASE_URL");
 requireEnv("FUSIONAUTH_API_KEY");
 requireEnv("FUSIONAUTH_HOST");

@@ -26,6 +26,11 @@ resource "kubernetes_deployment" "stela_dev" {
           name  = "stela-dev"
 
           env {
+            name  = "ENV"
+            value = var.dev_env
+          }
+
+          env {
             name = "DATABASE_URL"
             value_from {
               secret_key_ref {
