@@ -1,4 +1,4 @@
-name: Validate Terraform (test envs)
+name: Validate Terraform (prod)
 on:
   push:
 jobs:
@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-20.04
     defaults:
       run:
-        working-directory: ./terraform/test_cluster
+        working-directory: ./terraform/prod_cluster
     steps:
       - uses: actions/checkout@v3
       - name: Setup Terraform
