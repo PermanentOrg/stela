@@ -1,10 +1,10 @@
 import { Md5 } from "ts-md5";
-import { MailChimpClient } from "../mailchimp";
+import { MailchimpMarketing } from "../mailchimp";
 import { accountService } from "./service";
 import type { UpdateTagsRequest } from "./models";
 
 jest.mock("../mailchimp", () => ({
-  MailChimpClient: {
+  MailchimpMarketing: {
     lists: {
       updateListMemberTags: jest.fn(),
     },
@@ -29,14 +29,14 @@ test("should call updateListMemberTags with the correct arguments", async () => 
   const expectedSubscriberHash = Md5.hashStr(requestBody.emailFromAuthToken);
 
   (
-    MailChimpClient.lists.updateListMemberTags as jest.MockedFunction<
-      typeof MailChimpClient.lists.updateListMemberTags
+    MailchimpMarketing.lists.updateListMemberTags as jest.MockedFunction<
+      typeof MailchimpMarketing.lists.updateListMemberTags
     >
   ).mockResolvedValue(null);
 
   await accountService.updateTags(requestBody);
 
-  expect(MailChimpClient.lists.updateListMemberTags).toHaveBeenCalledWith(
+  expect(MailchimpMarketing.lists.updateListMemberTags).toHaveBeenCalledWith(
     expectedListId,
     expectedSubscriberHash,
     { tags: expectedTags }
@@ -45,8 +45,8 @@ test("should call updateListMemberTags with the correct arguments", async () => 
 
 test("should throw an error if MailChimp call fails", async () => {
   (
-    MailChimpClient.lists.updateListMemberTags as jest.MockedFunction<
-      typeof MailChimpClient.lists.updateListMemberTags
+    MailchimpMarketing.lists.updateListMemberTags as jest.MockedFunction<
+      typeof MailchimpMarketing.lists.updateListMemberTags
     >
   ).mockResolvedValue({
     detail: "Out of Cheese - Redo from Start",

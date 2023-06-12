@@ -1,6 +1,6 @@
 import { Md5 } from "ts-md5";
 import createError from "http-errors";
-import { MailChimpClient } from "../mailchimp";
+import { MailchimpMarketing } from "../mailchimp";
 import type { UpdateTagsRequest } from "./models";
 
 const updateTags = async (requestBody: UpdateTagsRequest): Promise<void> => {
@@ -18,7 +18,7 @@ const updateTags = async (requestBody: UpdateTagsRequest): Promise<void> => {
       )
     );
 
-  const response = await MailChimpClient.lists.updateListMemberTags(
+  const response = await MailchimpMarketing.lists.updateListMemberTags(
     process.env["MAILCHIMP_COMMUNITY_LIST_ID"] ?? "",
     Md5.hashStr(requestBody.emailFromAuthToken),
     { tags }
