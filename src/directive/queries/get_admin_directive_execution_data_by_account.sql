@@ -2,6 +2,7 @@ SELECT
   directive.directive_id "directiveId",
   directive.archive_id "archiveId",
   directive.type "directiveType",
+  directive.note,
   archive.archiveNbr "archiveSlug",
   account.primaryEmail "stewardEmail"
 FROM

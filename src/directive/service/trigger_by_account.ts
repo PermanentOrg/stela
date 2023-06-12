@@ -14,6 +14,7 @@ export const triggerAccountAdminDirectives = async (
     directiveId: string;
     archiveId: string;
     directiveType: string;
+    note: string;
   }>("directive.queries.get_admin_directive_execution_data_by_account", {
     accountId,
   });
@@ -24,7 +25,9 @@ export const triggerAccountAdminDirectives = async (
         if (directive.directiveType === "transfer") {
           const response = await legacyClient.transferArchiveOwnership(
             directive.stewardEmail,
-            directive.archiveSlug
+            directive.archiveSlug,
+            directive.note,
+            true
           );
           if (response.status === 200) {
             return {
