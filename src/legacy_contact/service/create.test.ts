@@ -1,9 +1,19 @@
 import { InternalServerError } from "http-errors";
 import { db } from "../../database";
+import { sendLegacyContactNotification } from "../../email";
+import { logger } from "../../log";
 import { legacyContactService } from "./index";
 import type { LegacyContact } from "../model";
 
 jest.mock("../../database");
+jest.mock("../../email", () => ({
+  sendLegacyContactNotification: jest.fn(),
+}));
+jest.mock("../../log", () => ({
+  logger: {
+    error: jest.fn(),
+  },
+}));
 
 const loadFixtures = async (): Promise<void> => {
   await db.sql("fixtures.create_test_accounts");
@@ -20,9 +30,15 @@ describe("createLegacyContact", () => {
   });
   afterEach(async () => {
     await clearDatabase();
+    jest.clearAllMocks();
   });
 
   test("should successfully create a legacy contact", async () => {
+    (
+      sendLegacyContactNotification as jest.MockedFunction<
+        typeof sendLegacyContactNotification
+      >
+    ).mockResolvedValueOnce(undefined);
     await legacyContactService.createLegacyContact({
       emailFromAuthToken: "test@permanent.org",
       name: "Legacy Contact",
@@ -44,6 +60,25 @@ describe("createLegacyContact", () => {
       { accountId: 2 }
     );
     expect(legacyContactResult.rows.length).toBe(1);
+    expect(sendLegacyContactNotification).toHaveBeenCalledWith(
+      legacyContactResult.rows[0]?.legacyContactId
+    );
+  });
+
+  test("should log errors sending email", async () => {
+    const testError = new Error("out of cheese error - redo from start");
+    (
+      sendLegacyContactNotification as jest.MockedFunction<
+        typeof sendLegacyContactNotification
+      >
+    ).mockRejectedValueOnce(testError);
+    await legacyContactService.createLegacyContact({
+      emailFromAuthToken: "test@permanent.org",
+      name: "Legacy Contact",
+      email: "legacy.contact@permanent.org",
+    });
+
+    expect(logger.error).toHaveBeenCalledWith(testError);
   });
 
   test("should error if emailFromAuthToken doesn't correspond to an account", async () => {

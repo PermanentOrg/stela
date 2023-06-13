@@ -1,9 +1,19 @@
 import { InternalServerError, NotFound } from "http-errors";
 import { db } from "../../database";
+import { sendLegacyContactNotification } from "../../email";
+import { logger } from "../../log";
 import { legacyContactService } from "./index";
 import type { LegacyContact } from "../model";
 
 jest.mock("../../database");
+jest.mock("../../email", () => ({
+  sendLegacyContactNotification: jest.fn(),
+}));
+jest.mock("../../log", () => ({
+  logger: {
+    error: jest.fn(),
+  },
+}));
 
 const loadFixtures = async (): Promise<void> => {
   await db.sql("fixtures.create_test_accounts");
@@ -23,9 +33,15 @@ describe("updateLegacyContact", () => {
   });
   afterEach(async () => {
     await clearDatabase();
+    jest.clearAllMocks();
   });
 
   test("should update a legacy contact's name and email", async () => {
+    (
+      sendLegacyContactNotification as jest.MockedFunction<
+        typeof sendLegacyContactNotification
+      >
+    ).mockResolvedValueOnce(undefined);
     const result = await legacyContactService.updateLegacyContact(
       testLegacyContactId,
       {
@@ -54,6 +70,9 @@ describe("updateLegacyContact", () => {
     expect(legacyContactResult.rows.length).toBe(1);
     expect(legacyContactResult.rows[0]?.name).toBe("Jane Rando");
     expect(legacyContactResult.rows[0]?.email).toBe("contact+1@permanent.org");
+    expect(sendLegacyContactNotification).toHaveBeenCalledWith(
+      testLegacyContactId
+    );
   });
 
   test("should update a legacy contact's name and not email", async () => {
@@ -84,6 +103,7 @@ describe("updateLegacyContact", () => {
     expect(legacyContactResult.rows.length).toBe(1);
     expect(legacyContactResult.rows[0]?.name).toBe("Jane Rando");
     expect(legacyContactResult.rows[0]?.email).toBe("contact@permanent.org");
+    expect(sendLegacyContactNotification).toHaveBeenCalledTimes(0);
   });
 
   test("should raise not found error when legacy contact does not exist for account", async () => {
@@ -115,5 +135,20 @@ describe("updateLegacyContact", () => {
     } finally {
       expect(error instanceof InternalServerError).toBe(true);
     }
+  });
+
+  test("should log errors sending email", async () => {
+    const testError = new Error("out of cheese error - redo from start");
+    (
+      sendLegacyContactNotification as jest.MockedFunction<
+        typeof sendLegacyContactNotification
+      >
+    ).mockRejectedValueOnce(testError);
+    await legacyContactService.updateLegacyContact(testLegacyContactId, {
+      emailFromAuthToken: "test@permanent.org",
+      name: "Jane Rando",
+      email: "contact+1@permanent.org",
+    });
+    expect(logger.error).toHaveBeenCalledWith(testError);
   });
 });
