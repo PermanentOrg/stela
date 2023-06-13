@@ -100,6 +100,17 @@ resource "kubernetes_deployment" "stela_dev" {
           }
 
           env {
+            name = "MAILCHIMP_TRANSACTIONAL_API_KEY"
+            value_from {
+              secret_key_ref {
+                name     = "dev-secrets"
+                key      = "MAILCHIMP_TRANSACTIONAL_API_KEY"
+                optional = false
+              }
+            }
+          }
+
+          env {
             name  = "MAILCHIMP_DATACENTER"
             value = var.mailchimp_datacenter
           }

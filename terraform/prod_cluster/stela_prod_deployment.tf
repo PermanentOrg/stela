@@ -88,6 +88,38 @@ resource "kubernetes_deployment" "stela_prod" {
             value = var.legacy_backend_prod_host_url
           }
 
+          env {
+            name = "MAILCHIMP_API_KEY"
+            value_from {
+              secret_key_ref {
+                name     = "prod-secrets"
+                key      = "MAILCHIMP_API_KEY"
+                optional = false
+              }
+            }
+          }
+
+          env {
+            name = "MAILCHIMP_TRANSACTIONAL_API_KEY"
+            value_from {
+              secret_key_ref {
+                name     = "prod-secrets"
+                key      = "MAILCHIMP_TRANSACTIONAL_API_KEY"
+                optional = false
+              }
+            }
+          }
+
+          env {
+            name  = "MAILCHIMP_DATACENTER"
+            value = var.mailchimp_datacenter
+          }
+
+          env {
+            name  = "MAILCHIMP_COMMUNITY_LIST_ID"
+            value = var.prod_mailchimp_community_list_id
+          }
+
           port {
             container_port = 80
           }

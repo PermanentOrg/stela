@@ -135,7 +135,12 @@ variable "staging_legacy_backend_shared_secret" {
 }
 
 variable "mailchimp_api_key" {
-  description = "API key for Mailchimp"
+  description = "API key for Mailchimp Marketing"
+  type        = string
+}
+
+variable "mailchimp_transactional_api_key" {
+  description = "API key for Mailchimp Transactional"
   type        = string
 }
 

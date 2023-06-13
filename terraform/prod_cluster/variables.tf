@@ -77,3 +77,25 @@ variable "prod_legacy_backend_shared_secret" {
   description = "Shared secret for authenticating calls to the legacy backend in the prod environment"
   type        = string
 }
+
+variable "mailchimp_api_key" {
+  description = "API key for Mailchimp Marketing"
+  type        = string
+}
+
+variable "mailchimp_transactional_api_key" {
+  description = "API key for Mailchimp Transactional"
+  type        = string
+}
+
+variable "mailchimp_datacenter" {
+  description = "The identifier for the Mailchimp datacenter where our account is hosted"
+  type        = string
+  default     = "us12"
+}
+
+variable "prod_mailchimp_community_list_id" {
+  description = "The ID of the Mailchimp audience we use in the prod environment"
+  type        = string
+  default     = "487bd863fb"
+}
