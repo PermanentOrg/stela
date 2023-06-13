@@ -2,6 +2,7 @@ import createError, { BadRequest } from "http-errors";
 import { db } from "../../database";
 import {
   isInvalidEnumError,
+  isMissingStewardAccountError,
   getInvalidValueFromInvalidEnumMessage,
 } from "../../database_util";
 import { logger } from "../../log";
@@ -50,6 +51,10 @@ export const updateDirective = async (
             `${getInvalidValueFromInvalidEnumMessage(
               err.message
             )} is not a valid value for "type"`
+          );
+        } else if (isMissingStewardAccountError(err)) {
+          throw new createError.BadRequest(
+            "Steward email must have an account"
           );
         } else if (err instanceof BadRequest) {
           throw err;
