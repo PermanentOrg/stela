@@ -101,6 +101,20 @@ describe("validateCreateLegacyContactRequest", () => {
       expect(error).not.toBeNull();
     }
   });
+  test("should raise an error if email is the active account's", () => {
+    let error = null;
+    try {
+      validateCreateLegacyContactRequest({
+        emailFromAuthToken: "test@permanent.org",
+        email: "test@permanent.org",
+        name: "John Rando",
+      });
+    } catch (err) {
+      error = err;
+    } finally {
+      expect(error).not.toBeNull();
+    }
+  });
   test("should raise an error if name is missing", () => {
     let error = null;
     try {
@@ -210,6 +224,19 @@ describe("validateUpdateLegacyContactRequest", () => {
       validateUpdateLegacyContactRequest({
         emailFromAuthToken: "test@permanent.org",
         email: "not_an_email",
+      });
+    } catch (err) {
+      error = err;
+    } finally {
+      expect(error).not.toBeNull();
+    }
+  });
+  test("should raise an error when email is the active account's", () => {
+    let error = null;
+    try {
+      validateUpdateLegacyContactRequest({
+        emailFromAuthToken: "test@permanent.org",
+        email: "test@permanent.org",
       });
     } catch (err) {
       error = err;

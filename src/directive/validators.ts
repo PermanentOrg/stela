@@ -13,7 +13,10 @@ export const validateCreateDirectiveRequest = (
       archiveId: Joi.string().required(),
       stewardEmail: Joi.when("type", {
         is: Joi.string().valid("transfer"),
-        then: Joi.string().email().required(),
+        then: Joi.string()
+          .email()
+          .invalid(Joi.ref("emailFromAuthToken"))
+          .required(),
         otherwise: Joi.valid(null),
       }),
       type: Joi.string().required(),
@@ -53,7 +56,7 @@ export const validateUpdateDirectiveRequest = (
       emailFromAuthToken: Joi.string().email().required(),
       stewardEmail: Joi.when("type", {
         is: Joi.string().valid("transfer"),
-        then: Joi.string().email(),
+        then: Joi.string().invalid(Joi.ref("emailFromAuthToken")).email(),
         otherwise: Joi.valid(null),
       }),
       type: Joi.string(),
