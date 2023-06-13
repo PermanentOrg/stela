@@ -59,6 +59,24 @@ describe("validateCreateDirectiveRequest", () => {
       expect(error).not.toBeNull();
     }
   });
+  test("should raise an error if stewardEmail is the active account's email", () => {
+    let error = null;
+    try {
+      validateCreateDirectiveRequest({
+        emailFromAuthToken: "test@permanent.org",
+        stewardEmail: "test@permanent.org",
+        archiveId: "1",
+        type: "transfer",
+        trigger: {
+          type: "admin",
+        },
+      });
+    } catch (err) {
+      error = err;
+    } finally {
+      expect(error).not.toBeNull();
+    }
+  });
   test("should raise an error if type is missing", () => {
     let error = null;
     try {
@@ -465,6 +483,23 @@ describe("validateUpdateDirectiveRequest", () => {
         emailFromAuthToken: "test@permanent.org",
         stewardEmail: "test+1@permanent.org",
         type: "delete",
+        trigger: {
+          type: "admin",
+        },
+      });
+    } catch (err) {
+      error = err;
+    } finally {
+      expect(error).not.toBeNull();
+    }
+  });
+  test("should raise an error if stewardEmail is the active account's email", () => {
+    let error = null;
+    try {
+      validateUpdateDirectiveRequest({
+        emailFromAuthToken: "test@permanent.org",
+        stewardEmail: "test@permanent.org",
+        type: "transfer",
         trigger: {
           type: "admin",
         },

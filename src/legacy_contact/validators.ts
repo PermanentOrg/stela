@@ -10,7 +10,10 @@ export const validateCreateLegacyContactRequest = (
   const validation = Joi.object()
     .keys({
       emailFromAuthToken: Joi.string().email().required(),
-      email: Joi.string().email().required(),
+      email: Joi.string()
+        .email()
+        .invalid(Joi.ref("emailFromAuthToken"))
+        .required(),
       name: Joi.string().required(),
     })
     .validate(data);
@@ -26,7 +29,7 @@ export const validateUpdateLegacyContactRequest = (
   const validation = Joi.object()
     .keys({
       emailFromAuthToken: Joi.string().email().required(),
-      email: Joi.string().email(),
+      email: Joi.string().email().invalid(Joi.ref("emailFromAuthToken")),
       name: Joi.string(),
     })
     .validate(data);
