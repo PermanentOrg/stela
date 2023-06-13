@@ -2,15 +2,16 @@ UPDATE
   directive
 SET
   type = COALESCE(:type, type),
-  steward_account_id = COALESCE(
-    (SELECT
-      accountId
-    FROM
-      account
-    WHERE
-      primaryEmail = :stewardEmail),
-    steward_account_id
-  ),
+  steward_account_id = 
+    CASE WHEN :stewardEmail::text IS NULL THEN steward_account_id
+    ELSE (
+      SELECT
+        accountId
+      FROM
+        account
+      WHERE
+        primaryEmail = :stewardEmail
+    ) END,
   note = COALESCE(:note, note),
   updated_dt = CURRENT_TIMESTAMP
 WHERE

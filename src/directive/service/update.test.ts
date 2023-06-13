@@ -121,6 +121,22 @@ describe("updateDirective", () => {
     }
   });
 
+  test("should error if steward email doesn't have an account", async () => {
+    let error = null;
+    try {
+      await directiveService.updateDirective(testDirectiveId, {
+        emailFromAuthToken: "test@permanent.org",
+        stewardEmail: "not_an_account@permanent.org",
+        note: testNote,
+        type: "transfer",
+      });
+    } catch (err) {
+      error = err;
+    } finally {
+      expect(error instanceof BadRequest).toBe(true);
+    }
+  });
+
   test("should error if trigger type is invalid", async () => {
     let error = null;
     try {
