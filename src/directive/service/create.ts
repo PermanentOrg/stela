@@ -10,6 +10,7 @@ import {
   isMissingStewardAccountError,
   getInvalidValueFromInvalidEnumMessage,
 } from "../../database_util";
+import { sendArchiveStewardNotification } from "../../email";
 import { logger } from "../../log";
 import { confirmArchiveOwnership } from "./utils";
 
@@ -79,6 +80,12 @@ export const createDirective = async (
     directive.trigger = trigger;
     return directive;
   });
+
+  await sendArchiveStewardNotification(directiveToReturn.directiveId).catch(
+    (err) => {
+      logger.error(err);
+    }
+  );
 
   return directiveToReturn;
 };

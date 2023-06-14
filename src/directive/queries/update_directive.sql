@@ -1,3 +1,11 @@
+WITH original_directive AS (
+  SELECT
+    steward_account_id
+  FROM
+    directive
+  WHERE
+    directive_id = :directiveId
+)
 UPDATE
   directive
 SET
@@ -37,4 +45,6 @@ RETURNING
       accountId = steward_account_id
   ) "steward",
   note,
-  execution_dt "executionDt";
+  execution_dt "executionDt",
+  steward_account_id != (SELECT steward_account_id FROM original_directive) "stewardChanged";
+

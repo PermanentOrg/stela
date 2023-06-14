@@ -1,9 +1,19 @@
 import { NotFound, BadRequest, InternalServerError } from "http-errors";
 import { db } from "../../database";
+import { sendArchiveStewardNotification } from "../../email";
+import { logger } from "../../log";
 import { directiveService } from "./index";
 import type { Directive, DirectiveTrigger } from "../model";
 
 jest.mock("../../database");
+jest.mock("../../email", () => ({
+  sendArchiveStewardNotification: jest.fn(),
+}));
+jest.mock("../../log", () => ({
+  logger: {
+    error: jest.fn(),
+  },
+}));
 
 const loadFixtures = async (): Promise<void> => {
   await db.sql("fixtures.create_test_accounts");
@@ -24,9 +34,15 @@ describe("createDirective", () => {
   });
   afterEach(async () => {
     await clearDatabase();
+    jest.clearAllMocks();
   });
 
   test("should successfully create a directive and trigger", async () => {
+    (
+      sendArchiveStewardNotification as jest.MockedFunction<
+        typeof sendArchiveStewardNotification
+      >
+    ).mockResolvedValueOnce(undefined);
     await directiveService.createDirective({
       emailFromAuthToken: "test@permanent.org",
       archiveId: "1",
@@ -69,6 +85,29 @@ describe("createDirective", () => {
       { directiveId: directiveResult.rows[0]?.directiveId }
     );
     expect(triggerResult.rows.length).toBe(1);
+    expect(sendArchiveStewardNotification).toHaveBeenCalledWith(
+      directiveResult.rows[0]?.directiveId
+    );
+  });
+
+  test("should log error if notification email fails", async () => {
+    const testError = new Error("out of cheese error - redo from start");
+    (
+      sendArchiveStewardNotification as jest.MockedFunction<
+        typeof sendArchiveStewardNotification
+      >
+    ).mockRejectedValueOnce(testError);
+    await directiveService.createDirective({
+      emailFromAuthToken: "test@permanent.org",
+      archiveId: "1",
+      stewardEmail: "test@permanent.org",
+      type: "transfer",
+      trigger: {
+        type: "admin",
+      },
+    });
+
+    expect(logger.error).toHaveBeenCalledWith(testError);
   });
 
   test("should error if authenticated account doesn't own the archive", async () => {

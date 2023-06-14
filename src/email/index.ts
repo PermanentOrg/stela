@@ -1,3 +1,6 @@
-import { sendLegacyContactNotification } from "./service";
+import {
+  sendLegacyContactNotification,
+  sendArchiveStewardNotification,
+} from "./service";
 
-export { sendLegacyContactNotification };
+export { sendLegacyContactNotification, sendArchiveStewardNotification };

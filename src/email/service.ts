@@ -11,6 +11,40 @@ const defaultMessage = {
   merge_language: "mailchimp" as const,
 };
 
+export const sendEmail = async (
+  templateName: string,
+  fromName: string,
+  toData: { email: string; name: string }[],
+  subject: string,
+  mergeVariables: { name: string; content: string }[]
+): Promise<void> => {
+  const response = await MailchimpTransactional.messages.sendTemplate({
+    template_name: templateName,
+    template_content: [],
+    message: {
+      ...defaultMessage,
+      from_name: fromName,
+      to: toData,
+      subject,
+      global_merge_vars: mergeVariables,
+    },
+  });
+
+  if ("isAxiosError" in response) {
+    throw new Error(
+      `Error calling Mailchimp. Status: ${response.response?.status ?? ""}`
+    );
+  } else if (!response[0]) {
+    throw new Error("no email sent");
+  } else if (response[0].status !== "sent") {
+    throw new Error(
+      `Email not sent. Status: ${response[0].status}; Reason: ${
+        response[0].reject_reason ?? ""
+      }`
+    );
+  }
+};
+
 export const sendLegacyContactNotification = async (
   legacyContactId: string
 ): Promise<void> => {
@@ -24,30 +58,42 @@ export const sendLegacyContactNotification = async (
   }
   const { accountName, legacyContactName, legacyContactEmail } =
     legacyContactDetailsResult.rows[0];
-  const response = await MailchimpTransactional.messages.sendTemplate({
-    template_name: "legacy-contact-added",
-    template_content: [],
-    message: {
-      ...defaultMessage,
-      from_name: accountName,
-      to: [{ email: legacyContactEmail, name: legacyContactName }],
-      subject: "*|FROM_FULLNAME|* wants you to be their Legacy Contact",
-      global_merge_vars: [
-        { name: "from_fullname", content: accountName },
-        { name: "to_fullname", content: legacyContactName },
-      ],
-    },
-  });
 
-  if ("isAxiosError" in response) {
-    throw response;
-  } else if (!response[0]) {
-    throw new Error("no email sent");
-  } else if (response[0].status !== "sent") {
-    throw new Error(
-      `Email not sent. Status: ${response[0].status}; Reason: ${
-        response[0].reject_reason ?? ""
-      }`
-    );
+  await sendEmail(
+    "legacy-contact-added",
+    accountName,
+    [{ email: legacyContactEmail, name: legacyContactName }],
+    "*|FROM_FULLNAME|* wants you to be their Legacy Contact",
+    [
+      { name: "from_fullname", content: accountName },
+      { name: "to_fullname", content: legacyContactName },
+    ]
+  );
+};
+
+export const sendArchiveStewardNotification = async (
+  directiveId: string
+): Promise<void> => {
+  const archiveStewardshipDetailsResult = await db.sql<{
+    stewardName: string;
+    stewardEmail: string;
+    ownerName: string;
+    archiveName: string;
+  }>("email.queries.get_archive_stewardship_details", { directiveId });
+  if (archiveStewardshipDetailsResult.rows[0] === undefined) {
+    throw new Error(`Directive ${directiveId} not found`);
   }
+  const { stewardName, stewardEmail, ownerName, archiveName } =
+    archiveStewardshipDetailsResult.rows[0];
+  await sendEmail(
+    "archive-steward-added",
+    ownerName,
+    [{ email: stewardEmail, name: stewardName }],
+    "*|FROM_FULLNAME|* wants you to be their Archive Steward",
+    [
+      { name: "from_fullname", content: ownerName },
+      { name: "to_fullname", content: stewardName },
+      { name: "from_archive_name", content: archiveName },
+    ]
+  );
 };

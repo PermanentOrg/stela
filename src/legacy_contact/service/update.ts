@@ -8,7 +8,7 @@ export const updateLegacyContact = async (
   legacyContactId: string,
   requestBody: UpdateLegacyContactRequest
 ): Promise<LegacyContact> => {
-  const legacyContact = await db
+  const legacyContactResult = await db
     .sql<LegacyContact & { emailChanged: boolean }>(
       "legacy_contact.queries.update_legacy_contact",
       {
@@ -25,22 +25,17 @@ export const updateLegacyContact = async (
       );
     });
 
-  if (legacyContact.rows[0] === undefined) {
+  if (legacyContactResult.rows[0] === undefined) {
     throw new createError.NotFound("Legacy contact not found");
   }
 
-  if (legacyContact.rows[0].emailChanged) {
+  const { emailChanged, ...legacyContact } = legacyContactResult.rows[0];
+
+  if (emailChanged) {
     await sendLegacyContactNotification(legacyContactId).catch((err) => {
       logger.error(err);
     });
   }
 
-  return {
-    legacyContactId: legacyContact.rows[0].legacyContactId,
-    accountId: legacyContact.rows[0].accountId,
-    name: legacyContact.rows[0].name,
-    email: legacyContact.rows[0].email,
-    createdDt: legacyContact.rows[0].createdDt,
-    updatedDt: legacyContact.rows[0].updatedDt,
-  };
+  return legacyContact;
 };
