@@ -11,7 +11,7 @@ const env = process.env["ENV"] ?? "";
 const app = express();
 app.use(
   cors({
-    origin: `https://${env === "production" ? "" : `${env}.`}permanent.org`,
+    origin: `https://${env === "production" ? "www" : `${env}`}.permanent.org`,
   })
 );
 app.use(expressWinston.logger({ level: "http", winstonInstance: logger }));
