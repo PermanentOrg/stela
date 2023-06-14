@@ -5,6 +5,7 @@ import {
   isMissingStewardAccountError,
   getInvalidValueFromInvalidEnumMessage,
 } from "../../database_util";
+import { sendArchiveStewardNotification } from "../../email";
 import { logger } from "../../log";
 import type {
   UpdateDirectiveRequest,
@@ -27,18 +28,19 @@ export const updateDirective = async (
     throw new createError.NotFound("Directive not found");
   }
 
-  const directiveToReturn = await db.transaction(async (transactionDb) => {
-    const directive = await (async (): Promise<Directive> => {
+  const directiveData = await db.transaction(async (transactionDb) => {
+    const directive = await (async (): Promise<
+      Directive & { stewardChanged: boolean }
+    > => {
       try {
-        const directiveResult = await transactionDb.sql<Directive>(
-          "directive.queries.update_directive",
-          {
-            directiveId,
-            type: requestBody.type,
-            stewardEmail: requestBody.stewardEmail,
-            note: requestBody.note,
-          }
-        );
+        const directiveResult = await transactionDb.sql<
+          Directive & { stewardChanged: boolean }
+        >("directive.queries.update_directive", {
+          directiveId,
+          type: requestBody.type,
+          stewardEmail: requestBody.stewardEmail,
+          note: requestBody.note,
+        });
         if (directiveResult.rows[0] === undefined) {
           throw new createError.BadRequest(
             "Directives cannot be updated after they've been executed"
@@ -94,6 +96,15 @@ export const updateDirective = async (
     directive.trigger = trigger;
     return directive;
   });
+
+  const { stewardChanged, ...directiveToReturn } = directiveData;
+  if (stewardChanged) {
+    await sendArchiveStewardNotification(directiveToReturn.directiveId).catch(
+      (err) => {
+        logger.error(err);
+      }
+    );
+  }
 
   return directiveToReturn;
 };
