@@ -12,20 +12,14 @@ accountController.put(
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       validateUpdateTagsRequest(req.body);
+      await accountService.updateTags(req.body);
+      res.json({});
     } catch (err) {
       if (isValidationError(err)) {
         res.status(400).json({ error: err });
         return;
       }
       next(err);
-    }
-    if (validateUpdateTagsRequest(req.body)) {
-      try {
-        await accountService.updateTags(req.body);
-        res.json({});
-      } catch (err) {
-        next(err);
-      }
     }
   }
 );

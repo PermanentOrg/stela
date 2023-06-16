@@ -17,22 +17,16 @@ legacyContactController.post(
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       validateCreateLegacyContactRequest(req.body);
+      const legacyContact = await legacyContactService.createLegacyContact(
+        req.body
+      );
+      res.json(legacyContact);
     } catch (err) {
       if (isValidationError(err)) {
         res.status(400).json({ error: err });
         return;
       }
       next(err);
-    }
-    if (validateCreateLegacyContactRequest(req.body)) {
-      try {
-        const legacyContact = await legacyContactService.createLegacyContact(
-          req.body
-        );
-        res.json(legacyContact);
-      } catch (err) {
-        next(err);
-      }
     }
   }
 );
@@ -43,23 +37,17 @@ legacyContactController.get(
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       validateBodyFromAuthentication(req.body);
+      const legacyContacts =
+        await legacyContactService.getLegacyContactsByAccountId(
+          req.body.emailFromAuthToken
+        );
+      res.json(legacyContacts);
     } catch (err) {
       if (isValidationError(err)) {
         res.status(400).json({ error: err });
         return;
       }
       next(err);
-    }
-    if (validateBodyFromAuthentication(req.body)) {
-      try {
-        const legacyContacts =
-          await legacyContactService.getLegacyContactsByAccountId(
-            req.body.emailFromAuthToken
-          );
-        res.json(legacyContacts);
-      } catch (err) {
-        next(err);
-      }
     }
   }
 );
@@ -71,26 +59,17 @@ legacyContactController.put(
     try {
       validateUpdateLegacyContactRequest(req.body);
       validateUpdateLegacyContactParams(req.params);
+      const legacyContact = await legacyContactService.updateLegacyContact(
+        req.params.legacyContactId,
+        req.body
+      );
+      res.json(legacyContact);
     } catch (err) {
       if (isValidationError(err)) {
         res.status(400).json({ error: err });
         return;
       }
       next(err);
-    }
-    if (
-      validateUpdateLegacyContactRequest(req.body) &&
-      validateUpdateLegacyContactParams(req.params)
-    ) {
-      try {
-        const legacyContact = await legacyContactService.updateLegacyContact(
-          req.params.legacyContactId,
-          req.body
-        );
-        res.json(legacyContact);
-      } catch (err) {
-        next(err);
-      }
     }
   }
 );
