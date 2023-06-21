@@ -1,5 +1,8 @@
 import Joi from "joi";
 import type { UpdateTagsRequest } from "./models";
+import { validateBodyFromAuthentication } from "../validators";
+
+export { validateBodyFromAuthentication };
 
 export function validateUpdateTagsRequest(
   data: unknown
