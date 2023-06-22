@@ -247,3 +247,24 @@ instead return a [Joi ValidationError object](https://joi.dev/api/?v=17.9.1#vali
   token: string
 }
 ```
+
+## Archives
+
+### GET `/archive/:archiveId/tags/public`
+
+- Response
+```
+[
+  {
+    tagId: string,
+    name: string,
+    archiveId: string,
+    status: string,
+    type: string,
+    createdDt: string (date),
+    updatedDt: string (date)
+  }
+]
+```
+
+- Note: If the archive doesn't exist, this will return an empty array

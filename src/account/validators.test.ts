@@ -1,7 +1,7 @@
 import { validateUpdateTagsRequest } from "./validators";
 
 describe("validateUpdateTagsRequest", () => {
-  test("should find not errors in a valid request", () => {
+  test("should find no errors in a valid request", () => {
     let error = null;
     try {
       validateUpdateTagsRequest({
