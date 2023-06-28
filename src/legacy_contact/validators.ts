@@ -4,9 +4,9 @@ import { validateBodyFromAuthentication } from "../validators";
 
 export { validateBodyFromAuthentication };
 
-export const validateCreateLegacyContactRequest = (
+export function validateCreateLegacyContactRequest(
   data: unknown
-): data is CreateLegacyContactRequest => {
+): asserts data is CreateLegacyContactRequest {
   const validation = Joi.object()
     .keys({
       emailFromAuthToken: Joi.string().email().required(),
@@ -20,12 +20,11 @@ export const validateCreateLegacyContactRequest = (
   if (validation.error) {
     throw validation.error;
   }
-  return true;
-};
+}
 
-export const validateUpdateLegacyContactRequest = (
+export function validateUpdateLegacyContactRequest(
   data: unknown
-): data is CreateLegacyContactRequest => {
+): asserts data is CreateLegacyContactRequest {
   const validation = Joi.object()
     .keys({
       emailFromAuthToken: Joi.string().email().required(),
@@ -36,12 +35,11 @@ export const validateUpdateLegacyContactRequest = (
   if (validation.error) {
     throw validation.error;
   }
-  return true;
-};
+}
 
-export const validateUpdateLegacyContactParams = (
+export function validateUpdateLegacyContactParams(
   data: unknown
-): data is { legacyContactId: string } => {
+): asserts data is { legacyContactId: string } {
   const validation = Joi.object()
     .keys({
       legacyContactId: Joi.string().uuid().required(),
@@ -50,5 +48,4 @@ export const validateUpdateLegacyContactParams = (
   if (validation.error) {
     throw validation.error;
   }
-  return true;
-};
+}

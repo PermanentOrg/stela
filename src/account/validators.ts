@@ -1,9 +1,12 @@
 import Joi from "joi";
 import type { UpdateTagsRequest } from "./models";
+import { validateBodyFromAuthentication } from "../validators";
 
-export const validateUpdateTagsRequest = (
+export { validateBodyFromAuthentication };
+
+export function validateUpdateTagsRequest(
   data: unknown
-): data is UpdateTagsRequest => {
+): asserts data is UpdateTagsRequest {
   const validation = Joi.object()
     .keys({
       emailFromAuthToken: Joi.string().email().required(),
@@ -15,5 +18,4 @@ export const validateUpdateTagsRequest = (
   if (validation.error) {
     throw validation.error;
   }
-  return true;
-};
+}

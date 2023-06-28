@@ -3,8 +3,10 @@
 - Path: `<host>/api/v2`
 
 ## Errors
+
 Errors that can be foreseen, including any errors intended to be part of client control flow, will come with a JSON
 response body, of the form
+
 ```
 {
   "error": <error object>
@@ -25,9 +27,7 @@ instead return a [Joi ValidationError object](https://joi.dev/api/?v=17.9.1#vali
 {
   archiveId: string,
   stewardEmail: string (email format),
-  type: string (must be "transfer" presently),
-  note: string (optional),
-  trigger: {
+  type: string (must be "transfer" presently), note: string (optional), trigger: {
     type: string (must be "admin" presently)
   }
 }
@@ -175,7 +175,7 @@ instead return a [Joi ValidationError object](https://joi.dev/api/?v=17.9.1#vali
 
 ### GET `/legacy-contact`
 
-- Headers Authorization: Bearer \<JWT from FusionAuth>
+- Headers: Authorization: Bearer \<JWT from FusionAuth>
 - Response
 
 ```
@@ -213,5 +213,37 @@ instead return a [Joi ValidationError object](https://joi.dev/api/?v=17.9.1#vali
   email: string,
   createdDt: string (date),
   updatedDt: string (date),
+}
+```
+
+## Accounts
+
+### PUT `/account/tags`
+
+- Headers: Authorization: Bearer \<JWT from FusionAuth>
+- Request Body
+
+```
+{
+  addTags: [string]
+  removeTags: [string]
+}
+```
+
+- Response
+
+```
+{} (empty response with 200 code indicates success)
+```
+
+### GET `/account/signup`
+
+- Headers: Authorization: Bearer \<JWT from FusionAuth>
+
+- Response
+
+```
+{
+  token: string
 }
 ```

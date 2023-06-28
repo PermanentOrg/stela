@@ -3,3 +3,7 @@ export interface UpdateTagsRequest {
   addTags?: string[];
   removeTags?: string[];
 }
+
+export interface SignupDetails {
+  token: string;
+}
