@@ -6,6 +6,8 @@ services:
       dockerfile: Dockerfile.test
     networks:
       - devenv
+    volumes:
+      - ../stela:/usr/local/apps/stela
 networks:
   devenv:
     name: devenv_default
