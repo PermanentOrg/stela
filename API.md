@@ -253,6 +253,7 @@ instead return a [Joi ValidationError object](https://joi.dev/api/?v=17.9.1#vali
 ### GET `/archive/:archiveId/tags/public`
 
 - Response
+
 ```
 [
   {
@@ -268,3 +269,27 @@ instead return a [Joi ValidationError object](https://joi.dev/api/?v=17.9.1#vali
 ```
 
 - Note: If the archive doesn't exist, this will return an empty array
+
+### GET `/archive/:archiveId/payer-account-storage
+
+- Headers: Authorization: Bearer \<JWT from FusionAuth>
+
+- Response
+
+```
+{
+  accountSpaceId: string,
+  accountId: string,
+  spaceLeft: string,
+  spaceTotal: string,
+  filesLeft: string,
+  filesTotal: string,
+  status: string,
+  type: string,
+  createdDt: string (date),
+  updatedDt: string (date)
+}
+```
+
+- Note: This will return a 404 error if the archive has no payer account, or if the caller doesn't have access to that
+  archive
