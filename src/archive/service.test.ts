@@ -1,10 +1,10 @@
 import { InternalServerError } from "http-errors";
-import { db } from "../../database";
-import { archiveService } from "./index";
-import { logger } from "../../log";
+import { db } from "../database";
+import { archiveService } from "./service";
+import { logger } from "../log";
 
-jest.mock("../../database");
-jest.mock("../../log", () => ({
+jest.mock("../database");
+jest.mock("../log", () => ({
   logger: {
     error: jest.fn(),
   },
