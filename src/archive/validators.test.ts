@@ -1,10 +1,10 @@
-import { validateArchiveIdFromParams } from "./validators";
+import { validateGetPublicTagsParams } from "./validators";
 
-describe("validateArchiveIdFromParams", () => {
+describe("validateGetPublicTagsParams", () => {
   test("should find no errors in valid parameters", () => {
     let error = null;
     try {
-      validateArchiveIdFromParams({
+      validateGetPublicTagsParams({
         archiveId: "123",
       });
     } catch (err) {
@@ -17,7 +17,7 @@ describe("validateArchiveIdFromParams", () => {
   test("should error if archiveId is missing", () => {
     let error = null;
     try {
-      validateArchiveIdFromParams({});
+      validateGetPublicTagsParams({});
     } catch (err) {
       error = err;
     } finally {
@@ -28,7 +28,7 @@ describe("validateArchiveIdFromParams", () => {
   test("should error if archiveId is wrong type", () => {
     let error = null;
     try {
-      validateArchiveIdFromParams({
+      validateGetPublicTagsParams({
         archiveId: 123,
       });
     } catch (err) {

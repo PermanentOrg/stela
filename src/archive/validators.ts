@@ -1,9 +1,6 @@
 import Joi from "joi";
-import { validateBodyFromAuthentication } from "../validators";
 
-export { validateBodyFromAuthentication };
-
-export function validateArchiveIdFromParams(
+export function validateGetPublicTagsParams(
   data: unknown
 ): asserts data is { archiveId: string } {
   const validation = Joi.object()
