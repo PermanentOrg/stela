@@ -99,3 +99,8 @@ variable "prod_mailchimp_community_list_id" {
   type        = string
   default     = "487bd863fb"
 }
+
+variable "sentry_dsn" {
+  description = "DSN for Sentry"
+  type        = string
+}

@@ -120,6 +120,17 @@ resource "kubernetes_deployment" "stela_staging" {
             value = var.staging_mailchimp_community_list_id
           }
 
+          env {
+            name = "SENTRY_DSN"
+            value_from {
+              secret_key_ref {
+                name     = "staging-secrets"
+                key      = "SENTRY_DSN"
+                optional = false
+              }
+            }
+          }
+
           port {
             container_port = 80
           }

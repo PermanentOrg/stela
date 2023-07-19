@@ -24,22 +24,24 @@ npm install
 
 ## Environment Variables
 
-| Variable                          | Default                                               | Notes                                                                                                         |
-| --------------------------------- | ----------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
-| ENV                               | local                                                 | Tells stela what environment it's running in                                                                  |
-| DATABASE_URL                      | postgres://postgres:permanent@database:5432/permanent | Run tests to generate default database                                                                        |
-| PORT                              | 8080                                                  | Tells stela what port to run on                                                                               |
-| FUSIONAUTH_HOST                   | none                                                  | Can be found in `back-end`'s library/base/constants/base.constants.php                                        |
-| FUSIONAUTH_API_KEY                | none                                                  | Can be found in `back-end`'s library/base/constants/base.constants.php                                        |
-| FUSIONAUTH_TENANT                 | none                                                  | Can be found in `back-end`'s library/base/constants/base.constants.php                                        |
-| FUSIONAUTH_BACKEND_APPLICATION_ID | none                                                  | Can be found in `back-end`'s library/base/constants/base.constants.php                                        |
-| FUSIONAUTH_ADMIN_APPLICATION_ID   | none                                                  | Can be found in the FusionAuth Admin application                                                              |
+| Variable                          | Default                                               | Notes                                                                                                                                      |
+| --------------------------------- | ----------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| ENV                               | local                                                 | Tells stela what environment it's running in                                                                                               |
+| DATABASE_URL                      | postgres://postgres:permanent@database:5432/permanent | Run tests to generate default database                                                                                                     |
+| PORT                              | 8080                                                  | Tells stela what port to run on                                                                                                            |
+| FUSIONAUTH_HOST                   | none                                                  | Can be found in `back-end`'s library/base/constants/base.constants.php                                                                     |
+| FUSIONAUTH_API_KEY                | none                                                  | Can be found in `back-end`'s library/base/constants/base.constants.php                                                                     |
+| FUSIONAUTH_TENANT                 | none                                                  | Can be found in `back-end`'s library/base/constants/base.constants.php                                                                     |
+| FUSIONAUTH_BACKEND_APPLICATION_ID | none                                                  | Can be found in `back-end`'s library/base/constants/base.constants.php                                                                     |
+| FUSIONAUTH_ADMIN_APPLICATION_ID   | none                                                  | Can be found in the FusionAuth Admin application                                                                                           |
 | LEGACY_BACKEND_HOST_URL           | http://load_balancer:80/api                           |
-| LEGACY_BACKEND_SHARED_SECRET      | none                                                  | Can be found in `back-end`'s library/base/constants/base.constants.php                                        |
-| MAILCHIMP_API_KEY                 | none                                                  | Can be found in `back-end`'s library/base/constants/base.constants.php                                        |
-| MAILCHIMP_TRANSACTIONAL_API_KEY   | none                                                  | Can be found in `back-end`'s library/base/constants/base.constants.php, where it is called `MANDRILL_API_KEY` |
+| LEGACY_BACKEND_SHARED_SECRET      | none                                                  | Can be found in `back-end`'s library/base/constants/base.constants.php                                                                     |
+| MAILCHIMP_API_KEY                 | none                                                  | Can be found in `back-end`'s library/base/constants/base.constants.php                                                                     |
+| MAILCHIMP_TRANSACTIONAL_API_KEY   | none                                                  | Can be found in `back-end`'s library/base/constants/base.constants.php, where it is called `MANDRILL_API_KEY`                              |
 | MAILCHIMP_DATACENTER              | us12                                                  |
-| MAILCHIMP_COMMUNITY_LIST_ID       | 2736f796db                                            | The default value corresponds to the `dev` list                                                               |
+| MAILCHIMP_COMMUNITY_LIST_ID       | 2736f796db                                            | The default value corresponds to the `dev` list                                                                                            |
+| SENTRY_DSN                        | none                                                  | Can be found in Sentry under Projects > stela > Settings > Client Keys (DSN)                                                               |
+| DEV_NAME                          | none                                                  | This should only be set in local environments, and should be your given name, all lowercase. Used to create Sentry envs for each developer |
 
 ## Testing
 
@@ -80,17 +82,21 @@ npm run start
 ## Deployment
 
 ### To `dev`
+
 `stela` deploys to `dev` automatically upon any merge to `main`.
 
 ### Beyond `dev`
+
 To deploy to `staging` and `prod`, create a Release with a tag of the form `vX.X.X` (this should conform to semantic
 versioning). This will trigger a deploy to staging. If that is successful, the workflow will pause and wait for manual
 approval to deploy to prod. Given manual approval, it will deploy to prod.
 
 ### To `staging` Only
+
 To deploy to `staging` without deploying to prod, run the "Deploy to staging" workflow from the Actions tab.
 
 ### Updating Test Cluster Infrastructure
+
 Because `dev` and `staging` run on the same EKS cluster, deploys to each of these environments just target the `stela`
 deployments and won't update the underlying infrastructure they run on. To update that infrastructure, manually trigger
 the "Deploy to all test envs" workflow from the Actions tab in Github. This will deploy the current `main` branch to

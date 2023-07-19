@@ -161,3 +161,8 @@ variable "staging_mailchimp_community_list_id" {
   type        = string
   default     = "757be72121"
 }
+
+variable "sentry_dsn" {
+  description = "DSN for Sentry"
+  type        = string
+}

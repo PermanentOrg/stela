@@ -9,5 +9,6 @@ resource "kubernetes_secret" "prod-secrets" {
     "LEGACY_BACKEND_SHARED_SECRET"    = var.prod_legacy_backend_shared_secret
     "MAILCHIMP_API_KEY"               = var.mailchimp_api_key
     "MAILCHIMP_TRANSACTIONAL_API_KEY" = var.mailchimp_transactional_api_key
+    "SENTRY_DSN"                      = var.sentry_dsn
   }
 }

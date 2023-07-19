@@ -9,6 +9,7 @@ resource "kubernetes_secret" "dev-secrets" {
     "LEGACY_BACKEND_SHARED_SECRET"    = var.dev_legacy_backend_shared_secret
     "MAILCHIMP_API_KEY"               = var.mailchimp_api_key
     "MAILCHIMP_TRANSACTIONAL_API_KEY" = var.mailchimp_transactional_api_key
+    "SENTRY_DSN"                      = var.sentry_dsn
   }
 }
 
@@ -23,5 +24,6 @@ resource "kubernetes_secret" "staging-secrets" {
     "LEGACY_BACKEND_SHARED_SECRET"    = var.staging_legacy_backend_shared_secret
     "MAILCHIMP_API_KEY"               = var.mailchimp_api_key
     "MAILCHIMP_TRANSACTIONAL_API_KEY" = var.mailchimp_transactional_api_key
+    "SENTRY_DSN"                      = var.sentry_dsn
   }
 }
