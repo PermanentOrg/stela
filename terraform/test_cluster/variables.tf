@@ -166,3 +166,39 @@ variable "sentry_dsn" {
   description = "DSN for Sentry"
   type        = string
 }
+
+variable "aws_region" {
+  description = "AWS region"
+  type        = string
+  default     = "us-west-2"
+}
+
+variable "dev_aws_access_key_id" {
+  description = "AWS access key"
+  type        = string
+}
+
+variable "dev_aws_secret_access_key" {
+  description = "AWS secret access key"
+  type        = string
+}
+
+variable "dev_low_priority_topic_arn" {
+  description = "ARN of the SNS topic for 'low priority' messages"
+  type        = string
+}
+
+variable "staging_aws_access_key_id" {
+  description = "AWS access key"
+  type        = string
+}
+
+variable "staging_aws_secret_access_key" {
+  description = "AWS secret access key"
+  type        = string
+}
+
+variable "staging_low_priority_topic_arn" {
+  description = "ARN of the SNS topic for 'low priority' messages"
+  type        = string
+}

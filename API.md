@@ -293,3 +293,29 @@ instead return a [Joi ValidationError object](https://joi.dev/api/?v=17.9.1#vali
 
 - Note: This will return a 404 error if the archive has no payer account, or if the caller doesn't have access to that
   archive
+
+## Admin
+
+These endpoints are all authenticated with admin authentication tokens, generated according to step 2 in this
+[documentation](https://permanent.atlassian.net/wiki/spaces/EN/pages/2072576001/Trigger+Admin+Directives)
+
+### POST `/admin/folder/recalculate_thumbnails`
+
+- Headers: Authorization: Bearer \<JWT from FusionAuth>
+
+- Request
+
+```
+{
+    cutoffTimestamp: string (date, iso format)
+}
+```
+
+- Response
+
+```
+{
+  messagesSent: int,
+  failedFolders: [string (folder ID)]
+}
+```
