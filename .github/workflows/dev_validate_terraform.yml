@@ -1,6 +1,8 @@
 name: Validate Terraform (test envs)
 on:
   push:
+  paths:
+    - ./terraform/test_cluster/**
 jobs:
   validate_terraform:
     name: "Validate Terraform"
