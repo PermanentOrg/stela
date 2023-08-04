@@ -33,5 +33,5 @@ jobs:
             - run: touch stela/.env
             - run: (cd devenv; docker compose up database_setup -d; docker logs devenv-database_setup-1)
             - run: (cd stela; npm run start-containers)
-            - run: (cd stela; docker compose run stela npm run test-ci --coverage)
+            - run: (cd stela/apps/api; docker compose run stela npm run api:test-ci --coverage)
             - uses: codecov/codecov-action@v2

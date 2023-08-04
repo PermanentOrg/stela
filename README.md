@@ -43,6 +43,13 @@ npm install
 | SENTRY_DSN                        | none                                                  | Can be found in Sentry under Projects > stela > Settings > Client Keys (DSN)                                                               |
 | DEV_NAME                          | none                                                  | This should only be set in local environments, and should be your given name, all lowercase. Used to create Sentry envs for each developer |
 
+## Linting
+
+Run linting checks with
+```bash
+npm run lint
+```
+
 ## Testing
 
 Make sure the local database from `devenv`'s docker compose is running
@@ -54,7 +61,7 @@ docker compose up -d
 then run tests with
 
 ```bash
-npm run test
+npm run api:test
 ```
 
 Note that the database tests run against is dropped and recreated at the beginning of each test run.

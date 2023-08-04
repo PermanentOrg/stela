@@ -9,4 +9,5 @@ jobs:
               with:
                   node-version: "18"
             - run: npm install --production=false
+            - run: npm install --dev
             - run: npm run lint
