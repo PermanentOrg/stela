@@ -10,5 +10,8 @@ resource "kubernetes_secret" "prod-secrets" {
     "MAILCHIMP_API_KEY"               = var.mailchimp_api_key
     "MAILCHIMP_TRANSACTIONAL_API_KEY" = var.mailchimp_transactional_api_key
     "SENTRY_DSN"                      = var.sentry_dsn
+    "AWS_ACCESS_KEY_ID"               = var.aws_access_key_id
+    "AWS_SECRET_ACCESS_KEY"           = var.aws_secret_access_key
+    "LOW_PRIORITY_TOPIC_ARN"          = var.low_priority_topic_arn
   }
 }

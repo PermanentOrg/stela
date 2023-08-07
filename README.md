@@ -42,6 +42,10 @@ npm install
 | MAILCHIMP_COMMUNITY_LIST_ID       | 2736f796db                                            | The default value corresponds to the `dev` list                                                                                            |
 | SENTRY_DSN                        | none                                                  | Can be found in Sentry under Projects > stela > Settings > Client Keys (DSN)                                                               |
 | DEV_NAME                          | none                                                  | This should only be set in local environments, and should be your given name, all lowercase. Used to create Sentry envs for each developer |
+| AWS_REGION                        | us-west-2                                             |                                                                                                               |
+| AWS_ACCESS_KEY_ID                 | none                                                  | The same one you use in `devenv`                                                                              |
+| AWS_SECRET_ACCESS_KEY             | none                                                  | The same one you use in `devenv`                                                                              |
+| LOW_PRIORITY_TOPIC_ARN            | test                                                  | Doesn't need to be set to a real ARN unless your work touches it specifically                                 |
 
 ## Testing
 

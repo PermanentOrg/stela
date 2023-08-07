@@ -131,6 +131,44 @@ resource "kubernetes_deployment" "stela_dev" {
             }
           }
 
+          env {
+            name  = "AWS_REGION"
+            value = var.aws_region
+          }
+
+          env {
+            name = "AWS_ACCESS_KEY_ID"
+            value_from {
+              secret_key_ref {
+                name     = "dev-secrets"
+                key      = "AWS_ACCESS_KEY_ID"
+                optional = false
+              }
+            }
+          }
+
+          env {
+            name = "AWS_SECRET_ACCESS_KEY"
+            value_from {
+              secret_key_ref {
+                name     = "dev-secrets"
+                key      = "AWS_SECRET_ACCESS_KEY"
+                optional = false
+              }
+            }
+          }
+
+          env {
+            name = "LOW_PRIORITY_TOPIC_ARN"
+            value_from {
+              secret_key_ref {
+                name     = "dev-secrets"
+                key      = "LOW_PRIORITY_TOPIC_ARN"
+                optional = false
+              }
+            }
+          }
+
           port {
             container_port = 80
           }
