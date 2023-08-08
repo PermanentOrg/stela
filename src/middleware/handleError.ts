@@ -1,5 +1,6 @@
 import type { Request, Response, NextFunction } from "express";
 import * as Sentry from "@sentry/node";
+import { logger } from "../log";
 
 interface ErrorWithStatus {
   status: number;
@@ -22,6 +23,7 @@ export const handleError = async (
   next: NextFunction
 ): Promise<void> => {
   Sentry.captureException(err);
+  logger.error(err);
   if (isErrorWithStatus(err)) {
     res.status(err.status).json({ error: err });
   } else if (isErrorWithStatusCode(err)) {
