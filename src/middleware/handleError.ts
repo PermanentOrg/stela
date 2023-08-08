@@ -22,8 +22,8 @@ export const handleError = async (
   res: Response,
   next: NextFunction
 ): Promise<void> => {
-  Sentry.captureException(JSON.stringify(err));
-  logger.error(err);
+  Sentry.captureException(err);
+  logger.error(JSON.stringify(err));
   if (isErrorWithStatus(err)) {
     res.status(err.status).json({ error: err });
   } else if (isErrorWithStatusCode(err)) {
