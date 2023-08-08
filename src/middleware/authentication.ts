@@ -1,6 +1,7 @@
 import type { RequestHandler, Request, Response, NextFunction } from "express";
 import createError from "http-errors";
 import { fusionAuthClient } from "../fusionauth";
+import { logger } from "../log";
 
 const buildAuthenticationVerifier =
   (
@@ -46,6 +47,7 @@ const buildAuthenticationVerifier =
       }
 
       req.body.emailFromAuthToken = introspectionResponse.response["email"];
+      logger.info("Validated auth token");
     } catch (err) {
       next(err);
     }

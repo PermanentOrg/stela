@@ -22,7 +22,7 @@ export const handleError = async (
   res: Response,
   next: NextFunction
 ): Promise<void> => {
-  Sentry.captureException(err);
+  Sentry.captureException(JSON.stringify(err));
   logger.error(err);
   if (isErrorWithStatus(err)) {
     res.status(err.status).json({ error: err });
