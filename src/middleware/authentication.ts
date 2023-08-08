@@ -12,6 +12,7 @@ const buildAuthenticationVerifier =
     _: Response,
     next: NextFunction
   ): Promise<void> => {
+    logger.info("Start auth token validation");
     const authorizationHeaderParts = req.get("Authorization")?.split(" ");
     if (
       !authorizationHeaderParts ||
@@ -22,14 +23,18 @@ const buildAuthenticationVerifier =
       return;
     }
     const authenticationToken = authorizationHeaderParts[1];
+    logger.info("Extract auth token from header");
 
     try {
+      logger.info("Calling fusionauth");
       const introspectionResponse =
         await fusionAuthClient.introspectAccessToken(
           applicationId,
           authenticationToken ?? ""
         );
+      logger.info("Received response from fusionauth");
       if (!introspectionResponse.wasSuccessful()) {
+        logger.info("Token validation failed");
         next(
           new createError.Unauthorized(
             `Token validation failed: ${introspectionResponse.exception.message}`
@@ -42,10 +47,12 @@ const buildAuthenticationVerifier =
         typeof introspectionResponse.response["email"] !== "string" ||
         introspectionResponse.response["email"] === ""
       ) {
+        logger.info("Invalid token");
         next(new createError.Unauthorized("Invalid token"));
         return;
       }
 
+      logger.info("Extracting email from token");
       req.body.emailFromAuthToken = introspectionResponse.response["email"];
       logger.info("Validated auth token");
     } catch (err) {
