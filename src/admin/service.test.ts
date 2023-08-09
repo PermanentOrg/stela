@@ -35,8 +35,11 @@ describe("recalculateFolderThumbnails", () => {
   test("should send messages for folders created before the cutoff", async () => {
     jest
       .spyOn(publisherClient, "batchPublishMessages")
-      .mockResolvedValueOnce({ failedMessages: [], messagesSent: 5 });
-    const result = await adminService.recalculateFolderThumbnails(new Date());
+      .mockResolvedValueOnce({ failedMessages: [], messagesSent: 4 });
+    const result = await adminService.recalculateFolderThumbnails(
+      new Date(new Date().setDate(new Date().getDate() - 1)),
+      new Date()
+    );
     expect(
       (
         (
@@ -46,8 +49,8 @@ describe("recalculateFolderThumbnails", () => {
           ]
         )[1] as unknown as Message[]
       ).length
-    ).toBe(5);
-    expect(result).toEqual({ failedFolders: [], messagesSent: 5 });
+    ).toBe(4);
+    expect(result).toEqual({ failedFolders: [], messagesSent: 4 });
   });
 
   test("should throw internal server error if database call fails", async () => {
@@ -55,7 +58,10 @@ describe("recalculateFolderThumbnails", () => {
     const testError = new Error("out of cheese - redo from start");
     jest.spyOn(db, "sql").mockRejectedValueOnce(testError);
     try {
-      await adminService.recalculateFolderThumbnails(new Date());
+      await adminService.recalculateFolderThumbnails(
+        new Date(new Date().setDate(new Date().getDate() - 1)),
+        new Date()
+      );
     } catch (err) {
       error = err;
     } finally {
@@ -71,7 +77,10 @@ describe("recalculateFolderThumbnails", () => {
       .spyOn(publisherClient, "batchPublishMessages")
       .mockRejectedValueOnce(testError);
     try {
-      await adminService.recalculateFolderThumbnails(new Date());
+      await adminService.recalculateFolderThumbnails(
+        new Date(new Date().setDate(new Date().getDate() - 1)),
+        new Date()
+      );
     } catch (err) {
       error = err;
     } finally {

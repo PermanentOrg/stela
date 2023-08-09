@@ -13,7 +13,8 @@ adminController.post(
     try {
       validateRecalculateFolderThumbnailsRequest(req.body);
       const results = await adminService.recalculateFolderThumbnails(
-        req.body.cutoffTimestamp
+        req.body.beginTimestamp,
+        req.body.endTimestamp
       );
       if (results.failedFolders.length > 0) {
         res.status(500).json(results);
