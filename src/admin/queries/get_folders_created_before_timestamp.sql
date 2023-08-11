@@ -4,4 +4,5 @@ SELECT
 FROM
   folder
 WHERE
-  createdDT < :cutoffTimestamp
+  createdDT BETWEEN :beginTimestamp AND :endTimestamp
+  AND (type IS NULL OR type NOT LIKE '%root%');

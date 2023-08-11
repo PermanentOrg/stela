@@ -300,6 +300,7 @@ These endpoints are all authenticated with admin authentication tokens, generate
 [documentation](https://permanent.atlassian.net/wiki/spaces/EN/pages/2072576001/Trigger+Admin+Directives)
 
 ### POST `/admin/folder/recalculate_thumbnails`
+Queues thumbnail generation tasks for all non-root folders created between `beginTimestamp` and `endTimestamp`.
 
 - Headers: Authorization: Bearer \<JWT from FusionAuth>
 
@@ -307,7 +308,8 @@ These endpoints are all authenticated with admin authentication tokens, generate
 
 ```
 {
-    cutoffTimestamp: string (date, iso format)
+    beginTimestamp: string (date, iso format)
+    endTimestamp: string (date, iso format)
 }
 ```
 

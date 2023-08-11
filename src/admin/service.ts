@@ -5,11 +5,13 @@ import { publisherClient, lowPriorityTopicArn } from "../publisher_client";
 import { logger } from "../log";
 
 const recalculateFolderThumbnails = async (
-  cutoffTimestamp: Date
+  beginTimestamp: Date,
+  endTimestamp: Date
 ): Promise<{ messagesSent: number; failedFolders: string[] }> => {
   const folderResult = await db
     .sql<Folder>("admin.queries.get_folders_created_before_timestamp", {
-      cutoffTimestamp,
+      beginTimestamp,
+      endTimestamp,
     })
     .catch((err) => {
       logger.error(err);
