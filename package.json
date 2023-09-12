@@ -15,21 +15,21 @@
   },
   "scripts": {
     "check-types": "tsc --noEmit",
-    "api:eslint": "eslint --max-warnings 0 apps/api/src --ext .ts",
-    "api:check-format": "prettier --check apps/api/src",
+    "api:eslint": "eslint --max-warnings 0 packages/api/src --ext .ts",
+    "api:check-format": "prettier --check packages/api/src",
     "lint": "npm run api:eslint && npm run check-types && npm run api:check-format",
-    "start-containers": "(cd apps/api; docker compose up -d --build stela)",
+    "start-containers": "(cd packages/api; docker compose up -d --build stela)",
     "clear-database": "psql postgresql://postgres:permanent@localhost:5432 -c 'DROP DATABASE IF EXISTS test_permanent;'",
     "create-database": "psql postgresql://postgres:permanent@localhost:5432 -c 'CREATE DATABASE test_permanent;'",
     "set-up-database": "docker exec --env='PGPASSWORD=permanent' devenv-database-1 pg_dump -U postgres permanent --schema-only | psql postgresql://postgres:permanent@localhost:5432/test_permanent",
     "clear-database-ci": "psql postgresql://postgres:permanent@database:5432 -c 'DROP DATABASE IF EXISTS test_permanent;'",
     "create-database-ci": "psql postgresql://postgres:permanent@database:5432 -c 'CREATE DATABASE test_permanent;'",
     "set-up-database-ci": "pg_dump postgresql://postgres:permanent@database:5432/permanent --schema-only | psql postgresql://postgres:permanent@database:5432/test_permanent",
-    "api:test": "npm run start-containers && npm run clear-database && npm run create-database && npm run set-up-database && (cd apps/api; docker compose run stela node --experimental-vm-modules ./node_modules/jest/bin/jest.js -i)",
+    "api:test": "npm run start-containers && npm run clear-database && npm run create-database && npm run set-up-database && (cd packages/api; docker compose run stela node --experimental-vm-modules ./node_modules/jest/bin/jest.js -i)",
     "api:test-ci": "npm run clear-database-ci && npm run create-database-ci && npm run set-up-database-ci && node --experimental-vm-modules node_modules/jest/bin/jest.js -i --coverage",
-    "api:start": "ts-node --transpile-only app/api/src/index.ts",
-    "api:start:debug": "node --no-lazy -r ts-node/register/transpile-only --inspect-brk=0.0.0.0 app/api/src/index.ts",
-    "api:start:watch": "nodemon ./apps/api/src/index.ts"
+    "api:start": "ts-node --transpile-only -r tsconfig-paths/register app/api/src/index.ts",
+    "api:start:debug": "node --no-lazy -r ts-node/register --transpile-only --inspect-brk=0.0.0.0 app/api/src/index.ts",
+    "api:start:watch": "nodemon -r tsconfig-paths/register ./packages/api/src/index.ts"
   },
   "jest": {
     "silent": true,
@@ -38,13 +38,12 @@
     "transform": {
       "^.+\\.ts?$": "ts-jest"
     },
-    "transformIgnorePatterns": [
-      "./node_modules/"
-    ]
+    "transformIgnorePatterns": ["./node_modules/"],
+    "moduleNameMapper": {
+      "^@stela/logger$": "<rootDir>/packages/logger"
+    }
   },
-  "workspaces": [
-    "./apps/*"
-  ],
+  "workspaces": ["./packages/*"],
   "devDependencies": {
     "@smithy/types": "^2.2.0",
     "@types/jest": "26.0.23",
@@ -61,7 +60,13 @@
     "nodemon": "^2.0.20",
     "prettier": "^2.7.1",
     "ts-jest": "27.0.2",
+    "tsconfig-paths": "^4.2.0",
     "tslint-tinypg": "^2.0.2",
     "typescript": "^4.8.4"
+  },
+  "dependencies": {
+    "@tsconfig/node18-strictest": "^1.0.0",
+    "npm": "^8.19.3",
+    "ts-node": "^10.9.1"
   }
 }

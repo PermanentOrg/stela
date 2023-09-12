@@ -1,10 +1,10 @@
 {
   "extends": "@tsconfig/node18-strictest/tsconfig.json",
   "compilerOptions": {
-    "types": ["jest", "node"],
+    "types": ["jest", "node", "@types/jest"],
     "outDir": "lib",
     "noEmit": true,
-    "typeRoots": ["apps/api/src/types", "node_modules/@types"]
+    "typeRoots": ["packages/api/src/types", "node_modules/@types"]
   },
   "ts-node": { "files": true },
   "composite": true

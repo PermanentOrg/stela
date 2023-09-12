@@ -1,0 +1,19 @@
+{
+  "name": "@stela/metadata_lambda",
+  "version": "0.0.0",
+  "description": "An AWS Lambda function to extract and store metadata from files uploaded to permanent.org",
+  "main": "src/index.js",
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.398.0",
+    "@tsconfig/node18-strictest": "^1.0.0",
+    "dotenv": "^16.3.1",
+    "geo-tz": "^7.0.7",
+    "luxon": "^3.4.2",
+    "require-env-variable": "^4.0.1",
+    "tinypg": "^7.0.1"
+  },
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.119",
+    "@types/luxon": "^3.3.1"
+  }
+}

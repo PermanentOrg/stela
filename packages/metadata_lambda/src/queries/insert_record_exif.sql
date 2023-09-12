@@ -1,0 +1,52 @@
+INSERT INTO
+  record_exif (
+    recordId,
+    height,
+    width,
+    shutterSpeed,
+    focalLength,
+    aperture,
+    fNumber,
+    exposure,
+    iso,
+    brightness,
+    flash,
+    whiteBalance,
+    xdpi,
+    ydpi,
+    createdDt,
+    updatedDt
+  )
+VALUES (
+  :recordId,
+  :height,
+  :width,
+  :shutterSpeed,
+  :focalLength,
+  :aperture,
+  :fNumber,
+  :exposure,
+  :iso,
+  :brightness,
+  :flash,
+  :whiteBalance,
+  :xdpi,
+  :ydpi,
+  CURRENT_TIMESTAMP,
+  CURRENT_TIMESTAMP
+)
+ON CONFLICT (recordId) DO UPDATE SET
+  height = EXCLUDED.height,
+  width = EXCLUDED.width,
+  shutterSpeed = EXCLUDED.shutterSpeed,
+  focalLength = EXCLUDED.focalLength,
+  aperture = EXCLUDED.aperture,
+  fNumber = EXCLUDED.fNumber,
+  exposure = EXCLUDED.exposure,
+  iso = EXCLUDED.iso,
+  brightness = EXCLUDED.brightness,
+  flash = EXCLUDED.flash,
+  whiteBalance = EXCLUDED.whiteBalance,
+  xdpi = EXCLUDED.xdpi,
+  ydpi = EXCLUDED.ydpi,
+  updatedDT = CURRENT_TIMESTAMP;

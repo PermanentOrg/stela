@@ -1,0 +1,23 @@
+FROM node:18-alpine
+WORKDIR /usr/local/apps/stela/
+
+RUN apk add curl
+
+COPY package.json .
+COPY packages/api/package.json packages/api/
+RUN npm install -g npm@8.19.3
+RUN npm cache clean --force
+RUN npm install
+RUN npm install --dev
+ENV PATH=/usr/local/apps/stela/node_modules/.bin:$PATH
+
+WORKDIR /usr/local/apps/stela/
+
+COPY tsconfig.json ./
+COPY packages/api/tsconfig.json ./packages/api/
+COPY packages/api/src ./packages/api/src
+COPY .env ./
+
+EXPOSE 8080
+
+CMD npm run api:start:watch

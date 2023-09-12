@@ -1,0 +1,9 @@
+{
+  "name": "@stela/logger",
+  "version": "0.0.0",
+  "description": "A logger for stela applications",
+  "main": "src/log.js",
+  "dependencies": {
+    "winston": "^3.3.3"
+  }
+}
