@@ -16,6 +16,34 @@ response body, of the form
 For most errors, the error object will include at least a "message" field describing the error. Validation errors will
 instead return a [Joi ValidationError object](https://joi.dev/api/?v=17.9.1#validationerror).
 
+## Admin
+
+These endpoints are all authenticated with admin authentication tokens, generated according to step 2 in this
+[documentation](https://permanent.atlassian.net/wiki/spaces/EN/pages/2072576001/Trigger+Admin+Directives)
+
+### POST `/admin/folder/recalculate_thumbnails`
+Queues thumbnail generation tasks for all non-root folders created between `beginTimestamp` and `endTimestamp`.
+
+- Headers: Authorization: Bearer \<JWT from FusionAuth>
+
+- Request
+
+```
+{
+    beginTimestamp: string (date, iso format)
+    endTimestamp: string (date, iso format)
+}
+```
+
+- Response
+
+```
+{
+  messagesSent: int,
+  failedFolders: [string (folder ID)]
+}
+```
+
 ## Directives
 
 ### POST `/directive`
@@ -294,30 +322,26 @@ instead return a [Joi ValidationError object](https://joi.dev/api/?v=17.9.1#vali
 - Note: This will return a 404 error if the archive has no payer account, or if the caller doesn't have access to that
   archive
 
-## Admin
+### POST `/archive/:archiveId/make-featured`
 
-These endpoints are all authenticated with admin authentication tokens, generated according to step 2 in this
-[documentation](https://permanent.atlassian.net/wiki/spaces/EN/pages/2072576001/Trigger+Admin+Directives)
+- Headers: Authorization: Bearer \<Admin JWT from FusionAuth>
+- Response: 200 if successful, 400 if archive is already featured, doesn't exist, or isn't public
 
-### POST `/admin/folder/recalculate_thumbnails`
-Queues thumbnail generation tasks for all non-root folders created between `beginTimestamp` and `endTimestamp`.
+### DELETE `/archive/:archiveId/unfeature
 
-- Headers: Authorization: Bearer \<JWT from FusionAuth>
+- Headers: Authorization: Bearer \<Admin JWT from FusionAuth>
+- Response: 200 if successful
 
-- Request
-
-```
-{
-    beginTimestamp: string (date, iso format)
-    endTimestamp: string (date, iso format)
-}
-```
+### GET `/archive/featured`
 
 - Response
-
 ```
 {
-  messagesSent: int,
-  failedFolders: [string (folder ID)]
+  archiveId: string,
+  name: string,
+  type: string,
+  archiveNbr: string,
+  profileImage: string (URL),
+  bannerImage: string (URL)
 }
 ```

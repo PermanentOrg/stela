@@ -1,6 +1,9 @@
 import { Router } from "express";
 import type { Request, Response, NextFunction } from "express";
-import { verifyUserAuthentication } from "../middleware";
+import {
+  verifyUserAuthentication,
+  verifyAdminAuthentication,
+} from "../middleware";
 import {
   validateArchiveIdFromParams,
   validateBodyFromAuthentication,
@@ -43,6 +46,54 @@ archiveController.get(
         res.status(400).json({ error: err });
         return;
       }
+      next(err);
+    }
+  }
+);
+
+archiveController.post(
+  "/:archiveId/make-featured",
+  verifyAdminAuthentication,
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      validateArchiveIdFromParams(req.params);
+      await archiveService.makeFeatured(req.params.archiveId);
+      res.sendStatus(200);
+    } catch (err) {
+      if (isValidationError(err)) {
+        res.status(400).json({ error: err });
+        return;
+      }
+      next(err);
+    }
+  }
+);
+
+archiveController.delete(
+  "/:archiveId/unfeature",
+  verifyAdminAuthentication,
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      validateArchiveIdFromParams(req.params);
+      await archiveService.unfeature(req.params.archiveId);
+      res.sendStatus(200);
+    } catch (err) {
+      if (isValidationError(err)) {
+        res.status(400).json({ error: err });
+        return;
+      }
+      next(err);
+    }
+  }
+);
+
+archiveController.get(
+  "/featured",
+  async (_: Request, res: Response, next: NextFunction) => {
+    try {
+      const archives = await archiveService.getFeatured();
+      res.json(archives);
+    } catch (err) {
       next(err);
     }
   }
