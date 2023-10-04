@@ -20,3 +20,12 @@ export interface AccountStorage {
   createdDt: Date;
   updatedDt: Date;
 }
+
+export interface FeaturedArchive {
+  archiveId: string;
+  name: string;
+  type: string;
+  archiveNbr: string;
+  profileImage: string;
+  bannerImage: string;
+}
