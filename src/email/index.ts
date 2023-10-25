@@ -1,6 +1,11 @@
 import {
   sendLegacyContactNotification,
   sendArchiveStewardNotification,
+  sendInvitationNotification,
 } from "./service";
 
-export { sendLegacyContactNotification, sendArchiveStewardNotification };
+export {
+  sendLegacyContactNotification,
+  sendArchiveStewardNotification,
+  sendInvitationNotification,
+};

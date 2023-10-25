@@ -6,6 +6,8 @@ services:
       dockerfile: Dockerfile.test
     networks:
       - devenv
+    environment:
+      - ENV=test
 networks:
   devenv:
     name: devenv_default

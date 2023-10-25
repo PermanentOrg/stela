@@ -22,6 +22,7 @@ These endpoints are all authenticated with admin authentication tokens, generate
 [documentation](https://permanent.atlassian.net/wiki/spaces/EN/pages/2072576001/Trigger+Admin+Directives)
 
 ### POST `/admin/folder/recalculate_thumbnails`
+
 Queues thumbnail generation tasks for all non-root folders created between `beginTimestamp` and `endTimestamp`.
 
 - Headers: Authorization: Bearer \<JWT from FusionAuth>
@@ -335,6 +336,7 @@ Queues thumbnail generation tasks for all non-root folders created between `begi
 ### GET `/archive/featured`
 
 - Response
+
 ```
 {
   archiveId: string,
@@ -343,5 +345,33 @@ Queues thumbnail generation tasks for all non-root folders created between `begi
   archiveNbr: string,
   profileImage: string (URL),
   bannerImage: string (URL)
+}
+```
+
+## Billing
+
+### POST `/billing/gift`
+
+- Headers: Authorization: Bearer \<JWT from FusionAuth>
+- Request Body
+
+```
+{
+  storageAmount: int (expressed in GB, given to each recipient)
+  recipientEmails: [string] (email format, list must be non-empty)
+  note: string
+}
+```
+
+- Response
+
+```
+{
+  storageGifted: int (expressed in GB) // total amount of storage given away
+  giftDelivered: [string] // emails to which the gift has been successfully delivered
+  // emails which don't have Permanent accounts yet, gift will be delivered when the accept the invite
+  invitationSent: [string]
+  // emails to which no gift could be made because they have no account and have already been invited
+  alreadyInvited: [string]
 }
 ```

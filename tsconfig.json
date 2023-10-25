@@ -3,7 +3,8 @@
   "compilerOptions": {
     "outDir": "lib",
     "noEmit": true,
-    "typeRoots": ["src/types", "node_modules/@types"]
+    "typeRoots": ["src/types", "node_modules/@types"],
+    "lib": ["es2022", "DOM"]
   },
   "include": ["src"],
   "ts-node": { "files": true }

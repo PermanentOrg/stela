@@ -6,6 +6,7 @@ import type { AxiosError } from "axios";
 import {
   sendLegacyContactNotification,
   sendArchiveStewardNotification,
+  sendInvitationNotification,
   sendEmail,
 } from "./service";
 import { MailchimpTransactional } from "../mailchimp";
@@ -295,5 +296,90 @@ describe("sendEmail", () => {
         ]
       )
     ).rejects.toThrow("Error calling Mailchimp. Status: 500");
+  });
+});
+
+describe("sendInvitationNotification", () => {
+  const senderEmail = "test@permanent.org";
+  const recipientEmail = "test+recipient@permanent.org";
+  const testToken = "abc123def4";
+  const testMessage = "test message";
+
+  beforeEach(async () => {
+    await clearDatabase();
+    await loadFixtures();
+  });
+
+  afterEach(async () => {
+    await clearDatabase();
+    jest.clearAllMocks();
+  });
+
+  test("send invite email should call mailchimp successfully", async () => {
+    const mockResponse = [
+      {
+        status: "sent",
+        _id: "test",
+        email: "contact@permanent.org",
+        reject_reason: null,
+      } as MessagesSendSuccessResponse,
+    ];
+    (
+      MailchimpTransactional.messages.sendTemplate as jest.MockedFunction<
+        typeof MailchimpTransactional.messages.sendTemplate
+      >
+    ).mockResolvedValueOnce(mockResponse);
+
+    await sendInvitationNotification(
+      senderEmail,
+      recipientEmail,
+      testMessage,
+      1,
+      testToken
+    );
+
+    expect(MailchimpTransactional.messages.sendTemplate).toHaveBeenCalledWith({
+      template_name: "invitation-from-relationship",
+      template_content: [],
+      message: {
+        from_email: "support@permanent.org",
+        headers: { "Reply-To": "support@permanent.org" },
+        track_opens: true,
+        track_clicks: true,
+        merge: true,
+        merge_language: "mailchimp",
+        from_name: "Jack Rando",
+        to: [{ email: recipientEmail }],
+        subject: "",
+        global_merge_vars: [
+          { name: "from_fullname", content: "Jack Rando" },
+          { name: "space_amount_hr", content: "1GB" },
+          { name: "token", content: testToken },
+          { name: "message", content: testMessage },
+          {
+            name: "click_url",
+            content: `https://test.permanent.org/app/signup?primaryEmail=${btoa(
+              recipientEmail
+            )}&inviteCode=${btoa(testToken)}`,
+          },
+        ],
+      },
+    });
+  });
+
+  test("should throw an error if sender account is not found in the database", async () => {
+    await db.query("TRUNCATE account CASCADE;");
+
+    await expect(
+      sendInvitationNotification(
+        senderEmail,
+        recipientEmail,
+        testMessage,
+        1,
+        testToken
+      )
+    ).rejects.toThrow(`Account with primary email ${senderEmail} not found`);
+
+    expect(MailchimpTransactional.messages.sendTemplate).not.toHaveBeenCalled();
   });
 });
