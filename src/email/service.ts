@@ -14,7 +14,7 @@ const defaultMessage = {
 export const sendEmail = async (
   templateName: string,
   fromName: string,
-  toData: { email: string; name: string }[],
+  toData: { email: string; name?: string }[],
   subject: string,
   mergeVariables: { name: string; content: string }[]
 ): Promise<void> => {
@@ -94,6 +94,45 @@ export const sendArchiveStewardNotification = async (
       { name: "from_fullname", content: ownerName },
       { name: "to_fullname", content: stewardName },
       { name: "from_archive_name", content: archiveName },
+    ]
+  );
+};
+
+export const sendInvitationNotification = async (
+  fromEmail: string,
+  toEmail: string,
+  message: string,
+  giftAmount: number,
+  token: string
+): Promise<void> => {
+  const fullNameResult = await db.sql<{ fullName: string }>(
+    "email.queries.get_full_name_by_account_email",
+    { email: fromEmail }
+  );
+  if (fullNameResult.rows[0] === undefined) {
+    throw new Error(`Account with primary email ${fromEmail} not found`);
+  }
+  const { fullName } = fullNameResult.rows[0];
+  await sendEmail(
+    "invitation-from-relationship",
+    fullName,
+    [{ email: toEmail }],
+    "",
+    [
+      { name: "from_fullname", content: fullName },
+      { name: "space_amount_hr", content: `${giftAmount}GB` },
+      { name: "token", content: token },
+      { name: "message", content: message },
+      {
+        name: "click_url",
+        content: `https://${
+          process.env["ENV"] === "production"
+            ? ""
+            : `${process.env["ENV"] ?? ""}.`
+        }permanent.org/app/signup?primaryEmail=${btoa(
+          toEmail
+        )}&inviteCode=${btoa(token)}`,
+      },
     ]
   );
 };

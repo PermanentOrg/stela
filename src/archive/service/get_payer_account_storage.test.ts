@@ -2,6 +2,7 @@ import { InternalServerError, NotFound } from "http-errors";
 import { db } from "../../database";
 import { archiveService } from "./index";
 import { logger } from "../../log";
+import { GB } from "../../constants";
 
 jest.mock("../../database");
 jest.mock("../../log", () => ({
@@ -39,7 +40,7 @@ describe("getPayerAccountStorage", () => {
       "test+1@permanent.org"
     );
     expect(payerAccountStorage.accountId).toEqual("2");
-    expect(payerAccountStorage.spaceLeft).toEqual("104723522");
+    expect(+payerAccountStorage.spaceLeft).toEqual(2 * GB);
   });
 
   test("should throw a not found error if account can't access the archive", async () => {

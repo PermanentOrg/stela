@@ -1,4 +1,36 @@
 INSERT INTO 
   account_space (accountId, spaceLeft, spaceTotal, fileLeft, fileTotal, status, type, createdDt, updatedDt)
 VALUES
-  (2, 104723522,104857600, 99999, 100000, 'status.generic.ok', 'type.generic.placeholder', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+  (
+    2,
+    2147483648,
+    2147483648,
+    100000,
+    100000,
+    'status.generic.ok',
+    'type.generic.placeholder',
+    CURRENT_TIMESTAMP,
+    CURRENT_TIMESTAMP
+  ),
+  (
+    3,
+    2147483648,
+    2147483648,
+    100000,
+    100000,
+    'status.generic.ok',
+    'type.generic.placeholder',
+    CURRENT_TIMESTAMP,
+    CURRENT_TIMESTAMP
+  ),
+  (
+    4,
+    2147483648,
+    2147483648,
+    100000,
+    100000,
+    'status.generic.ok',
+    'type.generic.placeholder',
+    CURRENT_TIMESTAMP,
+    CURRENT_TIMESTAMP
+  );
