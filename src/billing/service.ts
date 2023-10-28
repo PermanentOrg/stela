@@ -3,7 +3,7 @@ import { db } from "../database";
 import type { GiftStorageRequest, GiftStorageResponse } from "./models";
 import { logger } from "../log";
 import { GB } from "../constants";
-import { sendInvitationNotification } from "../email";
+import { sendInvitationNotification, sendGiftNotification } from "../email";
 
 const getRandomAlphanumericString = (length: number): string => {
   const chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -110,6 +110,17 @@ export const issueGift = async (
         throw new createError.InternalServerError("Failed to create invites");
       });
   });
+
+  await Promise.all(
+    existingAccountEmails.map(async (email) => {
+      await sendGiftNotification(
+        requestBody.emailFromAuthToken,
+        email,
+        requestBody.note,
+        requestBody.storageAmount
+      );
+    })
+  );
 
   await Promise.all(
     emailsToInvite.map(async (email, idx) => {

@@ -4,7 +4,7 @@ import { app } from "../app";
 import { verifyUserAuthentication } from "../middleware";
 import { db } from "../database";
 import { GB } from "../constants";
-import { sendInvitationNotification } from "../email";
+import { sendInvitationNotification, sendGiftNotification } from "../email";
 import { logger } from "../log";
 import type { GiftStorageRequest, GiftStorageResponse } from "./models";
 
@@ -499,6 +499,24 @@ describe("/billing/gift", () => {
       .expect(200);
 
     expect(sendInvitationNotification).toHaveBeenCalledTimes(2);
+  });
+
+  test("should send gift notification email if recipient does have an account", async () => {
+    await db.sql("fixtures.create_test_accounts");
+    await db.sql("fixtures.create_test_account_space");
+    await db.sql("fixtures.create_test_emails");
+
+    const newUserEmails = ["test+1@permanent.org"];
+
+    await agent
+      .post("/api/v2/billing/gift")
+      .send({
+        storageAmount: 1,
+        recipientEmails: newUserEmails,
+      })
+      .expect(200);
+
+    expect(sendGiftNotification).toHaveBeenCalledTimes(1);
   });
 
   test("should report what happened to each email passed in", async () => {

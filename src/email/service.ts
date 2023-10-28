@@ -107,7 +107,7 @@ export const sendInvitationNotification = async (
 ): Promise<void> => {
   const fullNameResult = await db.sql<{ fullName: string }>(
     "email.queries.get_full_name_by_account_email",
-    { email: fromEmail }
+    { emails: [fromEmail] }
   );
   if (fullNameResult.rows[0] === undefined) {
     throw new Error(`Account with primary email ${fromEmail} not found`);
@@ -133,6 +133,43 @@ export const sendInvitationNotification = async (
           toEmail
         )}&inviteCode=${btoa(token)}`,
       },
+    ]
+  );
+};
+
+export const sendGiftNotification = async (
+  fromEmail: string,
+  toEmail: string,
+  note: string,
+  giftAmount: number
+): Promise<void> => {
+  const fullNameResult = await db.sql<{ fullName: string; email: string }>(
+    "email.queries.get_full_name_by_account_email",
+    { emails: [fromEmail, toEmail] }
+  );
+
+  const fromResult = fullNameResult.rows.find((row) => row.email === fromEmail);
+  if (fromResult === undefined) {
+    throw new Error(`Account with primary email ${fromEmail} not found`);
+  }
+  const fromFullName = fromResult.fullName;
+
+  const toResult = fullNameResult.rows.find((row) => row.email === toEmail);
+  if (toResult === undefined) {
+    throw new Error(`Account with primary email ${toEmail} not found`);
+  }
+  const toFullName = toResult.fullName;
+
+  await sendEmail(
+    "gift-notification",
+    fromFullName,
+    [{ email: toEmail }],
+    "*|FROM_FULLNAME|* is giving you *|SPACE_AMOUNT|* GB of Permanent storage",
+    [
+      { name: "from_fullname", content: fromFullName },
+      { name: "to_fullname", content: toFullName },
+      { name: "space_amount", content: giftAmount.toString() },
+      { name: "note", content: note },
     ]
   );
 };

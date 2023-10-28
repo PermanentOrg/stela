@@ -1,6 +1,7 @@
 SELECT
-  fullName "fullName"
+  fullName "fullName",
+  primaryEmail "email"
 FROM
   account
 WHERE
-  primaryEmail = :email;
+  primaryEmail = ANY(:emails);

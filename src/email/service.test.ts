@@ -7,6 +7,7 @@ import {
   sendLegacyContactNotification,
   sendArchiveStewardNotification,
   sendInvitationNotification,
+  sendGiftNotification,
   sendEmail,
 } from "./service";
 import { MailchimpTransactional } from "../mailchimp";
@@ -379,6 +380,99 @@ describe("sendInvitationNotification", () => {
         testToken
       )
     ).rejects.toThrow(`Account with primary email ${senderEmail} not found`);
+
+    expect(MailchimpTransactional.messages.sendTemplate).not.toHaveBeenCalled();
+  });
+});
+
+describe("sendGiftNotification", () => {
+  const senderEmail = "test@permanent.org";
+  const recipientEmail = "test+1@permanent.org";
+  const testMessage = "test message";
+  const testSpaceAmount = 1;
+
+  beforeEach(async () => {
+    await clearDatabase();
+    await loadFixtures();
+  });
+
+  afterEach(async () => {
+    await clearDatabase();
+    jest.clearAllMocks();
+  });
+
+  test("send gift email should call mailchimp successfully", async () => {
+    const mockResponse = [
+      {
+        status: "sent",
+        _id: "test",
+        email: "contact@permanent.org",
+        reject_reason: null,
+      } as MessagesSendSuccessResponse,
+    ];
+    (
+      MailchimpTransactional.messages.sendTemplate as jest.MockedFunction<
+        typeof MailchimpTransactional.messages.sendTemplate
+      >
+    ).mockResolvedValueOnce(mockResponse);
+
+    await sendGiftNotification(
+      senderEmail,
+      recipientEmail,
+      testMessage,
+      testSpaceAmount
+    );
+
+    expect(MailchimpTransactional.messages.sendTemplate).toHaveBeenCalledWith({
+      template_name: "gift-notification",
+      template_content: [],
+      message: {
+        from_email: "support@permanent.org",
+        headers: { "Reply-To": "support@permanent.org" },
+        track_opens: true,
+        track_clicks: true,
+        merge: true,
+        merge_language: "mailchimp",
+        from_name: "Jack Rando",
+        to: [{ email: recipientEmail }],
+        subject:
+          "*|FROM_FULLNAME|* is giving you *|SPACE_AMOUNT|* GB of Permanent storage",
+        global_merge_vars: [
+          { name: "from_fullname", content: "Jack Rando" },
+          { name: "to_fullname", content: "John Rando" },
+          { name: "space_amount", content: "1" },
+          { name: "note", content: testMessage },
+        ],
+      },
+    });
+  });
+
+  test("should throw an error if sender account is not found in the database", async () => {
+    await db.query("TRUNCATE account CASCADE;");
+
+    await expect(
+      sendGiftNotification(
+        senderEmail,
+        recipientEmail,
+        testMessage,
+        testSpaceAmount
+      )
+    ).rejects.toThrow(`Account with primary email ${senderEmail} not found`);
+
+    expect(MailchimpTransactional.messages.sendTemplate).not.toHaveBeenCalled();
+  });
+
+  test("should throw an error if recipient account is not found in the database", async () => {
+    await expect(
+      sendGiftNotification(
+        senderEmail,
+        "test+not_an_account@permanent.org",
+        testMessage,
+        testSpaceAmount
+      )
+    ).rejects.toThrow(
+      `Account with primary email test+not_an_account@permanent.org not found`
+    );
 
     expect(MailchimpTransactional.messages.sendTemplate).not.toHaveBeenCalled();
   });
