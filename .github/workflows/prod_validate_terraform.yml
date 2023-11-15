@@ -1,8 +1,8 @@
 name: Validate Terraform (prod)
 on:
   push:
-  paths:
-    - ./terraform/prod_cluster/**
+    paths:
+      - ./terraform/prod_cluster/**
 jobs:
   validate_terraform:
     name: "Validate Terraform"
