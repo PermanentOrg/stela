@@ -8,6 +8,8 @@ services:
       - devenv
     environment:
       - ENV=test
+    volumes:
+      - ./coverage:/usr/local/apps/stela/coverage
 networks:
   devenv:
     name: devenv_default
