@@ -9,8 +9,6 @@ RUN npm cache clean --force
 RUN npm install
 ENV PATH=/usr/local/apps/stela/node_modules/.bin:$PATH
 
-WORKDIR /usr/local/apps/stela/dev
-
 COPY tsconfig.json ./
 COPY src ./src
 COPY .env ./
