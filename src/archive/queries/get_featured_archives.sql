@@ -20,4 +20,4 @@ WHERE
   profile_item.fieldNameUI = 'profile.basic'
   AND folder.type = 'type.folder.root.public'
   AND archive.public IS NOT NULL
-  AND archive.public = 1;
+  AND archive.public;

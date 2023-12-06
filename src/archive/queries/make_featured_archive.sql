@@ -8,7 +8,7 @@ INSERT INTO
   WHERE
     archiveId = :archiveId
     AND public IS NOT NULL
-    AND public = 1
+    AND public
 )
 ON CONFLICT DO NOTHING
 RETURNING archive_id;
