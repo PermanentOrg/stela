@@ -367,7 +367,7 @@ CREATE TABLE public.archive (
     archiveid bigint NOT NULL,
     publicdt timestamp with time zone,
     archivenbr text,
-    public integer DEFAULT 0,
+    public boolean DEFAULT false,
     allowpublicdownload boolean DEFAULT true NOT NULL,
     view text,
     viewproperty text,
