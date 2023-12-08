@@ -1,11 +1,10 @@
 {
   "extends": "@tsconfig/node18-strictest/tsconfig.json",
   "compilerOptions": {
+    "rootDir": "src",
     "outDir": "lib",
-    "noEmit": true,
     "typeRoots": ["src/types", "node_modules/@types"],
     "lib": ["es2022", "DOM"]
   },
-  "include": ["src"],
-  "ts-node": { "files": true }
+  "include": ["src"]
 }
