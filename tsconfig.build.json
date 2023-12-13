@@ -1,0 +1,15 @@
+{
+  "extends": "@tsconfig/node18-strictest/tsconfig.json",
+  "exclude": ["**/*.test.ts", "node_modules", "packages/*/dist"],
+  "compilerOptions": {
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "declaration": true,
+    "lib": ["es2022", "DOM"],
+    "paths": {
+      "@stela/*": ["./packages/*/"]
+    }
+  }
+}

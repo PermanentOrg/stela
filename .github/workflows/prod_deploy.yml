@@ -19,7 +19,7 @@ jobs:
         env:
           AWS_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
       - name: Build Image
-        run: docker build -t $IMAGE_TAG .
+        run: docker build -t $IMAGE_TAG -f Dockerfile.api .
       - name: AWS Login
         run: aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin 364159549467.dkr.ecr.$AWS_REGION.amazonaws.com
         env:
