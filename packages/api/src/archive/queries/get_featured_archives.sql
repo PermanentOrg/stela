@@ -1,23 +1,23 @@
 SELECT
-  archive.archiveId "archiveId",
+  archive.archiveid AS "archiveId",
   archive.type,
-  archive.archiveNbr "archiveNbr",
-  archive.thumburl200 "profileImage",
-  profile_item.string1 "name",
-  folder.thumburl500 "bannerImage"
+  archive.archivenbr AS "archiveNbr",
+  archive.thumburl200 AS "profileImage",
+  profile_item.string1 AS "name",
+  folder.thumburl500 AS "bannerImage"
 FROM
   archive
-JOIN
+INNER JOIN
   featured_archive
-  ON archive.archiveId = featured_archive.archive_id
-JOIN
+  ON archive.archiveid = featured_archive.archive_id
+INNER JOIN
   profile_item
-  ON archive.archiveId = profile_item.archiveId
-JOIN
+  ON archive.archiveid = profile_item.archiveid
+INNER JOIN
   folder
-  ON archive.archiveId = folder.archiveId
+  ON archive.archiveid = folder.archiveid
 WHERE
-  profile_item.fieldNameUI = 'profile.basic'
+  profile_item.fieldnameui = 'profile.basic'
   AND folder.type = 'type.folder.root.public'
   AND archive.public IS NOT NULL
   AND archive.public;

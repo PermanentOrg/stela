@@ -1,8 +1,8 @@
 SELECT
-  folderId AS "folderId",
-  archiveId AS "archiveId"
+  folderid AS "folderId",
+  archiveid AS "archiveId"
 FROM
   folder
 WHERE
-  createdDT BETWEEN :beginTimestamp AND :endTimestamp
+  createddt BETWEEN :beginTimestamp AND :endTimestamp
   AND (type IS NULL OR type NOT LIKE '%root%');

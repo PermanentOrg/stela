@@ -1,5 +1,5 @@
 UPDATE
-  directive_trigger
+directive_trigger
 SET
   type = COALESCE(:type, directive_trigger.type),
   updated_dt = CURRENT_TIMESTAMP
@@ -10,8 +10,8 @@ WHERE
   AND directive_trigger.directive_id = :directiveId
   AND directive.execution_dt IS NULL
 RETURNING
-  directive_trigger_id "directiveTriggerId",
-  directive_trigger.directive_id "directiveId",
-  directive_trigger.type,
-  directive_trigger.created_dt "createdDt",
-  directive_trigger.updated_dt "updatedDt";
+directive_trigger_id "directiveTriggerId",
+directive_trigger.directive_id "directiveId",
+directive_trigger.type,
+directive_trigger.created_dt "createdDt",
+directive_trigger.updated_dt "updatedDt";
