@@ -1,13 +1,12 @@
 WITH original_legacy_contact AS (
-  SELECT
-    email
+  SELECT email
   FROM
     legacy_contact
   WHERE
     legacy_contact_id = :legacyContactId
 )
 UPDATE
-  legacy_contact
+legacy_contact
 SET
   name = COALESCE(:name, name),
   email = COALESCE(:email, email),
@@ -15,17 +14,16 @@ SET
 WHERE
   legacy_contact_id = :legacyContactId
   AND account_id = (
-    SELECT
-      accountId
+    SELECT accountid
     FROM
       account
     WHERE
-      primaryEmail = :primaryEmail
+      primaryemail = :primaryEmail
   )
 RETURNING
-  legacy_contact_id "legacyContactId",
-  name,
-  email,
-  created_dt "createdDt",
-  updated_dt "updatedDt",
-  email != (SELECT email FROM original_legacy_contact) "emailChanged";
+legacy_contact_id "legacyContactId",
+name,
+email,
+created_dt "createdDt",
+updated_dt "updatedDt",
+email != (SELECT email FROM original_legacy_contact) "emailChanged";

@@ -1,18 +1,17 @@
 SELECT
-  legacy_contact_id "legacyContactId",
-  account_id "accountId",
+  legacy_contact_id AS "legacyContactId",
+  account_id AS "accountId",
   name,
   email,
-  created_dt "createdDt",
-  updated_dt "updatedDt"
+  created_dt AS "createdDt",
+  updated_dt AS "updatedDt"
 FROM
   legacy_contact
 WHERE
   account_id = (
-    SELECT
-      accountId
+    SELECT accountid
     FROM
       account
     WHERE
-      primaryEmail = :primaryEmail
+      primaryemail = :primaryEmail
   );

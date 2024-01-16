@@ -1,11 +1,10 @@
-SELECT
-  token
+SELECT invite.token
 FROM
   invite
-JOIN
+INNER JOIN
   account
-  ON account.accountId = invite.byAccountId
+  ON invite.byaccountid = account.accountid
 WHERE
-  account.primaryEmail = :email
+  account.primaryemail = :email
   AND invite.type = 'type.invite.invite_code'
   AND invite.status = 'status.invite.revoked';

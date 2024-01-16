@@ -1,26 +1,26 @@
 SELECT
-  account_space.account_spaceId "accountSpaceId",
-  account_space.accountId "accountId",
-  account_space.spaceLeft "spaceLeft",
-  account_space.spaceTotal "spaceTotal",
-  account_space.fileLeft "filesLeft",
-  account_space.fileTotal "filesTotal",
+  account_space.account_spaceid AS "accountSpaceId",
+  account_space.accountid AS "accountId",
+  account_space.spaceleft AS "spaceLeft",
+  account_space.spacetotal AS "spaceTotal",
+  account_space.fileleft AS "filesLeft",
+  account_space.filetotal AS "filesTotal",
   account_space.status,
   account_space.type,
-  account_space.createdDt "createdDt",
-  account_space.updatedDt "updatedDt"
+  account_space.createddt AS "createdDt",
+  account_space.updateddt AS "updatedDt"
 FROM
   account_space
-JOIN
+INNER JOIN
   archive
-  ON account_space.accountId = archive.payerAccountId
-JOIN
+  ON account_space.accountid = archive.payeraccountid
+INNER JOIN
   account_archive
-  ON archive.archiveId = account_archive.archiveId
-JOIN
+  ON archive.archiveid = account_archive.archiveid
+INNER JOIN
   account
-  ON account_archive.accountId = account.accountId
+  ON account_archive.accountid = account.accountid
 WHERE
-  archive.archiveId = :archiveId
-  AND account.primaryEmail = :accountEmail
+  archive.archiveid = :archiveId
+  AND account.primaryemail = :accountEmail
   AND account_archive.status = 'status.generic.ok';

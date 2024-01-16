@@ -1,14 +1,13 @@
-SELECT EXISTS (
-  SELECT
-    account_archiveId
+SELECT EXISTS(
+  SELECT account_archive.account_archiveid
   FROM
     account_archive
-  JOIN
+  INNER JOIN
     account
-    ON account_archive.accountId = account.accountId
+    ON account_archive.accountid = account.accountid
   WHERE
-    archiveId = :archiveId
-    AND account.primaryEmail = :email
-    AND account_archive.accessRole = 'access.role.owner'
+    account_archive.archiveid = :archiveId
+    AND account.primaryemail = :email
+    AND account_archive.accessrole = 'access.role.owner'
     AND account_archive.status = 'status.generic.ok'
-) "hasAccess";
+) AS "hasAccess";

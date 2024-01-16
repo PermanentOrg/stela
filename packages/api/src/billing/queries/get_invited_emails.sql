@@ -1,5 +1,4 @@
-SELECT
-  email
+SELECT email
 FROM
   invite
 WHERE

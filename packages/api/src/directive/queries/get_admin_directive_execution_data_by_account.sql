@@ -1,27 +1,27 @@
 SELECT
-  directive.directive_id "directiveId",
-  directive.archive_id "archiveId",
-  directive.type "directiveType",
+  directive.directive_id AS "directiveId",
+  directive.archive_id AS "archiveId",
+  directive.type AS "directiveType",
   directive.note,
-  archive.archiveNbr "archiveSlug",
-  account.primaryEmail "stewardEmail"
+  archive.archivenbr AS "archiveSlug",
+  account.primaryemail AS "stewardEmail"
 FROM
   directive
-JOIN
+INNER JOIN
   archive
-  ON archive.archiveId = directive.archive_id
-JOIN
+  ON directive.archive_id = archive.archiveid
+INNER JOIN
   account
-  ON account.accountId = directive.steward_account_id
-JOIN
+  ON directive.steward_account_id = account.accountid
+INNER JOIN
   account_archive
-  ON directive.archive_id = account_archive.archiveId
-JOIN
+  ON directive.archive_id = account_archive.archiveid
+INNER JOIN
   directive_trigger
   ON directive.directive_id = directive_trigger.directive_id
 WHERE
-  account_archive.accountId = :accountId
-  AND account_archive.accessRole = 'access.role.owner'
+  account_archive.accountid = :accountId
+  AND account_archive.accessrole = 'access.role.owner'
   AND account_archive.status = 'status.generic.ok'
   AND directive_trigger.type = 'admin'
   AND directive.execution_dt IS NULL;

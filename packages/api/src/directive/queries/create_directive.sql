@@ -1,36 +1,35 @@
 INSERT INTO
-  directive (archive_id, type, steward_account_id, note)
+directive (archive_id, type, steward_account_id, note)
 VALUES (
   :archiveId,
   :type,
   (
-    SELECT
-      accountId
+    SELECT accountid
     FROM
       account
     WHERE
-      primaryEmail = :stewardEmail
+      primaryemail = :stewardEmail
   ),
   :note
 )
 RETURNING
-  directive_id "directiveId",
-  archive_id "archiveId",
-  type,
-  created_dt "createdDt",
-  updated_dt "updatedDt",
-  (
-    SELECT
+directive_id AS "directiveId",
+archive_id AS "archiveId",
+type,
+created_dt AS "createdDt",
+updated_dt AS "updatedDt",
+(
+  SELECT
     jsonb_build_object(
       'email',
-      primaryEmail,
+      primaryemail,
       'name',
-      fullName
+      fullname
     )
-    FROM
-      account
-    WHERE
-      accountId = steward_account_id
-  ) "steward",
-  note,
-  execution_dt "executionDt";
+  FROM
+    account
+  WHERE
+    accountid = steward_account_id
+) AS "steward",
+note,
+execution_dt AS "executionDt";

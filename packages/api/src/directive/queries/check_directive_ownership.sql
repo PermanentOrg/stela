@@ -1,17 +1,16 @@
-SELECT EXISTS (
-  SELECT
-    account_archiveId
+SELECT EXISTS(
+  SELECT account_archive.account_archiveid
   FROM
     account_archive
-  JOIN
+  INNER JOIN
     account
-    ON account_archive.accountId = account.accountId
-  JOIN
+    ON account_archive.accountid = account.accountid
+  INNER JOIN
     directive
-    ON account_archive.archiveId = directive.archive_id
+    ON account_archive.archiveid = directive.archive_id
   WHERE
-    directive_id = :directiveId
-    AND account.primaryEmail = :email
-    AND account_archive.accessRole = 'access.role.owner'
+    directive.directive_id = :directiveId
+    AND account.primaryemail = :email
+    AND account_archive.accessrole = 'access.role.owner'
     AND account_archive.status = 'status.generic.ok'
-) "hasAccess";
+) AS "hasAccess";

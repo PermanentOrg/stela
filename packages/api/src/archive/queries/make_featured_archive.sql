@@ -1,12 +1,11 @@
 INSERT INTO
-  featured_archive (archive_id)
+featured_archive (archive_id)
 (
-  SELECT
-    archiveId
+  SELECT archiveid
   FROM
     archive
   WHERE
-    archiveId = :archiveId
+    archiveid = :archiveId
     AND public IS NOT NULL
     AND public
 )

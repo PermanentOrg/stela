@@ -1,10 +1,9 @@
-SELECT
-  spaceLeft "spaceLeft"
+SELECT account_space.spaceleft AS "spaceLeft"
 FROM
   account_space
-JOIN
+INNER JOIN
   account
-  ON account_space.accountId = account.accountId
+  ON account_space.accountid = account.accountid
 WHERE
-  account.primaryEmail = :email
+  account.primaryemail = :email
 FOR NO KEY UPDATE;
