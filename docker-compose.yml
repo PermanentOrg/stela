@@ -3,13 +3,13 @@ services:
   stela:
     build:
       context: ./
-      dockerfile: Dockerfile.test
+      dockerfile: packages/api/Dockerfile.test
     networks:
       - devenv
     environment:
       - ENV=test
     volumes:
-      - ./coverage:/usr/local/apps/stela/coverage
+      - ./coverage:/usr/local/apps/stela/packages/api/coverage
 networks:
   devenv:
     name: devenv_default

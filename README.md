@@ -20,6 +20,7 @@ Update values as needed (see [Environment Variables](#environment-variables).
 
 ```bash
 npm install
+npm install -ws
 ```
 
 ## Environment Variables
@@ -42,10 +43,18 @@ npm install
 | MAILCHIMP_COMMUNITY_LIST_ID       | 2736f796db                                            | The default value corresponds to the `dev` list                                                                                            |
 | SENTRY_DSN                        | none                                                  | Can be found in Sentry under Projects > stela > Settings > Client Keys (DSN)                                                               |
 | DEV_NAME                          | none                                                  | This should only be set in local environments, and should be your given name, all lowercase. Used to create Sentry envs for each developer |
-| AWS_REGION                        | us-west-2                                             |                                                                                                               |
-| AWS_ACCESS_KEY_ID                 | none                                                  | The same one you use in `devenv`                                                                              |
-| AWS_SECRET_ACCESS_KEY             | none                                                  | The same one you use in `devenv`                                                                              |
-| LOW_PRIORITY_TOPIC_ARN            | test                                                  | Doesn't need to be set to a real ARN unless your work touches it specifically                                 |
+| AWS_REGION                        | us-west-2                                             |                                                                                                                                            |
+| AWS_ACCESS_KEY_ID                 | none                                                  | The same one you use in `devenv`                                                                                                           |
+| AWS_SECRET_ACCESS_KEY             | none                                                  | The same one you use in `devenv`                                                                                                           |
+| LOW_PRIORITY_TOPIC_ARN            | test                                                  | Doesn't need to be set to a real ARN unless your work touches it specifically                                                              |
+
+## Linting
+
+Run
+
+```bash
+npm run lint -ws
+```
 
 ## Testing
 
@@ -58,12 +67,18 @@ docker compose up -d
 then run tests with
 
 ```bash
-npm run test
+npm run test -ws
+```
+
+or, for a single project, specify the workspace
+
+```bash
+npm run test -w @stela/api
 ```
 
 Note that the database tests run against is dropped and recreated at the beginning of each test run.
 
-## Running Locally
+## Running the API Server Locally
 
 Preferred method: From the `devenv` repo, run
 
@@ -80,7 +95,7 @@ docker compose up -d --build stela
 Outside a container: Run
 
 ```bash
-npm run start
+npm run start -w @stela/api
 ```
 
 ## Deployment

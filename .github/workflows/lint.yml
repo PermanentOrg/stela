@@ -8,5 +8,8 @@ jobs:
             - uses: actions/setup-node@v1
               with:
                   node-version: "18"
-            - run: npm install --production=false
-            - run: npm run lint
+            - run: npm install -g npm@9.5.0
+            - run: npm install --include dev
+            - run: npm install -ws
+            - run: npm run build -ws
+            - run: npm run lint -ws
