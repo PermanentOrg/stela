@@ -5,7 +5,8 @@ account (
   status,
   notificationpreferences,
   type,
-  fullname
+  fullname,
+  subject
 )
 VALUES
 (
@@ -14,7 +15,8 @@ VALUES
   'status.auth.ok',
   '{}',
   'type.account.standard',
-  'Jack Rando'
+  'Jack Rando',
+  null
 ),
 (
   3,
@@ -22,7 +24,8 @@ VALUES
   'status.auth.ok',
   '{}',
   'type.account.standard',
-  'John Rando'
+  'John Rando',
+  '553f3cb8-b753-43ce-83af-4443a404741b'
 ),
 (
   4,
@@ -30,5 +33,15 @@ VALUES
   'status.auth.ok',
   '{}',
   'type.account.standard',
-  'Jane Rando'
+  'Jane Rando',
+  null
+),
+(
+  5,
+  'test+3@permanent.org',
+  'status.generic.invited',
+  '{}',
+  'type.account.standard',
+  'Jenny Rando',
+  null
 );
