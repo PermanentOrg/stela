@@ -318,6 +318,21 @@ describe("set_null_subjects", () => {
       .expect(200, { updatedAccounts: ["2", "4"], emailsWithErrors: [] });
   });
 
+  test("should look up emails case-insensitively", async () => {
+    const testEmail = "test+4@permanent.org";
+    await agent
+      .post("/api/v2/admin/account/set_null_subjects")
+      .send({
+        accounts: [
+          {
+            email: testEmail,
+            subject: "5c3473b6-cf2e-4c55-a80e-8db51d1bc5fd",
+          },
+        ],
+      })
+      .expect(200, { updatedAccounts: ["6"], emailsWithErrors: [] });
+  });
+
   test("should call logger.error if database call fails", async () => {
     const testError = new Error("out of cheese - redo from start");
     jest.spyOn(db, "sql").mockRejectedValueOnce(testError);

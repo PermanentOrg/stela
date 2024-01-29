@@ -3,7 +3,7 @@ account
 SET
   subject = :subject
 WHERE
-  primaryemail = :email
+  LOWER(primaryemail) = LOWER(:email)
   AND status = 'status.auth.ok'
   AND subject IS NULL
 RETURNING
