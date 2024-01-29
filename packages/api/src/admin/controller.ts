@@ -2,7 +2,10 @@ import { Router } from "express";
 import type { Request, Response, NextFunction } from "express";
 import { adminService } from "./service";
 import { verifyAdminAuthentication } from "../middleware";
-import { validateRecalculateFolderThumbnailsRequest } from "./validators";
+import {
+  validateRecalculateFolderThumbnailsRequest,
+  validateAccountSetNullSubjectsRequest,
+} from "./validators";
 import { isValidationError } from "../validators/validator_util";
 
 export const adminController = Router();
@@ -21,6 +24,26 @@ adminController.post(
       } else {
         res.json(results);
       }
+    } catch (err) {
+      if (isValidationError(err)) {
+        res.status(400).json({ error: err });
+        return;
+      }
+      next(err);
+    }
+  }
+);
+
+adminController.post(
+  "/account/set_null_subjects",
+  verifyAdminAuthentication,
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      validateAccountSetNullSubjectsRequest(req.body);
+      const response = await adminService.setNullAccountSubjects(
+        req.body.accounts
+      );
+      res.json(response);
     } catch (err) {
       if (isValidationError(err)) {
         res.status(400).json({ error: err });

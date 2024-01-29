@@ -45,6 +45,33 @@ Queues thumbnail generation tasks for all non-root folders created between `begi
 }
 ```
 
+### POST `/admin/account/set_null_subjects`
+
+For each pair of `email` and `subject`, sets the `subject` of the account corresponding to `email` to `subject`, if that
+account's status is `status.auth.ok` and its current `subject` is `null`
+
+- Headers: Authorization: Bearer \<JWT from FusionAuth>
+
+- Request
+
+```
+{
+  accounts: [{
+    email: string (email)
+    subject: string (uuid)
+  }]
+}
+```
+
+- Response
+
+```
+{
+  updatedAccounts: [string (accountId)],
+  emailsWithErrors: [string (email)]
+}
+```
+
 ## Directives
 
 ### POST `/directive`

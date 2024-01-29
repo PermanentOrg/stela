@@ -48,6 +48,39 @@ const recalculateFolderThumbnails = async (
   };
 };
 
+const setNullAccountSubjects = async (
+  accounts: {
+    email: string;
+    subject: string;
+  }[]
+): Promise<{ updatedAccounts: string[]; emailsWithErrors: string[] }> => {
+  const updatedAccounts: string[] = [];
+  const emailsWithErrors: string[] = [];
+  await Promise.all(
+    accounts.map(async (account) => {
+      const result = await db
+        .sql<{ accountId: string }>("admin.queries.set_null_account_subject", {
+          email: account.email,
+          subject: account.subject,
+        })
+        .catch((err) => {
+          logger.error(err);
+          emailsWithErrors.push(account.email);
+          return null;
+        });
+      if (result?.rows[0]) {
+        updatedAccounts.push(result.rows[0].accountId);
+      }
+    })
+  );
+
+  return {
+    updatedAccounts,
+    emailsWithErrors,
+  };
+};
+
 export const adminService = {
   recalculateFolderThumbnails,
+  setNullAccountSubjects,
 };

@@ -14,3 +14,24 @@ export function validateRecalculateFolderThumbnailsRequest(
     throw validation.error;
   }
 }
+
+export function validateAccountSetNullSubjectsRequest(
+  data: unknown
+): asserts data is { accounts: { email: string; subject: string }[] } {
+  const validation = Joi.object()
+    .keys({
+      emailFromAuthToken: Joi.string().email().required(),
+      accounts: Joi.array()
+        .items(
+          Joi.object({
+            email: Joi.string().email().required(),
+            subject: Joi.string().uuid().required(),
+          })
+        )
+        .required(),
+    })
+    .validate(data);
+  if (validation.error) {
+    throw validation.error;
+  }
+}
