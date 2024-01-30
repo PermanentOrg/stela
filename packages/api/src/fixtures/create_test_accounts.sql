@@ -44,4 +44,13 @@ VALUES
   'type.account.standard',
   'Jenny Rando',
   null
+),
+(
+  6,
+  'TEST+4@permanent.org',
+  'status.auth.ok',
+  '{}',
+  'type.account.standard',
+  'Jenny Rando',
+  null
 );
