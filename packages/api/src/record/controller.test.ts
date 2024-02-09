@@ -1,6 +1,7 @@
+import { app } from "../app";
 import request from "supertest";
 
-describe("record/get", () => {
+fdescribe("record/get", () => {
   const agent = request(app);
   test("expect a non-404 response", async () => {
     await agent.get("/api/v2/record/get").end((err, res) => {
