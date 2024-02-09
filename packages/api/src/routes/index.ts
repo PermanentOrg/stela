@@ -9,6 +9,7 @@ import { billingController } from "../billing";
 import { eventController } from "../event";
 import { promoController } from "../promo";
 import { idpUserController } from "../idpuser";
+import { recordController } from "../record";
 
 const apiRoutes = express.Router();
 apiRoutes.get("/health", healthController.getHealth);
@@ -21,5 +22,6 @@ apiRoutes.use("/billing", billingController);
 apiRoutes.use("/event", eventController);
 apiRoutes.use("/promo", promoController);
 apiRoutes.use("/idpuser", idpUserController);
+apiRoutes.use("/record", recordController);
 
 export { apiRoutes };
