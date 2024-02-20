@@ -50,6 +50,15 @@ fdescribe("record/get", () => {
     const response = await agent
       .get("/api/v2/record/get?recordIds[]=1")
       .expect(200);
-    expect(response.body.records.length).toEqual(1);
+    expect(response.body.length).toEqual(1);
+    expect(response.body[0].recordId).toEqual("1");
+  });
+  test("expect to return multiple records", async () => {
+    // BAD: extract out the fixture calls into a beforeEach and reset the db in
+    // an afterEach
+    const response = await agent
+      .get("/api/v2/record/get?recordIds[]=1&recordIds[]=2")
+      .expect(200);
+    expect(response.body.length).toEqual(2);
   });
 });
