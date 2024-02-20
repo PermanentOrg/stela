@@ -17,9 +17,9 @@ export function validateGetRecordQuery(
   data: unknown
 ): asserts data is { recordIds: string[] } {
   const validation = Joi.object()
-      .keys({
-        recordIds: Joi.required(),
-      })
+    .keys({
+      recordIds: Joi.array().items(Joi.string().required()).required(),
+    })
     .validate(data);
   if (validation.error) {
     throw validation.error;

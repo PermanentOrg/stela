@@ -24,7 +24,7 @@ fdescribe("record/get", () => {
     );
     await agent.get("/api/v2/record/get").expect(400);
   });
-  test("expect an invalid request to cause a 400 error", async () => {
+  test("expect an empty query to cause a 400 error", async () => {
     (verifyUserAuthentication as jest.Mock).mockImplementation(
       (req, _: Response, next: NextFunction) => {
         req.body.emailFromAuthToken = "test@permanent.org";
@@ -32,5 +32,14 @@ fdescribe("record/get", () => {
       }
     );
     await agent.get("/api/v2/record/get").expect(400);
+  });
+  test("expect an invalid request to cause a 400 error", async () => {
+    (verifyUserAuthentication as jest.Mock).mockImplementation(
+      (req, _: Response, next: NextFunction) => {
+        req.body.emailFromAuthToken = "test@permanent.org";
+        next();
+      }
+    );
+    await agent.get("/api/v2/record/get?recordIds=1").expect(400);
   });
 });
