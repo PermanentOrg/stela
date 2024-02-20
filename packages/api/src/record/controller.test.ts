@@ -49,6 +49,15 @@ fdescribe("record/get", () => {
         next();
       }
     );
-    await agent.get("/api/v2/record/get?recordIds[]=").expect(400);
+    await agent.get("/api/v2/record/get?recordIds[]").expect(400);
+  });
+  test("expect to return a record", async () => {
+    (verifyUserAuthentication as jest.Mock).mockImplementation(
+      (req, _: Response, next: NextFunction) => {
+        req.body.emailFromAuthToken = "test@permanent.org";
+        next();
+      }
+    );
+    await agent.get("/api/v2/record/get?recordIds[]=1").expect();
   });
 });
