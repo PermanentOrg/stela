@@ -6,6 +6,7 @@ import {
 } from "express";
 import { verifyUserAuthentication } from "../middleware";
 import { validateGetRecordRequest } from "./validators";
+import { validateGetRecordQuery } from "./validators";
 import { isValidationError } from "../validators/validator_util";
 
 export const recordController = Router();
@@ -16,6 +17,7 @@ recordController.get(
   (req: Request, res: Response, next: NextFunction) => {
     try {
       validateGetRecordRequest(req.body);
+      validateGetRecordQuery(req.query);
       res.send("Hello, World!");
     } catch (error) {
       if (isValidationError(error)) {

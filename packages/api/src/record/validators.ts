@@ -12,3 +12,16 @@ export function validateGetRecordRequest(
     throw validation.error;
   }
 }
+
+export function validateGetRecordQuery(
+  data: unknown
+): asserts data is { recordIds: string[] } {
+  const validation = Joi.object()
+      .keys({
+        recordIds: Joi.required(),
+      })
+    .validate(data);
+  if (validation.error) {
+    throw validation.error;
+  }
+}
