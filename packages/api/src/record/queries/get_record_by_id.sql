@@ -1,5 +1,5 @@
 SELECT
-  recordid
+  recordid as "recordId"
 FROM
   record
 WHERE

@@ -1,12 +1,13 @@
 import createError from "http-errors";
 import { logger } from "@stela/logger";
 import { db } from "../database";
+import type { ArchiveRecord } from "./models";
 
 export const getRecordById = async (requestQuery: {
   recordIds: string[];
-}): Promise<any> => {
+}): Promise<ArchiveRecord[]> => {
   const record = await db
-    .sql("record.queries.get_record_by_id", {
+    .sql<ArchiveRecord>("record.queries.get_record_by_id", {
       recordId: requestQuery.recordIds[0],
     })
     .catch((err) => {
