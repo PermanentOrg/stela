@@ -2,8 +2,10 @@ import type { Response, NextFunction } from "express";
 import createError from "http-errors";
 import request from "supertest";
 import { app } from "../app";
+import { db } from "../database";
 import { verifyUserAuthentication } from "../middleware";
 
+jest.mock("../database");
 jest.mock("../middleware");
 
 fdescribe("record/get", () => {
@@ -42,6 +44,9 @@ fdescribe("record/get", () => {
     await agent.get("/api/v2/record/get?recordIds[]").expect(400);
   });
   test("expect to return a record", async () => {
+    await db.sql("fixtures.create_test_accounts");
+    await db.sql("fixtures.create_test_archive");
+    await db.sql("fixtures.create_test_records");
     const response = await agent
       .get("/api/v2/record/get?recordIds[]=1")
       .expect(200);

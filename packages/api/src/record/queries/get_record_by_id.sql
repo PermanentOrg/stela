@@ -3,4 +3,4 @@ SELECT
 FROM
   record
 WHERE
-  recordid = :recordid;
+  recordid = :recordId;
