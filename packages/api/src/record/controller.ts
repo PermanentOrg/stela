@@ -5,8 +5,8 @@ import {
   type NextFunction,
 } from "express";
 import { verifyUserAuthentication } from "../middleware";
-import { validateGetRecordRequest } from "./validators";
 import { validateGetRecordQuery } from "./validators";
+import { validateBodyFromAuthentication } from "../validators/shared";
 import { isValidationError } from "../validators/validator_util";
 
 export const recordController = Router();
@@ -16,7 +16,7 @@ recordController.get(
   verifyUserAuthentication,
   (req: Request, res: Response, next: NextFunction) => {
     try {
-      validateGetRecordRequest(req.body);
+      validateBodyFromAuthentication(req.body);
       validateGetRecordQuery(req.query);
       res.send("Hello, World!");
     } catch (error) {
