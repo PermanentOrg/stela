@@ -499,3 +499,30 @@ MixPanel](https://permanent.atlassian.net/wiki/spaces/EN/pages/2086862849/Mixpan
 ```
 {}
 ```
+
+
+## FusionAuth Users and Two-Factor Methods
+
+(Note: this section is not yet implemented)
+
+### GET `/idpuser`
+
+The logged-in user should only be able to get information about
+themselves, so no need to pass the email. We will use the one in the
+JWT. For now, this endpoint will only return the user's two-factor
+methods. This will be an array with 0-2 methods in it.
+
+- Headers: Authorization: Bearer \<JWT from FusionAuth>
+- Response
+
+```
+[
+  {
+    id: [string] 4 random letters and numbers
+    method: [string] // either 'sms' or 'email'
+    value: [string] // either a phone number or an email address
+  }
+]
+
+
+```
