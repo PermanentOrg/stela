@@ -509,11 +509,11 @@ MixPanel](https://permanent.atlassian.net/wiki/spaces/EN/pages/2086862849/Mixpan
 
 The logged-in user should only be able to get information about
 themselves, so no need to pass the email. We will use the one in the
-JWT. For now, this endpoint will only return the user's two-factor
-methods. This will be an array with 0-2 methods in it.
+JWT.
 
 - Headers: Authorization: Bearer \<JWT from FusionAuth>
-- Response
+- Response: For now, this endpoint will only return the user's
+  two-factor methods. This will be an array with 0-2 methods in it.
 
 ```
 [
@@ -523,6 +523,31 @@ methods. This will be an array with 0-2 methods in it.
     value: [string] // either a phone number or an email address
   }
 ]
-
-
 ```
+
+### POST `/idpuser/send-enable-code`
+
+- Headers: Authorization: Bearer \<JWT from FusionAuth>
+- Request Body
+```
+{
+  method: [string] // either 'sms' or 'email'
+  value: [string] // either a phone number or an email address
+}
+```
+
+### POST `/idpuser/enable-two-factor`
+
+- Headers: Authorization: Bearer \<JWT from FusionAuth>
+- Request Body
+```
+{
+  method: [string] // the same method from `idpuser/send-enable-code`
+  value: [string] // the same value from `idpuser/send-enable-code`
+  code: [string] // provided by the user (they will have received it from FusionAuth)
+}
+```
+
+### POST `/idpuser/send-disable-code`
+
+### POST `/idpuser/disable-two-factor`
