@@ -22,7 +22,7 @@
     "eslint": "eslint --max-warnings 0 ./src --ext .ts",
     "lint-sql": "docker run -i --rm -v $PWD:/sql sqlfluff/sqlfluff:2.3.5 lint --dialect postgres --nocolor src/*/queries/ src/fixtures",
     "lint": "npm run check-format && npm run check-types && npm run eslint && npm run lint-sql",
-    "build": "rm -rf dist/* && tsc -p tsconfig.json && tscp -p tsconfig.tscp.json",
+    "build": "rm -rf dist/* && tsc -p tsconfig.build.json && tscp -p tsconfig.tscp.json",
     "start:watch": "rm -rf dist/* && tsc-watch --onSuccess \"npm run start\"",
     "start": "tscp -p tsconfig.tscp.json && node dist/index.js",
     "start-containers": "(cd ../..; docker compose up -d --build stela)",
@@ -36,12 +36,12 @@
     "test-ci": "npm run clear-database-ci && npm run create-database-ci && npm run set-up-database-ci && node --experimental-vm-modules ../../node_modules/jest/bin/jest.js -i --coverage"
   },
   "dependencies": {
-    "@stela/logger": "^1.0.0",
     "@aws-sdk/client-sns": "^3.370.0",
     "@fusionauth/typescript-client": "^1.42.0",
     "@mailchimp/mailchimp_marketing": "^3.0.80",
-    "@mailchimp/mailchimp_transactional": "^1.0.50",
+    "@mailchimp/mailchimp_transactional": "1.0.57",
     "@sentry/node": "^7.57.0",
+    "@stela/logger": "^1.0.0",
     "@types/http-errors": "^2.0.1",
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",

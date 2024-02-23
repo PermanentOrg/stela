@@ -1,5 +1,4 @@
 {
-  "exclude": ["node_modules", "packages/*/dist"],
   "extends": "../../tsconfig.build.json",
   "compilerOptions": {
     "outDir": "./dist/",
