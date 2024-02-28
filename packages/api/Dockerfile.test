@@ -8,15 +8,18 @@ COPY package.json ./
 COPY tsconfig.build.json ./
 COPY tsconfig.json ./
 COPY jest.config.js ./
-COPY packages ./packages
-COPY database ./database
+COPY packages/api/package.json ./packages/api/package.json
+COPY packages/logger ./packages/logger
 
 RUN npm install -g npm@8.19.3
 RUN npm cache clean --force
 RUN npm install
 RUN npm install -ws
-RUN npm run build -ws
 ENV PATH=/usr/local/apps/stela/node_modules/.bin:$PATH
+
+COPY packages/api ./packages/api
+COPY database ./database
+RUN npm run build -ws
 
 EXPOSE 8080
 
