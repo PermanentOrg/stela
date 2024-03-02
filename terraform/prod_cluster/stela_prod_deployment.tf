@@ -169,6 +169,17 @@ resource "kubernetes_deployment" "stela_prod" {
             }
           }
 
+          env {
+            name = "MIXPANEL_TOKEN"
+            value_from {
+              secret_key_ref {
+                name     = "prod-secrets"
+                key      = "MIXPANEL_TOKEN"
+                optional = false
+              }
+            }
+          }
+
           port {
             container_port = 80
           }

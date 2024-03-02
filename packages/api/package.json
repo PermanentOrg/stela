@@ -50,6 +50,7 @@
     "express-winston": "^4.1.0",
     "http-errors": "^2.0.0",
     "joi": "^17.7.1",
+    "mixpanel": "^0.18.0",
     "node-fetch": "^2.6.9",
     "pg": "^8.5.1",
     "require-env-variable": "^3.1.2",

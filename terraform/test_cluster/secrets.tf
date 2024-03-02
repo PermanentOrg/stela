@@ -13,6 +13,7 @@ resource "kubernetes_secret" "dev-secrets" {
     "AWS_ACCESS_KEY_ID"               = var.dev_aws_access_key_id
     "AWS_SECRET_ACCESS_KEY"           = var.dev_aws_secret_access_key
     "LOW_PRIORITY_TOPIC_ARN"          = var.dev_low_priority_topic_arn
+    "MIXPANEL_TOKEN"                  = var.dev_mixpanel_token
   }
 }
 
@@ -31,5 +32,6 @@ resource "kubernetes_secret" "staging-secrets" {
     "AWS_ACCESS_KEY_ID"               = var.staging_aws_access_key_id
     "AWS_SECRET_ACCESS_KEY"           = var.staging_aws_secret_access_key
     "LOW_PRIORITY_TOPIC_ARN"          = var.staging_low_priority_topic_arn
+    "MIXPANEL_TOKEN"                  = var.staging_mixpanel_token
   }
 }

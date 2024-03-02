@@ -402,3 +402,37 @@ account's status is `status.auth.ok` and its current `subject` is `null`
   alreadyInvited: [string]
 }
 ```
+
+## Events
+
+### POST `/event`
+
+Records events in the database's `event` table. If `body.mixpanel` is populated, sends the event described by that field
+to Mixpanel.
+
+- Headers: Authorization: Bearer \<JWT from FusionAuth> (can be user or admin)
+- Request Body
+
+```
+{
+  entity: string (see database for valid values),
+  action: string (see database for valid values),
+  version: number,
+  entityId: string (should be the ID of the database object the event happened to),
+  userAgent: string (optional),
+  body: {
+    analytics: {
+      event: string,
+      distinctId: string,
+      data: {} (required but can be empty)
+    } (optional)
+    (optionally, any other data desired)
+  }
+}
+```
+
+- Response
+
+```
+{}
+```
