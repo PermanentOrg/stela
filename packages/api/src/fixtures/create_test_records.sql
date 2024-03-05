@@ -65,4 +65,15 @@ VALUES
   'public_file.jpg',
   'status.generic.ok',
   'type.record.image'
+),
+(
+  6,
+  2,
+  NULL,
+  'Private non-owned File',
+  3,
+  3,
+  'other_file.jpg',
+  'status.generic.ok',
+  'type.record.image'
 );

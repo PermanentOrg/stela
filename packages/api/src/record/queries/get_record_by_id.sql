@@ -10,4 +10,5 @@ INNER JOIN
   ON account_archive.accountid = account.accountid
 WHERE
   recordid = ANY(:recordIds)
-  AND account.primaryemail = :accountEmail;
+  AND account.primaryemail = :accountEmail
+  AND record.status != 'status.generic.deleted';
