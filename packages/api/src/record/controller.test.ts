@@ -8,15 +8,32 @@ import { verifyUserAuthentication } from "../middleware";
 jest.mock("../database");
 jest.mock("../middleware");
 
+const setupDatabase = async (): Promise<void> => {
+  await db.sql("fixtures.create_test_accounts");
+  await db.sql("fixtures.create_test_archive");
+  await db.sql("fixtures.create_test_records");
+};
+
+const clearDatabase = async (): Promise<void> => {
+  await db.query("TRUNCATE account, archive, record CASCADE");
+};
+
 fdescribe("record/get", () => {
-  beforeEach(() => {
+  beforeEach( async () => {
     (verifyUserAuthentication as jest.Mock).mockImplementation(
       (req, _: Response, next: NextFunction) => {
         req.body.emailFromAuthToken = "test@permanent.org";
         next();
       }
     );
+    await clearDatabase();
+    await setupDatabase();
   });
+
+  afterEach( async () => {
+    await clearDatabase();
+  });
+  
   const agent = request(app);
   test("expect a 401 response", async () => {
     (verifyUserAuthentication as jest.Mock).mockImplementation(
@@ -44,9 +61,6 @@ fdescribe("record/get", () => {
     await agent.get("/api/v2/record/get?recordIds[]").expect(400);
   });
   test("expect to return a record", async () => {
-    await db.sql("fixtures.create_test_accounts");
-    await db.sql("fixtures.create_test_archive");
-    await db.sql("fixtures.create_test_records");
     const response = await agent
       .get("/api/v2/record/get?recordIds[]=1")
       .expect(200);
@@ -54,8 +68,6 @@ fdescribe("record/get", () => {
     expect(response.body[0].recordId).toEqual("1");
   });
   test("expect to return multiple records", async () => {
-    // BAD: extract out the fixture calls into a beforeEach and reset the db in
-    // an afterEach
     const response = await agent
       .get("/api/v2/record/get?recordIds[]=1&recordIds[]=2")
       .expect(200);
