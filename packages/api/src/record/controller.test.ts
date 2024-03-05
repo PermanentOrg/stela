@@ -19,7 +19,7 @@ const clearDatabase = async (): Promise<void> => {
 };
 
 fdescribe("record/get", () => {
-  beforeEach( async () => {
+  beforeEach(async () => {
     (verifyUserAuthentication as jest.Mock).mockImplementation(
       (req, _: Response, next: NextFunction) => {
         req.body.emailFromAuthToken = "test@permanent.org";
@@ -30,10 +30,10 @@ fdescribe("record/get", () => {
     await setupDatabase();
   });
 
-  afterEach( async () => {
+  afterEach(async () => {
     await clearDatabase();
   });
-  
+
   const agent = request(app);
   test("expect a 401 response", async () => {
     (verifyUserAuthentication as jest.Mock).mockImplementation(
@@ -74,5 +74,6 @@ fdescribe("record/get", () => {
     expect(response.body.length).toEqual(2);
   });
   test("expect a 404 if the logged-in user does not own the record", async () => {
+    await agent.get("/api/v2/record/get?recordIds[]=5").expect(404);
   });
 });
