@@ -8,7 +8,7 @@ export const getRecordById = async (requestQuery: {
 }): Promise<ArchiveRecord[]> => {
   const record = await db
     .sql<ArchiveRecord>("record.queries.get_record_by_id", {
-      recordId: requestQuery.recordIds[0],
+      recordIds: requestQuery.recordIds,
     })
     .catch((err) => {
       logger.error(err);

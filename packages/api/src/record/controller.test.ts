@@ -73,4 +73,6 @@ fdescribe("record/get", () => {
       .expect(200);
     expect(response.body.length).toEqual(2);
   });
+  test("expect a 404 if the logged-in user does not own the record", async () => {
+  });
 });
