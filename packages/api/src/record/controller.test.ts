@@ -11,6 +11,7 @@ jest.mock("../middleware");
 const setupDatabase = async (): Promise<void> => {
   await db.sql("fixtures.create_test_accounts");
   await db.sql("fixtures.create_test_archive");
+  await db.sql("fixtures.create_test_account_archive");
   await db.sql("fixtures.create_test_records");
 };
 

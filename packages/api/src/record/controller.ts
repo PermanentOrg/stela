@@ -19,7 +19,10 @@ recordController.get(
     try {
       validateBodyFromAuthentication(req.body);
       validateGetRecordQuery(req.query);
-      const records = await getRecordById(req.query);
+      const records = await getRecordById({
+        recordIds: req.query.recordIds,
+        accountEmail: req.body.emailFromAuthToken,
+      });
       res.send(records);
     } catch (error) {
       if (isValidationError(error)) {
