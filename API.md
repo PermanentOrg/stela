@@ -402,7 +402,6 @@ account's status is `status.auth.ok` and its current `subject` is `null`
   alreadyInvited: [string]
 }
 ```
-
 ## Events
 
 ### POST `/event`
@@ -428,6 +427,28 @@ to Mixpanel.
     } (optional)
     (optionally, any other data desired)
   }
+}
+```
+
+- Response
+
+```
+{}
+```
+
+## Promo
+
+### POST `/promo`
+
+- Headers: Authorization: Bearer \<JWT from FusionAuth> (admin user)
+- Request Body
+
+```
+{
+  code: string,
+  storageInMB: number (integer > 0),
+  expirationTimestamp: string (ISO 8601 format timestamp),
+  totalUses: number (integer > 0)
 }
 ```
 

@@ -7,6 +7,7 @@ import { archiveController } from "../archive";
 import { adminController } from "../admin";
 import { billingController } from "../billing";
 import { eventController } from "../event";
+import { promoController } from "../promo";
 
 const apiRoutes = express.Router();
 apiRoutes.get("/health", healthController.getHealth);
@@ -17,5 +18,6 @@ apiRoutes.use("/archive", archiveController);
 apiRoutes.use("/admin", adminController);
 apiRoutes.use("/billing", billingController);
 apiRoutes.use("/event", eventController);
+apiRoutes.use("/promo", promoController);
 
 export { apiRoutes };
