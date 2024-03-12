@@ -202,3 +202,13 @@ variable "staging_low_priority_topic_arn" {
   description = "ARN of the SNS topic for 'low priority' messages"
   type        = string
 }
+
+variable "dev_mixpanel_token" {
+  description = "Mixpanel token"
+  type        = string
+}
+
+variable "staging_mixpanel_token" {
+  description = "Mixpanel token"
+  type        = string
+}

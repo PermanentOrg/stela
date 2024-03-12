@@ -47,6 +47,7 @@ npm install -ws
 | AWS_ACCESS_KEY_ID                 | none                                                  | The same one you use in `devenv`                                                                                                           |
 | AWS_SECRET_ACCESS_KEY             | none                                                  | The same one you use in `devenv`                                                                                                           |
 | LOW_PRIORITY_TOPIC_ARN            | test                                                  | Doesn't need to be set to a real ARN unless your work touches it specifically                                                              |
+| MIXPANEL_TOKEN                    | none                                                  | Found in Mixpanel at Settings > Project Settings > Project Token                                                                           |
 
 ## Linting
 

@@ -1,0 +1,1 @@
+export { eventController } from "./controller";

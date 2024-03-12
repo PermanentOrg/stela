@@ -13,5 +13,6 @@ resource "kubernetes_secret" "prod-secrets" {
     "AWS_ACCESS_KEY_ID"               = var.aws_access_key_id
     "AWS_SECRET_ACCESS_KEY"           = var.aws_secret_access_key
     "LOW_PRIORITY_TOPIC_ARN"          = var.low_priority_topic_arn
+    "MIXPANEL_TOKEN"                  = var.mixpanel_token
   }
 }

@@ -16,3 +16,4 @@ requireEnv("MAILCHIMP_COMMUNITY_LIST_ID");
 requireEnv("SENTRY_DSN");
 requireEnv("AWS_REGION");
 requireEnv("LOW_PRIORITY_TOPIC_ARN");
+requireEnv("MIXPANEL_TOKEN");

@@ -13,7 +13,7 @@ export const getInvalidValueFromInvalidEnumMessage = (
 ): string =>
   // These error messages take the form:
   // invalid input value for enum <SPECIFIC_ENUM>: "<OFFENDING_VALUE>"
-  (message.split(": ")[1] ?? "").replace('"', "");
+  (message.split(": ")[1] ?? "").replaceAll('"', "");
 
 export const isMissingStewardAccountError = (
   err: unknown

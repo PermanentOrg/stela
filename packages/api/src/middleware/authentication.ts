@@ -1,62 +1,128 @@
-import type { RequestHandler, Request, Response, NextFunction } from "express";
+import type { Request, Response, NextFunction } from "express";
 import createError from "http-errors";
 import { fusionAuthClient } from "../fusionauth";
 
-const buildAuthenticationVerifier =
-  (
-    applicationId: string
-  ): RequestHandler<unknown, unknown, { emailFromAuthToken?: string }> =>
-  async (
-    req: Request<unknown, unknown, { emailFromAuthToken?: string }>,
-    _: Response,
-    next: NextFunction
-  ): Promise<void> => {
-    const authorizationHeaderParts = req.get("Authorization")?.split(" ");
-    if (
-      !authorizationHeaderParts ||
-      authorizationHeaderParts.length !== 2 ||
-      authorizationHeaderParts[0] !== "Bearer"
-    ) {
-      next(new createError.Unauthorized("Invalid Authorization header format"));
-      return;
-    }
-    const authenticationToken = authorizationHeaderParts[1];
+const emailKey = "email";
+const subjectKey = "sub";
 
-    try {
-      const introspectionResponse =
-        await fusionAuthClient.introspectAccessToken(
-          applicationId,
-          authenticationToken ?? ""
-        );
-      if (!introspectionResponse.wasSuccessful()) {
-        next(
-          new createError.Unauthorized(
-            `Token validation failed: ${introspectionResponse.exception.message}`
-          )
-        );
-        return;
-      }
-      if (
-        introspectionResponse.response["active"] !== true ||
-        typeof introspectionResponse.response["email"] !== "string" ||
-        introspectionResponse.response["email"] === ""
-      ) {
-        next(new createError.Unauthorized("Invalid token"));
-        return;
-      }
+const getValueFromAuthToken = async (
+  authenticationToken: string,
+  key: "email" | "sub",
+  applicationId: string
+): Promise<string> => {
+  const introspectionResponse = await fusionAuthClient.introspectAccessToken(
+    applicationId,
+    authenticationToken
+  );
+  if (!introspectionResponse.wasSuccessful()) {
+    throw new createError.Unauthorized(
+      `Token validation failed: ${
+        introspectionResponse.exception.message ?? ""
+      }`
+    );
+  }
+  if (
+    !introspectionResponse.response.active ||
+    typeof introspectionResponse.response[key] !== "string" ||
+    introspectionResponse.response[key] === ""
+  ) {
+    throw new createError.Unauthorized("Invalid token");
+  }
 
-      req.body.emailFromAuthToken = introspectionResponse.response["email"];
-    } catch (err) {
-      next(err);
-    }
+  return introspectionResponse.response[key];
+};
+
+const getAuthTokenFromRequest = (
+  req: Request<unknown, unknown, unknown>
+): string => {
+  const authorizationHeaderParts = req.get("Authorization")?.split(" ");
+  if (
+    !authorizationHeaderParts ||
+    authorizationHeaderParts.length !== 2 ||
+    authorizationHeaderParts[0] !== "Bearer"
+  ) {
+    throw new createError.Unauthorized("Invalid Authorization header format");
+  }
+  return authorizationHeaderParts[1] ?? "";
+};
+
+const verifyUserAuthentication = async (
+  req: Request<unknown, unknown, { emailFromAuthToken?: string }>,
+  _: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const authenticationToken = getAuthTokenFromRequest(req);
+    const email = await getValueFromAuthToken(
+      authenticationToken,
+      emailKey,
+      process.env["FUSIONAUTH_BACKEND_APPLICATION_ID"] ?? ""
+    );
+    req.body.emailFromAuthToken = email;
     next();
-  };
+  } catch (err) {
+    next(err);
+  }
+};
 
-const verifyUserAuthentication = buildAuthenticationVerifier(
-  process.env["FUSIONAUTH_BACKEND_APPLICATION_ID"] ?? ""
-);
-const verifyAdminAuthentication = buildAuthenticationVerifier(
-  process.env["FUSIONAUTH_ADMIN_APPLICATION_ID"] ?? ""
-);
+const verifyAdminAuthentication = async (
+  req: Request<unknown, unknown, { emailFromAuthToken?: string }>,
+  _: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const authenticationToken = getAuthTokenFromRequest(req);
+    const email = await getValueFromAuthToken(
+      authenticationToken,
+      emailKey,
+      process.env["FUSIONAUTH_ADMIN_APPLICATION_ID"] ?? ""
+    );
+    req.body.emailFromAuthToken = email;
+    next();
+  } catch (err) {
+    next(err);
+  }
+};
 
-export { verifyUserAuthentication, verifyAdminAuthentication };
+const verifyUserOrAdminAuthentication = async (
+  req: Request<
+    unknown,
+    unknown,
+    { userSubjectFromAuthToken?: string; adminSubjectFromAuthToken?: string }
+  >,
+  _: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const authenticationToken = getAuthTokenFromRequest(req);
+    try {
+      const subject = await getValueFromAuthToken(
+        authenticationToken,
+        subjectKey,
+        process.env["FUSIONAUTH_BACKEND_APPLICATION_ID"] ?? ""
+      );
+      req.body.userSubjectFromAuthToken = subject;
+      next();
+    } catch (err) {
+      try {
+        const subject = await getValueFromAuthToken(
+          authenticationToken,
+          subjectKey,
+          process.env["FUSIONAUTH_ADMIN_APPLICATION_ID"] ?? ""
+        );
+        req.body.adminSubjectFromAuthToken = subject;
+        next();
+      } catch (innerErr) {
+        next(innerErr);
+      }
+    }
+  } catch (err) {
+    next(err);
+  }
+};
+
+export {
+  verifyUserAuthentication,
+  verifyAdminAuthentication,
+  verifyUserOrAdminAuthentication,
+};
