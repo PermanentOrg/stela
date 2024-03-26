@@ -1,7 +1,7 @@
-import { Router, type Request, type Response } from "express";
+import { Router, type Response } from "express";
 
 export const idpUserController = Router();
 
-idpUserController.get("/", (req: Request, res: Response) => {
+idpUserController.get("/", (res: Response) => {
   res.send("Hello, World!");
 });
