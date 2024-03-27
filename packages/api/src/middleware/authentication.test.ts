@@ -51,6 +51,19 @@ test("should add the email to the request body if the token is valid", async () 
   expect(request.body.emailFromAuthToken).toBe("test@permanent.org");
 });
 
+test("should add the token to the request body if the token is valid", async () => {
+  const request = {
+    body: {},
+    get: (_: string) => "Bearer test",
+  } as Request<unknown, unknown, { token?: string }>;
+  jest
+    .spyOn(fusionAuthClient, "introspectAccessToken")
+    .mockImplementation(async () => successfulIntrospectionResponse);
+  await verifyUserAuthentication(request, {} as Response, () => {});
+
+  expect(request.body.token).toBe("test");
+});
+
 test("should throw unauthorized if authorization header is missing", async () => {
   const request = {
     body: {},
