@@ -18,7 +18,7 @@ idpUserController.get(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       validateBodyFromAuthentication(req.body);
-      res.send("Hello, World!");
+      res.send([]);
     } catch (error) {
       if (isValidationError(error)) {
         res.status(400).json({ error });

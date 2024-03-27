@@ -4,6 +4,7 @@ import request from "supertest";
 import type { NextFunction, Request } from "express";
 import { app } from "../app";
 import { verifyUserAuthentication } from "../middleware";
+import type { TwoFactorRequest } from "./models";
 
 jest.mock("../middleware");
 
@@ -12,7 +13,8 @@ describe("/idpuser", () => {
   beforeEach(async () => {
     (verifyUserAuthentication as jest.Mock).mockImplementation(
       (req: Request, __, next: NextFunction) => {
-        req.body.emailFromAuthToken = "test@permanent.org";
+        (req.body as TwoFactorRequest).emailFromAuthToken =
+          "test@permanent.org";
         next();
       }
     );
@@ -29,7 +31,7 @@ describe("/idpuser", () => {
   test("should return invalid request status if email from auth token is not an email", async () => {
     (verifyUserAuthentication as jest.Mock).mockImplementation(
       (req: Request, __, next: NextFunction) => {
-        req.body.emailFromAuthToken = "not_an_email";
+        (req.body as TwoFactorRequest).emailFromAuthToken = "not_an_email";
         next();
       }
     );
@@ -43,5 +45,10 @@ describe("/idpuser", () => {
       }
     );
     await agent.get("/api/v2/idpuser").expect(400);
+  });
+
+  test("should return an array", async () => {
+    const response = await agent.get("/api/v2/idpuser");
+    expect(response.body).toBeInstanceOf(Array);
   });
 });
