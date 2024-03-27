@@ -35,4 +35,13 @@ describe("/idpuser", () => {
     );
     await agent.get("/api/v2/idpuser").expect(400);
   });
+
+  test("should return invalid request status if there is no email in the auth token", async () => {
+    (verifyUserAuthentication as jest.Mock).mockImplementation(
+      (_: Request, __, next: NextFunction) => {
+        next();
+      }
+    );
+    await agent.get("/api/v2/idpuser").expect(400);
+  });
 });
