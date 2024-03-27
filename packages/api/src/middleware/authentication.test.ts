@@ -64,6 +64,19 @@ test("should add the token to the request body if the token is valid", async () 
   expect(request.body.token).toBe("test");
 });
 
+test("should not add the token to the request body if the token is invalid", async () => {
+  const request = {
+    body: {},
+    get: (_: string) => "Bearer test",
+  } as Request<unknown, unknown, { token?: string }>;
+  jest
+    .spyOn(fusionAuthClient, "introspectAccessToken")
+    .mockImplementation(async () => failedIntrospectionResponse);
+  await verifyUserAuthentication(request, {} as Response, () => {});
+
+  expect(request.body.token).toBeUndefined();
+});
+
 test("should throw unauthorized if authorization header is missing", async () => {
   const request = {
     body: {},
