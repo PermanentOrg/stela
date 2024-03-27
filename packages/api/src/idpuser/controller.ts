@@ -1,14 +1,30 @@
 /** @format */
 
-import { Router, type Response, type Request } from "express";
+import {
+  Router,
+  type Response,
+  type Request,
+  type NextFunction,
+} from "express";
 import { verifyUserAuthentication } from "../middleware";
+import { validateBodyFromAuthentication } from "../validators";
+import { isValidationError } from "../validators/validator_util";
 
 export const idpUserController = Router();
 
 idpUserController.get(
   "/",
   verifyUserAuthentication,
-  async (_: Request, res: Response) => {
-    res.send("Hello, World!");
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      validateBodyFromAuthentication(req.body);
+      res.send("Hello, World!");
+    } catch (error) {
+      if (isValidationError(error)) {
+        res.status(400).json({ error });
+        return;
+      }
+      next(error);
+    }
   }
 );
