@@ -47,6 +47,15 @@ describe("/idpuser", () => {
     await agent.get("/api/v2/idpuser").expect(400);
   });
 
+  test('should return invalid request if the token is not defined', async () => {
+    (verifyUserAuthentication as jest.Mock).mockImplementation(
+      (req: Request, __, next: NextFunction) => {
+        (req.body as TwoFactorRequest).token = "";
+        next();
+      }
+    );
+    await agent.get("/api/v2/idpuser").expect(400);
+  })
   test("should return an array", async () => {
     const response = await agent.get("/api/v2/idpuser");
     expect(response.body).toBeInstanceOf(Array);
