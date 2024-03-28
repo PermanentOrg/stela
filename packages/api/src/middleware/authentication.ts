@@ -1,3 +1,4 @@
+/* @format */
 import type { Request, Response, NextFunction } from "express";
 import createError from "http-errors";
 import { fusionAuthClient } from "../fusionauth";
