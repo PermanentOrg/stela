@@ -1,3 +1,5 @@
+/** @format */
+
 import type { RequestHandler, Request, Response, NextFunction } from "express";
 import createError from "http-errors";
 import { fusionAuthClient } from "../fusionauth";
@@ -5,9 +7,17 @@ import { fusionAuthClient } from "../fusionauth";
 const buildAuthenticationVerifier =
   (
     applicationId: string
-  ): RequestHandler<unknown, unknown, { emailFromAuthToken?: string }> =>
+  ): RequestHandler<
+    unknown,
+    unknown,
+    { emailFromAuthToken?: string; token?: string }
+  > =>
   async (
-    req: Request<unknown, unknown, { emailFromAuthToken?: string }>,
+    req: Request<
+      unknown,
+      unknown,
+      { emailFromAuthToken?: string; token?: string }
+    >,
     _: Response,
     next: NextFunction
   ): Promise<void> => {
@@ -46,6 +56,7 @@ const buildAuthenticationVerifier =
       }
 
       req.body.emailFromAuthToken = introspectionResponse.response["email"];
+      req.body.token = authenticationToken as string;
     } catch (err) {
       next(err);
     }
