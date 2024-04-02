@@ -7,7 +7,9 @@ import {
   type NextFunction,
 } from "express";
 import { verifyUserAuthentication } from "../middleware";
-import { validateBodyFromAuthentication } from "../validators";
+import {
+  validateTokenFromBody,
+} from "./validators";
 import { isValidationError } from "../validators/validator_util";
 
 export const idpUserController = Router();
@@ -17,7 +19,7 @@ idpUserController.get(
   verifyUserAuthentication,
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      validateBodyFromAuthentication(req.body);
+      validateTokenFromBody(req.body);
       res.send([]);
     } catch (error) {
       if (isValidationError(error)) {
