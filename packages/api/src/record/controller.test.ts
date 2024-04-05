@@ -43,13 +43,14 @@ fdescribe("record/get", () => {
     );
     await agent.get("/api/v2/record/get?recordIds[]=1").expect(200);
   });
-  test("expect request to have an email from auth token", async () => {
+  test("expect request to have an email from auth token if an auth token exists", async () => {
     (extractUserEmailFromAuthToken as jest.Mock).mockImplementation(
-      (_, __, next: NextFunction) => {
+      (req, __, next: NextFunction) => {
+        req.body.emailFromAuthToken = "not an email";
         next();
       }
     );
-    await agent.get("/api/v2/record/get").expect(400);
+    await agent.get("/api/v2/record/get?recordIds[]=1").expect(400);
   });
   test("expect an empty query to cause a 400 error", async () => {
     await agent.get("/api/v2/record/get").expect(400);
