@@ -155,4 +155,5 @@ export {
   verifyUserAuthentication,
   verifyAdminAuthentication,
   verifyUserOrAdminAuthentication,
+  extractUserEmailFromAuthToken,
 };

@@ -1,9 +1,8 @@
 import type { Response, NextFunction } from "express";
-import createError from "http-errors";
 import request from "supertest";
 import { app } from "../app";
 import { db } from "../database";
-import { verifyUserAuthentication } from "../middleware";
+import { extractUserEmailFromAuthToken } from "../middleware";
 
 jest.mock("../database");
 jest.mock("../middleware");
@@ -21,7 +20,7 @@ const clearDatabase = async (): Promise<void> => {
 
 fdescribe("record/get", () => {
   beforeEach(async () => {
-    (verifyUserAuthentication as jest.Mock).mockImplementation(
+    (extractUserEmailFromAuthToken as jest.Mock).mockImplementation(
       (req, _: Response, next: NextFunction) => {
         req.body.emailFromAuthToken = "test@permanent.org";
         next();
@@ -37,15 +36,15 @@ fdescribe("record/get", () => {
 
   const agent = request(app);
   test("expect a 200 response", async () => {
-    (verifyUserAuthentication as jest.Mock).mockImplementation(
+    (extractUserEmailFromAuthToken as jest.Mock).mockImplementation(
       (_, __, next: NextFunction) => {
-        next(new createError.Unauthorized("You aren't logged in"));
+        next();
       }
     );
     await agent.get("/api/v2/record/get?recordIds[]=1").expect(200);
   });
   test("expect request to have an email from auth token", async () => {
-    (verifyUserAuthentication as jest.Mock).mockImplementation(
+    (extractUserEmailFromAuthToken as jest.Mock).mockImplementation(
       (_, __, next: NextFunction) => {
         next();
       }

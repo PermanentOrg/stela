@@ -4,20 +4,20 @@ import {
   type Response,
   type NextFunction,
 } from "express";
-import { verifyUserAuthentication } from "../middleware";
+import { extractUserEmailFromAuthToken } from "../middleware";
 import { getRecordById } from "./service";
 import { validateGetRecordQuery } from "./validators";
-import { validateBodyFromAuthentication } from "../validators/shared";
+import { validateOptionalEmailFromAuthentication } from "../validators/shared";
 import { isValidationError } from "../validators/validator_util";
 
 export const recordController = Router();
 
 recordController.get(
   "/get",
-  verifyUserAuthentication,
+  extractUserEmailFromAuthToken,
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      validateBodyFromAuthentication(req.body);
+      validateOptionalEmailFromAuthentication(req.body);
       validateGetRecordQuery(req.query);
       const records = await getRecordById({
         recordIds: req.query.recordIds,
