@@ -261,15 +261,38 @@ describe("extractUserEmailFromAuthToken", () => {
     const request = {
       body: {},
       get: (_: string) => "Bearer test",
-    } as Request<
-      unknown,
-      unknown,
-      { emailFromAuthToken?: string; }
-    >;
+    } as Request<unknown, unknown, { emailFromAuthToken?: string }>;
     jest
       .spyOn(fusionAuthClient, "introspectAccessToken")
       .mockImplementationOnce(async () => successfulIntrospectionResponse);
     await extractUserEmailFromAuthToken(request, {} as Response, () => {});
     expect(request.body.emailFromAuthToken).toBe(testEmail);
+  });
+
+  test("Request body has undefined emailFromAuthToken if there was no auth token", async () => {
+    const request = {
+      body: {},
+      get: (_: string) => "",
+    } as Request<unknown, unknown, { emailFromAuthToken?: string }>;
+    await extractUserEmailFromAuthToken(request, {} as Response, () => {});
+    expect(request.body.emailFromAuthToken).toBeUndefined();
+  });
+
+  test("Calls next with an error if an error is thrown", async () => {
+    let error;
+    const testError = new Error("Test Error");
+    const request = {
+      body: {},
+      get: (_: string) => "",
+    } as Request<unknown, unknown, { emailFromAuthToken?: string }>;
+    jest
+      .spyOn(fusionAuthClient, "introspectAccessToken")
+      .mockImplementationOnce(async () => {
+        throw testError;
+      });
+    await extractUserEmailFromAuthToken(request, {} as Response, (err) => {
+      error = err;
+    });
+    expect(error).toBe(testError);
   });
 });
