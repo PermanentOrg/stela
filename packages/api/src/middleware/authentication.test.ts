@@ -1,5 +1,6 @@
 import type { Request, Response } from "express";
 import {
+  extractUserEmailFromAuthToken,
   verifyUserAuthentication,
   verifyAdminAuthentication,
   verifyUserOrAdminAuthentication,
@@ -252,5 +253,23 @@ describe("verifyUserOrAdminAuthentication", () => {
     await verifyUserOrAdminAuthentication(request, {} as Response, (err) => {
       expect((err as { statusCode: number }).statusCode).toBe(401);
     });
+  });
+});
+
+describe("extractUserEmailFromAuthToken", () => {
+  test("request body will have email if there was an auth token", async () => {
+    const request = {
+      body: {},
+      get: (_: string) => "Bearer test",
+    } as Request<
+      unknown,
+      unknown,
+      { emailFromAuthToken?: string; }
+    >;
+    jest
+      .spyOn(fusionAuthClient, "introspectAccessToken")
+      .mockImplementationOnce(async () => successfulIntrospectionResponse);
+    await extractUserEmailFromAuthToken(request, {} as Response, () => {});
+    expect(request.body.emailFromAuthToken).toBe(testEmail);
   });
 });
