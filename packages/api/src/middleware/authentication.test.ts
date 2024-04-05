@@ -278,7 +278,7 @@ describe("extractUserEmailFromAuthToken", () => {
     expect(request.body.emailFromAuthToken).toBeUndefined();
   });
 
-  test("Calls next with an error if an error is thrown", async () => {
+  test("Request body has undefined emailFromAuthToken if auth token is invalid", async () => {
     const request = {
       body: {},
       get: (_: string) => "Bearer test",
@@ -286,8 +286,7 @@ describe("extractUserEmailFromAuthToken", () => {
     jest
       .spyOn(fusionAuthClient, "introspectAccessToken")
       .mockImplementationOnce(async () => failedIntrospectionResponse);
-    await extractUserEmailFromAuthToken(request, {} as Response, (err) => {
-      expect((err as { statusCode: number }).statusCode).toBe(401);
-    });
+    await extractUserEmailFromAuthToken(request, {} as Response, () => {});
+    expect(request.body.emailFromAuthToken).toBeUndefined();
   });
 });
