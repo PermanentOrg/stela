@@ -41,7 +41,7 @@ const getAuthTokenFromRequest = (
     authorizationHeaderParts.length !== 2 ||
     authorizationHeaderParts[0] !== "Bearer"
   ) {
-    throw new createError.Unauthorized("Invalid Authorization header format");
+    return "";
   }
   return authorizationHeaderParts[1] ?? "";
 };
@@ -53,6 +53,9 @@ const verifyUserAuthentication = async (
 ): Promise<void> => {
   try {
     const authenticationToken = getAuthTokenFromRequest(req);
+    if (authenticationToken === "") {
+      throw new createError.Unauthorized("Invalid Authorization header format");
+    }
     const email = await getValueFromAuthToken(
       authenticationToken,
       emailKey,
@@ -72,6 +75,9 @@ const verifyAdminAuthentication = async (
 ): Promise<void> => {
   try {
     const authenticationToken = getAuthTokenFromRequest(req);
+    if (authenticationToken === "") {
+      throw new createError.Unauthorized("Invalid Authorization header format");
+    }
     const email = await getValueFromAuthToken(
       authenticationToken,
       emailKey,
@@ -95,6 +101,9 @@ const verifyUserOrAdminAuthentication = async (
 ): Promise<void> => {
   try {
     const authenticationToken = getAuthTokenFromRequest(req);
+    if (authenticationToken === "") {
+      throw new createError.Unauthorized("Invalid Authorization header format");
+    }
     try {
       const subject = await getValueFromAuthToken(
         authenticationToken,
@@ -116,6 +125,27 @@ const verifyUserOrAdminAuthentication = async (
         next(innerErr);
       }
     }
+  } catch (err) {
+    next(err);
+  }
+};
+
+const extractUserEmailFromAuthToken = async (
+  req: Request<unknown, unknown, { emailFromAuthToken?: string }>,
+  _: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const authenticationToken = getAuthTokenFromRequest(req);
+    if (authenticationToken !== "") {
+      const email = await getValueFromAuthToken(
+        authenticationToken,
+        emailKey,
+        process.env["FUSIONAUTH_BACKEND_APPLICATION_ID"] ?? ""
+      );
+      req.body.emailFromAuthToken = email;
+    }
+    next();
   } catch (err) {
     next(err);
   }
