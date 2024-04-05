@@ -4,6 +4,7 @@ import { adminService } from "./service";
 import { verifyAdminAuthentication } from "../middleware";
 import {
   validateRecalculateFolderThumbnailsRequest,
+  validateRecalculateRecordThumbnailRequest,
   validateAccountSetNullSubjectsRequest,
 } from "./validators";
 import { isValidationError } from "../validators/validator_util";
@@ -49,6 +50,23 @@ adminController.post(
         res.status(400).json({ error: err });
         return;
       }
+      next(err);
+    }
+  }
+);
+
+adminController.post(
+  "/record/:recordId/recalculate_thumbnail",
+  verifyAdminAuthentication,
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      // You couldn't actually call this endpoint with invalid params,
+      // because the route would not match. We validate solely to make the type checker happy.
+      // This is why there is no error handling for validation errors.
+      validateRecalculateRecordThumbnailRequest(req.params);
+      await adminService.recalculateRecordThumbnail(req.params.recordId);
+      res.status(200).json({});
+    } catch (err) {
       next(err);
     }
   }
