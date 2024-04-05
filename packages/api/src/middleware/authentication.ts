@@ -32,6 +32,28 @@ const getValueFromAuthToken = async (
   return introspectionResponse.response[key];
 };
 
+const getOptionalValueFromAuthToken = async (
+  authenticationToken: string,
+  key: "email" | "sub",
+  applicationId: string
+): Promise<string> => {
+  const introspectionResponse = await fusionAuthClient.introspectAccessToken(
+    applicationId,
+    authenticationToken
+  );
+  if (!introspectionResponse.wasSuccessful()) {
+    return "";
+  }
+  if (
+    !introspectionResponse.response.active ||
+    typeof introspectionResponse.response[key] !== "string"
+  ) {
+    return "";
+  }
+
+  return introspectionResponse.response[key];
+};
+
 const getAuthTokenFromRequest = (
   req: Request<unknown, unknown, unknown>
 ): string => {
@@ -41,7 +63,7 @@ const getAuthTokenFromRequest = (
     authorizationHeaderParts.length !== 2 ||
     authorizationHeaderParts[0] !== "Bearer"
   ) {
-    throw new createError.Unauthorized("Invalid Authorization header format");
+    return "";
   }
   return authorizationHeaderParts[1] ?? "";
 };
@@ -53,6 +75,9 @@ const verifyUserAuthentication = async (
 ): Promise<void> => {
   try {
     const authenticationToken = getAuthTokenFromRequest(req);
+    if (authenticationToken === "") {
+      throw new createError.Unauthorized("Invalid Authorization header format");
+    }
     const email = await getValueFromAuthToken(
       authenticationToken,
       emailKey,
@@ -72,6 +97,9 @@ const verifyAdminAuthentication = async (
 ): Promise<void> => {
   try {
     const authenticationToken = getAuthTokenFromRequest(req);
+    if (authenticationToken === "") {
+      throw new createError.Unauthorized("Invalid Authorization header format");
+    }
     const email = await getValueFromAuthToken(
       authenticationToken,
       emailKey,
@@ -95,6 +123,9 @@ const verifyUserOrAdminAuthentication = async (
 ): Promise<void> => {
   try {
     const authenticationToken = getAuthTokenFromRequest(req);
+    if (authenticationToken === "") {
+      throw new createError.Unauthorized("Invalid Authorization header format");
+    }
     try {
       const subject = await getValueFromAuthToken(
         authenticationToken,
@@ -121,8 +152,28 @@ const verifyUserOrAdminAuthentication = async (
   }
 };
 
+const extractUserEmailFromAuthToken = async (
+  req: Request<unknown, unknown, { emailFromAuthToken?: string }>,
+  _: Response,
+  next: NextFunction
+): Promise<void> => {
+  const authenticationToken = getAuthTokenFromRequest(req);
+  if (authenticationToken !== "") {
+    const email = await getOptionalValueFromAuthToken(
+      authenticationToken,
+      emailKey,
+      process.env["FUSIONAUTH_BACKEND_APPLICATION_ID"] ?? ""
+    );
+    if (email !== "") {
+      req.body.emailFromAuthToken = email;
+    }
+  }
+  next();
+};
+
 export {
   verifyUserAuthentication,
   verifyAdminAuthentication,
   verifyUserOrAdminAuthentication,
+  extractUserEmailFromAuthToken,
 };

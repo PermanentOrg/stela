@@ -10,3 +10,14 @@ export function validateBodyFromAuthentication(
     throw validation.error;
   }
 }
+
+export function validateOptionalEmailFromAuthentication(
+  data: unknown
+): asserts data is { emailFromAuthToken: string } {
+  const validation = Joi.object()
+    .keys({ emailFromAuthToken: Joi.string().email() })
+    .validate(data);
+  if (validation.error) {
+    throw validation.error;
+  }
+}

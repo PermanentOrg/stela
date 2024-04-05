@@ -1,9 +1,8 @@
 import type { Response, NextFunction } from "express";
-import createError from "http-errors";
 import request from "supertest";
 import { app } from "../app";
 import { db } from "../database";
-import { verifyUserAuthentication } from "../middleware";
+import { extractUserEmailFromAuthToken } from "../middleware";
 
 jest.mock("../database");
 jest.mock("../middleware");
@@ -21,7 +20,7 @@ const clearDatabase = async (): Promise<void> => {
 
 fdescribe("record/get", () => {
   beforeEach(async () => {
-    (verifyUserAuthentication as jest.Mock).mockImplementation(
+    (extractUserEmailFromAuthToken as jest.Mock).mockImplementation(
       (req, _: Response, next: NextFunction) => {
         req.body.emailFromAuthToken = "test@permanent.org";
         next();
@@ -36,21 +35,14 @@ fdescribe("record/get", () => {
   });
 
   const agent = request(app);
-  test("expect a 200 response", async () => {
-    (verifyUserAuthentication as jest.Mock).mockImplementation(
-      (_, __, next: NextFunction) => {
-        next(new createError.Unauthorized("You aren't logged in"));
-      }
-    );
-    await agent.get("/api/v2/record/get?recordIds[]=1").expect(200);
-  });
-  test("expect request to have an email from auth token", async () => {
-    (verifyUserAuthentication as jest.Mock).mockImplementation(
-      (_, __, next: NextFunction) => {
+  test("expect request to have an email from auth token if an auth token exists", async () => {
+    (extractUserEmailFromAuthToken as jest.Mock).mockImplementation(
+      (req, __, next: NextFunction) => {
+        req.body.emailFromAuthToken = "not an email";
         next();
       }
     );
-    await agent.get("/api/v2/record/get").expect(400);
+    await agent.get("/api/v2/record/get?recordIds[]=1").expect(400);
   });
   test("expect an empty query to cause a 400 error", async () => {
     await agent.get("/api/v2/record/get").expect(400);
@@ -60,6 +52,18 @@ fdescribe("record/get", () => {
   });
   test("expect an empty array to cause a 400 error", async () => {
     await agent.get("/api/v2/record/get?recordIds[]").expect(400);
+  });
+  test("expect return a public record when not logged in", async () => {
+    (extractUserEmailFromAuthToken as jest.Mock).mockImplementation(
+      (_, __, next: NextFunction) => {
+        next();
+      }
+    );
+    const response = await agent
+      .get("/api/v2/record/get?recordIds[]=1")
+      .expect(200);
+    expect(response.body.length).toEqual(1);
+    expect(response.body[0].recordId).toEqual("1");
   });
   test("expect to return a record", async () => {
     const response = await agent
@@ -86,5 +90,28 @@ fdescribe("record/get", () => {
       .expect(200);
     expect(response.body.length).toEqual(1);
     expect(response.body[0].recordId).toEqual("5");
+  });
+  test("expect return a public record when not logged in", async () => {
+    (extractUserEmailFromAuthToken as jest.Mock).mockImplementation(
+      (_, __, next: NextFunction) => {
+        next();
+      }
+    );
+    const response = await agent
+      .get("/api/v2/record/get?recordIds[]=1")
+      .expect(200);
+    expect(response.body.length).toEqual(1);
+    expect(response.body[0].recordId).toEqual("1");
+  });
+  test("expect not to return a private record when not logged in", async () => {
+    (extractUserEmailFromAuthToken as jest.Mock).mockImplementation(
+      (_, __, next: NextFunction) => {
+        next();
+      }
+    );
+    const response = await agent
+      .get("/api/v2/record/get?recordIds[]=2")
+      .expect(200);
+    expect(response.body.length).toEqual(0);
   });
 });
