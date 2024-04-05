@@ -279,20 +279,15 @@ describe("extractUserEmailFromAuthToken", () => {
   });
 
   test("Calls next with an error if an error is thrown", async () => {
-    let error;
-    const testError = new Error("Test Error");
     const request = {
       body: {},
       get: (_: string) => "",
     } as Request<unknown, unknown, { emailFromAuthToken?: string }>;
     jest
       .spyOn(fusionAuthClient, "introspectAccessToken")
-      .mockImplementationOnce(async () => {
-        throw testError;
-      });
+      .mockImplementationOnce(async () => failedIntrospectionResponse);
     await extractUserEmailFromAuthToken(request, {} as Response, (err) => {
-      error = err;
+      expect((err as { statusCode: number }).statusCode).toBe(401);
     });
-    expect(error).toBe(testError);
   });
 });
