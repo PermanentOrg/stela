@@ -32,6 +32,28 @@ const getValueFromAuthToken = async (
   return introspectionResponse.response[key];
 };
 
+const getOptionalValueFromAuthToken = async (
+  authenticationToken: string,
+  key: "email" | "sub",
+  applicationId: string
+): Promise<string> => {
+  const introspectionResponse = await fusionAuthClient.introspectAccessToken(
+    applicationId,
+    authenticationToken
+  );
+  if (!introspectionResponse.wasSuccessful()) {
+    return "";
+  }
+  if (
+    !introspectionResponse.response.active ||
+    typeof introspectionResponse.response[key] !== "string"
+  ) {
+    return "";
+  }
+
+  return introspectionResponse.response[key];
+};
+
 const getAuthTokenFromRequest = (
   req: Request<unknown, unknown, unknown>
 ): string => {
@@ -135,20 +157,18 @@ const extractUserEmailFromAuthToken = async (
   _: Response,
   next: NextFunction
 ): Promise<void> => {
-  try {
-    const authenticationToken = getAuthTokenFromRequest(req);
-    if (authenticationToken !== "") {
-      const email = await getValueFromAuthToken(
-        authenticationToken,
-        emailKey,
-        process.env["FUSIONAUTH_BACKEND_APPLICATION_ID"] ?? ""
-      );
+  const authenticationToken = getAuthTokenFromRequest(req);
+  if (authenticationToken !== "") {
+    const email = await getOptionalValueFromAuthToken(
+      authenticationToken,
+      emailKey,
+      process.env["FUSIONAUTH_BACKEND_APPLICATION_ID"] ?? ""
+    );
+    if (email !== "") {
       req.body.emailFromAuthToken = email;
     }
-    next();
-  } catch (err) {
-    next(err);
   }
+  next();
 };
 
 export {

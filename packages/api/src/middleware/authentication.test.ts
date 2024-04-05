@@ -281,7 +281,7 @@ describe("extractUserEmailFromAuthToken", () => {
   test("Calls next with an error if an error is thrown", async () => {
     const request = {
       body: {},
-      get: (_: string) => "",
+      get: (_: string) => "Bearer test",
     } as Request<unknown, unknown, { emailFromAuthToken?: string }>;
     jest
       .spyOn(fusionAuthClient, "introspectAccessToken")
