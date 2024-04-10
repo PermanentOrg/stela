@@ -412,23 +412,32 @@ to Mixpanel.
 - Headers: Authorization: Bearer \<JWT from FusionAuth> (can be user or admin)
 - Request Body
 
+See
+[the Events Schema](https://permanent.atlassian.net/wiki/spaces/EN/pages/2118975490/Events+Schema)
+for valid values of `action` and `entity`.
+
 ```
 {
-  entity: string (see database for valid values),
-  action: string (see database for valid values),
-  version: number,
-  entityId: string (should be the ID of the database object the event happened to),
+  entity: string (see database for valid values), 
+  action: string (see database for valid values), 
+  version: number (this should be 1 for now and can increment if we
+    change the body of the event), 
+  entityId: string (should be the ID of the database object the event
+    happened to; e.g. 1 if this pertains to accountId 1),
   userAgent: string (optional),
   body: {
     analytics: {
       event: string,
       distinctId: string,
-      data: {} (required but can be empty)
+      data: {} (required but can be empty. Can take arbitrary key value pairs.)
     } (optional)
     (optionally, any other data desired)
   }
 }
 ```
+
+See also [internal documentation on
+MixPanel](https://permanent.atlassian.net/wiki/spaces/EN/pages/2086862849/Mixpanel+Events).
 
 - Response
 
