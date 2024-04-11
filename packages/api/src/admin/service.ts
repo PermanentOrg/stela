@@ -1,7 +1,7 @@
 import createError from "http-errors";
 import { logger } from "@stela/logger";
 import { db } from "../database";
-import type { Folder } from "./models";
+import type { Folder, ArchiveRecord } from "./models";
 import { publisherClient, lowPriorityTopicArn } from "../publisher_client";
 
 const recalculateFolderThumbnails = async (
@@ -48,6 +48,45 @@ const recalculateFolderThumbnails = async (
   };
 };
 
+const recalculateRecordThumbnail = async (recordId: string): Promise<void> => {
+  const recordResult = await db
+    .sql<ArchiveRecord>("admin.queries.get_record", {
+      recordId,
+    })
+    .catch((err) => {
+      logger.error(err);
+      throw new createError.InternalServerError("Failed to retrieve record");
+    });
+
+  if (!recordResult.rows[0]) {
+    throw new createError.NotFound("Record not found");
+  }
+
+  const publishResult = await publisherClient.batchPublishMessages(
+    lowPriorityTopicArn,
+    [
+      {
+        id: recordId,
+        body: JSON.stringify({
+          task: "task.thumbnail.record",
+          parameters: [
+            "Thumbnail_Redo",
+            recordId,
+            recordResult.rows[0].parentFolderId,
+            recordResult.rows[0].archiveId,
+            0,
+            new Date().toISOString(),
+          ],
+        }),
+      },
+    ]
+  );
+
+  if (publishResult.failedMessages.length > 0) {
+    throw new createError.InternalServerError("Failed to publish message");
+  }
+};
+
 const setNullAccountSubjects = async (
   accounts: {
     email: string;
@@ -82,5 +121,6 @@ const setNullAccountSubjects = async (
 
 export const adminService = {
   recalculateFolderThumbnails,
+  recalculateRecordThumbnail,
   setNullAccountSubjects,
 };

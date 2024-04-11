@@ -72,6 +72,24 @@ account's status is `status.auth.ok` and its current `subject` is `null`
 }
 ```
 
+### POST `/admin/record/:recordId/recalculate_thumbnail
+
+Queues a thumbnail regeneration task for the record given by `recordId`
+
+- Headers: Authorization: Bearer \<JWT from FusionAuth>
+
+- Request
+
+```
+{}
+```
+
+- Response
+
+```
+{}
+```
+
 ## Directives
 
 ### POST `/directive`
@@ -402,6 +420,7 @@ account's status is `status.auth.ok` and its current `subject` is `null`
   alreadyInvited: [string]
 }
 ```
+
 ## Events
 
 ### POST `/event`

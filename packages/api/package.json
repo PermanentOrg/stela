@@ -32,7 +32,7 @@
     "clear-database-ci": "psql postgresql://postgres:permanent@database:5432 -c 'DROP DATABASE IF EXISTS test_permanent;'",
     "create-database-ci": "psql postgresql://postgres:permanent@database:5432 -c 'CREATE DATABASE test_permanent;'",
     "set-up-database-ci": "pg_dump postgresql://postgres:permanent@database:5432/permanent --schema-only | psql postgresql://postgres:permanent@database:5432/test_permanent",
-    "test": "npm run start-containers && npm run clear-database && npm run create-database && npm run set-up-database && (cd ../..; docker compose run stela node --experimental-vm-modules ../../node_modules/jest/bin/jest.js -i)",
+    "test": "npm run start-containers && npm run clear-database && npm run create-database && npm run set-up-database && (cd ../..; docker compose run stela node --experimental-vm-modules ../../node_modules/jest/bin/jest.js -i --silent=false)",
     "test-ci": "npm run clear-database-ci && npm run create-database-ci && npm run set-up-database-ci && node --experimental-vm-modules ../../node_modules/jest/bin/jest.js -i --coverage"
   },
   "dependencies": {

@@ -378,3 +378,108 @@ describe("set_null_subjects", () => {
       });
   });
 });
+
+describe("/record/:recordId/recalculate_thumbnail", () => {
+  const agent = request(app);
+
+  const loadFixtures = async (): Promise<void> => {
+    await db.sql("fixtures.create_test_accounts");
+    await db.sql("fixtures.create_test_archive");
+    await db.sql("fixtures.create_test_records");
+    await db.sql("fixtures.create_test_folders");
+    await db.sql("fixtures.create_test_folder_links");
+  };
+
+  const clearDatabase = async (): Promise<void> => {
+    await db.query(
+      "TRUNCATE account, archive, record, folder, folder_link CASCADE"
+    );
+  };
+
+  beforeEach(async () => {
+    (verifyAdminAuthentication as jest.Mock).mockImplementation(
+      (req: Request, __, next: NextFunction) => {
+        (
+          req.body as {
+            beginTimestamp: Date;
+            endTimestamp: Date;
+            emailFromAuthToken: string;
+          }
+        ).emailFromAuthToken = "test@permanent.org";
+        next();
+      }
+    );
+    jest.clearAllMocks();
+    await clearDatabase();
+    await loadFixtures();
+  });
+
+  afterEach(async () => {
+    await clearDatabase();
+  });
+
+  test("should response with 401 if not authenticated as an admin", async () => {
+    (verifyAdminAuthentication as jest.Mock).mockImplementation(
+      (_, __, next: NextFunction) => {
+        next(new createError.Unauthorized("Invalid token"));
+      }
+    );
+    await agent
+      .post("/api/v2/admin/record/1/recalculate_thumbnail")
+      .expect(401);
+  });
+
+  test("should publish a message with correct parameters", async () => {
+    (publisherClient.batchPublishMessages as jest.Mock).mockResolvedValueOnce({
+      failedMessages: [],
+      messagesSent: 1,
+    });
+    await agent
+      .post("/api/v2/admin/record/1/recalculate_thumbnail")
+      .expect(200);
+
+    expect(publisherClient.batchPublishMessages).toHaveBeenCalled();
+    const publishMessages = (
+      (publisherClient.batchPublishMessages as jest.Mock).mock.calls[0] as [
+        string,
+        Message[]
+      ]
+    )[1] as unknown as Message[];
+    if (publishMessages[0]) {
+      const publishBody = JSON.parse(publishMessages[0].body) as {
+        parameters: string[];
+      };
+      expect(publishBody.parameters.length).toBe(6);
+      expect(publishBody.parameters[1]).toBe("1");
+      expect(publishBody.parameters[2]).toBe("2");
+      expect(publishBody.parameters[3]).toBe("1");
+    } else {
+      expect(true).toBe(false);
+    }
+  });
+
+  test("should respond with 404 if the record doesn't exist", async () => {
+    await agent
+      .post("/api/v2/admin/record/1000/recalculate_thumbnail")
+      .expect(404);
+  });
+
+  test("should respond with 500 if the message fails to send", async () => {
+    jest
+      .spyOn(publisherClient, "batchPublishMessages")
+      .mockResolvedValueOnce({ failedMessages: ["1"], messagesSent: 0 });
+    await agent
+      .post("/api/v2/admin/record/1/recalculate_thumbnail")
+      .expect(500);
+  });
+
+  test("should respond with 500  and log the error if the database call fails", async () => {
+    const testError = new Error("out of cheese - redo from start");
+    jest.spyOn(db, "sql").mockRejectedValueOnce(testError);
+
+    await agent
+      .post("/api/v2/admin/record/1/recalculate_thumbnail")
+      .expect(500);
+    expect(logger.error).toHaveBeenCalledWith(testError);
+  });
+});

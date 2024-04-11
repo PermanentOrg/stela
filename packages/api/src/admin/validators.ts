@@ -35,3 +35,16 @@ export function validateAccountSetNullSubjectsRequest(
     throw validation.error;
   }
 }
+
+export function validateRecalculateRecordThumbnailRequest(
+  data: unknown
+): asserts data is { recordId: string } {
+  const validation = Joi.object()
+    .keys({
+      recordId: Joi.string().required(),
+    })
+    .validate(data);
+  if (validation.error) {
+    throw validation.error;
+  }
+}
