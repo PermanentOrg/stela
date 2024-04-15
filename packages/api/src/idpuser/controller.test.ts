@@ -62,4 +62,14 @@ describe("/idpuser", () => {
     );
     await agent.get("/api/v2/idpuser").expect(400);
   });
+
+  test("should return an array with the length equal to 1 is the user has one multi factor method enabled", async () => {
+    const response = await agent.get("/api/v2/idpuser");
+    expect(response.body.length).toEqual(1);
+  });
+
+  test("should return an array with the length equal to 2 is the user has both multi factor methods enabled", async () => {
+    const response = await agent.get("/api/v2/idpuser");
+    expect(response.body.length).toEqual(2);
+  });
 });
