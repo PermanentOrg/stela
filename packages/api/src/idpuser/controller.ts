@@ -7,9 +7,7 @@ import {
   type NextFunction,
 } from "express";
 import { verifyUserAuthentication } from "../middleware";
-import {
-  validateTokenFromBody,
-} from "./validators";
+import { validateTokenFromBody } from "./validators";
 import { isValidationError } from "../validators/validator_util";
 
 export const idpUserController = Router();
