@@ -464,6 +464,20 @@ MixPanel](https://permanent.atlassian.net/wiki/spaces/EN/pages/2086862849/Mixpan
 {}
 ```
 
+### GET `/event/checklist`
+
+- Headers: Authorization: Bearer \<JWT from FusionAuth>
+- Response
+```
+[
+  {
+    id: string // an identifier for the checklist item
+    title: string // the display text for the checklist item in the UI
+    completed: boolean
+  }
+]
+```
+
 ## Promo
 
 ### POST `/promo`

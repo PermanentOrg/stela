@@ -1,0 +1,73 @@
+INSERT INTO
+event (
+  entity,
+  action,
+  version,
+  actor_type,
+  actor_id,
+  entity_id,
+  body
+)
+VALUES (
+  'archive',
+  'create',
+  1,
+  'user',
+  '553f3cb8-b753-43ce-83af-4443a404741b',
+  1,
+  '{}'
+),
+(
+  'account',
+  'submit_promo',
+  1,
+  'user',
+  '553f3cb8-b753-43ce-83af-4443a404741b',
+  3,
+  '{"promoCode": "TellYourStory"}'
+),
+(
+  'legacy_contact',
+  'create',
+  1,
+  'user',
+  '553f3cb8-b753-43ce-83af-4443a404741b',
+  1,
+  '{}'
+),
+(
+  'directive',
+  'create',
+  1,
+  'user',
+  '553f3cb8-b753-43ce-83af-4443a404741b',
+  1,
+  '{}'
+),
+(
+  'profile_item',
+  'update',
+  1,
+  'user',
+  '553f3cb8-b753-43ce-83af-4443a404741b',
+  1,
+  '{}'
+),
+(
+  'record',
+  'submit',
+  1,
+  'user',
+  '553f3cb8-b753-43ce-83af-4443a404741b',
+  1,
+  '{}'
+),
+(
+  'folder',
+  'move',
+  1,
+  'user',
+  '553f3cb8-b753-43ce-83af-4443a404741b',
+  1,
+  '{"public": true, "hasRecords": true}'
+);
