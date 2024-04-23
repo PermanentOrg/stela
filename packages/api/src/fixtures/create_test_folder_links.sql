@@ -1,5 +1,5 @@
-INSERT INTO
-folder_link (
+INSERT INTO folder_link (
+  folder_linkid,
   recordid,
   parentfolderid,
   archiveid,
@@ -13,6 +13,69 @@ VALUES
   1,
   2,
   1,
+  1,
+  'access.role.owner',
+  'status.generic.ok',
+  'type.folder_link.private'
+),
+(
+  1,
+  6,
+  2,
+  1,
+  'access.role.owner',
+  'status.generic.ok',
+  'type.folder_link.private'
+),
+(
+  2,
+  1,
+  1,
+  1,
+  'access.role.owner',
+  'status.generic.ok',
+  'type.folder_link.public'
+),
+(
+  3,
+  2,
+  1,
+  1,
+  'access.role.owner',
+  'status.generic.ok',
+  'type.folder_link.private'
+),
+(
+  4,
+  3,
+  1,
+  1,
+  'access.role.owner',
+  'status.generic.ok',
+  'type.folder_link.private'
+),
+(
+  5,
+  4,
+  1,
+  1,
+  'access.role.owner',
+  'status.generic.deleted',
+  'type.folder_link.public'
+),
+(
+  6,
+  5,
+  2,
+  1,
+  'access.role.owner',
+  'status.generic.ok',
+  'type.folder_link.public'
+),
+(
+  7,
+  7,
+  2,
   1,
   'access.role.owner',
   'status.generic.ok',

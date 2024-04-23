@@ -12,10 +12,14 @@ const setupDatabase = async (): Promise<void> => {
   await db.sql("fixtures.create_test_archive");
   await db.sql("fixtures.create_test_account_archive");
   await db.sql("fixtures.create_test_records");
+  await db.sql("fixtures.create_test_folder_links");
+  await db.sql("fixtures.create_test_accesses");
 };
 
 const clearDatabase = async (): Promise<void> => {
-  await db.query("TRUNCATE account, archive, record CASCADE");
+  await db.query(
+    "TRUNCATE account, archive, account_archive, record, folder_link, access CASCADE"
+  );
 };
 
 fdescribe("record/get", () => {
@@ -78,11 +82,13 @@ fdescribe("record/get", () => {
       .expect(200);
     expect(response.body.length).toEqual(2);
   });
-  test("expect a 404 if the logged-in user does not own the record", async () => {
-    await agent.get("/api/v2/record/get?recordIds[]=6").expect(404);
+  test("expect an empty response if the logged-in user does not own the record", async () => {
+    const response = await agent.get("/api/v2/record/get?recordIds[]=7").expect(200);
+    expect(response.body.length).toEqual(0);
   });
-  test("expect a 404 if the record is deleted", async () => {
-    await agent.get("/api/v2/record/get?recordIds[]=4").expect(404);
+  test("expect an empty response if the record is deleted", async () => {
+    const response = await agent.get("/api/v2/record/get?recordIds[]=4").expect(200);
+    expect(response.body.length).toEqual(0);
   });
   test("expect to return a public record not owned by logged-in user", async () => {
     const response = await agent
@@ -113,5 +119,15 @@ fdescribe("record/get", () => {
       .get("/api/v2/record/get?recordIds[]=2")
       .expect(200);
     expect(response.body.length).toEqual(0);
+  });
+  test("expect to return a private record shared with the logged in account", async () => {
+    // Note: Records shared directly or that are descended from a shared folder
+    // will all have equivalent entries in the access table. So we don't need to
+    // test that separately.
+    const response = await agent
+      .get("/api/v2/record/get?recordIds[]=6")
+      .expect(200);
+    expect(response.body.length).toEqual(1);
+    expect(response.body[0].recordId).toEqual("6");
   });
 });
