@@ -8,6 +8,12 @@ INNER JOIN
 INNER JOIN
   account
   ON account_archive.accountid = account.accountid
+INNER JOIN
+  folder_link
+  ON record.recordid = folder_link.recordid
+LEFT JOIN
+  access
+  ON folder_link.folder_linkid = access.folder_linkid
 WHERE
   recordid = ANY(:recordIds)
   AND (

@@ -5,4 +5,9 @@ INSERT INTO access (
   status,
   type
 ) VALUES (
+  1,
+  1,
+  'access.role.viewer',
+  'status.generic.ok',
+  'type.access.share'
 ); 
