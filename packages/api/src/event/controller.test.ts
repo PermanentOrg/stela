@@ -4,21 +4,27 @@ import createError from "http-errors";
 import { db } from "../database";
 import { mixpanelClient } from "../mixpanel";
 import { app } from "../app";
-import { verifyUserOrAdminAuthentication, extractIp } from "../middleware";
-import type { CreateEventRequest } from "./models";
+import {
+  verifyUserAuthentication,
+  verifyUserOrAdminAuthentication,
+  extractIp,
+} from "../middleware";
+import type { CreateEventRequest, ChecklistItem } from "./models";
 
 jest.mock("../database");
 jest.mock("../middleware");
 jest.mock("../mixpanel");
 
 const testSubject = "fcb2b59b-df07-4e79-ad20-bf7f067a965e";
-
-const clearDatabase = async (): Promise<void> => {
-  await db.query("TRUNCATE event CASCADE");
-};
+const testEmail = "test+1@permanent.org";
+const testNoProgressEmail = "test+no_progress@permanent.org";
 
 describe("POST /event", () => {
   const agent = request(app);
+
+  const clearDatabase = async (): Promise<void> => {
+    await db.query("TRUNCATE event CASCADE");
+  };
 
   beforeEach(async () => {
     (verifyUserOrAdminAuthentication as jest.Mock).mockImplementation(
@@ -507,5 +513,339 @@ describe("POST /event", () => {
         body: {},
       })
       .expect(400);
+  });
+});
+
+describe("GET /event/checklist", () => {
+  const agent = request(app);
+
+  const loadFixtures = async (): Promise<void> => {
+    await db.sql("fixtures.create_test_accounts");
+    await db.sql("fixtures.create_test_events");
+  };
+
+  const clearDatabase = async (): Promise<void> => {
+    await db.query("TRUNCATE account, event CASCADE");
+  };
+
+  beforeEach(async () => {
+    (verifyUserAuthentication as jest.Mock).mockImplementation(
+      (req: Request, __, next: NextFunction) => {
+        (
+          req.body as unknown as { emailFromAuthToken: string }
+        ).emailFromAuthToken = testEmail;
+        next();
+      }
+    );
+    await clearDatabase();
+    await loadFixtures();
+  });
+
+  afterEach(async () => {
+    jest.restoreAllMocks();
+    await clearDatabase();
+  });
+
+  test("should return 200 if authenticated", async () => {
+    await agent.get("/api/v2/event/checklist").expect(200);
+  });
+
+  test("should return 401 if unauthenticated", async () => {
+    (verifyUserAuthentication as jest.Mock).mockImplementation(
+      (_: Request, __, next: NextFunction) => {
+        next(new createError.Unauthorized("You aren't logged in"));
+      }
+    );
+
+    await agent.get("/api/v2/event/checklist").expect(401);
+  });
+
+  test("should return 400 if emailFromAuthToken is not an email", async () => {
+    (verifyUserAuthentication as jest.Mock).mockImplementation(
+      (req: Request, _, next: NextFunction) => {
+        (
+          req.body as unknown as { emailFromAuthToken: string }
+        ).emailFromAuthToken = "not_an_email";
+        next();
+      }
+    );
+
+    await agent.get("/api/v2/event/checklist").expect(400);
+  });
+
+  test("should have the right title for each item", async () => {
+    const response = await agent.get("/api/v2/event/checklist").expect(200);
+    expect(
+      (
+        response.body as { checklistItems: ChecklistItem[] }
+      ).checklistItems.find(
+        (item: ChecklistItem) => item.id === "archiveCreated"
+      )?.title
+    ).toEqual("Create your first archive");
+    expect(
+      (
+        response.body as { checklistItems: ChecklistItem[] }
+      ).checklistItems.find(
+        (item: ChecklistItem) => item.id === "storageRedeemed"
+      )?.title
+    ).toEqual("Redeem free storage");
+    expect(
+      (
+        response.body as { checklistItems: ChecklistItem[] }
+      ).checklistItems.find(
+        (item: ChecklistItem) => item.id === "legacyContact"
+      )?.title
+    ).toEqual("Assign a Legacy Contact");
+    expect(
+      (
+        response.body as { checklistItems: ChecklistItem[] }
+      ).checklistItems.find(
+        (item: ChecklistItem) => item.id === "archiveSteward"
+      )?.title
+    ).toEqual("Assign an Archive Steward");
+    expect(
+      (
+        response.body as { checklistItems: ChecklistItem[] }
+      ).checklistItems.find(
+        (item: ChecklistItem) => item.id === "archiveProfile"
+      )?.title
+    ).toEqual("Update Archive Profile");
+    expect(
+      (
+        response.body as { checklistItems: ChecklistItem[] }
+      ).checklistItems.find((item: ChecklistItem) => item.id === "firstUpload")
+        ?.title
+    ).toEqual("Upload first file");
+    expect(
+      (
+        response.body as { checklistItems: ChecklistItem[] }
+      ).checklistItems.find(
+        (item: ChecklistItem) => item.id === "publishContent"
+      )?.title
+    ).toEqual("Publish your archive");
+  });
+
+  test("should communicate that a user with an archive has created an archive", async () => {
+    const response = await agent.get("/api/v2/event/checklist").expect(200);
+    expect(
+      (
+        response.body as { checklistItems: ChecklistItem[] }
+      ).checklistItems.find(
+        (item: ChecklistItem) => item.id === "archiveCreated"
+      )?.completed
+    ).toEqual(true);
+  });
+
+  test("should communicate that a user without an archive has not created an archive", async () => {
+    (verifyUserAuthentication as jest.Mock).mockImplementation(
+      (req: Request, __, next: NextFunction) => {
+        (
+          req.body as unknown as { emailFromAuthToken: string }
+        ).emailFromAuthToken = testNoProgressEmail;
+        next();
+      }
+    );
+    const response = await agent.get("/api/v2/event/checklist").expect(200);
+    expect(
+      (
+        response.body as { checklistItems: ChecklistItem[] }
+      ).checklistItems.find(
+        (item: ChecklistItem) => item.id === "archiveCreated"
+      )?.completed
+    ).toEqual(false);
+  });
+
+  test("should communicate that a user has redeemed their welcome storage", async () => {
+    const response = await agent.get("/api/v2/event/checklist").expect(200);
+    expect(
+      (
+        response.body as { checklistItems: ChecklistItem[] }
+      ).checklistItems.find(
+        (item: ChecklistItem) => item.id === "storageRedeemed"
+      )?.completed
+    ).toEqual(true);
+  });
+
+  test("should communicate that a user hasn't redeemed their welcome storage", async () => {
+    (verifyUserAuthentication as jest.Mock).mockImplementation(
+      (req: Request, __, next: NextFunction) => {
+        (
+          req.body as unknown as { emailFromAuthToken: string }
+        ).emailFromAuthToken = testNoProgressEmail;
+        next();
+      }
+    );
+    const response = await agent.get("/api/v2/event/checklist").expect(200);
+    expect(
+      (
+        response.body as { checklistItems: ChecklistItem[] }
+      ).checklistItems.find(
+        (item: ChecklistItem) => item.id === "storageRedeemed"
+      )?.completed
+    ).toEqual(false);
+  });
+
+  test("should communicate that a user has assigned a legacy contact", async () => {
+    const response = await agent.get("/api/v2/event/checklist").expect(200);
+    expect(
+      (
+        response.body as { checklistItems: ChecklistItem[] }
+      ).checklistItems.find(
+        (item: ChecklistItem) => item.id === "legacyContact"
+      )?.completed
+    ).toEqual(true);
+  });
+
+  test("should communicate that a user hasn't assigned a legacy contact", async () => {
+    (verifyUserAuthentication as jest.Mock).mockImplementation(
+      (req: Request, __, next: NextFunction) => {
+        (
+          req.body as unknown as { emailFromAuthToken: string }
+        ).emailFromAuthToken = testNoProgressEmail;
+        next();
+      }
+    );
+    const response = await agent.get("/api/v2/event/checklist").expect(200);
+    expect(
+      (
+        response.body as { checklistItems: ChecklistItem[] }
+      ).checklistItems.find(
+        (item: ChecklistItem) => item.id === "legacyContact"
+      )?.completed
+    ).toEqual(false);
+  });
+
+  test("should communicate that a user has assigned an archive steward", async () => {
+    const response = await agent.get("/api/v2/event/checklist").expect(200);
+    expect(
+      (
+        response.body as { checklistItems: ChecklistItem[] }
+      ).checklistItems.find(
+        (item: ChecklistItem) => item.id === "archiveSteward"
+      )?.completed
+    ).toEqual(true);
+  });
+
+  test("should communicate that a user hasn't assigned an archive steward", async () => {
+    (verifyUserAuthentication as jest.Mock).mockImplementation(
+      (req: Request, __, next: NextFunction) => {
+        (
+          req.body as unknown as { emailFromAuthToken: string }
+        ).emailFromAuthToken = testNoProgressEmail;
+        next();
+      }
+    );
+    const response = await agent.get("/api/v2/event/checklist").expect(200);
+    expect(
+      (
+        response.body as { checklistItems: ChecklistItem[] }
+      ).checklistItems.find(
+        (item: ChecklistItem) => item.id === "archiveSteward"
+      )?.completed
+    ).toEqual(false);
+  });
+
+  test("should communicate that a user has updated an archive profile", async () => {
+    const response = await agent.get("/api/v2/event/checklist").expect(200);
+    expect(
+      (
+        response.body as { checklistItems: ChecklistItem[] }
+      ).checklistItems.find(
+        (item: ChecklistItem) => item.id === "archiveProfile"
+      )?.completed
+    ).toEqual(true);
+  });
+
+  test("should communicate that a user hasn't updated an archive profile", async () => {
+    (verifyUserAuthentication as jest.Mock).mockImplementation(
+      (req: Request, __, next: NextFunction) => {
+        (
+          req.body as unknown as { emailFromAuthToken: string }
+        ).emailFromAuthToken = testNoProgressEmail;
+        next();
+      }
+    );
+    const response = await agent.get("/api/v2/event/checklist").expect(200);
+    expect(
+      (
+        response.body as { checklistItems: ChecklistItem[] }
+      ).checklistItems.find(
+        (item: ChecklistItem) => item.id === "archiveProfile"
+      )?.completed
+    ).toEqual(false);
+  });
+
+  test("should communicate that a user has uploaded a file", async () => {
+    const response = await agent.get("/api/v2/event/checklist").expect(200);
+    expect(
+      (
+        response.body as { checklistItems: ChecklistItem[] }
+      ).checklistItems.find((item: ChecklistItem) => item.id === "firstUpload")
+        ?.completed
+    ).toEqual(true);
+  });
+
+  test("should communicate that a user hasn't uploaded a file", async () => {
+    (verifyUserAuthentication as jest.Mock).mockImplementation(
+      (req: Request, __, next: NextFunction) => {
+        (
+          req.body as unknown as { emailFromAuthToken: string }
+        ).emailFromAuthToken = testNoProgressEmail;
+        next();
+      }
+    );
+    const response = await agent.get("/api/v2/event/checklist").expect(200);
+    expect(
+      (
+        response.body as { checklistItems: ChecklistItem[] }
+      ).checklistItems.find((item: ChecklistItem) => item.id === "firstUpload")
+        ?.completed
+    ).toEqual(false);
+  });
+
+  test("should communicate that a user has published content", async () => {
+    const response = await agent.get("/api/v2/event/checklist").expect(200);
+    expect(
+      (
+        response.body as { checklistItems: ChecklistItem[] }
+      ).checklistItems.find(
+        (item: ChecklistItem) => item.id === "publishContent"
+      )?.completed
+    ).toEqual(true);
+  });
+
+  test("should communicate that a user hasn't published content", async () => {
+    (verifyUserAuthentication as jest.Mock).mockImplementation(
+      (req: Request, __, next: NextFunction) => {
+        (
+          req.body as unknown as { emailFromAuthToken: string }
+        ).emailFromAuthToken = testNoProgressEmail;
+        next();
+      }
+    );
+    const response = await agent.get("/api/v2/event/checklist").expect(200);
+    expect(
+      (
+        response.body as { checklistItems: ChecklistItem[] }
+      ).checklistItems.find((item: ChecklistItem) => item.id === "firstUpload")
+        ?.completed
+    ).toEqual(false);
+  });
+
+  test("should return 500 error if database call fails", async () => {
+    jest.spyOn(db, "sql").mockImplementation(() => {
+      throw new Error("SQL error");
+    });
+    await agent.get("/api/v2/event/checklist").expect(500);
+  });
+
+  test("should return 500 error if database response is empty", async () => {
+    jest.spyOn(db, "sql").mockImplementationOnce(
+      (async () =>
+        ({
+          rows: [],
+        } as object)) as unknown as typeof db.sql
+    );
+    await agent.get("/api/v2/event/checklist").expect(500);
   });
 });

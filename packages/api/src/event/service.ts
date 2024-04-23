@@ -2,7 +2,7 @@ import createError from "http-errors";
 import { logger } from "@stela/logger";
 import { db } from "../database";
 import { mixpanelClient } from "../mixpanel";
-import type { CreateEventRequest } from "./models";
+import type { CreateEventRequest, ChecklistItem } from "./models";
 import {
   isInvalidEnumError,
   getInvalidValueFromInvalidEnumMessage,
@@ -46,4 +46,40 @@ export const createEvent = async (data: CreateEventRequest): Promise<void> => {
       logger.error(err);
       throw new createError.InternalServerError(`Failed to create event`);
     });
+};
+
+const checklistEvents: Record<string, string> = {
+  archiveCreated: "Create your first archive",
+  storageRedeemed: "Redeem free storage",
+  legacyContact: "Assign a Legacy Contact",
+  archiveSteward: "Assign an Archive Steward",
+  archiveProfile: "Update Archive Profile",
+  firstUpload: "Upload first file",
+  publishContent: "Publish your archive",
+};
+
+export const getChecklistEvents = async (
+  email: string
+): Promise<ChecklistItem[]> => {
+  const eventResult = await db
+    .sql<Record<string, boolean>>("event.queries.get_checklist_events", {
+      email,
+    })
+    .catch((err) => {
+      logger.error(err);
+      throw new createError.InternalServerError(
+        "Failed to retrieve checklist data"
+      );
+    });
+  if (!eventResult.rows[0]) {
+    throw new createError.InternalServerError(
+      "Failed to retrieve checklist data"
+    );
+  }
+  const eventData = eventResult.rows[0];
+  return Object.keys(checklistEvents).map((key: string) => ({
+    id: key,
+    title: checklistEvents[key] ?? "",
+    completed: eventData[key] ?? false,
+  }));
 };
