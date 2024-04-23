@@ -114,4 +114,11 @@ fdescribe("record/get", () => {
       .expect(200);
     expect(response.body.length).toEqual(0);
   });
+  test("expect to return a private record shared with the logged in account", async () => {
+    const response = await agent
+      .get("/api/v2/record/get?recordIds[]=5")
+      .expect(200);
+    expect(response.body.length).toEqual(1);
+    expect(response.body[0].recordId).toEqual("5");
+  });
 });
