@@ -3,11 +3,15 @@ INSERT INTO access (
   archiveid,
   accessrole,
   status,
-  type
+  type,
+  createddt,
+  updateddt
 ) VALUES (
   1,
   1,
   'access.role.viewer',
   'status.generic.ok',
-  'type.access.share'
+  'type.access.share',
+  CURRENT_TIMESTAMP,
+  CURRENT_TIMESTAMP
 ); 

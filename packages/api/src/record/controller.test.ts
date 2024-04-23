@@ -12,6 +12,8 @@ const setupDatabase = async (): Promise<void> => {
   await db.sql("fixtures.create_test_archive");
   await db.sql("fixtures.create_test_account_archive");
   await db.sql("fixtures.create_test_records");
+  await db.sql("fixtures.create_test_folder_links");
+  await db.sql("fixtures.create_test_accesses");
 };
 
 const clearDatabase = async (): Promise<void> => {

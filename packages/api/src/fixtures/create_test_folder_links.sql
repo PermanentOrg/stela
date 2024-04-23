@@ -11,7 +11,52 @@ INSERT INTO folder_link (
   6,
   2,
   1,
-  'access.role.viewer',
+  'access.role.owner',
   'status.generic.ok',
   'type.folder_link.private'
-); 
+),
+(
+  2,
+  1,
+  1,
+  1,
+  'access.role.owner',
+  'status.generic.ok',
+  'type.folder_link.public'
+),
+(
+  3,
+  2,
+  1,
+  1,
+  'access.role.owner',
+  'status.generic.ok',
+  'type.folder_link.private'
+),
+(
+  4,
+  3,
+  1,
+  1,
+  'access.role.owner',
+  'status.generic.ok',
+  'type.folder_link.private'
+),
+(
+  5,
+  4,
+  1,
+  1,
+  'access.role.owner',
+  'status.generic.deleted',
+  'type.folder_link.public'
+),
+(
+  6,
+  5,
+  2,
+  1,
+  'access.role.owner',
+  'status.generic.ok',
+  'type.folder_link.public'
+);

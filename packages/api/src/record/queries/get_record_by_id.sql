@@ -1,12 +1,11 @@
-SELECT DISTINCT
-  record.recordid AS "recordId"
+SELECT DISTINCT record.recordid AS "recordId"
 FROM
   record
 INNER JOIN
-  account_archive as record_account_archive
+  account_archive AS record_account_archive
   ON record.archiveid = record_account_archive.archiveid
 INNER JOIN
-  account as record_account
+  account AS record_account
   ON record_account_archive.accountid = record_account.accountid
 INNER JOIN
   folder_link
