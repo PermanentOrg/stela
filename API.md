@@ -518,7 +518,7 @@ JWT.
 ```
 [
   {
-    id: [string] 4 random letters and numbers
+    methodId: [string] 4 random letters and numbers
     method: [string] // either 'sms' or 'email'
     value: [string] // either a phone number or an email address
   }
@@ -550,4 +550,21 @@ JWT.
 
 ### POST `/idpuser/send-disable-code`
 
+- Headers: Authorization: Bearer \<JWT from FusionAuth>
+- Request Body
+```
+{
+  methodId: [4-digit string] // this was returned in the GET
+}
+```
+
 ### POST `/idpuser/disable-two-factor`
+
+- Headers: Authorization: Bearer \<JWT from FusionAuth>
+- Request Body
+```
+{
+  code: [string] // provided by the user (they will have received it from FusionAuth)
+  methodId: [4-digit string] // this was returned in the GET that listed all methods initially
+}
+```
