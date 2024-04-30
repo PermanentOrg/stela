@@ -13,10 +13,10 @@ INNER JOIN
 LEFT JOIN
   access
   ON folder_link.folder_linkid = access.folder_linkid
-INNER JOIN
+LEFT JOIN
   account_archive as share_account_archive
   ON access.archiveid = share_account_archive.archiveid
-INNER JOIN
+LEFT JOIN
   account as share_account
   ON share_account_archive.accountid = share_account.accountid
 WHERE

@@ -81,7 +81,7 @@ fdescribe("record/get", () => {
     expect(response.body.length).toEqual(2);
   });
   test("expect a 404 if the logged-in user does not own the record", async () => {
-    await agent.get("/api/v2/record/get?recordIds[]=6").expect(404);
+    await agent.get("/api/v2/record/get?recordIds[]=7").expect(404);
   });
   test("expect a 404 if the record is deleted", async () => {
     await agent.get("/api/v2/record/get?recordIds[]=4").expect(404);
@@ -105,7 +105,7 @@ fdescribe("record/get", () => {
     expect(response.body.length).toEqual(1);
     expect(response.body[0].recordId).toEqual("1");
   });
-  xtest("expect not to return a private record when not logged in", async () => {
+  test("expect not to return a private record when not logged in", async () => {
     (extractUserEmailFromAuthToken as jest.Mock).mockImplementation(
       (_, __, next: NextFunction) => {
         next();
