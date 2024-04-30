@@ -17,7 +17,9 @@ const setupDatabase = async (): Promise<void> => {
 };
 
 const clearDatabase = async (): Promise<void> => {
-  await db.query("TRUNCATE account, archive, record CASCADE");
+  await db.query(
+    "TRUNCATE account, archive, account_archive, record, folder_link, access CASCADE"
+  );
 };
 
 fdescribe("record/get", () => {
@@ -117,6 +119,9 @@ fdescribe("record/get", () => {
     expect(response.body.length).toEqual(0);
   });
   test("expect to return a private record shared with the logged in account", async () => {
+    // Note: Records shared directly or that are descended from a shared folder
+    // will all have equivalent entries in the access table. So we don't need to
+    // test that separately.
     const response = await agent
       .get("/api/v2/record/get?recordIds[]=6")
       .expect(200);
