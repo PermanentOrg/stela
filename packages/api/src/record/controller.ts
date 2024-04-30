@@ -13,7 +13,7 @@ import { isValidationError } from "../validators/validator_util";
 export const recordController = Router();
 
 recordController.get(
-  "/get",
+  "/",
   extractUserEmailFromAuthToken,
   async (req: Request, res: Response, next: NextFunction) => {
     try {
