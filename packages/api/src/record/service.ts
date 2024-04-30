@@ -18,8 +18,5 @@ export const getRecordById = async (requestQuery: {
         "failed to retrieve featured archives"
       );
     });
-  if (record.rows.length == 0) {
-    throw createError.NotFound();
-  }
   return record.rows;
 };

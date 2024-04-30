@@ -82,11 +82,13 @@ fdescribe("record/get", () => {
       .expect(200);
     expect(response.body.length).toEqual(2);
   });
-  test("expect a 404 if the logged-in user does not own the record", async () => {
-    await agent.get("/api/v2/record/get?recordIds[]=7").expect(404);
+  test("expect an empty response if the logged-in user does not own the record", async () => {
+    const response = await agent.get("/api/v2/record/get?recordIds[]=7").expect(200);
+    expect(response.body.length).toEqual(0);
   });
-  test("expect a 404 if the record is deleted", async () => {
-    await agent.get("/api/v2/record/get?recordIds[]=4").expect(404);
+  test("expect an empty response if the record is deleted", async () => {
+    const response = await agent.get("/api/v2/record/get?recordIds[]=4").expect(200);
+    expect(response.body.length).toEqual(0);
   });
   test("expect to return a public record not owned by logged-in user", async () => {
     const response = await agent
