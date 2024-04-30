@@ -130,4 +130,10 @@ fdescribe("record/get", () => {
     expect(response.body.length).toEqual(1);
     expect(response.body[0].recordId).toEqual("6");
   });
+  test("expect to receive a whole record", async () => {
+    // record, child files, folder links (necessary?), parent folder,
+    // object (necessary?), original exif data (seems unnecessary?),
+    // fileDurationInSeconds (not used in UI), tags as objects, timezone as an
+    // object (unnecessary), archive.archiveNbr, shares
+  });
 });
