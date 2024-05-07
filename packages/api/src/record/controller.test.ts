@@ -12,6 +12,7 @@ const setupDatabase = async (): Promise<void> => {
   await db.sql("fixtures.create_test_archive");
   await db.sql("fixtures.create_test_account_archive");
   await db.sql("fixtures.create_test_records");
+  await db.sql("fixtures.create_complete_test_record");
   await db.sql("fixtures.create_test_folder_links");
   await db.sql("fixtures.create_test_accesses");
 };
@@ -140,13 +141,18 @@ fdescribe("record/get", () => {
     // fileDurationInSeconds (not used in UI), tags as objects, timezone as an
     // object (unnecessary), archive.archiveNbr, shares
     const response = await agent
-      .get("/api/v2/record/get?recordIds[]=1")
+      .get("/api/v2/record/get?recordIds[]=8")
       .expect(200);
     expect(response.body.length).toEqual(1);
-    expect(response.body[0].recordId).toEqual("1");
+    expect(response.body[0].recordId).toEqual("8");
     expect(response.body[0].displayName).toEqual("Public File");
     expect(response.body[0].archiveId).toEqual("1");
     expect(response.body[0].archiveNumber).toEqual("0000-0001");
     expect(response.body[0].publicAt).toEqual("2023-06-21T00:00:00.000Z");
+    expect(response.body[0].description).toEqual("A description of the image");
+    expect(response.body[0].downloadname).toEqual("public_file.jpg");
+    expect(response.body[0].uploadfilename).toEqual("public_file.jpg");
+    expect(response.body[0].uploadaccountid).toEqual(2);
+    expect(response.body[0].uploadpayeraccountid).toEqual(2);
   });
 });

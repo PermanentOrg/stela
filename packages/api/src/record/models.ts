@@ -4,5 +4,9 @@ export interface ArchiveRecord {
   displayName: string;
   archiveNumber?: string;
   description?: string;
-  publicAt: Date;
+  publicAt?: string;
+  downloadName?: string;
+  uploadFileName: string;
+  uploadAccountId: string;
+  uploadPayerAccountId?: string;
 }

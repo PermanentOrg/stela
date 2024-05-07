@@ -4,7 +4,11 @@ SELECT DISTINCT ON (record.recordid)
   record.archiveid AS "archiveId",
   record.archivenbr AS "archiveNumber",
   record.description,
-  record.publicdt AS "publicAt"
+  record.publicdt AS "publicAt",
+  record.downloadname AS "downloadName",
+  record.uploadfilename AS "uploadFileName",
+  record.uploadaccountid AS "uploadAccountId",
+  record.uploadpayeraccountid AS "uploadPayerAccountId"
 FROM
   record
 INNER JOIN
