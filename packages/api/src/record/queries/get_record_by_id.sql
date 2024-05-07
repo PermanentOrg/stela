@@ -2,7 +2,9 @@ SELECT DISTINCT ON (record.recordid)
   record.recordid AS "recordId",
   record.displayname AS "displayName",
   record.archiveid AS "archiveId",
-  record.archivenbr AS "archiveNumber"
+  record.archivenbr AS "archiveNumber",
+  record.description,
+  record.publicdt AS "publicAt"
 FROM
   record
 INNER JOIN

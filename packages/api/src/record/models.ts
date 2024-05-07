@@ -3,4 +3,6 @@ export interface ArchiveRecord {
   archiveId: string;
   displayName: string;
   archiveNumber?: string;
+  description?: string;
+  publicAt: Date;
 }

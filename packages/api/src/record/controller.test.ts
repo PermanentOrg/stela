@@ -147,5 +147,6 @@ fdescribe("record/get", () => {
     expect(response.body[0].displayName).toEqual("Public File");
     expect(response.body[0].archiveId).toEqual("1");
     expect(response.body[0].archiveNumber).toEqual("0000-0001");
+    expect(response.body[0].publicAt).toEqual("2023-06-21T00:00:00.000Z");
   });
 });
