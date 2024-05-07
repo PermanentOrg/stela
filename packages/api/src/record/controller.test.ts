@@ -147,12 +147,12 @@ fdescribe("record/get", () => {
     expect(response.body[0].recordId).toEqual("8");
     expect(response.body[0].displayName).toEqual("Public File");
     expect(response.body[0].archiveId).toEqual("1");
-    expect(response.body[0].archiveNumber).toEqual("0000-0001");
+    expect(response.body[0].archiveNumber).toEqual("0000-0008");
     expect(response.body[0].publicAt).toEqual("2023-06-21T00:00:00.000Z");
     expect(response.body[0].description).toEqual("A description of the image");
-    expect(response.body[0].downloadname).toEqual("public_file.jpg");
-    expect(response.body[0].uploadfilename).toEqual("public_file.jpg");
-    expect(response.body[0].uploadaccountid).toEqual(2);
-    expect(response.body[0].uploadpayeraccountid).toEqual(2);
+    expect(response.body[0].downloadName).toEqual("public_file.jpg");
+    expect(response.body[0].uploadFileName).toEqual("public_file.jpg");
+    expect(response.body[0].uploadAccountId).toEqual("2");
+    expect(response.body[0].uploadPayerAccountId).toEqual("2");
   });
 });
