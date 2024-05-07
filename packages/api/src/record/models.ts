@@ -9,4 +9,8 @@ export interface ArchiveRecord {
   uploadFileName: string;
   uploadAccountId: string;
   uploadPayerAccountId?: string;
+  size?: number;
+  displayDate?: string;
+  fileCreatedAt?: string;
+  imageRatio?: number;
 }

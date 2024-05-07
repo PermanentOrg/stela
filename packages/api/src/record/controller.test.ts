@@ -154,5 +154,9 @@ fdescribe("record/get", () => {
     expect(response.body[0].uploadFileName).toEqual("public_file.jpg");
     expect(response.body[0].uploadAccountId).toEqual("2");
     expect(response.body[0].uploadPayerAccountId).toEqual("2");
+    expect(response.body[0].size).toEqual(1024);
+    expect(response.body[0].displayDate).toEqual("2023-06-21T00:00:00.000Z");
+    expect(response.body[0].fileCreatedAt).toEqual("2023-06-21T00:00:00.000Z");
+    expect(response.body[0].imageRatio).toEqual(1);
   });
 });

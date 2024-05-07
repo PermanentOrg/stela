@@ -8,7 +8,11 @@ SELECT DISTINCT ON (record.recordid)
   record.downloadname AS "downloadName",
   record.uploadfilename AS "uploadFileName",
   record.uploadaccountid AS "uploadAccountId",
-  record.uploadpayeraccountid AS "uploadPayerAccountId"
+  record.uploadpayeraccountid AS "uploadPayerAccountId",
+  record.size,
+  record.displaydt AS "displayDate",
+  record.derivedcreateddt AS "fileCreatedAt",
+  record.imageratio AS "imageRatio"
 FROM
   record
 INNER JOIN
