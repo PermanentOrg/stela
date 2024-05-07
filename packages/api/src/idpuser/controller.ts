@@ -18,10 +18,11 @@ idpUserController.get(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       let response;
-      const clientResponse = await fusionAuthClient.retrieveUserByEmail(req.body.emailFromAuthToken);
+      const clientResponse = await fusionAuthClient.retrieveUserByEmail(
+        req.body.emailFromAuthToken
+      );
       response = clientResponse.response.user?.twoFactor?.methods ?? [];
       res.send(response);
-        
     } catch (err) {
       if (isValidationError(err)) {
         res.status(400).json({ error: err });

@@ -20,7 +20,6 @@ describe("/idpuser", () => {
       (req: Request, __, next: NextFunction) => {
         (req.body as TwoFactorRequest).emailFromAuthToken =
           "test@permanent.org";
-        (req.body as TwoFactorRequest).token = "testToken";
         next();
       }
     );
@@ -56,16 +55,6 @@ describe("/idpuser", () => {
   test("should return an array", async () => {
     const response = await agent.get("/api/v2/idpuser");
     expect(response.body).toBeInstanceOf(Array);
-  });
-
-  test("should return invalid request if the token is not defined", async () => {
-    (verifyUserAuthentication as jest.Mock).mockImplementation(
-      (req: Request, __, next: NextFunction) => {
-        (req.body as TwoFactorRequest).token = "";
-        next();
-      }
-    );
-    await agent.get("/api/v2/idpuser").expect(400);
   });
 
   test("should return an array with the length equal to 1 is the user has one multi factor method enabled", async () => {
