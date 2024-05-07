@@ -83,11 +83,15 @@ fdescribe("record/get", () => {
     expect(response.body.length).toEqual(2);
   });
   test("expect an empty response if the logged-in user does not own the record", async () => {
-    const response = await agent.get("/api/v2/record/get?recordIds[]=7").expect(200);
+    const response = await agent
+      .get("/api/v2/record/get?recordIds[]=7")
+      .expect(200);
     expect(response.body.length).toEqual(0);
   });
   test("expect an empty response if the record is deleted", async () => {
-    const response = await agent.get("/api/v2/record/get?recordIds[]=4").expect(200);
+    const response = await agent
+      .get("/api/v2/record/get?recordIds[]=4")
+      .expect(200);
     expect(response.body.length).toEqual(0);
   });
   test("expect to return a public record not owned by logged-in user", async () => {
@@ -135,5 +139,13 @@ fdescribe("record/get", () => {
     // object (necessary?), original exif data (seems unnecessary?),
     // fileDurationInSeconds (not used in UI), tags as objects, timezone as an
     // object (unnecessary), archive.archiveNbr, shares
+    const response = await agent
+      .get("/api/v2/record/get?recordIds[]=1")
+      .expect(200);
+    expect(response.body.length).toEqual(1);
+    expect(response.body[0].recordId).toEqual("1");
+    expect(response.body[0].displayName).toEqual("Public File");
+    expect(response.body[0].archiveId).toEqual("1");
+    expect(response.body[0].archiveNumber).toEqual("0000-0001");
   });
 });

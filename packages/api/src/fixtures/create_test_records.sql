@@ -2,6 +2,7 @@ INSERT INTO
 record (
   recordid,
   archiveid,
+  archiveNbr,
   publicdt,
   displayname,
   uploadaccountid,
@@ -14,6 +15,7 @@ VALUES
 (
   1,
   1,
+  '0000-0001',
   '2023-06-21',
   'Public File',
   2,
@@ -26,6 +28,7 @@ VALUES
   2,
   1,
   NULL,
+  NULL,
   'Private File',
   2,
   2,
@@ -36,6 +39,7 @@ VALUES
 (
   3,
   1,
+  NULL,
   CURRENT_TIMESTAMP + '1 day'::interval,
   'Future Public File',
   2,
@@ -47,6 +51,7 @@ VALUES
 (
   4,
   1,
+  NULL,
   '2023-06-21',
   'Deleted File',
   2,
@@ -58,6 +63,7 @@ VALUES
 (
   5,
   2,
+  NULL,
   '2023-06-21',
   'Public File',
   3,
@@ -70,6 +76,7 @@ VALUES
   6,
   2,
   NULL,
+  NULL,
   'Private shared non-owned File',
   3,
   3,
@@ -80,6 +87,7 @@ VALUES
 (
   7,
   2,
+  NULL,
   NULL,
   'Private non-owned non-shared File',
   3,

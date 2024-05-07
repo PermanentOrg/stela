@@ -1,4 +1,8 @@
-SELECT DISTINCT record.recordid AS "recordId"
+SELECT DISTINCT ON (record.recordid)
+  record.recordid AS "recordId",
+  record.displayname AS "displayName",
+  record.archiveid AS "archiveId",
+  record.archivenbr AS "archiveNumber"
 FROM
   record
 INNER JOIN
