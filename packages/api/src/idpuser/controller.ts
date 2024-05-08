@@ -9,6 +9,7 @@ import {
 import { fusionAuthClient } from "../fusionauth";
 import { verifyUserAuthentication } from "../middleware";
 import { isValidationError } from "../validators/validator_util";
+import { validateBodyFromAuthentication } from "../validators";
 
 export const idpUserController = Router();
 
@@ -17,6 +18,7 @@ idpUserController.get(
   verifyUserAuthentication,
   async (req: Request, res: Response, next: NextFunction) => {
     try {
+      validateBodyFromAuthentication(req.body);
       let response;
       const clientResponse = await fusionAuthClient.retrieveUserByEmail(
         req.body.emailFromAuthToken
