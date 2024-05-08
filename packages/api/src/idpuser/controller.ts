@@ -24,6 +24,15 @@ idpUserController.get(
         req.body.emailFromAuthToken
       );
       response = clientResponse.response.user?.twoFactor?.methods ?? [];
+
+      if (response.length) {
+        response = response.map(({ id, method, email, mobilePhone }) => ({
+          methodId: id,
+          method,
+          value: email || mobilePhone,
+        }));
+      }
+
       res.send(response);
     } catch (err) {
       if (isValidationError(err)) {
