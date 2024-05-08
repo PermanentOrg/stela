@@ -32,5 +32,19 @@ declare module "@fusionauth/typescript-client" {
       exception: Error;
       wasSuccessful: () => boolean;
     }>;
+    public retrieveUserByEmail(email: string): Promise<{
+      response: {
+        user: {
+          twoFactor: {
+            methods: {
+              id: string;
+              method: string;
+              email: string;
+              mobilePhone: string;
+            }[];
+          };
+        };
+      };
+    }>;
   }
 }
