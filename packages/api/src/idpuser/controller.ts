@@ -19,7 +19,7 @@ idpUserController.get(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       validateBodyFromAuthentication(req.body);
-      let response;
+      let response = [];
       const clientResponse = await fusionAuthClient.retrieveUserByEmail(
         req.body.emailFromAuthToken
       );
@@ -29,7 +29,7 @@ idpUserController.get(
         response = response.map(({ id, method, email, mobilePhone }) => ({
           methodId: id,
           method,
-          value: email || mobilePhone,
+          value: email ?? mobilePhone,
         }));
       }
 

@@ -4,7 +4,7 @@ import request from "supertest";
 import type { NextFunction, Request } from "express";
 import { app } from "../app";
 import { verifyUserAuthentication } from "../middleware";
-import type { TwoFactorRequest } from "./models";
+import type { TwoFactorRequest, TwoFactorRequestResponse } from "./models";
 import { fusionAuthClient } from "../fusionauth";
 
 jest.mock("node-fetch", () => jest.fn());
@@ -82,8 +82,9 @@ describe("/idpuser", () => {
     });
 
     const response = await agent.get("/api/v2/idpuser");
+    const responseBody = response.body as TwoFactorRequestResponse[];
 
-    expect(response.body.length).toEqual(1);
+    expect(responseBody.length).toEqual(1);
   });
 
   test("should return an array with the length equal to 2 is the user has both multi factor methods enabled", async () => {
@@ -109,7 +110,8 @@ describe("/idpuser", () => {
     });
 
     const response = await agent.get("/api/v2/idpuser");
+    const responseBody = response.body as TwoFactorRequestResponse[];
 
-    expect(response.body.length).toEqual(2);
+    expect(responseBody.length).toEqual(2);
   });
 });
