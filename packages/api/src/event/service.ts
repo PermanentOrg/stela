@@ -1,4 +1,5 @@
 import createError from "http-errors";
+import { UAParser } from "ua-parser-js";
 import { logger } from "@stela/logger";
 import { db } from "../database";
 import { mixpanelClient } from "../mixpanel";
@@ -10,10 +11,14 @@ import {
 
 export const createEvent = async (data: CreateEventRequest): Promise<void> => {
   if (data.body.analytics) {
+    const { browser, os, device } = UAParser(data.userAgent);
     try {
       const analyticsData: { [key: string]: unknown; distinct_id?: string } =
         data.body.analytics.data;
       analyticsData.distinct_id = data.body.analytics.distinctId;
+      analyticsData["$browser"] = browser.name;
+      analyticsData["$os"] = os.name;
+      analyticsData["$device"] = device.type;
       mixpanelClient.track(data.body.analytics.event, analyticsData);
     } catch (err) {
       logger.error(err);

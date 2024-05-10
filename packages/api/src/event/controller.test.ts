@@ -423,6 +423,10 @@ describe("POST /event", () => {
   test("should send Mixpanel event if body includes analytics", async () => {
     await agent
       .post("/api/v2/event")
+      .set(
+        "User-Agent",
+        "Mozilla/5.0 (iPhone; CPU iPhone OS 17_4 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/125.0.6422.33 Mobile/15E148 Safari/604.1"
+      )
       .send({
         entity: "account",
         action: "create",
@@ -445,6 +449,9 @@ describe("POST /event", () => {
       distinct_id: "local:123",
       accountId: "123",
       email: "test+sign_up@permanent.org",
+      $browser: "Chrome",
+      $device: "mobile",
+      $os: "iOS",
     });
   });
 
