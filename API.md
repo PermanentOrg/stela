@@ -518,9 +518,9 @@ JWT.
 ```
 [
   {
-    methodId: [string] 4 random letters and numbers
-    method: [string] // either 'sms' or 'email'
-    value: [string] // either a phone number or an email address
+    methodId: string 4 random letters and numbers
+    method: string // either 'sms' or 'email'
+    value: string // either a phone number or an email address
   }
 ]
 ```
@@ -531,8 +531,8 @@ JWT.
 - Request Body
 ```
 {
-  method: [string] // either 'sms' or 'email'
-  value: [string] // either a phone number or an email address
+  method: string // either 'sms' or 'email'
+  value: string // either a phone number or an email address
 }
 ```
 
@@ -542,9 +542,9 @@ JWT.
 - Request Body
 ```
 {
-  method: [string] // the same method from `idpuser/send-enable-code`
-  value: [string] // the same value from `idpuser/send-enable-code`
-  code: [string] // provided by the user (they will have received it from FusionAuth)
+  method: string // the same method from `idpuser/send-enable-code`
+  value: string // the same value from `idpuser/send-enable-code`
+  code: string // provided by the user (they will have received it from FusionAuth)
 }
 ```
 
@@ -554,7 +554,7 @@ JWT.
 - Request Body
 ```
 {
-  methodId: [4-digit string] // this was returned in the GET
+  methodId: 4-digit string // this was returned in the GET
 }
 ```
 
@@ -564,7 +564,7 @@ JWT.
 - Request Body
 ```
 {
-  code: [string] // provided by the user (they will have received it from FusionAuth)
-  methodId: [4-digit string] // this was returned in the GET that listed all methods initially
+  code: string // provided by the user (they will have received it from FusionAuth)
+  methodId: 4-digit string // this was returned in the GET that listed all methods initially
 }
 ```

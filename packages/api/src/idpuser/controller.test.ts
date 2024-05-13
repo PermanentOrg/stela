@@ -1,15 +1,17 @@
-/** @format */
-
 import request from "supertest";
 import type { NextFunction, Request } from "express";
 import { app } from "../app";
 import { verifyUserAuthentication } from "../middleware";
-import type { TwoFactorRequest, TwoFactorRequestResponse } from "./models";
-import { fusionAuthClient } from "../fusionauth";
+import type { TwoFactorRequestResponse } from "./models";
+import { getTwoFactorMethods } from "./service";
+
+interface TwoFactorRequest {
+  emailFromAuthToken: string;
+}
 
 jest.mock("node-fetch", () => jest.fn());
 jest.mock("../middleware");
-jest.mock("../fusionauth");
+jest.mock("./service");
 
 describe("/idpuser", () => {
   const agent = request(app);
@@ -21,15 +23,7 @@ describe("/idpuser", () => {
         next();
       }
     );
-    (fusionAuthClient.retrieveUserByEmail as jest.Mock).mockResolvedValue({
-      response: {
-        user: {
-          twoFactor: {
-            methods: [],
-          },
-        },
-      },
-    });
+    (getTwoFactorMethods as jest.Mock).mockResolvedValue([]);
   });
 
   afterEach(async () => {
@@ -65,21 +59,13 @@ describe("/idpuser", () => {
   });
 
   test("should return an array with the length equal to 1 is the user has one multi factor method enabled", async () => {
-    fusionAuthClient.retrieveUserByEmail = jest.fn().mockResolvedValue({
-      response: {
-        user: {
-          twoFactor: {
-            methods: [
-              {
-                id: "1234",
-                method: "email",
-                value: "test@example.com",
-              },
-            ],
-          },
-        },
+    (getTwoFactorMethods as jest.Mock).mockResolvedValue([
+      {
+        id: "1234",
+        method: "email",
+        value: "test@example.com",
       },
-    });
+    ]);
 
     const response = await agent.get("/api/v2/idpuser");
     const responseBody = response.body as TwoFactorRequestResponse[];
@@ -88,29 +74,21 @@ describe("/idpuser", () => {
   });
 
   test("should return an array with the length equal to 2 is the user has both multi factor methods enabled", async () => {
-    fusionAuthClient.retrieveUserByEmail = jest.fn().mockResolvedValue({
-      response: {
-        user: {
-          twoFactor: {
-            methods: [
-              {
-                id: "1234",
-                method: "email",
-                value: "test@example.com",
-              },
-              {
-                id: "5678",
-                method: "sms",
-                value: "+1234567890",
-              },
-            ],
-          },
-        },
+    (getTwoFactorMethods as jest.Mock).mockResolvedValue([
+      {
+        id: "1234",
+        method: "email",
+        value: "test@example.com",
       },
-    });
+      {
+        id: "5678",
+        method: "sms",
+        value: "+1234567890",
+      },
+    ]);
 
     const response = await agent.get("/api/v2/idpuser");
-    const responseBody = response.body as TwoFactorRequestResponse[];
+    const responseBody = response.body as unknown as TwoFactorRequestResponse[];
 
     expect(responseBody.length).toEqual(2);
   });
