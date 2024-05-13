@@ -39,7 +39,7 @@ describe("/idpuser", () => {
     const response = await fusionAuthClient.retrieveUserByEmail(
       "email@example.com"
     );
-    const methods = response.response.user.twoFactor.methods;
+    const { methods } = response.response.user.twoFactor;
 
     expect(methods.length).toEqual(1);
   });
@@ -69,7 +69,7 @@ describe("/idpuser", () => {
     const response = await fusionAuthClient.retrieveUserByEmail(
       "email@example.com"
     );
-    const methods = response.response.user.twoFactor.methods;
+    const { methods } = response.response.user.twoFactor;
 
     expect(methods.length).toEqual(2);
   });
