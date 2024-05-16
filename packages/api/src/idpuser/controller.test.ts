@@ -34,7 +34,7 @@ describe("/idpuser", () => {
     await agent.get("/api/v2/idpuser").expect(200);
   });
 
-  test("should return invalid request status if email from auth token is not an email", async () => {
+  test("should return invalid request status if the value from the auth token is not a valid email", async () => {
     (verifyUserAuthentication as jest.Mock).mockImplementation(
       (req: Request, __, next: NextFunction) => {
         (req.body as TwoFactorRequest).emailFromAuthToken = "not_an_email";
@@ -58,7 +58,7 @@ describe("/idpuser", () => {
     expect(response.body).toBeInstanceOf(Array);
   });
 
-  test("should return an array with the length equal to 1 is the user has one multi factor method enabled", async () => {
+  test("should return an array with the length equal to 1 if the user has one multi factor method enabled", async () => {
     (getTwoFactorMethods as jest.Mock).mockResolvedValue([
       {
         id: "1234",
@@ -73,7 +73,7 @@ describe("/idpuser", () => {
     expect(responseBody.length).toEqual(1);
   });
 
-  test("should return an array with the length equal to 2 is the user has both multi factor methods enabled", async () => {
+  test("should return an array with the length equal to 2 if the user has both multi factor methods enabled", async () => {
     (getTwoFactorMethods as jest.Mock).mockResolvedValue([
       {
         id: "1234",

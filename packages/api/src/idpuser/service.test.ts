@@ -1,76 +1,39 @@
 import { fusionAuthClient } from "../fusionauth";
+import { getTwoFactorMethods } from "./service";
 
 jest.mock("../fusionauth");
 
 describe("/idpuser", () => {
-  beforeEach(async () => {
-    (fusionAuthClient.retrieveUserByEmail as jest.Mock).mockResolvedValue({
-      response: {
-        user: {
-          twoFactor: {
-            methods: [],
-          },
-        },
-      },
-    });
-  });
+  const mockedFusionAuthClient = fusionAuthClient as jest.Mocked<
+    typeof fusionAuthClient
+  >;
 
   afterEach(async () => {
     jest.clearAllMocks();
   });
 
-  test("should return an array with the length equal to 1 is the user has one multi factor method enabled", async () => {
-    fusionAuthClient.retrieveUserByEmail = jest.fn().mockResolvedValue({
+  it("should correctly map values when there are two-factor methods", async () => {
+    const methods = [
+      { id: "1", method: "email", email: "test1@example.com", mobilePhone: "" },
+      { id: "2", method: "sms", email: "", mobilePhone: "1234567890" },
+    ];
+
+    mockedFusionAuthClient.retrieveUserByEmail.mockResolvedValue({
       response: {
         user: {
           twoFactor: {
-            methods: [
-              {
-                id: "1234",
-                method: "email",
-                value: "test@example.com",
-              },
-            ],
+            methods,
           },
         },
       },
     });
 
-    const response = await fusionAuthClient.retrieveUserByEmail(
-      "email@example.com"
-    );
-    const { methods } = response.response.user.twoFactor;
+    const expected = [
+      { methodId: "1", method: "email", value: "test1@example.com" },
+      { methodId: "2", method: "sms", value: "1234567890" },
+    ];
 
-    expect(methods.length).toEqual(1);
-  });
-
-  test("should return an array with the length equal to 2 is the user has both multi factor methods enabled", async () => {
-    fusionAuthClient.retrieveUserByEmail = jest.fn().mockResolvedValue({
-      response: {
-        user: {
-          twoFactor: {
-            methods: [
-              {
-                id: "1234",
-                method: "email",
-                value: "test@example.com",
-              },
-              {
-                id: "5678",
-                method: "sms",
-                value: "+1234567890",
-              },
-            ],
-          },
-        },
-      },
-    });
-
-    const response = await fusionAuthClient.retrieveUserByEmail(
-      "email@example.com"
-    );
-    const { methods } = response.response.user.twoFactor;
-
-    expect(methods.length).toEqual(2);
+    const result = await getTwoFactorMethods("test@example.com");
+    expect(result).toEqual(expected);
   });
 });
