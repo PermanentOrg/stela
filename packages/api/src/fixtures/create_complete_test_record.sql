@@ -19,7 +19,10 @@ record (
   thumburl1000,
   thumburl2000,
   status,
-  type
+  type,
+  createddt,
+  updateddt,
+  alttext
 )
 VALUES
 (
@@ -42,5 +45,8 @@ VALUES
   'https://localcdn.permanent.org/8/thumb1000.jpg',
   'https://localcdn.permanent.org/8/thumb2000.jpg',
   'status.generic.ok',
-  'type.record.image'
+  'type.record.image',
+  '2023-06-21T00:00:00.000Z',
+  '2023-06-21T00:00:00.000Z',
+  'An image'
 );

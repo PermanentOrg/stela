@@ -18,7 +18,10 @@ SELECT DISTINCT ON (record.recordid)
   record.thumburl1000 AS "thumbUrl1000",
   record.thumburl2000 AS "thumbUrl2000",
   record.status,
-  record.type
+  record.type,
+  record.createddt AS "createdAt",
+  record.updateddt AS "updatedAt",
+  record.alttext AS "altText"
 FROM
   record
 INNER JOIN
