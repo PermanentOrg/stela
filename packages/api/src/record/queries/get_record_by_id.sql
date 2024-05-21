@@ -21,7 +21,8 @@ SELECT DISTINCT ON (record.recordid)
   record.type,
   record.createddt AS "createdAt",
   record.updateddt AS "updatedAt",
-  record.alttext AS "altText"
+  record.alttext AS "altText",
+  file.fileid AS "fileId"
 FROM
   record
 INNER JOIN
@@ -30,6 +31,12 @@ INNER JOIN
 INNER JOIN
   account AS record_account
   ON record_account_archive.accountid = record_account.accountid
+INNER JOIN
+  record_file
+  ON record.recordid = record_file.recordid
+INNER JOIN
+  file
+  ON record_file.fileid = file.fileid
 INNER JOIN
   folder_link
   ON record.recordid = folder_link.recordid

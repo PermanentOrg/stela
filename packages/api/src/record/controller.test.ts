@@ -15,6 +15,8 @@ const setupDatabase = async (): Promise<void> => {
   await db.sql("fixtures.create_complete_test_record");
   await db.sql("fixtures.create_test_folder_links");
   await db.sql("fixtures.create_test_accesses");
+  await db.sql("fixtures.create_test_files");
+  await db.sql("fixtures.create_test_record_files");
 };
 
 const clearDatabase = async (): Promise<void> => {
@@ -175,5 +177,6 @@ fdescribe("record/get", () => {
     expect(response.body[0].createdAt).toEqual("2023-06-21T00:00:00.000Z");
     expect(response.body[0].updatedAt).toEqual("2023-06-21T00:00:00.000Z");
     expect(response.body[0].altText).toEqual("An image");
+    expect(response.body[0].fileId).toEqual("1");
   });
 });
