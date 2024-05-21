@@ -22,7 +22,7 @@ SELECT DISTINCT ON (record.recordid)
   record.createddt AS "createdAt",
   record.updateddt AS "updatedAt",
   record.alttext AS "altText",
-  file.fileid AS "fileId"
+  files.files
 FROM
   record
 INNER JOIN
@@ -32,11 +32,16 @@ INNER JOIN
   account AS record_account
   ON record_account_archive.accountid = record_account.accountid
 INNER JOIN
-  record_file
-  ON record.recordid = record_file.recordid
-INNER JOIN
-  file
-  ON record_file.fileid = file.fileid
+  (SELECT
+    recordid,
+    array_agg(file.fileid) AS files
+  FROM
+    record_file
+  INNER JOIN
+    file
+    ON record_file.fileid = file.fileid
+  GROUP BY record_file.recordid) AS files
+  ON record.recordid = files.recordid
 INNER JOIN
   folder_link
   ON record.recordid = folder_link.recordid
@@ -44,7 +49,7 @@ LEFT JOIN
   access
   ON folder_link.folder_linkid = access.folder_linkid
 LEFT JOIN
-  account_archive as share_account_archive
+  account_archive AS share_account_archive
   ON access.archiveid = share_account_archive.archiveid
 LEFT JOIN
   account as share_account

@@ -22,6 +22,7 @@ export interface ArchiveRecord {
   createdAt: string;
   updatedAt?: string;
   altText?: string;
+  files: ArchiveFile[];
 }
 
 export interface ArchiveRecordRow {
@@ -48,6 +49,11 @@ export interface ArchiveRecordRow {
   createdAt: string;
   updatedAt?: string;
   altText?: string;
+  files: ArchiveFile[];
+}
+
+export interface ArchiveFile {
+  fileId: string;
 }
 
 export enum RecordStatus {

@@ -3,6 +3,7 @@ import request from "supertest";
 import { app } from "../app";
 import { db } from "../database";
 import { extractUserEmailFromAuthToken } from "../middleware";
+import type { ArchiveFile } from "./models";
 
 jest.mock("../database");
 jest.mock("../middleware");
@@ -177,6 +178,11 @@ fdescribe("record/get", () => {
     expect(response.body[0].createdAt).toEqual("2023-06-21T00:00:00.000Z");
     expect(response.body[0].updatedAt).toEqual("2023-06-21T00:00:00.000Z");
     expect(response.body[0].altText).toEqual("An image");
-    expect(response.body[0].files.length).toEqual(2);
+    expect(
+      response.body[0].files.find((file: ArchiveFile) => file.fileId === "8")
+    ).toBeTruthy();
+    expect(
+      response.body[0].files.find((file: ArchiveFile) => file.fileId === "9")
+    ).toBeTruthy();
   });
 });
