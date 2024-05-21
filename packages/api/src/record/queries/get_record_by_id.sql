@@ -34,7 +34,7 @@ INNER JOIN
 INNER JOIN
   (SELECT
     recordid,
-    array_agg(file.fileid) AS files
+    array_agg(jsonb_build_object('fileId', file.fileid)) AS files
   FROM
     record_file
   INNER JOIN
