@@ -17,6 +17,7 @@ const setupDatabase = async (): Promise<void> => {
   await db.sql("fixtures.create_test_folder_links");
   await db.sql("fixtures.create_test_accesses");
   await db.sql("fixtures.create_test_files");
+  await db.sql("fixtures.create_complete_test_files");
   await db.sql("fixtures.create_test_record_files");
 };
 
@@ -179,12 +180,11 @@ fdescribe("record/get", () => {
     expect(response.body[0].updatedAt).toEqual("2023-06-21T00:00:00.000Z");
     expect(response.body[0].altText).toEqual("An image");
     expect(response.body[0].files.length).toEqual(2);
-    // fail(response.body[0].files);
-    expect(
-      response.body[0].files.find((file: ArchiveFile) => file.fileId === "8")
-    ).toBeTruthy();
-    expect(
-      response.body[0].files.find((file: ArchiveFile) => file.fileId === "9")
-    ).toBeTruthy();
+    const originalFile = response.body[0].files.find((file: ArchiveFile) => file.fileId === "8");
+    const convertedFile = response.body[0].files.find((file: ArchiveFile) => file.fileId === "9");
+    expect(originalFile).toBeTruthy();
+    expect(convertedFile).toBeTruthy();
+    expect(originalFile.size).toEqual(1024);
+    expect(convertedFile.size).toEqual(2056);
   });
 });

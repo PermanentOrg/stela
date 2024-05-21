@@ -1,0 +1,25 @@
+INSERT INTO file (
+  fileid,
+  archiveid,
+  size,
+  status,
+  createddt,
+  updateddt
+)
+VALUES
+(
+  8,
+  1,
+  1024,
+  'status.generic.ok',
+  '2023-06-21T00:00:00.000Z',
+  '2023-06-21T00:00:00.000Z'
+),
+(
+  9,
+  1,
+  2056,
+  'status.generic.ok',
+  '2023-06-21T00:00:00.000Z',
+  '2023-06-21T00:00:00.000Z'
+);

@@ -54,6 +54,7 @@ export interface ArchiveRecordRow {
 
 export interface ArchiveFile {
   fileId: string;
+  size: number;
 }
 
 export enum RecordStatus {
