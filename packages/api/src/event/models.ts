@@ -6,7 +6,7 @@ export interface CreateEventRequest {
   version: number;
   entityId: string;
   ip: string;
-  userAgent: string;
+  userAgent?: string;
   body: {
     [key: string]: unknown;
     analytics?: {

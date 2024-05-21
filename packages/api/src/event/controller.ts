@@ -20,6 +20,10 @@ eventController.post(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       validateCreateEventRequest(req.body);
+      const userAgent = req.body.userAgent ?? req.headers["user-agent"];
+      if (userAgent !== undefined) {
+        req.body.userAgent = userAgent;
+      }
       await createEvent(req.body);
       res.status(200).json({});
     } catch (err) {
