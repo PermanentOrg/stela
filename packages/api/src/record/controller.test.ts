@@ -177,6 +177,6 @@ fdescribe("record/get", () => {
     expect(response.body[0].createdAt).toEqual("2023-06-21T00:00:00.000Z");
     expect(response.body[0].updatedAt).toEqual("2023-06-21T00:00:00.000Z");
     expect(response.body[0].altText).toEqual("An image");
-    expect(response.body[0].fileId).toEqual("1");
+    expect(response.body[0].files.length).toEqual(2);
   });
 });
