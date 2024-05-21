@@ -16,7 +16,9 @@ SELECT DISTINCT ON (record.recordid)
   record.thumburl200 AS "thumbUrl200",
   record.thumburl500 AS "thumbUrl500",
   record.thumburl1000 AS "thumbUrl1000",
-  record.thumburl2000 AS "thumbUrl2000"
+  record.thumburl2000 AS "thumbUrl2000",
+  record.status,
+  record.type
 FROM
   record
 INNER JOIN
