@@ -158,5 +158,17 @@ fdescribe("record/get", () => {
     expect(response.body[0].displayDate).toEqual("2023-06-21T00:00:00.000Z");
     expect(response.body[0].fileCreatedAt).toEqual("2023-06-21T00:00:00.000Z");
     expect(response.body[0].imageRatio).toEqual(1);
+    expect(response.body[0].thumbUrl200).toEqual(
+      "https://localcdn.permanent.org/8/thumb200.jpg"
+    );
+    expect(response.body[0].thumbUrl500).toEqual(
+      "https://localcdn.permanent.org/8/thumb500.jpg"
+    );
+    expect(response.body[0].thumbUrl1000).toEqual(
+      "https://localcdn.permanent.org/8/thumb1000.jpg"
+    );
+    expect(response.body[0].thumbUrl2000).toEqual(
+      "https://localcdn.permanent.org/8/thumb2000.jpg"
+    );
   });
 });

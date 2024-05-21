@@ -14,6 +14,10 @@ record (
   displaydt,
   derivedcreateddt,
   imageratio,
+  thumburl200,
+  thumburl500,
+  thumburl1000,
+  thumburl2000,
   status,
   type
 )
@@ -33,6 +37,10 @@ VALUES
   '2023-06-21T00:00:00.000Z',
   '2023-06-21T00:00:00.000Z',
   1,
+  'https://localcdn.permanent.org/8/thumb200.jpg',
+  'https://localcdn.permanent.org/8/thumb500.jpg',
+  'https://localcdn.permanent.org/8/thumb1000.jpg',
+  'https://localcdn.permanent.org/8/thumb2000.jpg',
   'status.generic.ok',
   'type.record.image'
 );

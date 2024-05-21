@@ -19,7 +19,11 @@ export const getRecordById = async (requestQuery: {
       );
     });
   const records = record.rows.map<ArchiveRecord>((row: ArchiveRecordRow) => {
-    const record = {...row, size: +row.size};
+    const record = {
+      ...row,
+      size: +(row.size ?? 0),
+      imageRatio: +(row.imageRatio ?? 0),
+    };
     return record;
   });
   return records;
