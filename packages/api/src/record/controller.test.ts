@@ -170,5 +170,6 @@ fdescribe("record/get", () => {
     expect(response.body[0].thumbUrl2000).toEqual(
       "https://localcdn.permanent.org/8/thumb2000.jpg"
     );
+    expect(response.body[0].status).toEqual("status.generic.ok");
   });
 });

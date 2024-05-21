@@ -13,6 +13,10 @@ export interface ArchiveRecord {
   displayDate?: string;
   fileCreatedAt?: string;
   imageRatio?: number;
+  thumbUrl200?: string;
+  thumbUrl500?: string;
+  thumbUrl1000?: string;
+  thumbUrl2000?: string;
 }
 
 export interface ArchiveRecordRow {
@@ -29,5 +33,9 @@ export interface ArchiveRecordRow {
   size?: string;
   displayDate?: string;
   fileCreatedAt?: string;
-  imageRatio?: number;  
+  imageRatio?: number;
+  thumbUrl200?: string;
+  thumbUrl500?: string;
+  thumbUrl1000?: string;
+  thumbUrl2000?: string;
 }

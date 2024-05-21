@@ -12,7 +12,11 @@ SELECT DISTINCT ON (record.recordid)
   record.size,
   record.displaydt AS "displayDate",
   record.derivedcreateddt AS "fileCreatedAt",
-  record.imageratio AS "imageRatio"
+  record.imageratio AS "imageRatio",
+  record.thumburl200 AS "thumbUrl200",
+  record.thumburl500 AS "thumbUrl500",
+  record.thumburl1000 AS "thumbUrl1000",
+  record.thumburl2000 AS "thumbUrl2000"
 FROM
   record
 INNER JOIN
