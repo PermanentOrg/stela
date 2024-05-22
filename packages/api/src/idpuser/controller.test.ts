@@ -92,4 +92,13 @@ describe("/idpuser", () => {
 
     expect(responseBody.length).toEqual(2);
   });
+
+  test("should return a 500 status if getTwoFactorMethods throws an error", async () => {
+    (getTwoFactorMethods as jest.Mock).mockRejectedValue(
+      new Error("Unexpected error")
+    );
+
+    const response = await agent.get("/api/v2/idpuser");
+    expect(response.status).toBe(500);
+  });
 });

@@ -12,7 +12,7 @@ describe("/idpuser", () => {
     jest.clearAllMocks();
   });
 
-  it("should correctly map values when there are two-factor methods", async () => {
+  test("should correctly map values when there are two-factor methods", async () => {
     const methods = [
       { id: "1", method: "email", email: "test1@example.com", mobilePhone: "" },
       { id: "2", method: "sms", email: "", mobilePhone: "1234567890" },
