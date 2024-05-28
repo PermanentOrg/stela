@@ -101,4 +101,22 @@ describe("/idpuser", () => {
     const response = await agent.get("/api/v2/idpuser");
     expect(response.status).toBe(500);
   });
+
+  test("should correctly map values when there are two-factor methods", async () => {
+    const methods = [
+      { id: "1", method: "email", value: "test1@example.com" },
+      { id: "2", method: "sms", value: "1234567890" },
+    ];
+
+    (getTwoFactorMethods as jest.Mock).mockResolvedValue(methods);
+
+    const expected = [
+      { id: "1", method: "email", value: "test1@example.com" },
+      { id: "2", method: "sms", value: "1234567890" },
+    ];
+
+    const response = await agent.get("/api/v2/idpuser");
+
+    expect(response.body).toEqual(expected);
+  });
 });
