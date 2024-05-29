@@ -2,8 +2,8 @@ import request from "supertest";
 import type { NextFunction, Request } from "express";
 import { app } from "../app";
 import { verifyUserAuthentication } from "../middleware";
+import { fusionAuthClient } from "../fusionauth";
 import type { TwoFactorRequestResponse } from "./models";
-import { getTwoFactorMethods } from "./service";
 
 interface TwoFactorRequest {
   emailFromAuthToken: string;
@@ -11,7 +11,7 @@ interface TwoFactorRequest {
 
 jest.mock("node-fetch", () => jest.fn());
 jest.mock("../middleware");
-jest.mock("./service");
+jest.mock("../fusionauth");
 
 describe("/idpuser", () => {
   const agent = request(app);
@@ -23,7 +23,16 @@ describe("/idpuser", () => {
         next();
       }
     );
-    (getTwoFactorMethods as jest.Mock).mockResolvedValue([]);
+
+    (fusionAuthClient.retrieveUserByEmail as jest.Mock).mockResolvedValue({
+      response: {
+        user: {
+          twoFactor: {
+            methods: [],
+          },
+        },
+      },
+    });
   });
 
   afterEach(async () => {
@@ -59,42 +68,51 @@ describe("/idpuser", () => {
   });
 
   test("should return an array with the length equal to 1 if the user has one multi factor method enabled", async () => {
-    (getTwoFactorMethods as jest.Mock).mockResolvedValue([
-      {
-        id: "1234",
-        method: "email",
-        value: "test@example.com",
+    (fusionAuthClient.retrieveUserByEmail as jest.Mock).mockResolvedValue({
+      response: {
+        user: {
+          twoFactor: {
+            methods: [
+              {
+                id: "1234",
+                method: "email",
+                email: "test@example.com",
+                mobilePhone: "",
+              },
+            ],
+          },
+        },
       },
-    ]);
+    });
 
     const response = await agent.get("/api/v2/idpuser");
-    const responseBody = response.body as TwoFactorRequestResponse[];
 
-    expect(responseBody.length).toEqual(1);
+    expect((response.body as TwoFactorRequestResponse[]).length).toEqual(1);
   });
 
   test("should return an array with the length equal to 2 if the user has both multi factor methods enabled", async () => {
-    (getTwoFactorMethods as jest.Mock).mockResolvedValue([
-      {
-        id: "1234",
-        method: "email",
-        value: "test@example.com",
+    const methods = [
+      { id: "1", method: "email", email: "test1@example.com", mobilePhone: "" },
+      { id: "2", method: "sms", mobilePhone: "1234567890", email: "" },
+    ];
+
+    (fusionAuthClient.retrieveUserByEmail as jest.Mock).mockResolvedValue({
+      response: {
+        user: {
+          twoFactor: {
+            methods,
+          },
+        },
       },
-      {
-        id: "5678",
-        method: "sms",
-        value: "+1234567890",
-      },
-    ]);
+    });
 
     const response = await agent.get("/api/v2/idpuser");
-    const responseBody = response.body as unknown as TwoFactorRequestResponse[];
 
-    expect(responseBody.length).toEqual(2);
+    expect((response.body as TwoFactorRequestResponse[]).length).toEqual(2);
   });
 
   test("should return a 500 status if getTwoFactorMethods throws an error", async () => {
-    (getTwoFactorMethods as jest.Mock).mockRejectedValue(
+    (fusionAuthClient.retrieveUserByEmail as jest.Mock).mockRejectedValue(
       new Error("Unexpected error")
     );
 
@@ -104,15 +122,23 @@ describe("/idpuser", () => {
 
   test("should correctly map values when there are two-factor methods", async () => {
     const methods = [
-      { id: "1", method: "email", value: "test1@example.com" },
-      { id: "2", method: "sms", value: "1234567890" },
+      { id: "1", method: "email", email: "test1@example.com", mobilePhone: "" },
+      { id: "2", method: "sms", mobilePhone: "1234567890", email: "" },
     ];
 
-    (getTwoFactorMethods as jest.Mock).mockResolvedValue(methods);
+    (fusionAuthClient.retrieveUserByEmail as jest.Mock).mockResolvedValue({
+      response: {
+        user: {
+          twoFactor: {
+            methods,
+          },
+        },
+      },
+    });
 
     const expected = [
-      { id: "1", method: "email", value: "test1@example.com" },
-      { id: "2", method: "sms", value: "1234567890" },
+      { methodId: "1", method: "email", value: "test1@example.com" },
+      { methodId: "2", method: "sms", value: "1234567890" },
     ];
 
     const response = await agent.get("/api/v2/idpuser");
