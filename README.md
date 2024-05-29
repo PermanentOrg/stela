@@ -48,6 +48,8 @@ npm install -ws
 | AWS_SECRET_ACCESS_KEY             | none                                                  | The same one you use in `devenv`                                                                                                           |
 | LOW_PRIORITY_TOPIC_ARN            | test                                                  | Doesn't need to be set to a real ARN unless your work touches it specifically                                                              |
 | MIXPANEL_TOKEN                    | none                                                  | Found in Mixpanel at Settings > Project Settings > Project Token                                                                           |
+| ARCHIVEMATICA_BASE_URL            | none                                                  | Found in EC2, not needed unless you're running the cleanup cron                                                                            |
+| ARCHIVEMATICA_API_KEY             | none                                                  | Found in Bitwarden, not needed unless you're running the cleanup cron                                                                      |
 
 ## Linting
 
