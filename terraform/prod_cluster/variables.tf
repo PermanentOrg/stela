@@ -28,7 +28,12 @@ variable "subnet_ids" {
 }
 
 variable "stela_image" {
-  description = "Tag of stela image to deploy"
+  description = "Tag of stela API image to deploy"
+  type        = string
+}
+
+variable "archivematica_cleanup_image" {
+  description = "Tag of Archivematica cleanup image to deploy"
   type        = string
 }
 
@@ -128,5 +133,15 @@ variable "low_priority_topic_arn" {
 
 variable "mixpanel_token" {
   description = "Mixpanel token"
+  type        = string
+}
+
+variable "archivematica_base_url" {
+  description = "Base URL for the Archivematica API"
+  type        = string
+}
+
+variable "archivematica_api_key" {
+  description = "API key
   type        = string
 }

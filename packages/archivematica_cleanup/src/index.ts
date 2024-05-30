@@ -1,4 +1,5 @@
 import * as Sentry from "@sentry/node";
+import { logger } from "@stela/logger";
 import "./env";
 
 const env = process.env["ENV"] ?? "";
@@ -20,6 +21,7 @@ export const cleanupDashboard = async (): Promise<void> => {
       }
     );
     if (!transferDeleteResponse.ok) {
+      logger.error(await transferDeleteResponse.text());
       Sentry.captureMessage(await transferDeleteResponse.text());
       return;
     }
@@ -33,10 +35,12 @@ export const cleanupDashboard = async (): Promise<void> => {
       }
     );
     if (!ingestDeleteResponse.ok) {
+      logger.error(await ingestDeleteResponse.text());
       Sentry.captureMessage(await ingestDeleteResponse.text());
       return;
     }
   } catch (error) {
+    logger.error(error);
     Sentry.captureException(error);
   }
 };

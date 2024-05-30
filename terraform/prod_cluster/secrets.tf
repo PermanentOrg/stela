@@ -14,5 +14,7 @@ resource "kubernetes_secret" "prod-secrets" {
     "AWS_SECRET_ACCESS_KEY"           = var.aws_secret_access_key
     "LOW_PRIORITY_TOPIC_ARN"          = var.low_priority_topic_arn
     "MIXPANEL_TOKEN"                  = var.mixpanel_token
+    "ARCHIVEMATICA_BASE_URL"          = var.archivematica_base_url
+    "ARCHIVEMATICA_API_KEY"           = var.archivematica_api_key
   }
 }
