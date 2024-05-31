@@ -94,11 +94,11 @@ INSERT INTO folder_link (
   'type.folder_link.private'
 ),
 (
-  8,
-  8,
+  9,
   NULL,
   1,
-  9,
+  NULL,
+  NULL,
   1,
   1,
   'access.role.owner',
@@ -106,11 +106,11 @@ INSERT INTO folder_link (
   'type.folder_link.public'
 ),
 (
-  9,
+  8,
+  8,
   NULL,
   1,
-  NULL,
-  NULL,
+  9,
   1,
   1,
   'access.role.owner',

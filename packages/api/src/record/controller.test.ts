@@ -14,6 +14,7 @@ const setupDatabase = async (): Promise<void> => {
   await db.sql("fixtures.create_test_account_archive");
   await db.sql("fixtures.create_test_records");
   await db.sql("fixtures.create_complete_test_record");
+  await db.sql("fixtures.create_test_folders");
   await db.sql("fixtures.create_test_folder_links");
   await db.sql("fixtures.create_test_accesses");
   await db.sql("fixtures.create_test_files");
@@ -23,7 +24,7 @@ const setupDatabase = async (): Promise<void> => {
 
 const clearDatabase = async (): Promise<void> => {
   await db.query(
-    "TRUNCATE account, archive, account_archive, record, folder_link, access CASCADE"
+    "TRUNCATE account, archive, account_archive, record, folder, folder_link, access CASCADE"
   );
 };
 
@@ -205,5 +206,6 @@ fdescribe("record/get", () => {
     expect(response.body[0].folderLinkType).toEqual("type.folder_link.public");
     expect(response.body[0].parentFolderId).toEqual("1");
     expect(response.body[0].parentFolderLinkId).toEqual("9");
+    expect(response.body[0].parentFolderArchiveNumber).toEqual("9");
   });
 });
