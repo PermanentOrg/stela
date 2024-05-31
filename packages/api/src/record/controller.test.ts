@@ -180,11 +180,19 @@ fdescribe("record/get", () => {
     expect(response.body[0].updatedAt).toEqual("2023-06-21T00:00:00.000Z");
     expect(response.body[0].altText).toEqual("An image");
     expect(response.body[0].files.length).toEqual(2);
-    const originalFile = response.body[0].files.find((file: ArchiveFile) => file.fileId === "8");
-    const convertedFile = response.body[0].files.find((file: ArchiveFile) => file.fileId === "9");
+    const originalFile = response.body[0].files.find(
+      (file: ArchiveFile) => file.fileId === "8"
+    );
+    const convertedFile = response.body[0].files.find(
+      (file: ArchiveFile) => file.fileId === "9"
+    );
     expect(originalFile).toBeTruthy();
     expect(convertedFile).toBeTruthy();
     expect(originalFile.size).toEqual(1024);
     expect(convertedFile.size).toEqual(2056);
+    expect(originalFile.format).toEqual("file.format.original");
+    expect(convertedFile.format).toEqual("file.format.converted");
+    expect(originalFile.type).toEqual("type.file.image.png");
+    expect(convertedFile.type).toEqual("type.file.image.jpg");
   });
 });
