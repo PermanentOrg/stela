@@ -203,5 +203,7 @@ fdescribe("record/get", () => {
 
     expect(response.body[0].folderLinkId).toEqual("8");
     expect(response.body[0].folderLinkType).toEqual("type.folder_link.public");
+    expect(response.body[0].parentFolderId).toEqual("1");
+    expect(response.body[0].parentFolderLinkId).toEqual("9");
   });
 });

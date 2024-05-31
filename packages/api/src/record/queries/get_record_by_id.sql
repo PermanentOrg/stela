@@ -23,7 +23,10 @@ SELECT DISTINCT ON (record.recordid)
   record.updateddt AS "updatedAt",
   record.alttext AS "altText",
   files.files,
-  folder_link.folder_linkid AS "folderLinkId"
+  folder_link.folder_linkid AS "folderLinkId",
+  folder_link.type AS "folderLinkType",
+  folder_link.parentfolderid AS "parentFolderId",
+  folder_link.parentfolder_linkid AS "parentFolderLinkId"
 FROM
   record
 INNER JOIN

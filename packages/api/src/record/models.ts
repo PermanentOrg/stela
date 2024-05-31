@@ -24,6 +24,9 @@ export interface ArchiveRecord {
   altText?: string;
   files: ArchiveFile[];
   folderLinkId: string;
+  folderLinkType: FolderLinkType;
+  parentFolderId: string;
+  parentFolderLinkId: string;
 }
 
 export interface ArchiveRecordRow {
@@ -52,6 +55,9 @@ export interface ArchiveRecordRow {
   altText?: string;
   files: ArchiveFile[];
   folderLinkId: string;
+  folderLinkType: FolderLinkType;
+  parentFolderId: string;
+  parentFolderLinkId: string;
 }
 
 export interface ArchiveFile {

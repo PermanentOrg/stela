@@ -1,6 +1,9 @@
 INSERT INTO folder_link (
   folder_linkid,
   recordid,
+  folderid,
+  parentfolderid,
+  parentfolder_linkid,
   archiveid,
   position,
   accessrole,
@@ -9,6 +12,9 @@ INSERT INTO folder_link (
 ) VALUES (
   1,
   6,
+  NULL,
+  NULL,
+  NULL,
   2,
   1,
   'access.role.owner',
@@ -18,6 +24,9 @@ INSERT INTO folder_link (
 (
   2,
   1,
+  NULL,
+  NULL,
+  NULL,
   1,
   1,
   'access.role.owner',
@@ -27,6 +36,9 @@ INSERT INTO folder_link (
 (
   3,
   2,
+  NULL,
+  NULL,
+  NULL,
   1,
   1,
   'access.role.owner',
@@ -36,6 +48,9 @@ INSERT INTO folder_link (
 (
   4,
   3,
+  NULL,
+  NULL,
+  NULL,
   1,
   1,
   'access.role.owner',
@@ -45,6 +60,9 @@ INSERT INTO folder_link (
 (
   5,
   4,
+  NULL,
+  NULL,
+  NULL,
   1,
   1,
   'access.role.owner',
@@ -54,6 +72,9 @@ INSERT INTO folder_link (
 (
   6,
   5,
+  NULL,
+  NULL,
+  NULL,
   2,
   1,
   'access.role.owner',
@@ -63,6 +84,9 @@ INSERT INTO folder_link (
 (
   7,
   7,
+  NULL,
+  NULL,
+  NULL,
   2,
   1,
   'access.role.owner',
@@ -72,6 +96,21 @@ INSERT INTO folder_link (
 (
   8,
   8,
+  NULL,
+  1,
+  9,
+  1,
+  1,
+  'access.role.owner',
+  'status.generic.ok',
+  'type.folder_link.public'
+),
+(
+  9,
+  NULL,
+  1,
+  NULL,
+  NULL,
   1,
   1,
   'access.role.owner',
