@@ -42,7 +42,11 @@ INNER JOIN
         'format',
         file.format,
         'type',
-        file.type
+        file.type,
+        'fileUrl',
+        file.fileurl,
+        'downloadUrl',
+        file.downloadurl
     )) AS files
   FROM
     record_file
