@@ -26,7 +26,8 @@ SELECT DISTINCT ON (record.recordid)
   folder_link.folder_linkid AS "folderLinkId",
   folder_link.type AS "folderLinkType",
   folder_link.parentfolderid AS "parentFolderId",
-  folder_link.parentfolder_linkid AS "parentFolderLinkId"
+  folder_link.parentfolder_linkid AS "parentFolderLinkId",
+  parent_folder.archivenbr AS "parentFolderArchiveNumber"
 FROM
   record
 INNER JOIN
@@ -62,6 +63,9 @@ INNER JOIN
 INNER JOIN
   folder_link
   ON record.recordid = folder_link.recordid
+LEFT JOIN
+  folder AS parent_folder
+  ON folder_link.parentfolderid = parent_folder.folderid
 LEFT JOIN
   access
   ON folder_link.folder_linkid = access.folder_linkid
