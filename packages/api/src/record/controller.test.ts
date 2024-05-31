@@ -207,5 +207,6 @@ fdescribe("record/get", () => {
     expect(response.body[0].parentFolderId).toEqual("1");
     expect(response.body[0].parentFolderLinkId).toEqual("9");
     expect(response.body[0].parentFolderArchiveNumber).toEqual("0001-test");
+    expect(response.body[0].tags.length).toEqual(3);
   });
 });

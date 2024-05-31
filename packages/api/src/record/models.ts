@@ -27,6 +27,7 @@ export interface ArchiveRecord {
   folderLinkType: FolderLinkType;
   parentFolderId: string;
   parentFolderLinkId: string;
+  tags: Tag[];
 }
 
 export interface ArchiveRecordRow {
@@ -58,6 +59,7 @@ export interface ArchiveRecordRow {
   folderLinkType: FolderLinkType;
   parentFolderId: string;
   parentFolderLinkId: string;
+  tags: Tag[];
 }
 
 export interface ArchiveFile {
@@ -65,6 +67,11 @@ export interface ArchiveFile {
   size: number;
   format: FileFormat;
   type: FileType;
+}
+
+export interface Tag {
+  tagId: string;
+  name: string;
 }
 
 export enum RecordStatus {

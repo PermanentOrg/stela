@@ -27,7 +27,8 @@ SELECT DISTINCT ON (record.recordid)
   folder_link.type AS "folderLinkType",
   folder_link.parentfolderid AS "parentFolderId",
   folder_link.parentfolder_linkid AS "parentFolderLinkId",
-  parent_folder.archivenbr AS "parentFolderArchiveNumber"
+  parent_folder.archivenbr AS "parentFolderArchiveNumber",
+  tags.tags
 FROM
   record
 INNER JOIN
@@ -60,6 +61,24 @@ INNER JOIN
     ON record_file.fileid = file.fileid
   GROUP BY record_file.recordid) AS files
   ON record.recordid = files.recordid
+LEFT JOIN
+  (SELECT
+    refid,
+    array_agg(jsonb_build_object(
+        'tagId',
+        tag.tagid::TEXT,
+        'name',
+        tag.name
+    )) AS tags
+  FROM
+    tag_link
+  INNER JOIN
+    tag
+    ON tag_link.tagid = tag.tagid
+  WHERE
+    tag_link.reftable = 'record'
+  GROUP BY tag_link.refid) AS tags
+  ON record.recordid = tags.refid
 INNER JOIN
   folder_link
   ON record.recordid = folder_link.recordid
