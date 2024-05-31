@@ -22,7 +22,8 @@ SELECT DISTINCT ON (record.recordid)
   record.createddt AS "createdAt",
   record.updateddt AS "updatedAt",
   record.alttext AS "altText",
-  files.files
+  files.files,
+  folder_link.folder_linkid AS "folderLinkId"
 FROM
   record
 INNER JOIN

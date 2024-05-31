@@ -194,7 +194,14 @@ fdescribe("record/get", () => {
     expect(convertedFile.format).toEqual("file.format.converted");
     expect(originalFile.type).toEqual("type.file.image.png");
     expect(convertedFile.type).toEqual("type.file.image.jpg");
-    expect(originalFile.fileUrl).toEqual("https://localcdn.permanent.org/_Dev/8?t=1732914102&Expires=1732914102&Signature=AmCIgw__&Key-Pair-Id=APKA");
-    expect(originalFile.downloadUrl).toEqual("https://localcdn.permanent.org/_Dev/8?t=1732914102&response-content-disposition=attachment%3B+filename%3D%22Robert+birthday+%281%29.jpg%22&Expires=1732914102&Signature=R25~ODA0uZ77J2rjQ__&Key-Pair-Id=APKA");
+    expect(originalFile.fileUrl).toEqual(
+      "https://localcdn.permanent.org/_Dev/8?t=1732914102&Expires=1732914102&Signature=AmCIgw__&Key-Pair-Id=APKA"
+    );
+    expect(originalFile.downloadUrl).toEqual(
+      "https://localcdn.permanent.org/_Dev/8?t=1732914102&response-content-disposition=attachment%3B+filename%3D%22Robert+birthday+%281%29.jpg%22&Expires=1732914102&Signature=R25~ODA0uZ77J2rjQ__&Key-Pair-Id=APKA"
+    );
+
+    expect(response.body[0].folderLinkId).toEqual("8");
+    expect(response.body[0].folderLinkType).toEqual("type.folder_link.public");
   });
 });

@@ -23,6 +23,7 @@ export interface ArchiveRecord {
   updatedAt?: string;
   altText?: string;
   files: ArchiveFile[];
+  folderLinkId: string;
 }
 
 export interface ArchiveRecordRow {
@@ -50,6 +51,7 @@ export interface ArchiveRecordRow {
   updatedAt?: string;
   altText?: string;
   files: ArchiveFile[];
+  folderLinkId: string;
 }
 
 export interface ArchiveFile {
@@ -144,4 +146,19 @@ export enum FileType {
   VideoMov = "type.file.video.mov",
   DocumentRtf = "type.file.document.rtf",
   PdfPdf = "type.file.pdf.pdf",
+}
+
+enum FolderLinkType {
+  FolderLinkPrivate = "type.folder_link.private",
+  FolderPrivate = "type.folder.private",
+  FolderRootApp = "type.folder.root.app",
+  FolderLinkPublic = "type.folder_link.public",
+  FolderLinkVault = "type.folder_link.vault",
+  FolderLinkApp = "type.folder_link.app",
+  FolderLinkShare = "type.folder_link.share",
+  FolderLinkRootRoot = "type.folder_link.root.root",
+  FolderLinkRootVault = "type.folder_link.root.vault",
+  FolderLinkRootApp = "type.folder_link.root.app",
+  FolderLinkRootShare = "type.folder_link.root.share",
+  FolderLinkRootPrivate = "type.folder_link.root.private",
 }
