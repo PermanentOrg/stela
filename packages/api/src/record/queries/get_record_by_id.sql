@@ -28,9 +28,13 @@ SELECT DISTINCT ON (record.recordid)
   folder_link.parentfolderid AS "parentFolderId",
   folder_link.parentfolder_linkid AS "parentFolderLinkId",
   parent_folder.archivenbr AS "parentFolderArchiveNumber",
-  tags.tags
+  tags.tags,
+  archive.archivenbr AS "archiveArchiveNumber"
 FROM
   record
+INNER JOIN
+  archive
+  ON record.archiveid = archive.archiveid
 INNER JOIN
   account_archive AS record_account_archive
   ON record.archiveid = record_account_archive.archiveid
@@ -68,7 +72,9 @@ LEFT JOIN
         'tagId',
         tag.tagid::TEXT,
         'name',
-        tag.name
+        tag.name,
+        'type',
+        tag.type
     )) AS tags
   FROM
     tag_link

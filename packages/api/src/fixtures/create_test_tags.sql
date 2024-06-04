@@ -2,10 +2,7 @@ INSERT INTO
 tag (tagid, name, archiveid, status, type, createddt, updateddt)
 VALUES
 (
-  1,
-  'test_public_file',
-  1,
-  'status.generic.ok',
+  1, 'test_public_file', 1, 'status.generic.ok',
   'type.generic.placeholder',
   CURRENT_TIMESTAMP,
   CURRENT_TIMESTAMP
@@ -141,7 +138,7 @@ VALUES
   'Generic Tag 3',
   1,
   'status.generic.ok',
-  'type.generic.placeholder',
+  'type.tag.metadata.CustomField',
   CURRENT_TIMESTAMP,
   CURRENT_TIMESTAMP
 );

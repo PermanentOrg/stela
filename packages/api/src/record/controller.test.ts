@@ -231,5 +231,10 @@ fdescribe("record/get", () => {
     expect(firstTag.name).toEqual("Generic Tag 1");
     expect(secondTag.name).toEqual("Generic Tag 2");
     expect(thirdTag.name).toEqual("Generic Tag 3");
+    expect(firstTag.type).toEqual("type.generic.placeholder");
+    expect(secondTag.type).toEqual("type.generic.placeholder");
+    expect(thirdTag.type).toEqual("type.tag.metadata.CustomField");
+
+    expect(response.body[0].archiveArchiveNumber).toEqual("0001-0001");
   });
 });
