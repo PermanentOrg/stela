@@ -77,6 +77,28 @@ export interface Tag {
   type: string;
 }
 
+export interface Share {
+  shareId: string;
+  archiveId: string;
+  accessRole: AccessRole;
+  status: ShareStatus;
+}
+
+export enum AccessRole {
+  Owner = "access.role.owner",
+  Manager = "access.role.manager",
+  Editor = "access.role.editor",
+  Viewer = "access.role.viewer",
+  Contributor = "access.role.contributor",
+  Curator = "access.role.curator",
+}
+
+export enum ShareStatus {
+  Ok = "status.generic.ok",
+  Pending = "status.generic.pending",
+  Deleted = "status.generic.deleted",
+}
+
 export enum RecordStatus {
   Deleted = "status.generic.deleted",
   Error = "status.generic.error",

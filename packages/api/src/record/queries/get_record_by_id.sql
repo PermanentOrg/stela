@@ -29,7 +29,8 @@ SELECT DISTINCT ON (record.recordid)
   folder_link.parentfolder_linkid AS "parentFolderLinkId",
   parent_folder.archivenbr AS "parentFolderArchiveNumber",
   tags.tags,
-  archive.archivenbr AS "archiveArchiveNumber"
+  archive.archivenbr AS "archiveArchiveNumber",
+  shares.shares
 FROM
   record
 INNER JOIN
@@ -106,13 +107,11 @@ LEFT JOIN
     array_agg(jsonb_build_object(
         'shareId',
         share.shareid,
-        'shareFolderLinkId',
-        share.folder_linkid,
-        'shareArchiveId',
+        'archiveId',
         share.archiveid,
-        'shareAccessRole',
+        'accessRole',
         share.accessrole,
-        'shareStatus',
+        'status',
         share.status
    )) as shares
    FROM share
