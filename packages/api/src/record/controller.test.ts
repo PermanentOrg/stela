@@ -3,7 +3,7 @@ import request from "supertest";
 import { app } from "../app";
 import { db } from "../database";
 import { extractUserEmailFromAuthToken } from "../middleware";
-import type { ArchiveFile } from "./models";
+import type { ArchiveFile, Tag } from "./models";
 
 jest.mock("../database");
 jest.mock("../middleware");
@@ -20,11 +20,22 @@ const setupDatabase = async (): Promise<void> => {
   await db.sql("fixtures.create_test_files");
   await db.sql("fixtures.create_complete_test_files");
   await db.sql("fixtures.create_test_record_files");
+  await db.sql("fixtures.create_test_tags");
+  await db.sql("fixtures.create_test_tag_links");
 };
 
 const clearDatabase = async (): Promise<void> => {
   await db.query(
-    "TRUNCATE account, archive, account_archive, record, folder, folder_link, access CASCADE"
+    `TRUNCATE 
+       account,
+       archive,
+       account_archive,
+       record,
+       folder,
+       folder_link,
+       access,
+       tag,
+       tag_link CASCADE`
   );
 };
 
@@ -208,5 +219,17 @@ fdescribe("record/get", () => {
     expect(response.body[0].parentFolderLinkId).toEqual("9");
     expect(response.body[0].parentFolderArchiveNumber).toEqual("0001-test");
     expect(response.body[0].tags.length).toEqual(3);
+    const firstTag = response.body[0].tags.find(
+      (tag: Tag) => tag.tagId === "14"
+    );
+    const secondTag = response.body[0].tags.find(
+      (tag: Tag) => tag.tagId === "15"
+    );
+    const thirdTag = response.body[0].tags.find(
+      (tag: Tag) => tag.tagId === "16"
+    );
+    expect(firstTag.name).toEqual("Generic Tag 1");
+    expect(secondTag.name).toEqual("Generic Tag 2");
+    expect(thirdTag.name).toEqual("Generic Tag 3");
   });
 });
