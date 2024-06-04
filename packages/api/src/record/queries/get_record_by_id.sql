@@ -108,13 +108,20 @@ LEFT JOIN
         'shareId',
         share.shareid::TEXT,
         'archiveId',
-        share.archiveid,
+        share.archiveid::TEXT,
         'accessRole',
         share.accessrole,
         'status',
-        share.status
+        share.status,
+        'archive',
+        jsonb_build_object(
+          'thumbUrl200',
+          archive.thumburl200
+        )
    )) as shares
    FROM share
+   JOIN archive
+     ON share.archiveid = archive.archiveid
    GROUP BY folder_linkid) as shares
   ON shares.folder_linkid = folder_link.folder_linkid
 WHERE

@@ -248,5 +248,6 @@ fdescribe("record/get", () => {
     expect(share.accessRole).toEqual("access.role.viewer");
     expect(share.archiveId).toEqual("3");
     expect(share.status).toEqual("status.generic.ok");
+    expect(share.archive.thumbUrl200).toEqual("https://test-archive-thumbnail");
   });
 });
