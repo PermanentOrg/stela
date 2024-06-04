@@ -116,12 +116,20 @@ LEFT JOIN
         'archive',
         jsonb_build_object(
           'thumbUrl200',
-          archive.thumburl200
+          archive.thumburl200,
+          'name',
+          profile_item.string1
         )
    )) as shares
    FROM share
-   JOIN archive
+   INNER JOIN archive
      ON share.archiveid = archive.archiveid
+   INNER JOIN profile_item
+     ON profile_item.archiveid = archive.archiveid
+   WHERE
+     profile_item.fieldnameui = 'profile.basic'
+     AND profile_item.status = 'status.generic.ok'
+     AND profile_item.string1 IS NOT NULL
    GROUP BY folder_linkid) as shares
   ON shares.folder_linkid = folder_link.folder_linkid
 WHERE

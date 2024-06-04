@@ -87,6 +87,7 @@ export interface Share {
 
 export interface ShareArchive {
   thumbUrl200?: string;
+  name: string;
 }
 
 export enum AccessRole {
@@ -103,7 +104,6 @@ export enum ShareStatus {
   Pending = "status.generic.pending",
   Deleted = "status.generic.deleted",
 }
-
 
 export enum RecordStatus {
   Deleted = "status.generic.deleted",
