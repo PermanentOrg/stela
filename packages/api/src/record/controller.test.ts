@@ -236,5 +236,7 @@ fdescribe("record/get", () => {
     expect(thirdTag.type).toEqual("type.tag.metadata.CustomField");
 
     expect(response.body[0].archiveArchiveNumber).toEqual("0001-0001");
+
+    // Things needed in shares objects: shareId, accessRole, status, archive object (name, id, thumbnails)
   });
 });
