@@ -3,7 +3,7 @@ import request from "supertest";
 import { app } from "../app";
 import { db } from "../database";
 import { extractUserEmailFromAuthToken } from "../middleware";
-import type { ArchiveFile, Tag } from "./models";
+import type { ArchiveFile, Share, Tag } from "./models";
 
 jest.mock("../database");
 jest.mock("../middleware");
@@ -241,5 +241,12 @@ fdescribe("record/get", () => {
 
     // Things needed in shares objects: shareId, accessRole, status, archive object (name, id, thumbnails)
     expect(response.body[0].shares.length).toEqual(1);
+    expect(response.body[0].shares[0].shareId).toEqual("1");
+    const share: Share = response.body[0].shares.find(
+      (share: Share) => share.shareId === "1"
+    );
+    expect(share.accessRole).toEqual("access.role.viewer");
+    expect(share.archiveId).toEqual("3");
+    expect(share.status).toEqual("status.generic.ok");
   });
 });

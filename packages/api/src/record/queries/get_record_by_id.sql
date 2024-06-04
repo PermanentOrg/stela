@@ -106,7 +106,7 @@ LEFT JOIN
     folder_linkid,
     array_agg(jsonb_build_object(
         'shareId',
-        share.shareid,
+        share.shareid::TEXT,
         'archiveId',
         share.archiveid,
         'accessRole',
