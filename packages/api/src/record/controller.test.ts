@@ -23,6 +23,7 @@ const setupDatabase = async (): Promise<void> => {
   await db.sql("fixtures.create_test_tags");
   await db.sql("fixtures.create_test_tag_links");
   await db.sql("fixtures.create_test_shares");
+  await db.sql("fixtures.create_test_profile_items");
 };
 
 const clearDatabase = async (): Promise<void> => {
@@ -37,7 +38,8 @@ const clearDatabase = async (): Promise<void> => {
        access,
        tag,
        tag_link,
-       share CASCADE`
+       share,
+       profile_item CASCADE`
   );
 };
 
@@ -239,16 +241,26 @@ fdescribe("record/get", () => {
 
     expect(response.body[0].archiveArchiveNumber).toEqual("0001-0001");
 
-    // Things needed in shares objects: shareId, accessRole, status, archive object (name, id, thumbnails)
-    expect(response.body[0].shares.length).toEqual(1);
+    expect(response.body[0].shares.length).toEqual(2);
     expect(response.body[0].shares[0].shareId).toEqual("1");
-    const share: Share = response.body[0].shares.find(
+    const shareViewer: Share = response.body[0].shares.find(
       (share: Share) => share.shareId === "1"
     );
-    expect(share.accessRole).toEqual("access.role.viewer");
-    expect(share.archiveId).toEqual("3");
-    expect(share.status).toEqual("status.generic.ok");
-    expect(share.archive.thumbUrl200).toEqual("https://test-archive-thumbnail");
-    expect(share.archive.name).toEqual("Jay Rando");
+    const shareContributor: Share = response.body[0].shares.find(
+      (share: Share) => share.shareId === "2"
+    );
+    expect(shareViewer.accessRole).toEqual("access.role.viewer");
+    expect(shareViewer.status).toEqual("status.generic.ok");
+    expect(shareViewer.archive.archiveId).toEqual("3");
+    expect(shareViewer.archive.thumbUrl200).toEqual(
+      "https://test-archive-thumbnail"
+    );
+    expect(shareViewer.archive.name).toEqual("Jay Rando");
+
+    expect(shareContributor.accessRole).toEqual("access.role.contributor");
+    expect(shareContributor.status).toEqual("status.generic.ok");
+    expect(shareContributor.archive.archiveId).toEqual("2");
+    expect(shareContributor.archive.thumbUrl200).toBeFalsy();
+    expect(shareContributor.archive.name).toEqual("Jane Rando");
   });
 });

@@ -107,8 +107,6 @@ LEFT JOIN
     array_agg(jsonb_build_object(
         'shareId',
         share.shareid::TEXT,
-        'archiveId',
-        share.archiveid::TEXT,
         'accessRole',
         share.accessrole,
         'status',
@@ -118,7 +116,9 @@ LEFT JOIN
           'thumbUrl200',
           archive.thumburl200,
           'name',
-          profile_item.string1
+          profile_item.string1,
+          'archiveId',
+          archive.archiveid::TEXT
         )
    )) as shares
    FROM share

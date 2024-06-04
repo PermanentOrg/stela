@@ -86,6 +86,7 @@ export interface Share {
 }
 
 export interface ShareArchive {
+  archiveId: string;
   thumbUrl200?: string;
   name: string;
 }
