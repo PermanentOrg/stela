@@ -100,6 +100,24 @@ LEFT JOIN
 LEFT JOIN
   account as share_account
   ON share_account_archive.accountid = share_account.accountid
+LEFT JOIN
+  (SELECT
+    folder_linkid,
+    array_agg(jsonb_build_object(
+        'shareId',
+        share.shareid,
+        'shareFolderLinkId',
+        share.folder_linkid,
+        'shareArchiveId',
+        share.archiveid,
+        'shareAccessRole',
+        share.accessrole,
+        'shareStatus',
+        share.status
+   )) as shares
+   FROM share
+   GROUP BY folder_linkid) as shares
+  ON shares.folder_linkid = folder_link.folder_linkid
 WHERE
   record.recordid = ANY(:recordIds)
   AND (

@@ -22,6 +22,7 @@ const setupDatabase = async (): Promise<void> => {
   await db.sql("fixtures.create_test_record_files");
   await db.sql("fixtures.create_test_tags");
   await db.sql("fixtures.create_test_tag_links");
+  await db.sql("fixtures.create_test_shares");
 };
 
 const clearDatabase = async (): Promise<void> => {
@@ -35,7 +36,8 @@ const clearDatabase = async (): Promise<void> => {
        folder_link,
        access,
        tag,
-       tag_link CASCADE`
+       tag_link,
+       share CASCADE`
   );
 };
 
@@ -238,5 +240,6 @@ fdescribe("record/get", () => {
     expect(response.body[0].archiveArchiveNumber).toEqual("0001-0001");
 
     // Things needed in shares objects: shareId, accessRole, status, archive object (name, id, thumbnails)
+    expect(response.body[0].shares.length).toEqual(1);
   });
 });
