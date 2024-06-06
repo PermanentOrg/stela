@@ -39,12 +39,22 @@ variable "subnet_ids" {
 }
 
 variable "stela_dev_image" {
-  description = "Tag of stela image to deploy to dev"
+  description = "Tag of stela API image to deploy to dev"
   type        = string
 }
 
 variable "stela_staging_image" {
-  description = "Tag of stela image to deploy to staging"
+  description = "Tag of stela API image to deploy to staging"
+  type        = string
+}
+
+variable "archivematica_cleanup_dev_image" {
+  description = "Tag of archivematica cleanup image to deploy to dev"
+  type        = string
+}
+
+variable "archivematica_cleanup_staging_image" {
+  description = "Tag of archivematica cleanup image to deploy to staging"
   type        = string
 }
 
@@ -210,5 +220,25 @@ variable "dev_mixpanel_token" {
 
 variable "staging_mixpanel_token" {
   description = "Mixpanel token"
+  type        = string
+}
+
+variable "dev_archivematica_base_url" {
+  description = "Base URL for the Archivematica API in the dev environment"
+  type        = string
+}
+
+variable "staging_archivematica_base_url" {
+  description = "Base URL for the Archivematica API in the staging environment"
+  type        = string
+}
+
+variable "dev_archivematica_api_key" {
+  description = "API key for the Archivematica API in the dev environment"
+  type        = string
+}
+
+variable "staging_archivematica_api_key" {
+  description = "API key for the Archivematica API in the staging environment"
   type        = string
 }

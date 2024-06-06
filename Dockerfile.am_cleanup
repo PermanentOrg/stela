@@ -1,0 +1,28 @@
+FROM node:18-alpine AS builder
+WORKDIR /usr/local/apps/stela/
+
+COPY package.json ./
+COPY tsconfig.build.json ./
+COPY tsconfig.json ./
+COPY jest.config.js ./
+COPY packages ./packages
+
+RUN npm install -g npm@8.19.3
+RUN npm install
+RUN npm install -ws
+RUN npm run build -ws
+
+FROM node:18-alpine AS final
+WORKDIR /usr/local/apps/stela/
+
+COPY --from=builder /usr/local/apps/stela/packages/archivematica_cleanup/dist ./packages/archivematica_cleanup/dist
+COPY --from=builder /usr/local/apps/stela/packages/archivematica_cleanup/package.json ./packages/archivematica_cleanup/package.json
+COPY --from=builder /usr/local/apps/stela/packages/logger/dist ./packages/logger/dist
+COPY --from=builder /usr/local/apps/stela/packages/logger/package.json ./packages/logger/package.json
+COPY --from=builder /usr/local/apps/stela/package.json ./package.json
+COPY --from=builder /usr/local/apps/stela/package-lock.json ./package-lock.json
+
+RUN npm install -g npm@8.19.3
+RUN npm install --workspace @stela/archivematica_cleanup
+
+CMD node packages/archivematica_cleanup/dist/index.js
