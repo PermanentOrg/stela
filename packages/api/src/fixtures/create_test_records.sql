@@ -95,4 +95,16 @@ VALUES
   'other_file.jpg',
   'status.generic.ok',
   'type.record.image'
+),
+(
+  9,
+  1,
+  NULL,
+  NULL,
+  'Record with deleted Files',
+  2,
+  2,
+  'other_file.jpg',
+  'status.generic.ok',
+  'type.record.image'
 );

@@ -3,7 +3,7 @@ import request from "supertest";
 import { app } from "../app";
 import { db } from "../database";
 import { extractUserEmailFromAuthToken } from "../middleware";
-import type { ArchiveFile, Share, Tag } from "./models";
+import type { ArchiveFile, ArchiveRecord, Share, Tag } from "./models";
 
 jest.mock("../database");
 jest.mock("../middleware");
@@ -262,5 +262,12 @@ fdescribe("record/get", () => {
     expect(shareContributor.archive.archiveId).toEqual("2");
     expect(shareContributor.archive.thumbUrl200).toBeFalsy();
     expect(shareContributor.archive.name).toEqual("Jane Rando");
+  });
+  test("expect to not return deleted files", async () => {
+    const response = await agent
+      .get("/api/v2/record/get?recordIds[]=9")
+      .expect(200);
+    const record: ArchiveRecord = response.body[0];
+    expect(record.files.length).toEqual(0);
   });
 });
