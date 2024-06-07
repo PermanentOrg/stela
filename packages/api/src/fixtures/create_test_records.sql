@@ -119,4 +119,16 @@ VALUES
   'other_file.jpg',
   'status.generic.ok',
   'type.record.image'
+),
+(
+  11,
+  3,
+  NULL,
+  NULL,
+  'Record in an archive with a deleted member',
+  3,
+  3,
+  'other_file.jpg',
+  'status.generic.ok',
+  'type.record.image'
 );

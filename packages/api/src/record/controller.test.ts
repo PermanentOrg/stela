@@ -278,7 +278,7 @@ fdescribe("record/get", () => {
   });
   test("expect to not return a record for a pending archive member", async () => {
     const response = await agent
-      .get("/api/v2/record/get?recordIds[]=10")
+      .get("/api/v2/record/get?recordIds[]=11")
       .expect(200);
     expect(response.body.length).toEqual(0);
   });

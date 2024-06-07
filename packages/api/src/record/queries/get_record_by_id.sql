@@ -35,12 +35,15 @@ FROM
   record
 INNER JOIN
   archive
-  ON record.archiveid = archive.archiveid
+  ON
+    record.archiveid = archive.archiveid
     AND archive.status != 'status.generic.deleted'
     AND archive.status IS NOT NULL
 INNER JOIN
   account_archive AS record_account_archive
-  ON record.archiveid = record_account_archive.archiveid
+  ON
+    record.archiveid = record_account_archive.archiveid
+    AND record_account_archive.status = 'status.generic.ok'
 INNER JOIN
   account AS record_account
   ON record_account_archive.accountid = record_account.accountid
