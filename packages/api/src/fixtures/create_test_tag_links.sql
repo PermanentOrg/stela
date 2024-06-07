@@ -144,4 +144,13 @@ VALUES
   'type.generic.placeholder',
   CURRENT_TIMESTAMP,
   CURRENT_TIMESTAMP
+),
+(
+  2,
+  8,
+  'record',
+  'status.generic.deleted',
+  'type.generic.placeholder',
+  CURRENT_TIMESTAMP,
+  CURRENT_TIMESTAMP
 );

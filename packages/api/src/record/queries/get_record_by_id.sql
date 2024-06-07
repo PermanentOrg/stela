@@ -88,9 +88,12 @@ LEFT JOIN
     tag_link
   INNER JOIN
     tag
-    ON tag_link.tagid = tag.tagid
+    ON
+      tag_link.tagid = tag.tagid
+      AND tag.status = 'status.generic.ok'
   WHERE
     tag_link.reftable = 'record'
+    AND tag_link.status = 'status.generic.ok'
   GROUP BY tag_link.refid) AS tags
   ON record.recordid = tags.refid
 INNER JOIN
