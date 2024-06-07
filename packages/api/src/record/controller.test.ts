@@ -268,6 +268,6 @@ fdescribe("record/get", () => {
       .get("/api/v2/record/get?recordIds[]=9")
       .expect(200);
     const record: ArchiveRecord = response.body[0];
-    expect(record.files.length).toEqual(0);
+    expect(record.files.length).toEqual(1);
   });
 });

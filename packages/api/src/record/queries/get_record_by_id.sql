@@ -64,6 +64,8 @@ INNER JOIN
   INNER JOIN
     file
     ON record_file.fileid = file.fileid
+  WHERE
+    file.status != 'status.generic.deleted'
   GROUP BY record_file.recordid) AS files
   ON record.recordid = files.recordid
 LEFT JOIN

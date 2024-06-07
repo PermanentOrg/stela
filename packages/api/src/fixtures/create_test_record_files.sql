@@ -97,4 +97,13 @@ VALUES
   'type.generic.placeholder',
   '2023-06-21T00:00:00.000Z',
   '2023-06-21T00:00:00.000Z'
+),
+(
+  11,
+  9,
+  11,
+  'status.generic.ok',
+  'type.generic.placeholder',
+  '2023-06-21T00:00:00.000Z',
+  '2023-06-21T00:00:00.000Z'
 );
