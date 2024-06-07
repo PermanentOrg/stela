@@ -107,4 +107,16 @@ VALUES
   'other_file.jpg',
   'status.generic.ok',
   'type.record.image'
+),
+(
+  10,
+  4,
+  NULL,
+  NULL,
+  'Record in a deleted archive',
+  2,
+  2,
+  'other_file.jpg',
+  'status.generic.ok',
+  'type.record.image'
 );

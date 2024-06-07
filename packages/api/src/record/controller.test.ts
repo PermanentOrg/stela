@@ -270,4 +270,10 @@ fdescribe("record/get", () => {
     const record: ArchiveRecord = response.body[0];
     expect(record.files.length).toEqual(1);
   });
+  test("expect to not return a record in an deleted archive", async () => {
+    const response = await agent
+      .get("/api/v2/record/get?recordIds[]=10")
+      .expect(200);
+    expect(response.body.length).toEqual(0);
+  });
 });
