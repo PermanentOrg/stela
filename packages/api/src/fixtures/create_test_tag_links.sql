@@ -135,4 +135,13 @@ VALUES
   'type.generic.placeholder',
   CURRENT_TIMESTAMP,
   CURRENT_TIMESTAMP
+),
+(
+  5,
+  8,
+  'record',
+  'status.generic.ok',
+  'type.generic.placeholder',
+  CURRENT_TIMESTAMP,
+  CURRENT_TIMESTAMP
 );
