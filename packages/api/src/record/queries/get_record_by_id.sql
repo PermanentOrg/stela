@@ -98,7 +98,9 @@ LEFT JOIN
   ON record.recordid = tags.refid
 INNER JOIN
   folder_link
-  ON record.recordid = folder_link.recordid
+  ON
+    record.recordid = folder_link.recordid
+    AND folder_link.status != 'status.generic.deleted'
 LEFT JOIN
   folder AS parent_folder
   ON folder_link.parentfolderid = parent_folder.folderid

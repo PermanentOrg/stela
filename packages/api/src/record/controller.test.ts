@@ -282,4 +282,10 @@ fdescribe("record/get", () => {
       .expect(200);
     expect(response.body.length).toEqual(0);
   });
+  test("expect to not return a record with a deleted folder_link", async () => {
+    const response = await agent
+      .get("/api/v2/record/get?recordIds[]=12")
+      .expect(200);
+    expect(response.body.length).toEqual(0);
+  });
 });

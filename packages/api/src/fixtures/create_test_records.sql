@@ -131,4 +131,16 @@ VALUES
   'other_file.jpg',
   'status.generic.ok',
   'type.record.image'
+),
+(
+  12,
+  1,
+  NULL,
+  NULL,
+  'Record with a deleted folder_link',
+  2,
+  2,
+  'other_file.jpg',
+  'status.generic.ok',
+  'type.record.image'
 );
