@@ -3,6 +3,7 @@ import { fusionAuthClient } from "../fusionauth";
 import {
   TwoFactorMethod,
   type SendEnableCodeRequest,
+  type CreateTwoFactorMethodRequest,
   type TwoFactorRequestResponse,
 } from "./models";
 import { db } from "../database";
@@ -14,6 +15,12 @@ export const getTwoFactorMethods = async (
     emailFromAuthToken
   );
 
+  if (!clientResponse.wasSuccessful()) {
+    throw createError(
+      parseInt(clientResponse.exception.code ?? "500", 10),
+      clientResponse.exception.message ?? "Unknown error"
+    );
+  }
   if (clientResponse.response.user.twoFactor.methods.length) {
     return clientResponse.response.user.twoFactor.methods.map(
       ({ id, method, email, mobilePhone }) => ({
@@ -62,6 +69,44 @@ export const sendEnableCode = async (
       fusionAuthRequestBody
     );
 
+  if (!fusionAuthResponse.wasSuccessful()) {
+    throw createError(
+      parseInt(fusionAuthResponse.exception.code ?? "500", 10),
+      fusionAuthResponse.exception.message ?? "Unknown error"
+    );
+  }
+};
+
+export const addTwoFactorMethod = async (
+  requestBody: CreateTwoFactorMethodRequest
+): Promise<void> => {
+  const fusionAuthUserIdResponse = await db.sql<{ subject: string }>(
+    "idpuser.queries.get_subject_by_email",
+    {
+      email: requestBody.emailFromAuthToken,
+    }
+  );
+  if (!fusionAuthUserIdResponse.rows[0]) {
+    throw createError.NotFound("User not found");
+  }
+  const fusionAuthRequestBody: {
+    code: string;
+    method: string;
+    email?: string;
+    mobilePhone?: string;
+  } = {
+    code: requestBody.code,
+    method: requestBody.method,
+  };
+  if (requestBody.method === TwoFactorMethod.Email) {
+    fusionAuthRequestBody.email = requestBody.value;
+  } else {
+    fusionAuthRequestBody.mobilePhone = requestBody.value;
+  }
+  const fusionAuthResponse = await fusionAuthClient.enableTwoFactor(
+    fusionAuthUserIdResponse.rows[0].subject,
+    fusionAuthRequestBody
+  );
   if (!fusionAuthResponse.wasSuccessful()) {
     throw createError(
       parseInt(fusionAuthResponse.exception.code ?? "500", 10),

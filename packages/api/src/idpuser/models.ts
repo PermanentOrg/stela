@@ -10,6 +10,13 @@ export interface SendEnableCodeRequest {
   value: string;
 }
 
+export interface CreateTwoFactorMethodRequest {
+  emailFromAuthToken: string;
+  code: string;
+  method: TwoFactorMethod;
+  value: string;
+}
+
 export enum TwoFactorMethod {
   Email = "email",
   Sms = "sms",
