@@ -5,7 +5,11 @@ import { app } from "../app";
 import { db } from "../database";
 import { verifyUserAuthentication } from "../middleware";
 import { fusionAuthClient } from "../fusionauth";
-import type { TwoFactorRequestResponse, SendEnableCodeRequest } from "./models";
+import type {
+  TwoFactorRequestResponse,
+  SendEnableCodeRequest,
+  SendDisableCodeRequest,
+} from "./models";
 
 interface TwoFactorRequest {
   emailFromAuthToken: string;
@@ -186,6 +190,7 @@ describe("idpuser/send-enable-code", () => {
 
   afterEach(async () => {
     await clearDatabase();
+    jest.restoreAllMocks();
   });
 
   test("should return a 200 status if the request is successful", async () => {
@@ -437,6 +442,129 @@ describe("POST /idpuser/enable-two-factor", () => {
         method: "email",
         value: "test@permanent.org",
       })
+      .expect(500);
+  });
+});
+
+describe("idpuser/send-disable-code", () => {
+  const agent = request(app);
+
+  const loadFixtures = async (): Promise<void> => {
+    await db.sql("fixtures.create_test_accounts");
+  };
+
+  const clearDatabase = async (): Promise<void> => {
+    await db.query("TRUNCATE account CASCADE;");
+  };
+
+  beforeEach(async () => {
+    (verifyUserAuthentication as jest.Mock).mockImplementation(
+      (req: Request, __, next: NextFunction) => {
+        (req.body as SendDisableCodeRequest).emailFromAuthToken =
+          "test@permanent.org";
+        next();
+      }
+    );
+
+    (
+      fusionAuthClient.sendTwoFactorCodeForEnableDisable as jest.Mock
+    ).mockResolvedValue({
+      wasSuccessful: () => true,
+    });
+
+    await loadFixtures();
+  });
+
+  afterEach(async () => {
+    await clearDatabase();
+    jest.restoreAllMocks();
+  });
+
+  test("should return a 200 status if the request is successful", async () => {
+    await agent
+      .post("/api/v2/idpuser/send-disable-code")
+      .send({ methodId: "test_method_id" })
+      .expect(200);
+  });
+
+  test("should return a 401 status if the request not authenticated", async () => {
+    (verifyUserAuthentication as jest.Mock).mockImplementation(
+      (_: Request, __, next: NextFunction) => {
+        next(createError(401, "Unauthorized"));
+      }
+    );
+    await agent
+      .post("/api/v2/idpuser/send-disable-code")
+      .send({ methodId: "test_method_id" })
+      .expect(401);
+  });
+
+  test("should return a 400 status if emailFromAuthToken is missing", async () => {
+    (verifyUserAuthentication as jest.Mock).mockImplementation(
+      (_: Request, __, next: NextFunction) => {
+        next();
+      }
+    );
+    await agent
+      .post("/api/v2/idpuser/send-disable-code")
+      .send({ methodId: "test_method_id" })
+      .expect(400);
+  });
+
+  test("should return a 400 status if emailFromAuthToken is not an email", async () => {
+    (verifyUserAuthentication as jest.Mock).mockImplementation(
+      (req: Request, _, next: NextFunction) => {
+        (req.body as SendDisableCodeRequest).emailFromAuthToken =
+          "not_an_email";
+        next();
+      }
+    );
+    await agent
+      .post("/api/v2/idpuser/send-disable-code")
+      .send({ methodId: "test_method_id" })
+      .expect(400);
+  });
+
+  test("should return a 400 status if methodId is missing", async () => {
+    await agent.post("/api/v2/idpuser/send-disable-code").expect(400);
+  });
+
+  test("should call the fusionauth client to send the code", async () => {
+    await agent
+      .post("/api/v2/idpuser/send-disable-code")
+      .send({ methodId: "test_method_id" })
+      .expect(200);
+    expect(
+      fusionAuthClient.sendTwoFactorCodeForEnableDisable
+    ).toHaveBeenCalled();
+  });
+
+  test("should return a 404 status if the user doesn't exist in the database", async () => {
+    await db.query("TRUNCATE account CASCADE;");
+    await agent
+      .post("/api/v2/idpuser/send-disable-code")
+      .send({ methodId: "test_method_id" })
+      .expect(404);
+  });
+
+  test("should return a 500 status if the fusionauth client throws an error", async () => {
+    (
+      fusionAuthClient.sendTwoFactorCodeForEnableDisable as jest.Mock
+    ).mockResolvedValue({
+      wasSuccessful: () => false,
+      exception: { code: "500", message: "test_message" },
+    } as unknown as ReturnType<typeof fusionAuthClient.sendTwoFactorCodeForEnableDisable>);
+    await agent
+      .post("/api/v2/idpuser/send-disable-code")
+      .send({ methodId: "test_method_id" })
+      .expect(500);
+  });
+
+  test("should return a 500 status if the database call fails", async () => {
+    jest.spyOn(db, "sql").mockRejectedValue(new Error("test_error"));
+    await agent
+      .post("/api/v2/idpuser/send-disable-code")
+      .send({ methodId: "test_method_id" })
       .expect(500);
   });
 });
