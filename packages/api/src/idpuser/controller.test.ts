@@ -1,14 +1,17 @@
 import request from "supertest";
 import type { NextFunction, Request } from "express";
+import createError from "http-errors";
 import { app } from "../app";
 import { verifyUserAuthentication } from "../middleware";
 import { fusionAuthClient } from "../fusionauth";
-import type { TwoFactorRequestResponse } from "./models";
+import type { TwoFactorRequestResponse, SendEnableCodeRequest } from "./models";
+import { db } from "../database";
 
 interface TwoFactorRequest {
   emailFromAuthToken: string;
 }
 
+jest.mock("../database");
 jest.mock("node-fetch", () => jest.fn());
 jest.mock("../middleware");
 jest.mock("../fusionauth");
@@ -144,5 +147,138 @@ describe("/idpuser", () => {
     const response = await agent.get("/api/v2/idpuser");
 
     expect(response.body).toEqual(expected);
+  });
+});
+
+describe("idpuser/send-enable-code", () => {
+  const agent = request(app);
+
+  const loadFixtures = async (): Promise<void> => {
+    await db.sql("fixtures.create_test_accounts");
+  };
+
+  const clearDatabase = async (): Promise<void> => {
+    await db.query("TRUNCATE account CASCADE;");
+  };
+
+  beforeEach(async () => {
+    (verifyUserAuthentication as jest.Mock).mockImplementation(
+      (req: Request, __, next: NextFunction) => {
+        (req.body as SendEnableCodeRequest).emailFromAuthToken =
+          "test@permanent.org";
+        next();
+      }
+    );
+
+    (
+      fusionAuthClient.sendTwoFactorCodeForEnableDisable as jest.Mock
+    ).mockResolvedValue({
+      wasSuccessful: () => true,
+    });
+
+    await loadFixtures();
+  });
+
+  afterEach(async () => {
+    await clearDatabase();
+  });
+
+  test("should return a 200 status if the request is successful", async () => {
+    await agent
+      .post("/api/v2/idpuser/send-enable-code")
+      .send({ method: "email", value: "test@permanent.org" })
+      .expect(200);
+  });
+
+  test("should return a 401 status if the request is not authenticated", async () => {
+    (verifyUserAuthentication as jest.Mock).mockImplementation(
+      (_: Request, __, next: NextFunction) => {
+        next(createError(401, "Unauthorized"));
+      }
+    );
+    await agent.post("/api/v2/idpuser/send-enable-code").expect(401);
+  });
+
+  test("should return a 400 status if emailFromAuthToken is missing", async () => {
+    (verifyUserAuthentication as jest.Mock).mockImplementation(
+      (_: Request, __, next: NextFunction) => {
+        next();
+      }
+    );
+    await agent.post("/api/v2/idpuser/send-enable-code").expect(400);
+  });
+
+  test("should return a 400 status if emailFromAuthToken is not an email", async () => {
+    (verifyUserAuthentication as jest.Mock).mockImplementation(
+      (req: Request, _, next: NextFunction) => {
+        (req.body as SendEnableCodeRequest).emailFromAuthToken = "not_an_email";
+        next();
+      }
+    );
+    await agent.post("/api/v2/idpuser/send-enable-code").expect(400);
+  });
+
+  test("should return a 400 status if method is missing", async () => {
+    await agent.post("/api/v2/idpuser/send-enable-code").expect(400);
+  });
+
+  test("should return a 400 status if method is invalid", async () => {
+    await agent
+      .post("/api/v2/idpuser/send-enable-code")
+      .send({ method: "invalid", value: "test@permanent.org" })
+      .expect(400);
+  });
+
+  test("should return a 400 status if value is missing", async () => {
+    await agent
+      .post("/api/v2/idpuser/send-enable-code")
+      .send({ method: "email" })
+      .expect(400);
+  });
+
+  test("should return a 400 status if method is email and value is not an email", async () => {
+    await agent
+      .post("/api/v2/idpuser/send-enable-code")
+      .send({ method: "email", value: "not_an_email" })
+      .expect(400);
+  });
+
+  test("should call the fusionauth client to send the code", async () => {
+    await agent
+      .post("/api/v2/idpuser/send-enable-code")
+      .send({ method: "email", value: "test@permanent.org" })
+      .expect(200);
+    expect(
+      fusionAuthClient.sendTwoFactorCodeForEnableDisable
+    ).toHaveBeenCalled();
+  });
+
+  test("should return a 404 status if the user doesn't exist in the database", async () => {
+    await db.query("TRUNCATE account CASCADE;");
+    await agent
+      .post("/api/v2/idpuser/send-enable-code")
+      .send({ method: "email", value: "test@permanent.org" })
+      .expect(404);
+  });
+
+  test("should return a 500 status if the fusionauth client throws an error", async () => {
+    (
+      fusionAuthClient.sendTwoFactorCodeForEnableDisable as jest.Mock
+    ).mockResolvedValue({
+      wasSuccessful: () => false,
+      exception: { code: "500", message: "test_message" },
+    } as unknown as ReturnType<typeof fusionAuthClient.sendTwoFactorCodeForEnableDisable>);
+    await agent
+      .post("/api/v2/idpuser/send-enable-code")
+      .send({ method: "email", value: "test@permanent.org" })
+      .expect(500);
+  });
+
+  test("should return a 500 status if the database call fails", async () => {
+    jest.spyOn(db, "sql").mockRejectedValue(new Error("test_error"));
+    await agent
+      .post("/api/v2/idpuser/send-enable-code")
+      .send({ method: "email", value: "test@permanent.org" })
+      .expect(500);
   });
 });

@@ -3,3 +3,14 @@ export interface TwoFactorRequestResponse {
   method: string;
   value: string;
 }
+
+export interface SendEnableCodeRequest {
+  emailFromAuthToken: string;
+  method: TwoFactorMethod;
+  value: string;
+}
+
+export enum TwoFactorMethod {
+  Email = "email",
+  Sms = "sms",
+}
