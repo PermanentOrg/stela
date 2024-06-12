@@ -18,13 +18,10 @@ export const getRecordById = async (requestQuery: {
         "failed to retrieve featured archives"
       );
     });
-  const records = record.rows.map<ArchiveRecord>((row: ArchiveRecordRow) => {
-    const record = {
-      ...row,
-      size: +(row.size ?? 0),
-      imageRatio: +(row.imageRatio ?? 0),
-    };
-    return record;
-  });
+  const records = record.rows.map<ArchiveRecord>((row: ArchiveRecordRow) => ({
+    ...row,
+    size: +(row.size ?? 0),
+    imageRatio: +(row.imageRatio ?? 0),
+  }));
   return records;
 };

@@ -13,15 +13,6 @@ INSERT INTO folder_link (
 VALUES
 (
   1,
-  2,
-  1,
-  1,
-  'access.role.owner',
-  'status.generic.ok',
-  'type.folder_link.private'
-),
-(
-  1,
   6,
   NULL,
   5,
@@ -110,18 +101,6 @@ VALUES
   1,
   NULL,
   NULL,
-  1,
-  1,
-  'access.role.owner',
-  'status.generic.ok',
-  'type.folder_link.public'
-),
-(
-  8,
-  8,
-  NULL,
-  1,
-  9,
   1,
   1,
   'access.role.owner',

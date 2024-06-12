@@ -32,4 +32,4 @@ INSERT INTO access (
   'type.access.share',
   CURRENT_TIMESTAMP,
   CURRENT_TIMESTAMP
-); 
+);

@@ -95,7 +95,7 @@ VALUES
   'Deleted Folder',
   NULL,
   'status.generic.deleted',
-  CURRENT_TIMESTAMP,
+  '2020-01-01 00:00:00',
   'type.folder.private',
   NULL
 ),

@@ -27,8 +27,10 @@ export interface ArchiveRecord {
   folderLinkType: FolderLinkType;
   parentFolderId: string;
   parentFolderLinkId: string;
+  parentFolderArchiveNumber: string;
   tags: Tag[];
   archiveArchiveNumber: string;
+  shares: Share[];
 }
 
 export interface ArchiveRecordRow {
@@ -60,8 +62,10 @@ export interface ArchiveRecordRow {
   folderLinkType: FolderLinkType;
   parentFolderId: string;
   parentFolderLinkId: string;
+  parentFolderArchiveNumber: string;
   tags: Tag[];
   archiveArchiveNumber: string;
+  shares: Share[];
 }
 
 export interface ArchiveFile {
@@ -69,6 +73,8 @@ export interface ArchiveFile {
   size: number;
   format: FileFormat;
   type: FileType;
+  fileUrl: string;
+  downloadUrl: string;
 }
 
 export interface Tag {

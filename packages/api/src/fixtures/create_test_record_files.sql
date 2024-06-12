@@ -1,6 +1,6 @@
 INSERT INTO record_file (
   record_fileid,
-  recordid, 
+  recordid,
   fileid,
   status,
   type,

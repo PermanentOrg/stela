@@ -451,7 +451,7 @@ describe("/record/:recordId/recalculate_thumbnail", () => {
       };
       expect(publishBody.parameters.length).toBe(6);
       expect(publishBody.parameters[1]).toBe("1");
-      expect(publishBody.parameters[2]).toBe("2");
+      expect(publishBody.parameters[2]).toBe("1");
       expect(publishBody.parameters[3]).toBe("1");
     } else {
       expect(true).toBe(false);

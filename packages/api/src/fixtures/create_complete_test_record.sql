@@ -2,7 +2,7 @@ INSERT INTO
 record (
   recordid,
   archiveid,
-  archiveNbr,
+  archivenbr,
   publicdt,
   displayname,
   description,
