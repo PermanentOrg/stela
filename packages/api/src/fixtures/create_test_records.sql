@@ -15,8 +15,7 @@ VALUES
 (
   1,
   1,
-  '0000-0001',
-  '2023-06-21',
+  '0000-0001', '2023-06-21',
   'Public File',
   2,
   2,
@@ -150,6 +149,18 @@ VALUES
   NULL,
   NULL,
   'Record with deleted access',
+  2,
+  2,
+  'other_file.jpg',
+  'status.generic.ok',
+  'type.record.image'
+),
+(
+  14,
+  2,
+  NULL,
+  NULL,
+  'Record in deleted folder',
   2,
   2,
   'other_file.jpg',

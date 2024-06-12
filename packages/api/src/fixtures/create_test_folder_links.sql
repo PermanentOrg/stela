@@ -176,4 +176,16 @@ INSERT INTO folder_link (
   'access.role.owner',
   'status.generic.ok',
   'type.folder_link.private'
+),
+(
+  15,
+  14,
+  NULL,
+  8,
+  NULL,
+  2,
+  1,
+  'access.role.owner',
+  'status.generic.ok',
+  'type.folder_link.private'
 );

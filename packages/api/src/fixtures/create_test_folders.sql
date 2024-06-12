@@ -87,4 +87,15 @@ VALUES
   CURRENT_TIMESTAMP,
   'type.folder.root.public',
   'https://test-folder-thumbnail'
+),
+(
+  8,
+  2,
+  '2023-06-21',
+  'Deleted Folder',
+  NULL,
+  'status.generic.deleted',
+  CURRENT_TIMESTAMP,
+  'type.folder.private',
+  NULL
 );
