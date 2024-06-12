@@ -142,6 +142,6 @@ variable "archivematica_base_url" {
 }
 
 variable "archivematica_api_key" {
-  description = "API key
+  description = "API key"
   type        = string
 }
