@@ -4,7 +4,6 @@ import { app } from "../app";
 import { db } from "../database";
 import { extractUserEmailFromAuthToken } from "../middleware";
 import type { ArchiveFile, ArchiveRecord, Share, Tag } from "./models";
-
 jest.mock("../database");
 jest.mock("../middleware");
 
@@ -297,12 +296,12 @@ fdescribe("record/get", () => {
   test("expect to not return a record shared with a deleted membership", async () => {
     (extractUserEmailFromAuthToken as jest.Mock).mockImplementation(
       (req, _: Response, next: NextFunction) => {
-        req.body.emailFromAuthToken = "test+1@permanent.org";
+        req.body.emailFromAuthToken = "test+2@permanent.org";
         next();
       }
     );
     const response = await agent
-      .get("/api/v2/record/get?recordIds[]=8")
+      .get("/api/v2/record/get?recordIds[]=2")
       .expect(200);
     expect(response.body.length).toEqual(0);
   });

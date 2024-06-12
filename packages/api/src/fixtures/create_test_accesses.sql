@@ -25,7 +25,7 @@ INSERT INTO access (
   CURRENT_TIMESTAMP
 ),
 (
-  8,
+  3,
   4,
   'access.role.viewer',
   'status.generic.ok',
