@@ -101,9 +101,10 @@ INNER JOIN
   ON
     record.recordid = folder_link.recordid
     AND folder_link.status != 'status.generic.deleted'
-LEFT JOIN
+INNER JOIN
   folder AS parent_folder
   ON folder_link.parentfolderid = parent_folder.folderid
+  AND parent_folder.status != 'status.generic.deleted'
 LEFT JOIN
   access
   ON folder_link.folder_linkid = access.folder_linkid

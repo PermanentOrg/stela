@@ -157,7 +157,7 @@ VALUES
 ),
 (
   14,
-  2,
+  1,
   NULL,
   NULL,
   'Record in deleted folder',
