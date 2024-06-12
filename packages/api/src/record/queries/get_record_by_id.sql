@@ -144,6 +144,7 @@ LEFT JOIN
      profile_item.fieldnameui = 'profile.basic'
      AND profile_item.status = 'status.generic.ok'
      AND profile_item.string1 IS NOT NULL
+     AND share.status != 'status.generic.deleted'
    GROUP BY folder_linkid) as shares
   ON shares.folder_linkid = folder_link.folder_linkid
 WHERE

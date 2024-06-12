@@ -23,4 +23,13 @@ INSERT INTO share (
   'status.generic.ok',
   NOW(),
   NOW()
+),
+(
+  3,
+  8,
+  4,
+  'access.role.viewer',
+  'status.generic.deleted',
+  NOW(),
+  NOW()
 );
