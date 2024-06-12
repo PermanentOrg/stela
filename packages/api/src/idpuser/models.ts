@@ -22,6 +22,12 @@ export interface SendDisableCodeRequest {
   methodId: string;
 }
 
+export interface DisableTwoFactorRequest {
+  emailFromAuthToken: string;
+  methodId: string;
+  code: string;
+}
+
 export enum TwoFactorMethod {
   Email = "email",
   Sms = "sms",

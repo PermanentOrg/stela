@@ -78,5 +78,14 @@ declare module "@fusionauth/typescript-client" {
       exception: Error;
       wasSuccessful: () => boolean;
     }>;
+    public disableTwoFactor(
+      userId: string,
+      methodId: string,
+      code: string
+    ): Promise<{
+      statusCode: number;
+      exception: Error;
+      wasSuccessful: () => boolean;
+    }>;
   }
 }
