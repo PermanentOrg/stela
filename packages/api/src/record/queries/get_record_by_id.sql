@@ -111,6 +111,7 @@ LEFT JOIN
 LEFT JOIN
   account_archive AS share_account_archive
   ON access.archiveid = share_account_archive.archiveid
+  AND share_account_archive.status = 'status.generic.ok'
 LEFT JOIN
   account as share_account
   ON share_account_archive.accountid = share_account.accountid

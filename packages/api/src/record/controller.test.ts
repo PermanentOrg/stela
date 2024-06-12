@@ -294,4 +294,16 @@ fdescribe("record/get", () => {
       .expect(200);
     expect(response.body.length).toEqual(0);
   });
+  test("expect to not return a record shared with a deleted membership", async () => {
+    (extractUserEmailFromAuthToken as jest.Mock).mockImplementation(
+      (req, _: Response, next: NextFunction) => {
+        req.body.emailFromAuthToken = "test+1@permanent.org";
+        next();
+      }
+    );
+    const response = await agent
+      .get("/api/v2/record/get?recordIds[]=8")
+      .expect(200);
+    expect(response.body.length).toEqual(0);
+  });
 });
