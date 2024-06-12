@@ -1,4 +1,5 @@
 import type { Response, NextFunction } from "express";
+import { logger } from "@stela/logger";
 import request from "supertest";
 import { app } from "../app";
 import { db } from "../database";
@@ -6,6 +7,7 @@ import { extractUserEmailFromAuthToken } from "../middleware";
 import type { ArchiveFile, ArchiveRecord, Share, Tag } from "./models";
 jest.mock("../database");
 jest.mock("../middleware");
+jest.mock("@stela/logger");
 
 const setupDatabase = async (): Promise<void> => {
   await db.sql("fixtures.create_test_accounts");
@@ -42,7 +44,7 @@ const clearDatabase = async (): Promise<void> => {
   );
 };
 
-fdescribe("record/get", () => {
+fdescribe("record", () => {
   beforeEach(async () => {
     (extractUserEmailFromAuthToken as jest.Mock).mockImplementation(
       (req, _: Response, next: NextFunction) => {
@@ -66,16 +68,16 @@ fdescribe("record/get", () => {
         next();
       }
     );
-    await agent.get("/api/v2/record/get?recordIds[]=1").expect(400);
+    await agent.get("/api/v2/record?recordIds[]=1").expect(400);
   });
   test("expect an empty query to cause a 400 error", async () => {
-    await agent.get("/api/v2/record/get").expect(400);
+    await agent.get("/api/v2/record").expect(400);
   });
   test("expect a non-array record ID to cause a 400 error", async () => {
-    await agent.get("/api/v2/record/get?recordIds=1").expect(400);
+    await agent.get("/api/v2/record?recordIds=1").expect(400);
   });
   test("expect an empty array to cause a 400 error", async () => {
-    await agent.get("/api/v2/record/get?recordIds[]").expect(400);
+    await agent.get("/api/v2/record?recordIds[]").expect(400);
   });
   test("expect return a public record when not logged in", async () => {
     (extractUserEmailFromAuthToken as jest.Mock).mockImplementation(
@@ -84,39 +86,39 @@ fdescribe("record/get", () => {
       }
     );
     const response = await agent
-      .get("/api/v2/record/get?recordIds[]=1")
+      .get("/api/v2/record?recordIds[]=1")
       .expect(200);
     expect(response.body.length).toEqual(1);
     expect(response.body[0].recordId).toEqual("1");
   });
   test("expect to return a record", async () => {
     const response = await agent
-      .get("/api/v2/record/get?recordIds[]=1")
+      .get("/api/v2/record?recordIds[]=1")
       .expect(200);
     expect(response.body.length).toEqual(1);
     expect(response.body[0].recordId).toEqual("1");
   });
   test("expect to return multiple records", async () => {
     const response = await agent
-      .get("/api/v2/record/get?recordIds[]=1&recordIds[]=2")
+      .get("/api/v2/record?recordIds[]=1&recordIds[]=2")
       .expect(200);
     expect(response.body.length).toEqual(2);
   });
   test("expect an empty response if the logged-in user does not own the record", async () => {
     const response = await agent
-      .get("/api/v2/record/get?recordIds[]=7")
+      .get("/api/v2/record?recordIds[]=7")
       .expect(200);
     expect(response.body.length).toEqual(0);
   });
   test("expect an empty response if the record is deleted", async () => {
     const response = await agent
-      .get("/api/v2/record/get?recordIds[]=4")
+      .get("/api/v2/record?recordIds[]=4")
       .expect(200);
     expect(response.body.length).toEqual(0);
   });
   test("expect to return a public record not owned by logged-in user", async () => {
     const response = await agent
-      .get("/api/v2/record/get?recordIds[]=5")
+      .get("/api/v2/record?recordIds[]=5")
       .expect(200);
     expect(response.body.length).toEqual(1);
     expect(response.body[0].recordId).toEqual("5");
@@ -128,7 +130,7 @@ fdescribe("record/get", () => {
       }
     );
     const response = await agent
-      .get("/api/v2/record/get?recordIds[]=1")
+      .get("/api/v2/record?recordIds[]=1")
       .expect(200);
     expect(response.body.length).toEqual(1);
     expect(response.body[0].recordId).toEqual("1");
@@ -140,7 +142,7 @@ fdescribe("record/get", () => {
       }
     );
     const response = await agent
-      .get("/api/v2/record/get?recordIds[]=2")
+      .get("/api/v2/record?recordIds[]=2")
       .expect(200);
     expect(response.body.length).toEqual(0);
   });
@@ -149,7 +151,7 @@ fdescribe("record/get", () => {
     // will all have equivalent entries in the access table. So we don't need to
     // test that separately.
     const response = await agent
-      .get("/api/v2/record/get?recordIds[]=6")
+      .get("/api/v2/record?recordIds[]=6")
       .expect(200);
     expect(response.body.length).toEqual(1);
     expect(response.body[0].recordId).toEqual("6");
@@ -160,7 +162,7 @@ fdescribe("record/get", () => {
     // fileDurationInSeconds (not used in UI), tags as objects, timezone as an
     // object (unnecessary), archive.archiveNbr, shares
     const response = await agent
-      .get("/api/v2/record/get?recordIds[]=8")
+      .get("/api/v2/record?recordIds[]=8")
       .expect(200);
     expect(response.body.length).toEqual(1);
     expect(response.body[0].recordId).toEqual("8");
@@ -264,32 +266,32 @@ fdescribe("record/get", () => {
   });
   test("expect to not return deleted files", async () => {
     const response = await agent
-      .get("/api/v2/record/get?recordIds[]=9")
+      .get("/api/v2/record?recordIds[]=9")
       .expect(200);
     const record: ArchiveRecord = response.body[0];
     expect(record.files.length).toEqual(1);
   });
   test("expect to not return a record in a deleted archive", async () => {
     const response = await agent
-      .get("/api/v2/record/get?recordIds[]=10")
+      .get("/api/v2/record?recordIds[]=10")
       .expect(200);
     expect(response.body.length).toEqual(0);
   });
   test("expect to not return a record for a pending archive member", async () => {
     const response = await agent
-      .get("/api/v2/record/get?recordIds[]=11")
+      .get("/api/v2/record?recordIds[]=11")
       .expect(200);
     expect(response.body.length).toEqual(0);
   });
   test("expect to not return a record with a deleted folder_link", async () => {
     const response = await agent
-      .get("/api/v2/record/get?recordIds[]=12")
+      .get("/api/v2/record?recordIds[]=12")
       .expect(200);
     expect(response.body.length).toEqual(0);
   });
   test("expect to not return a record with deleted access", async () => {
     const response = await agent
-      .get("/api/v2/record/get?recordIds[]=13")
+      .get("/api/v2/record?recordIds[]=13")
       .expect(200);
     expect(response.body.length).toEqual(0);
   });
@@ -301,14 +303,25 @@ fdescribe("record/get", () => {
       }
     );
     const response = await agent
-      .get("/api/v2/record/get?recordIds[]=2")
+      .get("/api/v2/record?recordIds[]=2")
       .expect(200);
     expect(response.body.length).toEqual(0);
   });
   test("expect to not return a record with a deleted parent folder", async () => {
     const response = await agent
-      .get("/api/v2/record/get?recordIds[]=14")
+      .get("/api/v2/record?recordIds[]=14")
       .expect(200);
     expect(response.body.length).toEqual(0);
   });
+  test("expect to log error and return 500 if database lookup fails", async () => {
+    const testError = new Error("test error");
+    jest.spyOn(db, "sql").mockImplementation(async () => {
+      throw testError;
+    });
+
+    await agent.get("/api/v2/record?recordIds[]=14")
+      .expect(500);
+    expect(logger.error).toHaveBeenCalledWith(testError);
+  });
+       
 });

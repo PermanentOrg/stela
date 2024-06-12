@@ -98,4 +98,37 @@ VALUES
   CURRENT_TIMESTAMP,
   'type.folder.private',
   NULL
+),
+(
+  9,
+  4,
+  NULL,
+  'Private Root',
+  NULL,
+  'status.generic.ok',
+  CURRENT_TIMESTAMP,
+  'type.folder.root.private',
+  'https://test-folder-thumbnail'
+),
+(
+  10,
+  3,
+  NULL,
+  'Private Root',
+  NULL,
+  'status.generic.ok',
+  CURRENT_TIMESTAMP,
+  'type.folder.root.private',
+  'https://test-folder-thumbnail'
+),
+(
+  11,
+  2,
+  NULL,
+  'Private Root',
+  NULL,
+  'status.generic.ok',
+  CURRENT_TIMESTAMP,
+  'type.folder.root.private',
+  'https://test-folder-thumbnail'
 );
