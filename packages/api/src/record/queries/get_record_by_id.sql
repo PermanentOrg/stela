@@ -107,6 +107,7 @@ LEFT JOIN
 LEFT JOIN
   access
   ON folder_link.folder_linkid = access.folder_linkid
+  AND access.status = 'status.generic.ok'
 LEFT JOIN
   account_archive AS share_account_archive
   ON access.archiveid = share_account_archive.archiveid

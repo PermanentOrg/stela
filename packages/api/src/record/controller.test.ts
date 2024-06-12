@@ -288,4 +288,10 @@ fdescribe("record/get", () => {
       .expect(200);
     expect(response.body.length).toEqual(0);
   });
+  test("expect to not return a record with deleted access", async () => {
+    const response = await agent
+      .get("/api/v2/record/get?recordIds[]=13")
+      .expect(200);
+    expect(response.body.length).toEqual(0);
+  });
 });

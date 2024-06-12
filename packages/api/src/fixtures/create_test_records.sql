@@ -143,4 +143,16 @@ VALUES
   'other_file.jpg',
   'status.generic.ok',
   'type.record.image'
+),
+(
+  13,
+  2,
+  NULL,
+  NULL,
+  'Record with deleted access',
+  2,
+  2,
+  'other_file.jpg',
+  'status.generic.ok',
+  'type.record.image'
 );

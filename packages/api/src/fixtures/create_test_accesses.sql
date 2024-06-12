@@ -14,4 +14,13 @@ INSERT INTO access (
   'type.access.share',
   CURRENT_TIMESTAMP,
   CURRENT_TIMESTAMP
+),
+(
+  14,
+  1,
+  'access.role.viewer',
+  'status.generic.deleted',
+  'type.access.share',
+  CURRENT_TIMESTAMP,
+  CURRENT_TIMESTAMP
 ); 
