@@ -46,5 +46,16 @@ declare module "@fusionauth/typescript-client" {
         };
       };
     }>;
+    public sendTwoFactorCodeForEnableDisable(request: {
+      email?: string;
+      method?: string;
+      methodId?: string;
+      mobilePhone?: string;
+      userId?: string;
+    }): Promise<{
+      statusCode: number;
+      exception: Error;
+      wasSuccessful: () => boolean;
+    }>;
   }
 }
