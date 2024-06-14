@@ -4,6 +4,7 @@ import {
   TwoFactorMethod,
   type SendEnableCodeRequest,
   type CreateTwoFactorMethodRequest,
+  type SendDisableCodeRequest,
   type TwoFactorRequestResponse,
 } from "./models";
 import { db } from "../database";
@@ -107,6 +108,34 @@ export const addTwoFactorMethod = async (
     fusionAuthUserIdResponse.rows[0].subject,
     fusionAuthRequestBody
   );
+  if (!fusionAuthResponse.wasSuccessful()) {
+    throw createError(
+      parseInt(fusionAuthResponse.exception.code ?? "500", 10),
+      fusionAuthResponse.exception.message ?? "Unknown error"
+    );
+  }
+};
+
+export const sendDisableCode = async (
+  requestBody: SendDisableCodeRequest
+): Promise<void> => {
+  const fusionAuthUserIdResponse = await db.sql<{ subject: string }>(
+    "idpuser.queries.get_subject_by_email",
+    {
+      email: requestBody.emailFromAuthToken,
+    }
+  );
+
+  if (!fusionAuthUserIdResponse.rows[0]) {
+    throw createError.NotFound("User not found");
+  }
+
+  const fusionAuthResponse =
+    await fusionAuthClient.sendTwoFactorCodeForEnableDisable({
+      userId: fusionAuthUserIdResponse.rows[0].subject,
+      methodId: requestBody.methodId,
+    });
+
   if (!fusionAuthResponse.wasSuccessful()) {
     throw createError(
       parseInt(fusionAuthResponse.exception.code ?? "500", 10),

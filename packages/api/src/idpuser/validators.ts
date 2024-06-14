@@ -1,6 +1,7 @@
 import Joi from "joi";
 import type {
   SendEnableCodeRequest,
+  SendDisableCodeRequest,
   CreateTwoFactorMethodRequest,
 } from "./models";
 
@@ -34,6 +35,20 @@ export function validateCreateTwoFactorMethodRequest(
         is: "email",
         then: Joi.string().email(),
       }),
+    })
+    .validate(data);
+  if (validation.error) {
+    throw validation.error;
+  }
+}
+
+export function validateSendDisableCodeRequest(
+  data: unknown
+): asserts data is SendDisableCodeRequest {
+  const validation = Joi.object()
+    .keys({
+      emailFromAuthToken: Joi.string().email().required(),
+      methodId: Joi.string().required(),
     })
     .validate(data);
   if (validation.error) {
