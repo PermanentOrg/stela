@@ -11,12 +11,14 @@ import {
   validateSendEnableCodeRequest,
   validateSendDisableCodeRequest,
   validateCreateTwoFactorMethodRequest,
+  validateDisableTwoFactorRequest,
 } from "./validators";
 import {
   getTwoFactorMethods,
   sendEnableCode,
   addTwoFactorMethod,
   sendDisableCode,
+  removeTwoFactorMethod,
 } from "./service";
 
 export const idpUserController = Router();
@@ -83,6 +85,24 @@ idpUserController.post(
     try {
       validateSendDisableCodeRequest(req.body);
       await sendDisableCode(req.body);
+      res.send(200);
+    } catch (err) {
+      if (isValidationError(err)) {
+        res.status(400).json({ error: err });
+        return;
+      }
+      next(err);
+    }
+  }
+);
+
+idpUserController.post(
+  "/disable-two-factor",
+  verifyUserAuthentication,
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      validateDisableTwoFactorRequest(req.body);
+      await removeTwoFactorMethod(req.body);
       res.send(200);
     } catch (err) {
       if (isValidationError(err)) {
