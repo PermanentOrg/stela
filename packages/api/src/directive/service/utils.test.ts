@@ -9,8 +9,8 @@ const testEmail = "test@permanent.org";
 
 const loadFixtures = async (): Promise<void> => {
   await db.sql("fixtures.create_test_accounts");
-  await db.sql("fixtures.create_test_archive");
-  await db.sql("fixtures.create_test_account_archive");
+  await db.sql("fixtures.create_test_archives");
+  await db.sql("fixtures.create_test_account_archives");
 };
 
 const clearDatabase = async (): Promise<void> => {
