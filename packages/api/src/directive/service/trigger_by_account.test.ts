@@ -11,10 +11,10 @@ const testDirectiveId = "39b2a5fa-3508-4030-91b6-21dc6ec7a1ab";
 
 const loadFixtures = async (): Promise<void> => {
   await db.sql("fixtures.create_test_accounts");
-  await db.sql("fixtures.create_test_archive");
-  await db.sql("fixtures.create_test_account_archive");
-  await db.sql("fixtures.create_test_directive");
-  await db.sql("fixtures.create_test_directive_trigger");
+  await db.sql("fixtures.create_test_archives");
+  await db.sql("fixtures.create_test_account_archives");
+  await db.sql("fixtures.create_test_directives");
+  await db.sql("fixtures.create_test_directive_triggers");
 };
 
 const clearDatabase = async (): Promise<void> => {
