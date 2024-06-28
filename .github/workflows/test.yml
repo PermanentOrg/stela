@@ -30,8 +30,10 @@ jobs:
                   ref: main
                   path: ./devenv
             - run: (cd stela; npm install --production=false)
+            - run : (cd stela; npm run build -ws)
             - run: touch stela/.env
             - run: (cd devenv; docker compose up database_setup -d; docker logs devenv-database_setup-1)
             - run: (cd stela/packages/api; npm run start-containers)
             - run: (cd stela/packages/api; docker compose run stela npm run test-ci)
+            - run: (cd stela; npm run test -w @stela/account_space_updater)
             - uses: codecov/codecov-action@v2
