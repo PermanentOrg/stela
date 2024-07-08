@@ -1,3 +1,4 @@
+import _ from "newrelic";
 import { logger } from "@stela/logger";
 import "./env";
 import { app } from "./app";

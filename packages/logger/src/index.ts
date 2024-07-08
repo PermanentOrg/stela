@@ -11,8 +11,10 @@ const template = ({
 }: TransformableInfo): string => {
   const meta = Object.keys(rest).length > 0 ? ` ${JSON.stringify(rest)}` : "";
   const stacktrace = typeof stack === "string" ? `\n${stack}` : "";
+  const messageString =
+    typeof message === "string" ? message : JSON.stringify(message);
   const timestamp = new Date().toLocaleString();
-  return `${timestamp} ${level}: ${message}${meta}${stacktrace}`;
+  return `${timestamp} ${level}: ${messageString}${meta}${stacktrace}`;
 };
 
 const debugLogger = createLogger({

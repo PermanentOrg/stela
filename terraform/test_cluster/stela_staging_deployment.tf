@@ -179,6 +179,22 @@ resource "kubernetes_deployment" "stela_staging" {
               }
             }
           }
+ 
+          env {
+            name = "NEW_RELIC_LICENSE_KEY"
+            value_from {
+              secret_key_ref {
+                name     = "staging-secrets"
+                key      = "NEW_RELIC_LICENSE_KEY"
+                optional = false
+              }
+            }
+          }
+
+          env {
+            name  = "NEW_RELIC_APP_NAME"
+            value = var.staging_new_relic_app_name
+          }
 
           port {
             container_port = 80
