@@ -1,4 +1,7 @@
-import { validateUpdateTagsRequest } from "./validators";
+import {
+  validateLeaveArchiveParams,
+  validateUpdateTagsRequest,
+} from "./validators";
 
 describe("validateUpdateTagsRequest", () => {
   test("should find no errors in a valid request", () => {
@@ -117,6 +120,71 @@ describe("validateUpdateTagsRequest", () => {
     try {
       validateUpdateTagsRequest({
         emailFromAuthToken: "test@permanent.org",
+      });
+    } catch (err) {
+      error = err;
+    } finally {
+      expect(error).not.toBeNull();
+    }
+  });
+});
+
+describe("validateLeaveArchiveParams", () => {
+  test("should find no errors in valid parameters", () => {
+    let error = null;
+    try {
+      validateLeaveArchiveParams({
+        archiveId: "123",
+      });
+    } catch (err) {
+      error = err;
+    } finally {
+      expect(error).toBeNull();
+    }
+  });
+
+  test("should error if archiveId is missing", () => {
+    let error = null;
+    try {
+      validateLeaveArchiveParams({});
+    } catch (err) {
+      error = err;
+    } finally {
+      expect(error).not.toBeNull();
+    }
+  });
+
+  test("should error if archiveId is wrong type", () => {
+    let error = null;
+    try {
+      validateLeaveArchiveParams({
+        archiveId: 123,
+      });
+    } catch (err) {
+      error = err;
+    } finally {
+      expect(error).not.toBeNull();
+    }
+  });
+
+  test("should error if archiveId string contains non-numeric characters", () => {
+    let error = null;
+    try {
+      validateLeaveArchiveParams({
+        archiveId: 123,
+      });
+    } catch (err) {
+      error = err;
+    } finally {
+      expect(error).not.toBeNull();
+    }
+  });
+
+  test("should error if archiveId string begins with a 0", () => {
+    let error = null;
+    try {
+      validateLeaveArchiveParams({
+        archiveId: "0123",
       });
     } catch (err) {
       error = err;

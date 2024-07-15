@@ -5,6 +5,11 @@ import { db } from "../database";
 import { MailchimpMarketing } from "../mailchimp";
 import type { UpdateTagsRequest, SignupDetails } from "./models";
 
+interface GetAccountArchiveResult {
+  accessRole: string;
+  accountId: number;
+}
+
 const updateTags = async (requestBody: UpdateTagsRequest): Promise<void> => {
   const tags = (requestBody.addTags ?? [])
     .map((tag): { name: string; status: "active" | "inactive" } => ({
@@ -50,7 +55,51 @@ const getSignupDetails = async (
   return signupDetailResult.rows[0];
 };
 
+const leaveArchive = (accountEmail: string, archiveId: string) => {
+  return db.transaction(async (transactionDb) => {
+    const accountArchiveResult =
+      await transactionDb.sql<GetAccountArchiveResult>(
+        "account.queries.get_account_archive",
+        {
+          archiveId,
+          email: accountEmail,
+        }
+      );
+
+    const accountArchive = accountArchiveResult.rows[0];
+
+    if (!accountArchive) {
+      throw new createError.BadRequest(
+        `Unable to determine relationship with archiveId ${archiveId}`
+      );
+    }
+
+    if (accountArchive.accessRole === "access.role.owner") {
+      throw new createError.BadRequest(
+        "Cannot leave archive while owning it. Either pass ownership to another account or delete archive."
+      );
+    }
+
+    const deleteResult = await db.sql<{ accountArchiveId: string }>(
+      "account.queries.delete_account_archive",
+      {
+        archiveId,
+        email: accountEmail,
+      }
+    );
+
+    if (!deleteResult.rows[0]) {
+      throw new createError.InternalServerError(
+        "Unexpected result while performing DELETE on account archive relationship."
+      );
+    }
+
+    return deleteResult.rows[0];
+  });
+};
+
 export const accountService = {
-  updateTags,
   getSignupDetails,
+  leaveArchive,
+  updateTags,
 };
