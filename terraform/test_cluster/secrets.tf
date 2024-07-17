@@ -16,6 +16,7 @@ resource "kubernetes_secret" "dev-secrets" {
     "MIXPANEL_TOKEN"                  = var.dev_mixpanel_token
     "ARCHIVEMATICA_BASE_URL"          = var.dev_archivematica_base_url
     "ARCHIVEMATICA_API_KEY"           = var.dev_archivematica_api_key
+    "NEW_RELIC_LICENSE_KEY"           = var.dev_new_relic_license_key
   }
 }
 
@@ -37,5 +38,6 @@ resource "kubernetes_secret" "staging-secrets" {
     "MIXPANEL_TOKEN"                  = var.staging_mixpanel_token
     "ARCHIVEMATICA_BASE_URL"          = var.staging_archivematica_base_url
     "ARCHIVEMATICA_API_KEY"           = var.staging_archivematica_api_key
+    "NEW_RELIC_LICENSE_KEY"           = var.staging_new_relic_license_key
   }
 }

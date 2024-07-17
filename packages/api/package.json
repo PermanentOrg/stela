@@ -51,6 +51,7 @@
     "http-errors": "^2.0.0",
     "joi": "^17.7.1",
     "mixpanel": "^0.18.0",
+    "newrelic": "^11.22.0",
     "node-fetch": "^2.6.9",
     "pg": "^8.5.1",
     "require-env-variable": "^3.1.2",
@@ -60,6 +61,7 @@
     "uuid": "^9.0.0"
   },
   "devDependencies": {
+    "@types/newrelic": "^9.14.4",
     "@types/ua-parser-js": "^0.7.39",
     "supertest": "^5.0.0"
   }

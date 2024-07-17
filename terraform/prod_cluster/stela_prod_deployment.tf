@@ -179,6 +179,22 @@ resource "kubernetes_deployment" "stela_prod" {
               }
             }
           }
+ 
+          env {
+            name = "NEW_RELIC_LICENSE_KEY"
+            value_from {
+              secret_key_ref {
+                name     = "prod-secrets"
+                key      = "NEW_RELIC_LICENSE_KEY"
+                optional = false
+              }
+            }
+          }
+
+          env {
+            name  = "NEW_RELIC_APP_NAME"
+            value = var.new_relic_app_name
+          }
 
           port {
             container_port = 80

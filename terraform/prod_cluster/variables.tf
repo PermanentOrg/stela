@@ -145,3 +145,14 @@ variable "archivematica_api_key" {
   description = "API key"
   type        = string
 }
+
+variable "new_relic_license_key" {
+  description = "New Relic license key for the dev environment"
+  type        = string
+}
+
+variable "new_relic_app_name" {
+  description = "New Relic app name for the dev environment"
+  type        = string
+  default     = "stela-api-prod"
+}

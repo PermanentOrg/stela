@@ -16,5 +16,6 @@ resource "kubernetes_secret" "prod-secrets" {
     "MIXPANEL_TOKEN"                  = var.mixpanel_token
     "ARCHIVEMATICA_BASE_URL"          = var.archivematica_base_url
     "ARCHIVEMATICA_API_KEY"           = var.archivematica_api_key
+    "NEW_RELIC_LICENSE_KEY"           = var.new_relic_license_key
   }
 }

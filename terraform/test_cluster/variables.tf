@@ -242,3 +242,25 @@ variable "staging_archivematica_api_key" {
   description = "API key for the Archivematica API in the staging environment"
   type        = string
 }
+
+variable "dev_new_relic_license_key" {
+  description = "New Relic license key for the dev environment"
+  type        = string
+}
+
+variable "dev_new_relic_app_name" {
+  description = "New Relic app name for the dev environment"
+  type        = string
+  default     = "stela-api-dev"
+}
+
+variable "staging_new_relic_license_key" {
+  description = "New Relic license key for the dev environment"
+  type        = string
+}
+
+variable "staging_new_relic_app_name" {
+  description = "New Relic app name for the dev environment"
+  type        = string
+  default     = "stela-api-staging"
+}
