@@ -34,3 +34,18 @@ export function validateLeaveArchiveParams(
     throw validation.error;
   }
 }
+
+export function validateLeaveArchiveRequest(data: unknown): asserts data is {
+  ip: string;
+  emailFromAuthToken: string;
+} {
+  const validation = Joi.object()
+    .keys({
+      ip: Joi.string().ip().required(),
+      emailFromAuthToken: Joi.string().email().required(),
+    })
+    .validate(data);
+  if (validation.error) {
+    throw validation.error;
+  }
+}

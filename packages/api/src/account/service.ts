@@ -1,14 +1,19 @@
 import { Md5 } from "ts-md5";
 import createError from "http-errors";
 import { logger } from "@stela/logger";
+
 import { db } from "../database";
 import { MailchimpMarketing } from "../mailchimp";
-import type { UpdateTagsRequest, SignupDetails } from "./models";
+import { ACCESS_ROLE, EVENT_ACTION, EVENT_ENTITY } from "../constants";
+import { createEvent } from "../event/service";
+import type { CreateEventRequest } from "../event/models";
 
-interface GetAccountArchiveResult {
-  accessRole: string;
-  accountId: number;
-}
+import type {
+  UpdateTagsRequest,
+  SignupDetails,
+  GetAccountArchiveResult,
+  LeaveArchiveRequest,
+} from "./models";
 
 const updateTags = async (requestBody: UpdateTagsRequest): Promise<void> => {
   const tags = (requestBody.addTags ?? [])
@@ -55,26 +60,33 @@ const getSignupDetails = async (
   return signupDetailResult.rows[0];
 };
 
-const leaveArchive = (accountEmail: string, archiveId: string) => {
-  return db.transaction(async (transactionDb) => {
+const leaveArchive = async ({
+  emailFromAuthToken,
+  archiveId,
+  ip,
+  userAgent,
+}: LeaveArchiveRequest): Promise<{
+  accountArchiveId: string;
+}> =>
+  db.transaction(async (transactionDb) => {
     const accountArchiveResult =
       await transactionDb.sql<GetAccountArchiveResult>(
         "account.queries.get_account_archive",
         {
           archiveId,
-          email: accountEmail,
+          email: emailFromAuthToken,
         }
       );
 
     const accountArchive = accountArchiveResult.rows[0];
 
     if (!accountArchive) {
-      throw new createError.BadRequest(
-        `Unable to determine relationship with archiveId ${archiveId}`
+      throw new createError.NotFound(
+        `Unable to find relationship with archiveId ${archiveId}`
       );
     }
 
-    if (accountArchive.accessRole === "access.role.owner") {
+    if (accountArchive.accessRole === ACCESS_ROLE.Owner) {
       throw new createError.BadRequest(
         "Cannot leave archive while owning it. Either pass ownership to another account or delete archive."
       );
@@ -84,7 +96,7 @@ const leaveArchive = (accountEmail: string, archiveId: string) => {
       "account.queries.delete_account_archive",
       {
         archiveId,
-        email: accountEmail,
+        email: emailFromAuthToken,
       }
     );
 
@@ -94,9 +106,27 @@ const leaveArchive = (accountEmail: string, archiveId: string) => {
       );
     }
 
+    const eventData: CreateEventRequest = {
+      action: EVENT_ACTION.Update,
+      entity: EVENT_ENTITY.Account,
+      entityId: accountArchive.accountId.toString(),
+      ip,
+      version: 1,
+      body: {
+        archiveId,
+        accountArchiveId: accountArchive.accountArchiveId,
+      },
+      userSubjectFromAuthToken: emailFromAuthToken,
+    };
+
+    if (userAgent !== undefined) {
+      eventData.userAgent = userAgent;
+    }
+
+    await createEvent(eventData);
+
     return deleteResult.rows[0];
   });
-};
 
 export const accountService = {
   getSignupDetails,

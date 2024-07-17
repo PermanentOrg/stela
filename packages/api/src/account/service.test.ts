@@ -1,10 +1,11 @@
-import { NotFound, InternalServerError } from "http-errors";
+import { NotFound, InternalServerError, BadRequest } from "http-errors";
 import { Md5 } from "ts-md5";
 import { logger } from "@stela/logger";
 import { MailchimpMarketing } from "../mailchimp";
 import { db } from "../database";
 import { accountService } from "./service";
 import type { UpdateTagsRequest } from "./models";
+import { EVENT_ACTION, EVENT_ACTOR, EVENT_ENTITY } from "../constants";
 
 jest.mock("../database");
 jest.mock("../mailchimp", () => ({
@@ -145,5 +146,130 @@ describe("getSignupDetails", () => {
       expect(error instanceof InternalServerError).toBe(true);
       expect(logger.error).toHaveBeenCalled();
     }
+  });
+});
+
+describe("leaveArchive", () => {
+  const ip = "127.0.0.1";
+  const selectEventRow = `
+      SELECT * FROM event e
+      WHERE e.entity = '${EVENT_ENTITY.Account}'
+        AND e.version = 1
+        AND e.entity_id = '5'
+        AND e.action = '${EVENT_ACTION.Update}'
+        AND e.ip = '127.0.0.1'
+        AND e.user_agent = 'chrome'
+        AND e.actor_type = '${EVENT_ACTOR.User}'`;
+
+  beforeAll(async () => {
+    await db.query(`insert into account
+      (accountid, primaryemail, status, notificationpreferences, type)
+    values
+      (1, 'test@test.com', 'mock.status', '{}', 'mock.type'),
+      (5, 'test2@test2.com', 'mock.status', '{}', 'mock.type');`);
+
+    await db.query(`insert into archive (archiveid)
+        values (22), (34)`);
+  });
+
+  afterAll(async () => {
+    await db.query(`delete from account where accountid in (1, 5)`);
+    await db.query(`delete from archive where archiveid in (22, 34)`);
+  });
+
+  beforeEach(async () => {
+    await db.query(`insert into account_archive
+      (account_archiveid, accountid, archiveid, accessrole, "position", "type", status)
+    values
+      (1, 1,	22,	'access.role.owner',	0,	'type.account.standard',	'status.generic.ok'),
+      (2, 5,	34,	'access.role.owner',	0,	'type.account.standard',	'status.generic.ok'),
+      (3, 5,	22,	'access.role.viewer',	0,	'type.account.standard',	'status.generic.ok')`);
+  });
+
+  afterEach(async () => {
+    await db.query(
+      `delete from account_archive where account_archiveid in (1,2,3) returning *`
+    );
+  });
+
+  test("should successfully leave an archive", async () => {
+    const selectAccountArchiveRow = `SELECT * FROM account_archive WHERE
+    accountid = 5 AND archiveid = 22`;
+
+    const accounArchiveBeforeLeaveResult = await db.query(
+      selectAccountArchiveRow
+    );
+    expect(accounArchiveBeforeLeaveResult.rows.length).toBe(1);
+
+    await accountService.leaveArchive({
+      emailFromAuthToken: "test2@test2.com",
+      ip,
+      archiveId: "22",
+    });
+
+    const accounArchiveAfterLeaveResult = await db.query(
+      selectAccountArchiveRow
+    );
+    expect(accounArchiveAfterLeaveResult.rows.length).toBe(0);
+  });
+
+  test("should throw 404 error if account archive relationship is not found", async () => {
+    let error = null;
+
+    try {
+      await accountService.leaveArchive({
+        emailFromAuthToken: "test2@test2.com",
+        ip,
+        archiveId: "2022",
+      });
+    } catch (e) {
+      error = e;
+    } finally {
+      expect(error instanceof NotFound).toBe(true);
+    }
+  });
+
+  test("should throw 400 error if the account owns the archive", async () => {
+    let error = null;
+
+    try {
+      await accountService.leaveArchive({
+        emailFromAuthToken: "test2@test2.com",
+        ip,
+        archiveId: "34",
+      });
+    } catch (e) {
+      error = e;
+    } finally {
+      expect(error instanceof BadRequest).toBe(true);
+    }
+  });
+
+  test("should log an action in the database events table", async () => {
+    const eventsBeforeLeave = await db.query(selectEventRow);
+    expect(eventsBeforeLeave.rows.length).toBe(0);
+
+    await accountService.leaveArchive({
+      emailFromAuthToken: "test2@test2.com",
+      ip,
+      archiveId: "22",
+    });
+
+    const eventsAfterLeave = await db.query(selectEventRow);
+    expect(eventsAfterLeave.rows.length).toBe(1);
+  });
+
+  test("logged event contains expected body values", async () => {
+    await accountService.leaveArchive({
+      emailFromAuthToken: "test2@test2.com",
+      ip,
+      archiveId: "22",
+    });
+
+    const eventResult = await db.query(selectEventRow);
+    expect(eventResult.rows.length).toBe(1);
+
+    const eventBody = eventResult.rows[0].body;
+    expect(eventBody).toEqual({ archiveId: "22", accountArchiveId: "3" });
   });
 });

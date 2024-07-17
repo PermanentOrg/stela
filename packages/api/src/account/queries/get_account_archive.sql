@@ -1,6 +1,9 @@
 SELECT
-  account_archive.accessrole as "accessRole",
-  account_archive.accountid as "accountId"
+  account_archive.account_archiveid AS "accountArchiveId",
+  account_archive.accountid AS "accountId",
+  account_archive.accessrole AS "accessRole",
+  account_archive.type,
+  account_archive.status
 FROM
   account_archive
 INNER JOIN
@@ -9,5 +12,4 @@ INNER JOIN
 WHERE
   account_archive.archiveid = :archiveId
   AND account.primaryemail = :email
-  AND account_archive.status = 'status.generic.ok'
-;
+  AND account_archive.status = 'status.generic.ok';

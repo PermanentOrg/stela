@@ -1,13 +1,17 @@
 import { Router } from "express";
 import type { Request, Response, NextFunction } from "express";
-import { verifyUserAuthentication } from "../middleware";
+
+import { extractIp, verifyUserAuthentication } from "../middleware";
+import { isValidationError } from "../validators/validator_util";
+
 import {
   validateUpdateTagsRequest,
   validateBodyFromAuthentication,
   validateLeaveArchiveParams,
+  validateLeaveArchiveRequest,
 } from "./validators";
-import { isValidationError } from "../validators/validator_util";
 import { accountService } from "./service";
+import type { LeaveArchiveRequest } from "./models";
 
 export const accountController = Router();
 accountController.put(
@@ -49,15 +53,26 @@ accountController.get(
 accountController.delete(
   "/archive/:archiveId",
   verifyUserAuthentication,
+  extractIp,
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      validateBodyFromAuthentication(req.body);
+      validateLeaveArchiveRequest(req.body);
       validateLeaveArchiveParams(req.params);
 
-      await accountService.leaveArchive(
-        req.body.emailFromAuthToken,
-        req.params.archiveId
-      );
+      const data: LeaveArchiveRequest = {
+        ...req.params,
+        ...req.body,
+      };
+
+      if (
+        // redundant undefined check is due to typescript config
+        (req.headers["user-agent"] ?? "") &&
+        req.headers["user-agent"] !== undefined
+      ) {
+        data.userAgent = req.headers["user-agent"];
+      }
+
+      await accountService.leaveArchive(data);
 
       res.send(204);
     } catch (err) {
