@@ -24,10 +24,23 @@ jest.mock("@stela/logger", () => ({
 const loadFixtures = async (): Promise<void> => {
   await db.sql("fixtures.create_test_accounts");
   await db.sql("fixtures.create_test_invites");
+
+  // TODO (Valle) -> turn into fixtures
+  await db.query(`insert into archive (archiveid)
+      values (22), (34)`);
+
+  await db.query(`insert into account_archive
+        (account_archiveid, accountid, archiveid, accessrole, "position", "type", status)
+      values
+        (1, 2,	22,	'access.role.owner',	0,	'type.account.standard',	'status.generic.ok'),
+        (2, 5,	34,	'access.role.owner',	0,	'type.account.standard',	'status.generic.ok'),
+        (3, 5,	22,	'access.role.viewer',	0,	'type.account.standard',	'status.generic.ok')`);
 };
 
 const clearDatabase = async (): Promise<void> => {
-  await db.query("TRUNCATE account, invite CASCADE");
+  await db.query(
+    "TRUNCATE event, account_archive, account, archive, invite CASCADE"
+  );
 };
 
 describe("updateTags", () => {
@@ -158,38 +171,15 @@ describe("leaveArchive", () => {
         AND e.entity_id = '5'
         AND e.action = '${EVENT_ACTION.Update}'
         AND e.ip = '127.0.0.1'
-        AND e.user_agent = 'chrome'
-        AND e.actor_type = '${EVENT_ACTOR.User}'`;
-
-  beforeAll(async () => {
-    await db.query(`insert into account
-      (accountid, primaryemail, status, notificationpreferences, type)
-    values
-      (1, 'test@test.com', 'mock.status', '{}', 'mock.type'),
-      (5, 'test2@test2.com', 'mock.status', '{}', 'mock.type');`);
-
-    await db.query(`insert into archive (archiveid)
-        values (22), (34)`);
-  });
-
-  afterAll(async () => {
-    await db.query(`delete from account where accountid in (1, 5)`);
-    await db.query(`delete from archive where archiveid in (22, 34)`);
-  });
+        AND e.actor_type = '${EVENT_ACTOR.User}'
+        AND e.actor_id = 'b5461dc2-1eb0-450e-b710-fef7b2cafe1e'`;
 
   beforeEach(async () => {
-    await db.query(`insert into account_archive
-      (account_archiveid, accountid, archiveid, accessrole, "position", "type", status)
-    values
-      (1, 1,	22,	'access.role.owner',	0,	'type.account.standard',	'status.generic.ok'),
-      (2, 5,	34,	'access.role.owner',	0,	'type.account.standard',	'status.generic.ok'),
-      (3, 5,	22,	'access.role.viewer',	0,	'type.account.standard',	'status.generic.ok')`);
+    await loadFixtures();
   });
 
   afterEach(async () => {
-    await db.query(
-      `delete from account_archive where account_archiveid in (1,2,3) returning *`
-    );
+    await clearDatabase();
   });
 
   test("should successfully leave an archive", async () => {
@@ -202,7 +192,8 @@ describe("leaveArchive", () => {
     expect(accounArchiveBeforeLeaveResult.rows.length).toBe(1);
 
     await accountService.leaveArchive({
-      emailFromAuthToken: "test2@test2.com",
+      emailFromAuthToken: "test+3@permanent.org",
+      userSubjectFromAuthToken: "b5461dc2-1eb0-450e-b710-fef7b2cafe1e",
       ip,
       archiveId: "22",
     });
@@ -218,7 +209,8 @@ describe("leaveArchive", () => {
 
     try {
       await accountService.leaveArchive({
-        emailFromAuthToken: "test2@test2.com",
+        emailFromAuthToken: "test+3@permanent.org",
+        userSubjectFromAuthToken: "b5461dc2-1eb0-450e-b710-fef7b2cafe1e",
         ip,
         archiveId: "2022",
       });
@@ -234,7 +226,8 @@ describe("leaveArchive", () => {
 
     try {
       await accountService.leaveArchive({
-        emailFromAuthToken: "test2@test2.com",
+        emailFromAuthToken: "test+3@permanent.org",
+        userSubjectFromAuthToken: "b5461dc2-1eb0-450e-b710-fef7b2cafe1e",
         ip,
         archiveId: "34",
       });
@@ -250,7 +243,8 @@ describe("leaveArchive", () => {
     expect(eventsBeforeLeave.rows.length).toBe(0);
 
     await accountService.leaveArchive({
-      emailFromAuthToken: "test2@test2.com",
+      emailFromAuthToken: "test+3@permanent.org",
+      userSubjectFromAuthToken: "b5461dc2-1eb0-450e-b710-fef7b2cafe1e",
       ip,
       archiveId: "22",
     });
@@ -261,7 +255,8 @@ describe("leaveArchive", () => {
 
   test("logged event contains expected body values", async () => {
     await accountService.leaveArchive({
-      emailFromAuthToken: "test2@test2.com",
+      emailFromAuthToken: "test+3@permanent.org",
+      userSubjectFromAuthToken: "b5461dc2-1eb0-450e-b710-fef7b2cafe1e",
       ip,
       archiveId: "22",
     });

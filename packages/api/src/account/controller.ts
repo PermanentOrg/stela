@@ -64,14 +64,6 @@ accountController.delete(
         ...req.body,
       };
 
-      if (
-        // redundant undefined check is due to typescript config
-        (req.headers["user-agent"] ?? "") &&
-        req.headers["user-agent"] !== undefined
-      ) {
-        data.userAgent = req.headers["user-agent"];
-      }
-
       await accountService.leaveArchive(data);
 
       res.send(204);

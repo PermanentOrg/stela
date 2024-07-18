@@ -17,7 +17,7 @@ export interface GetAccountArchiveResult {
 }
 export interface LeaveArchiveRequest {
   emailFromAuthToken: string;
+  userSubjectFromAuthToken: string;
   archiveId: string;
   ip: string;
-  userAgent?: string;
 }

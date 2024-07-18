@@ -38,11 +38,13 @@ export function validateLeaveArchiveParams(
 export function validateLeaveArchiveRequest(data: unknown): asserts data is {
   ip: string;
   emailFromAuthToken: string;
+  userSubjectFromAuthToken: string;
 } {
   const validation = Joi.object()
     .keys({
       ip: Joi.string().ip().required(),
       emailFromAuthToken: Joi.string().email().required(),
+      userSubjectFromAuthToken: Joi.string().uuid(),
     })
     .validate(data);
   if (validation.error) {

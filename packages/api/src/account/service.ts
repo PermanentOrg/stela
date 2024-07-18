@@ -62,9 +62,9 @@ const getSignupDetails = async (
 
 const leaveArchive = async ({
   emailFromAuthToken,
+  userSubjectFromAuthToken,
   archiveId,
   ip,
-  userAgent,
 }: LeaveArchiveRequest): Promise<{
   accountArchiveId: string;
 }> =>
@@ -116,12 +116,8 @@ const leaveArchive = async ({
         archiveId,
         accountArchiveId: accountArchive.accountArchiveId,
       },
-      userSubjectFromAuthToken: emailFromAuthToken,
+      userSubjectFromAuthToken,
     };
-
-    if (userAgent !== undefined) {
-      eventData.userAgent = userAgent;
-    }
 
     await createEvent(eventData);
 
