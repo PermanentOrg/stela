@@ -23,33 +23,38 @@ npm install
 npm install -ws
 ```
 
+4. `psql` needs to be installed for running tests
+
 ## Environment Variables
 
-| Variable                          | Default                                               | Notes                                                                                                                                      |
-| --------------------------------- | ----------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
-| ENV                               | local                                                 | Tells stela what environment it's running in                                                                                               |
-| DATABASE_URL                      | postgres://postgres:permanent@database:5432/permanent | Run tests to generate default database                                                                                                     |
-| PORT                              | 8080                                                  | Tells stela what port to run on                                                                                                            |
-| FUSIONAUTH_HOST                   | none                                                  | Can be found in `back-end`'s library/base/constants/base.constants.php                                                                     |
-| FUSIONAUTH_API_KEY                | none                                                  | Can be found in `back-end`'s library/base/constants/base.constants.php                                                                     |
-| FUSIONAUTH_TENANT                 | none                                                  | Can be found in `back-end`'s library/base/constants/base.constants.php                                                                     |
-| FUSIONAUTH_BACKEND_APPLICATION_ID | none                                                  | Can be found in `back-end`'s library/base/constants/base.constants.php                                                                     |
-| FUSIONAUTH_ADMIN_APPLICATION_ID   | none                                                  | Can be found in the FusionAuth Admin application                                                                                           |
+Depending on the work being done, some environment variable will not be required for the service to run.
+For these, simply fill in any fake value to prevent `require-env-variable` from throwing errors.
+
+| Variable                          | Default                                               | Notes                                                                                                               |
+| --------------------------------- | ----------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| ENV                               | local                                                 | Tells stela what environment it's running in                                                                        |
+| DATABASE_URL                      | postgres://postgres:permanent@database:5432/permanent | Run tests to generate default database                                                                              |
+| PORT                              | 8080                                                  | Tells stela what port to run on                                                                                     |
+| FUSIONAUTH_HOST                   | <none. needs to be set>                               | Fusionauth's host URL. Should be different between prod and other envs.                                             |
+| FUSIONAUTH_API_KEY                | <none. needs to be set>                               | Find it in Fusionauth admin panel -> settings -> API keys -> the one called "back-end (local)"                      |
+| FUSIONAUTH_TENANT                 | <none. needs to be set>                               | Find it in Fusionauth admin panel -> Tenants -> the one called "Local"                                              |
+| FUSIONAUTH_BACKEND_APPLICATION_ID | <none. needs to be set>                               | Find it in Fusionauth admin panel -> Applications -> the one called "back-end (local)"                              |
+| FUSIONAUTH_ADMIN_APPLICATION_ID   | <none. needs to be set>                               | Find it in Fusionauth admin panel -> Applications -> the one called "admin-local"                                   |
 | LEGACY_BACKEND_HOST_URL           | http://load_balancer:80/api                           |
-| LEGACY_BACKEND_SHARED_SECRET      | none                                                  | Can be found in `back-end`'s library/base/constants/base.constants.php                                                                     |
-| MAILCHIMP_API_KEY                 | none                                                  | Can be found in `back-end`'s library/base/constants/base.constants.php                                                                     |
-| MAILCHIMP_TRANSACTIONAL_API_KEY   | none                                                  | Can be found in `back-end`'s library/base/constants/base.constants.php, where it is called `MANDRILL_API_KEY`                              |
+| LEGACY_BACKEND_SHARED_SECRET      | none                                                  | Can be found in `back-end`'s library/base/constants/base.constants.php                                              |
+| MAILCHIMP_API_KEY                 | none                                                  | Can be found in `back-end`'s library/base/constants/base.constants.php                                              |
+| MAILCHIMP_TRANSACTIONAL_API_KEY   | none                                                  | Can be found in `back-end`'s library/base/constants/base.constants.php, where it is called `MANDRILL_API_KEY`       |
 | MAILCHIMP_DATACENTER              | us12                                                  |
-| MAILCHIMP_COMMUNITY_LIST_ID       | 2736f796db                                            | The default value corresponds to the `dev` list                                                                                            |
-| SENTRY_DSN                        | none                                                  | Can be found in Sentry under Projects > stela > Settings > Client Keys (DSN)                                                               |
-| DEV_NAME                          | none                                                  | This should only be set in local environments, and should be your given name, all lowercase. Used to create Sentry envs for each developer |
-| AWS_REGION                        | us-west-2                                             |                                                                                                                                            |
-| AWS_ACCESS_KEY_ID                 | none                                                  | The same one you use in `devenv`                                                                                                           |
-| AWS_SECRET_ACCESS_KEY             | none                                                  | The same one you use in `devenv`                                                                                                           |
-| LOW_PRIORITY_TOPIC_ARN            | test                                                  | Doesn't need to be set to a real ARN unless your work touches it specifically                                                              |
-| MIXPANEL_TOKEN                    | none                                                  | Found in Mixpanel at Settings > Project Settings > Project Token                                                                           |
-| ARCHIVEMATICA_BASE_URL            | none                                                  | Found in EC2, not needed unless you're running the cleanup cron                                                                            |
-| ARCHIVEMATICA_API_KEY             | none                                                  | Found in Bitwarden, not needed unless you're running the cleanup cron                                                                      |
+| MAILCHIMP_COMMUNITY_LIST_ID       | 2736f796db                                            | The default value corresponds to the `dev` list                                                                     |
+| SENTRY_DSN                        | none                                                  | Can be found in Sentry under Projects > stela > Settings > Client Keys (DSN)                                        |
+| DEV_NAME                          | none                                                  | Only set in local environments. Should be your given name. all lowercase. Used to create Sentry envs for developers |
+| AWS_REGION                        | us-west-2                                             |                                                                                                                     |
+| AWS_ACCESS_KEY_ID                 | none                                                  | The same one you use in `devenv`                                                                                    |
+| AWS_SECRET_ACCESS_KEY             | none                                                  | The same one you use in `devenv`                                                                                    |
+| LOW_PRIORITY_TOPIC_ARN            | test                                                  | Doesn't need to be set to a real ARN unless your work touches it specifically                                       |
+| MIXPANEL_TOKEN                    | none                                                  | Found in Mixpanel at Settings > Project Settings > Project Token                                                    |
+| ARCHIVEMATICA_BASE_URL            | none                                                  | It is the url of the EC2 instance on which archivematica is running                                                 |
+| ARCHIVEMATICA_API_KEY             | none                                                  | Found in Bitwarden, not needed unless you're running the cleanup cron                                               |
 
 ## Linting
 
@@ -80,6 +85,13 @@ npm run test -w @stela/api
 ```
 
 Note that the database tests run against is dropped and recreated at the beginning of each test run.
+<br />
+
+For running tests on a single file in `stela`, you can make an adjustment to the existing `test` command in **packages/api/package.json** on your machine. See the example below (replace **src/middleware/authentication.test.ts** with a pattern to match your file):
+
+```json
+    "test:file": "npm run start-containers && npm run clear-database && npm run create-database && npm run set-up-database && (cd ../..; docker compose run stela node --experimental-vm-modules ../../node_modules/jest/bin/jest.js -i --silent=false -- src/middleware/authentication.test.ts)",
+```
 
 ## Running the API Server Locally
 
