@@ -322,6 +322,14 @@ Queues a thumbnail regeneration task for the record given by `recordId`
 }
 ```
 
+### DELETE `/account/archive/:archiveId`
+
+Used by accounts that want to leave an archive that is shared with them.
+
+- Headers: Authorization: Bearer \<JWT from FusionAuth>
+
+- Response: 204 if successful
+
 ## Archives
 
 ### GET `/archive/:archiveId/tags/public`
@@ -437,10 +445,10 @@ for valid values of `action` and `entity`.
 
 ```
 {
-  entity: string (see database for valid values), 
-  action: string (see database for valid values), 
+  entity: string (see database for valid values),
+  action: string (see database for valid values),
   version: number (this should be 1 for now and can increment if we
-    change the body of the event), 
+    change the body of the event),
   entityId: string (should be the ID of the database object the event
     happened to; e.g. 1 if this pertains to accountId 1),
   userAgent: string (optional),
@@ -468,6 +476,7 @@ MixPanel](https://permanent.atlassian.net/wiki/spaces/EN/pages/2086862849/Mixpan
 
 - Headers: Authorization: Bearer \<JWT from FusionAuth>
 - Response
+
 ```
 [
   {
@@ -500,7 +509,6 @@ MixPanel](https://permanent.atlassian.net/wiki/spaces/EN/pages/2086862849/Mixpan
 {}
 ```
 
-
 ## FusionAuth Users and Two-Factor Methods
 
 (Note: this section is not yet implemented)
@@ -529,6 +537,7 @@ JWT.
 
 - Headers: Authorization: Bearer \<JWT from FusionAuth>
 - Request Body
+
 ```
 {
   method: string // either 'sms' or 'email'
@@ -540,6 +549,7 @@ JWT.
 
 - Headers: Authorization: Bearer \<JWT from FusionAuth>
 - Request Body
+
 ```
 {
   method: string // the same method from `idpuser/send-enable-code`
@@ -552,6 +562,7 @@ JWT.
 
 - Headers: Authorization: Bearer \<JWT from FusionAuth>
 - Request Body
+
 ```
 {
   methodId: 4-digit string // this was returned in the GET
@@ -562,6 +573,7 @@ JWT.
 
 - Headers: Authorization: Bearer \<JWT from FusionAuth>
 - Request Body
+
 ```
 {
   code: string // provided by the user (they will have received it from FusionAuth)
