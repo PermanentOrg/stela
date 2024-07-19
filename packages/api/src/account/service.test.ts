@@ -24,17 +24,8 @@ jest.mock("@stela/logger", () => ({
 const loadFixtures = async (): Promise<void> => {
   await db.sql("fixtures.create_test_accounts");
   await db.sql("fixtures.create_test_invites");
-
-  // TODO (Valle) -> turn into fixtures
-  await db.query(`insert into archive (archiveid)
-      values (22), (34)`);
-
-  await db.query(`insert into account_archive
-        (account_archiveid, accountid, archiveid, accessrole, "position", "type", status)
-      values
-        (1, 2,	22,	'access.role.owner',	0,	'type.account.standard',	'status.generic.ok'),
-        (2, 5,	34,	'access.role.owner',	0,	'type.account.standard',	'status.generic.ok'),
-        (3, 5,	22,	'access.role.viewer',	0,	'type.account.standard',	'status.generic.ok')`);
+  await db.sql("fixtures.create_test_archives");
+  await db.sql("fixtures.create_test_account_archives");
 };
 
 const clearDatabase = async (): Promise<void> => {
@@ -168,7 +159,7 @@ describe("leaveArchive", () => {
       SELECT * FROM event e
       WHERE e.entity = '${EVENT_ENTITY.Account}'
         AND e.version = 1
-        AND e.entity_id = '5'
+        AND e.entity_id = '3'
         AND e.action = '${EVENT_ACTION.Update}'
         AND e.ip = '127.0.0.1'
         AND e.actor_type = '${EVENT_ACTOR.User}'
@@ -184,7 +175,7 @@ describe("leaveArchive", () => {
 
   test("should successfully leave an archive", async () => {
     const selectAccountArchiveRow = `SELECT * FROM account_archive WHERE
-    accountid = 5 AND archiveid = 22`;
+    accountid = 3 AND archiveid = 1`;
 
     const accounArchiveBeforeLeaveResult = await db.query(
       selectAccountArchiveRow
@@ -192,10 +183,10 @@ describe("leaveArchive", () => {
     expect(accounArchiveBeforeLeaveResult.rows.length).toBe(1);
 
     await accountService.leaveArchive({
-      emailFromAuthToken: "test+3@permanent.org",
+      emailFromAuthToken: "test+1@permanent.org",
       userSubjectFromAuthToken: "b5461dc2-1eb0-450e-b710-fef7b2cafe1e",
       ip,
-      archiveId: "22",
+      archiveId: "1",
     });
 
     const accounArchiveAfterLeaveResult = await db.query(
@@ -226,10 +217,10 @@ describe("leaveArchive", () => {
 
     try {
       await accountService.leaveArchive({
-        emailFromAuthToken: "test+3@permanent.org",
+        emailFromAuthToken: "test+1@permanent.org",
         userSubjectFromAuthToken: "b5461dc2-1eb0-450e-b710-fef7b2cafe1e",
         ip,
-        archiveId: "34",
+        archiveId: "2",
       });
     } catch (e) {
       error = e;
@@ -243,10 +234,10 @@ describe("leaveArchive", () => {
     expect(eventsBeforeLeave.rows.length).toBe(0);
 
     await accountService.leaveArchive({
-      emailFromAuthToken: "test+3@permanent.org",
+      emailFromAuthToken: "test+1@permanent.org",
       userSubjectFromAuthToken: "b5461dc2-1eb0-450e-b710-fef7b2cafe1e",
       ip,
-      archiveId: "22",
+      archiveId: "1",
     });
 
     const eventsAfterLeave = await db.query(selectEventRow);
@@ -255,16 +246,16 @@ describe("leaveArchive", () => {
 
   test("logged event contains expected body values", async () => {
     await accountService.leaveArchive({
-      emailFromAuthToken: "test+3@permanent.org",
+      emailFromAuthToken: "test+1@permanent.org",
       userSubjectFromAuthToken: "b5461dc2-1eb0-450e-b710-fef7b2cafe1e",
       ip,
-      archiveId: "22",
+      archiveId: "1",
     });
 
-    const eventResult = await db.query(selectEventRow);
+    const eventResult = await db.query<{ body: object }>(selectEventRow);
     expect(eventResult.rows.length).toBe(1);
 
-    const eventBody = eventResult.rows[0].body;
-    expect(eventBody).toEqual({ archiveId: "22", accountArchiveId: "3" });
+    const eventBody = eventResult.rows[0]?.body;
+    expect(eventBody).toEqual({ archiveId: "1", accountArchiveId: "5" });
   });
 });
