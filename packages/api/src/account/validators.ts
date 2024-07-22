@@ -25,8 +25,13 @@ export function validateLeaveArchiveParams(
 ): asserts data is { archiveId: string } {
   const validation = Joi.object()
     .keys({
-      archiveId: Joi.string()
-        .regex(/^[1-9]\d+$/)
+      archiveId: Joi.alternatives()
+        .try(
+          Joi.string()
+            .regex(/^[1-9]\d*$/)
+            .required(),
+          Joi.string().uuid()
+        )
         .required(),
     })
     .validate(data);
@@ -44,7 +49,7 @@ export function validateLeaveArchiveRequest(data: unknown): asserts data is {
     .keys({
       ip: Joi.string().ip().required(),
       emailFromAuthToken: Joi.string().email().required(),
-      userSubjectFromAuthToken: Joi.string().uuid(),
+      userSubjectFromAuthToken: Joi.string().uuid().required(),
     })
     .validate(data);
   if (validation.error) {

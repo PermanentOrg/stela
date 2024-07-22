@@ -324,7 +324,7 @@ Queues a thumbnail regeneration task for the record given by `recordId`
 
 ### DELETE `/account/archive/:archiveId`
 
-Used by accounts that want to leave an archive that is shared with them.
+Used by accounts that want to leave an archive of which they are a member.
 
 - Headers: Authorization: Bearer \<JWT from FusionAuth>
 

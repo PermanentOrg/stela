@@ -4,7 +4,7 @@ import {
   validateUpdateTagsRequest,
 } from "./validators";
 
-describe.skip("validateUpdateTagsRequest", () => {
+describe("validateUpdateTagsRequest", () => {
   test("should find no errors in a valid request", () => {
     let error = null;
     try {
@@ -130,12 +130,16 @@ describe.skip("validateUpdateTagsRequest", () => {
   });
 });
 
-describe.skip("validateLeaveArchiveParams", () => {
-  test("should find no errors in valid parameters", () => {
+describe("validateLeaveArchiveParams", () => {
+  test("should find no errors in valid parameters (accepts numeric IDs and UUIDs)", () => {
     let error = null;
     try {
       validateLeaveArchiveParams({
         archiveId: "123",
+      });
+
+      validateLeaveArchiveParams({
+        archiveId: "b5461dc2-1eb0-450e-b710-fef7b2cafe1e",
       });
     } catch (err) {
       error = err;
@@ -155,7 +159,7 @@ describe.skip("validateLeaveArchiveParams", () => {
     }
   });
 
-  test("should error if archiveId is wrong type", () => {
+  test("should error if archiveId is not of type string", () => {
     let error = null;
     try {
       validateLeaveArchiveParams({
@@ -168,11 +172,11 @@ describe.skip("validateLeaveArchiveParams", () => {
     }
   });
 
-  test("should error if archiveId string contains non-numeric characters", () => {
+  test("should error if archiveId is an invalid string", () => {
     let error = null;
     try {
       validateLeaveArchiveParams({
-        archiveId: 123,
+        archiveId: "not_real_id",
       });
     } catch (err) {
       error = err;
@@ -181,7 +185,7 @@ describe.skip("validateLeaveArchiveParams", () => {
     }
   });
 
-  test("should error if archiveId string begins with a 0", () => {
+  test("should error if archiveId string is numeric and begins with a 0", () => {
     let error = null;
     try {
       validateLeaveArchiveParams({
@@ -202,6 +206,7 @@ describe("validateLeaveArchiveRequest", () => {
       validateLeaveArchiveRequest({
         ip: "127.0.0.1",
         emailFromAuthToken: "test@test.com",
+        userSubjectFromAuthToken: "b5461dc2-1eb0-450e-b710-fef7b2cafe1e",
       });
     } catch (err) {
       error = err;
