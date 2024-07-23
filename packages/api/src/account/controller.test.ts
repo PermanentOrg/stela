@@ -26,10 +26,10 @@ describe("leaveArchive", () => {
   const ip = "127.0.0.1";
   const selectEventRow = `
       SELECT * FROM event e
-      WHERE e.entity = '${EVENT_ENTITY.Account}'
+      WHERE e.entity = '${EVENT_ENTITY.AccountArchive}'
         AND e.version = 1
-        AND e.entity_id = '3'
-        AND e.action = '${EVENT_ACTION.Update}'
+        AND e.entity_id = '5'
+        AND e.action = '${EVENT_ACTION.Delete}'
         AND e.ip = '${ip}'
         AND e.actor_type = '${EVENT_ACTOR.User}'
         AND e.actor_id = 'b5461dc2-1eb0-450e-b710-fef7b2cafe1e'`;
@@ -117,6 +117,10 @@ describe("leaveArchive", () => {
     expect(eventResult.rows.length).toBe(1);
 
     const eventBody = eventResult.rows[0]?.body;
-    expect(eventBody).toEqual({ archiveId: "1", accountArchiveId: "5" });
+    expect(eventBody).toEqual({
+      archiveId: "1",
+      accountId: "3",
+      accountPrimaryEmail: "test+1@permanent.org",
+    });
   });
 });

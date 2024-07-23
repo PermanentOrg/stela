@@ -107,14 +107,15 @@ const leaveArchive = async ({
     }
 
     const eventData: CreateEventRequest = {
-      action: EVENT_ACTION.Update,
-      entity: EVENT_ENTITY.Account,
-      entityId: accountArchive.accountId.toString(),
+      action: EVENT_ACTION.Delete,
+      entity: EVENT_ENTITY.AccountArchive,
+      entityId: accountArchive.accountArchiveId,
       ip,
       version: 1,
       body: {
         archiveId,
-        accountArchiveId: accountArchive.accountArchiveId,
+        accountId: accountArchive.accountId,
+        accountPrimaryEmail: emailFromAuthToken,
       },
       userSubjectFromAuthToken,
     };

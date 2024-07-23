@@ -8,11 +8,12 @@ export const ACCESS_ROLE = {
   Manager: "access.role.manager",
   Owner: "access.role.owner",
   Viewer: "access.role.viewer",
-};
+} as const;
 
 export const EVENT_ACTION = {
   Copy: "copy",
   Create: "create",
+  Delete: "delete",
   InitiateUpload: "initiate_upload",
   Login: "login",
   Move: "move",
@@ -36,20 +37,21 @@ export const EVENT_ACTION = {
   SubmitPromo: "submit_promo",
   SubmitReasons: "submit_reasons",
   Update: "update",
-};
+} as const;
 
 export const EVENT_ACTOR = {
-  User: "user",
   Admin: "admin",
   System: "system",
-};
+  User: "user",
+} as const;
 
 export const EVENT_ENTITY = {
   Account: "account",
+  AccountArchive: "account_archive",
   Archive: "archive",
   Directive: "directive",
   Folder: "folder",
   LegacyContact: "legacy_contact",
   ProfileItem: "profile_item",
   Record: "record",
-};
+} as const;
