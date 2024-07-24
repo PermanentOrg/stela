@@ -2,7 +2,12 @@
   "name": "stela",
   "version": "0.0.0",
   "description": "A monolithic backend for Permanent.org",
-  "workspaces": ["./packages/logger", "./packages/api", "./packages/archivematica_cleanup"],
+  "workspaces": [
+    "./packages/logger",
+    "./packages/api",
+    "./packages/archivematica_cleanup",
+    "./packages/account_space_updater"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/PermanentOrg/stela.git"
