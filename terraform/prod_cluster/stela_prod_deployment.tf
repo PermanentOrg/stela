@@ -179,7 +179,7 @@ resource "kubernetes_deployment" "stela_prod" {
               }
             }
           }
- 
+
           env {
             name = "NEW_RELIC_LICENSE_KEY"
             value_from {
