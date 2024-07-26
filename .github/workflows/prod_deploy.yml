@@ -15,7 +15,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Generate Image Tag
-        run: echo "API_IMAGE_TAG=364159549467.dkr.ecr.$AWS_REGION.amazonaws.com/stela:$([[ ${GITHUB_REF##*/} = main ]] && echo main || echo feature)-$(git rev-parse --short $GITHUB_SHA)" >> $GITHUB_ENV
+        run: echo "API_IMAGE_TAG=364159549467.dkr.ecr.$AWS_REGION.amazonaws.com/stela:api-$([[ ${GITHUB_REF##*/} = main ]] && echo main || echo feature)-$(git rev-parse --short $GITHUB_SHA)" >> $GITHUB_ENV
         env:
           AWS_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
       - name: Build Image
