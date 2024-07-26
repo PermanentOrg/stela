@@ -7,15 +7,14 @@ resource "kubernetes_cron_job_v1" "archivematica_cleanup_prod" {
   }
   spec {
     concurrency_policy            = "Replace"
-    failed_jobs_history_limit     = 5
+    failed_jobs_history_limit     = 3
     schedule                      = "0 * * * *"
     starting_deadline_seconds     = 10
-    successful_jobs_history_limit = 10
+    successful_jobs_history_limit = 0
     job_template {
       metadata {}
       spec {
         backoff_limit              = 2
-        ttl_seconds_after_finished = 10
         template {
           metadata {}
           spec {
