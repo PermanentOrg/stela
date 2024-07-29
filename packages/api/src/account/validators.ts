@@ -19,3 +19,40 @@ export function validateUpdateTagsRequest(
     throw validation.error;
   }
 }
+
+export function validateLeaveArchiveParams(
+  data: unknown
+): asserts data is { archiveId: string } {
+  const validation = Joi.object()
+    .keys({
+      archiveId: Joi.alternatives()
+        .try(
+          Joi.string()
+            .regex(/^[1-9]\d*$/)
+            .required(),
+          Joi.string().uuid()
+        )
+        .required(),
+    })
+    .validate(data);
+  if (validation.error) {
+    throw validation.error;
+  }
+}
+
+export function validateLeaveArchiveRequest(data: unknown): asserts data is {
+  ip: string;
+  emailFromAuthToken: string;
+  userSubjectFromAuthToken: string;
+} {
+  const validation = Joi.object()
+    .keys({
+      ip: Joi.string().ip().required(),
+      emailFromAuthToken: Joi.string().email().required(),
+      userSubjectFromAuthToken: Joi.string().uuid().required(),
+    })
+    .validate(data);
+  if (validation.error) {
+    throw validation.error;
+  }
+}

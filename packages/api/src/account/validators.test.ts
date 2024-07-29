@@ -1,4 +1,8 @@
-import { validateUpdateTagsRequest } from "./validators";
+import {
+  validateLeaveArchiveParams,
+  validateLeaveArchiveRequest,
+  validateUpdateTagsRequest,
+} from "./validators";
 
 describe("validateUpdateTagsRequest", () => {
   test("should find no errors in a valid request", () => {
@@ -117,6 +121,146 @@ describe("validateUpdateTagsRequest", () => {
     try {
       validateUpdateTagsRequest({
         emailFromAuthToken: "test@permanent.org",
+      });
+    } catch (err) {
+      error = err;
+    } finally {
+      expect(error).not.toBeNull();
+    }
+  });
+});
+
+describe("validateLeaveArchiveParams", () => {
+  test("should find no errors in valid parameters (accepts numeric IDs and UUIDs)", () => {
+    let error = null;
+    try {
+      validateLeaveArchiveParams({
+        archiveId: "123",
+      });
+
+      validateLeaveArchiveParams({
+        archiveId: "b5461dc2-1eb0-450e-b710-fef7b2cafe1e",
+      });
+    } catch (err) {
+      error = err;
+    } finally {
+      expect(error).toBeNull();
+    }
+  });
+
+  test("should error if archiveId is missing", () => {
+    let error = null;
+    try {
+      validateLeaveArchiveParams({});
+    } catch (err) {
+      error = err;
+    } finally {
+      expect(error).not.toBeNull();
+    }
+  });
+
+  test("should error if archiveId is not of type string", () => {
+    let error = null;
+    try {
+      validateLeaveArchiveParams({
+        archiveId: 123,
+      });
+    } catch (err) {
+      error = err;
+    } finally {
+      expect(error).not.toBeNull();
+    }
+  });
+
+  test("should error if archiveId is an invalid string", () => {
+    let error = null;
+    try {
+      validateLeaveArchiveParams({
+        archiveId: "not_real_id",
+      });
+    } catch (err) {
+      error = err;
+    } finally {
+      expect(error).not.toBeNull();
+    }
+  });
+
+  test("should error if archiveId string is numeric and begins with a 0", () => {
+    let error = null;
+    try {
+      validateLeaveArchiveParams({
+        archiveId: "0123",
+      });
+    } catch (err) {
+      error = err;
+    } finally {
+      expect(error).not.toBeNull();
+    }
+  });
+});
+
+describe("validateLeaveArchiveRequest", () => {
+  test("should find no errors in valid parameters", () => {
+    let error = null;
+    try {
+      validateLeaveArchiveRequest({
+        ip: "127.0.0.1",
+        emailFromAuthToken: "test@test.com",
+        userSubjectFromAuthToken: "b5461dc2-1eb0-450e-b710-fef7b2cafe1e",
+      });
+    } catch (err) {
+      error = err;
+    } finally {
+      expect(error).toBeNull();
+    }
+  });
+
+  test("should error if 'ip' is missing", () => {
+    let error = null;
+    try {
+      validateLeaveArchiveRequest({
+        emailFromAuthToken: "test@test.com",
+      });
+    } catch (err) {
+      error = err;
+    } finally {
+      expect(error).not.toBeNull();
+    }
+  });
+
+  test("should error if 'emailFromAuthToken' is missing", () => {
+    let error = null;
+    try {
+      validateLeaveArchiveRequest({
+        ip: "127.0.0.1",
+      });
+    } catch (err) {
+      error = err;
+    } finally {
+      expect(error).not.toBeNull();
+    }
+  });
+
+  test("should error if 'ip' is not the right format", () => {
+    let error = null;
+    try {
+      validateLeaveArchiveRequest({
+        ip: "1.2.3",
+        emailFromAuthToken: "test@test.com",
+      });
+    } catch (err) {
+      error = err;
+    } finally {
+      expect(error).not.toBeNull();
+    }
+  });
+
+  test("should error if 'emailFromAuthToken' is not the right format", () => {
+    let error = null;
+    try {
+      validateLeaveArchiveRequest({
+        ip: "127.0.0.1",
+        emailFromAuthToken: "not_an_email",
       });
     } catch (err) {
       error = err;

@@ -54,6 +54,38 @@ const getOptionalValueFromAuthToken = async (
   return introspectionResponse.response[key];
 };
 
+const getValuesFromAuthToken = async (
+  authenticationToken: string,
+  applicationId: string
+): Promise<{ email: string; subject: string }> => {
+  const introspectionResponse = await fusionAuthClient.introspectAccessToken(
+    applicationId,
+    authenticationToken
+  );
+  if (!introspectionResponse.wasSuccessful()) {
+    throw new createError.Unauthorized(
+      `Token validation failed: ${
+        introspectionResponse.exception.message ?? ""
+      }`
+    );
+  }
+
+  if (
+    !introspectionResponse.response.active ||
+    typeof introspectionResponse.response.email !== "string" ||
+    introspectionResponse.response.email === "" ||
+    typeof introspectionResponse.response.sub !== "string" ||
+    introspectionResponse.response.sub === ""
+  ) {
+    throw new createError.Unauthorized("Invalid token");
+  }
+
+  return {
+    email: introspectionResponse.response.email,
+    subject: introspectionResponse.response.sub,
+  };
+};
+
 const getAuthTokenFromRequest = (
   req: Request<unknown, unknown, unknown>
 ): string => {
@@ -69,7 +101,11 @@ const getAuthTokenFromRequest = (
 };
 
 const verifyUserAuthentication = async (
-  req: Request<unknown, unknown, { emailFromAuthToken?: string }>,
+  req: Request<
+    unknown,
+    unknown,
+    { emailFromAuthToken?: string; userSubjectFromAuthToken?: string }
+  >,
   _: Response,
   next: NextFunction
 ): Promise<void> => {
@@ -78,12 +114,12 @@ const verifyUserAuthentication = async (
     if (authenticationToken === "") {
       throw new createError.Unauthorized("Invalid Authorization header format");
     }
-    const email = await getValueFromAuthToken(
+    const { email, subject } = await getValuesFromAuthToken(
       authenticationToken,
-      emailKey,
       process.env["FUSIONAUTH_BACKEND_APPLICATION_ID"] ?? ""
     );
     req.body.emailFromAuthToken = email;
+    req.body.userSubjectFromAuthToken = subject;
     next();
   } catch (err) {
     next(err);

@@ -1,9 +1,19 @@
 import { Md5 } from "ts-md5";
 import createError from "http-errors";
 import { logger } from "@stela/logger";
+
 import { db } from "../database";
 import { MailchimpMarketing } from "../mailchimp";
-import type { UpdateTagsRequest, SignupDetails } from "./models";
+import { ACCESS_ROLE, EVENT_ACTION, EVENT_ENTITY } from "../constants";
+import { createEvent } from "../event/service";
+import type { CreateEventRequest } from "../event/models";
+
+import type {
+  UpdateTagsRequest,
+  SignupDetails,
+  GetAccountArchiveResult,
+  LeaveArchiveRequest,
+} from "./models";
 
 const updateTags = async (requestBody: UpdateTagsRequest): Promise<void> => {
   const tags = (requestBody.addTags ?? [])
@@ -50,7 +60,73 @@ const getSignupDetails = async (
   return signupDetailResult.rows[0];
 };
 
+const leaveArchive = async ({
+  emailFromAuthToken,
+  userSubjectFromAuthToken,
+  archiveId,
+  ip,
+}: LeaveArchiveRequest): Promise<{
+  accountArchiveId: string;
+}> =>
+  db.transaction(async (transactionDb) => {
+    const accountArchiveResult =
+      await transactionDb.sql<GetAccountArchiveResult>(
+        "account.queries.get_account_archive",
+        {
+          archiveId,
+          email: emailFromAuthToken,
+        }
+      );
+
+    const accountArchive = accountArchiveResult.rows[0];
+
+    if (!accountArchive) {
+      throw new createError.NotFound(
+        `Unable to find relationship with archiveId ${archiveId}`
+      );
+    }
+
+    if (accountArchive.accessRole === ACCESS_ROLE.Owner) {
+      throw new createError.BadRequest(
+        "Cannot leave archive while owning it. Either pass ownership to another account or delete archive."
+      );
+    }
+
+    const deleteResult = await db.sql<{ accountArchiveId: string }>(
+      "account.queries.delete_account_archive",
+      {
+        archiveId,
+        email: emailFromAuthToken,
+      }
+    );
+
+    if (!deleteResult.rows[0]) {
+      throw new createError.InternalServerError(
+        "Unexpected result while performing DELETE on account archive relationship."
+      );
+    }
+
+    const eventData: CreateEventRequest = {
+      action: EVENT_ACTION.Delete,
+      entity: EVENT_ENTITY.AccountArchive,
+      entityId: accountArchive.accountArchiveId,
+      ip,
+      version: 1,
+      body: {
+        archiveId,
+        accountId: accountArchive.accountId,
+        accountPrimaryEmail: emailFromAuthToken,
+      },
+      userSubjectFromAuthToken,
+    };
+
+    await createEvent(eventData);
+
+    return deleteResult.rows[0];
+  });
+
 export const accountService = {
-  updateTags,
   getSignupDetails,
+  leaveArchive,
+  updateTags,
 };

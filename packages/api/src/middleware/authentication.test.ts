@@ -91,6 +91,19 @@ describe("verifyUserAuthentication", () => {
     expect(request.body.emailFromAuthToken).toBe(testEmail);
   });
 
+  test("should add the subject to the request body if the token is valid", async () => {
+    const request = {
+      body: {},
+      get: (_: string) => "Bearer test",
+    } as Request<unknown, unknown, { userSubjectFromAuthToken?: string }>;
+    jest
+      .spyOn(fusionAuthClient, "introspectAccessToken")
+      .mockImplementation(async () => successfulIntrospectionResponse);
+    await verifyUserAuthentication(request, {} as Response, () => {});
+
+    expect(request.body.userSubjectFromAuthToken).toBe(testSubject);
+  });
+
   test("should throw unauthorized if authorization header is missing", async () => {
     const request = {
       body: {},
