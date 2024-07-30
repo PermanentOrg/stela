@@ -509,6 +509,27 @@ MixPanel](https://permanent.atlassian.net/wiki/spaces/EN/pages/2086862849/Mixpan
 {}
 ```
 
+### GET `/promo`
+
+- Headers: Authorization Bearer \<JWT rom FusionAuth> (admin user)
+- Response
+
+```
+[
+  {
+    id: string,
+    code: string,
+    storageInMB: number (integer > 0),
+    expirationTimestamp: string (ISO 8601 format timestamp),
+    remainingUses: number (integer >= 0)
+    status: string
+    type: string
+    createdDt: string (ISO 8601 format timestamp),
+    updatedDt: string (ISO 8601 format timestamp)
+  }
+]
+```
+
 ## FusionAuth Users and Two-Factor Methods
 
 (Note: this section is not yet implemented)
