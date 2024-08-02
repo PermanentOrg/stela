@@ -2,9 +2,15 @@ import Joi from "joi";
 
 export function validateBodyFromAuthentication(
   data: unknown
-): asserts data is { emailFromAuthToken: string } {
+): asserts data is {
+  emailFromAuthToken: string;
+  userSubjectFromAuthToken: string;
+} {
   const validation = Joi.object()
-    .keys({ emailFromAuthToken: Joi.string().email().required() })
+    .keys({
+      emailFromAuthToken: Joi.string().email().required(),
+      userSubjectFromAuthToken: Joi.string().required(),
+    })
     .validate(data);
   if (validation.error) {
     throw validation.error;

@@ -6,6 +6,7 @@ describe("validateBodyFromAuthentication", () => {
     try {
       validateBodyFromAuthentication({
         emailFromAuthToken: "test@permanent.org",
+        userSubjectFromAuthToken: "test",
       });
     } catch (err) {
       error = err;
@@ -16,7 +17,7 @@ describe("validateBodyFromAuthentication", () => {
   test("should raise an error if emailFromAuthToken is missing", () => {
     let error = null;
     try {
-      validateBodyFromAuthentication({});
+      validateBodyFromAuthentication({ userSubjectFromAuthToken: "test" });
     } catch (err) {
       error = err;
     } finally {
@@ -28,6 +29,7 @@ describe("validateBodyFromAuthentication", () => {
     try {
       validateBodyFromAuthentication({
         emailFromAuthToken: 1,
+        userSubjectFromAuthToken: "test",
       });
     } catch (err) {
       error = err;
@@ -40,6 +42,32 @@ describe("validateBodyFromAuthentication", () => {
     try {
       validateBodyFromAuthentication({
         emailFromAuthToken: "not_an_email",
+        userSubjectFromAuthToken: "test",
+      });
+    } catch (err) {
+      error = err;
+    } finally {
+      expect(error).not.toBeNull();
+    }
+  });
+  test("should raise an error if userSubjectFromAuthToken is missing", () => {
+    let error = null;
+    try {
+      validateBodyFromAuthentication({
+        emailFromAuthToken: "test@permanent.org",
+      });
+    } catch (err) {
+      error = err;
+    } finally {
+      expect(error).not.toBeNull();
+    }
+  });
+  test("should raise an error if userSubjectFromAuthToken is the wrong type", () => {
+    let error = null;
+    try {
+      validateBodyFromAuthentication({
+        emailFromAuthToken: "test@permanent.org",
+        userSubjectFromAuthToken: 1,
       });
     } catch (err) {
       error = err;

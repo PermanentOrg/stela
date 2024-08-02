@@ -15,6 +15,7 @@ import type {
 
 interface TwoFactorRequest {
   emailFromAuthToken: string;
+  userSubjectFromAuthToken: string;
 }
 
 jest.mock("../database");
@@ -29,6 +30,8 @@ describe("/idpuser", () => {
       (req: Request, __, next: NextFunction) => {
         (req.body as TwoFactorRequest).emailFromAuthToken =
           "test@permanent.org";
+        (req.body as TwoFactorRequest).userSubjectFromAuthToken =
+          "test_subject";
         next();
       }
     );
