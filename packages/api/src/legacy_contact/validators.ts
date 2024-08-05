@@ -1,6 +1,9 @@
 import Joi from "joi";
 import type { CreateLegacyContactRequest } from "./model";
-import { validateBodyFromAuthentication } from "../validators";
+import {
+  fieldsFromUserAuthentication,
+  validateBodyFromAuthentication,
+} from "../validators";
 
 export { validateBodyFromAuthentication };
 
@@ -9,7 +12,7 @@ export function validateCreateLegacyContactRequest(
 ): asserts data is CreateLegacyContactRequest {
   const validation = Joi.object()
     .keys({
-      emailFromAuthToken: Joi.string().email().required(),
+      ...fieldsFromUserAuthentication,
       email: Joi.string()
         .email()
         .invalid(Joi.ref("emailFromAuthToken"))
@@ -27,7 +30,7 @@ export function validateUpdateLegacyContactRequest(
 ): asserts data is CreateLegacyContactRequest {
   const validation = Joi.object()
     .keys({
-      emailFromAuthToken: Joi.string().email().required(),
+      ...fieldsFromUserAuthentication,
       email: Joi.string().email().invalid(Joi.ref("emailFromAuthToken")),
       name: Joi.string(),
     })

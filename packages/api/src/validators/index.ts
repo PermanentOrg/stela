@@ -1,3 +1,6 @@
-import { validateBodyFromAuthentication } from "./shared";
+import {
+  fieldsFromUserAuthentication,
+  validateBodyFromAuthentication,
+} from "./shared";
 
-export { validateBodyFromAuthentication };
+export { fieldsFromUserAuthentication, validateBodyFromAuthentication };

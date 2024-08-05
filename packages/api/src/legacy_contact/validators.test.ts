@@ -10,6 +10,7 @@ describe("validateCreateLegacyContactRequest", () => {
     try {
       validateCreateLegacyContactRequest({
         emailFromAuthToken: "test@permanent.org",
+        userSubjectFromAuthToken: "f4852021-74df-4458-91ea-a0b7f239a8cf",
         email: "test+1@permanent.org",
         name: "John Rando",
       });
@@ -24,6 +25,7 @@ describe("validateCreateLegacyContactRequest", () => {
     try {
       validateCreateLegacyContactRequest({
         email: "test+1@permanent.org",
+        userSubjectFromAuthToken: "f4852021-74df-4458-91ea-a0b7f239a8cf",
         name: "John Rando",
       });
     } catch (err) {
@@ -37,6 +39,7 @@ describe("validateCreateLegacyContactRequest", () => {
     try {
       validateCreateLegacyContactRequest({
         emailFromAuthToken: 1,
+        userSubjectFromAuthToken: "f4852021-74df-4458-91ea-a0b7f239a8cf",
         email: "test+1@permanent.org",
         name: "John Rando",
       });
@@ -51,6 +54,51 @@ describe("validateCreateLegacyContactRequest", () => {
     try {
       validateCreateLegacyContactRequest({
         emailFromAuthToken: "not_an_email",
+        userSubjectFromAuthToken: "f4852021-74df-4458-91ea-a0b7f239a8cf",
+        email: "test+1@permanent.org",
+        name: "John Rando",
+      });
+    } catch (err) {
+      error = err;
+    } finally {
+      expect(error).not.toBeNull();
+    }
+  });
+  test("should raise an error if userSubjectFromAuthToken is missing", () => {
+    let error = null;
+    try {
+      validateCreateLegacyContactRequest({
+        emailFromAuthToken: "test@permanent.org",
+        email: "test+1@permanent.org",
+        name: "John Rando",
+      });
+    } catch (err) {
+      error = err;
+    } finally {
+      expect(error).not.toBeNull();
+    }
+  });
+  test("should raise an error if userSubjectFromAuthToken is wrong type", () => {
+    let error = null;
+    try {
+      validateCreateLegacyContactRequest({
+        emailFromAuthToken: "test@permanent.org",
+        userSubjectFromAuthToken: 1,
+        email: "test+1@permanent.org",
+        name: "John Rando",
+      });
+    } catch (err) {
+      error = err;
+    } finally {
+      expect(error).not.toBeNull();
+    }
+  });
+  test("should raise an error if userSubjectFromAuthToken is wrong format", () => {
+    let error = null;
+    try {
+      validateCreateLegacyContactRequest({
+        emailFromAuthToken: "test@permanent.org",
+        userSubjectFromAuthToken: "not_a_uuid",
         email: "test+1@permanent.org",
         name: "John Rando",
       });
@@ -65,6 +113,7 @@ describe("validateCreateLegacyContactRequest", () => {
     try {
       validateCreateLegacyContactRequest({
         emailFromAuthToken: "test@permanent.org",
+        userSubjectFromAuthToken: "f4852021-74df-4458-91ea-a0b7f239a8cf",
         name: "John Rando",
       });
     } catch (err) {
@@ -78,6 +127,7 @@ describe("validateCreateLegacyContactRequest", () => {
     try {
       validateCreateLegacyContactRequest({
         emailFromAuthToken: "test@permanent.org",
+        userSubjectFromAuthToken: "f4852021-74df-4458-91ea-a0b7f239a8cf",
         email: 1,
         name: "John Rando",
       });
@@ -92,6 +142,7 @@ describe("validateCreateLegacyContactRequest", () => {
     try {
       validateCreateLegacyContactRequest({
         emailFromAuthToken: "test@permanent.org",
+        userSubjectFromAuthToken: "f4852021-74df-4458-91ea-a0b7f239a8cf",
         email: "not_an_email",
         name: "John Rando",
       });
@@ -106,6 +157,7 @@ describe("validateCreateLegacyContactRequest", () => {
     try {
       validateCreateLegacyContactRequest({
         emailFromAuthToken: "test@permanent.org",
+        userSubjectFromAuthToken: "f4852021-74df-4458-91ea-a0b7f239a8cf",
         email: "test@permanent.org",
         name: "John Rando",
       });
@@ -120,6 +172,7 @@ describe("validateCreateLegacyContactRequest", () => {
     try {
       validateCreateLegacyContactRequest({
         emailFromAuthToken: "test@permanent.org",
+        userSubjectFromAuthToken: "f4852021-74df-4458-91ea-a0b7f239a8cf",
         email: "test+1@permanent.org",
       });
     } catch (err) {
@@ -133,6 +186,7 @@ describe("validateCreateLegacyContactRequest", () => {
     try {
       validateCreateLegacyContactRequest({
         emailFromAuthToken: "test@permanent.org",
+        userSubjectFromAuthToken: "f4852021-74df-4458-91ea-a0b7f239a8cf",
         email: "test+1@permanent.org",
         name: 1,
       });
@@ -150,6 +204,7 @@ describe("validateUpdateLegacyContactRequest", () => {
     try {
       validateUpdateLegacyContactRequest({
         emailFromAuthToken: "test@permanent.org",
+        userSubjectFromAuthToken: "f4852021-74df-4458-91ea-a0b7f239a8cf",
         email: "contact@permanent.org",
         name: "John Rando",
       });
@@ -164,6 +219,7 @@ describe("validateUpdateLegacyContactRequest", () => {
     try {
       validateUpdateLegacyContactRequest({
         emailFromAuthToken: "test@permanent.org",
+        userSubjectFromAuthToken: "f4852021-74df-4458-91ea-a0b7f239a8cf",
       });
     } catch (err) {
       error = err;
@@ -174,7 +230,9 @@ describe("validateUpdateLegacyContactRequest", () => {
   test("should raise an error when emailFromAuthToken is missing", () => {
     let error = null;
     try {
-      validateUpdateLegacyContactRequest({});
+      validateUpdateLegacyContactRequest({
+        userSubjectFromAuthToken: "f4852021-74df-4458-91ea-a0b7f239a8cf",
+      });
     } catch (err) {
       error = err;
     } finally {
@@ -186,6 +244,7 @@ describe("validateUpdateLegacyContactRequest", () => {
     try {
       validateUpdateLegacyContactRequest({
         emailFromAuthToken: 1,
+        userSubjectFromAuthToken: "f4852021-74df-4458-91ea-a0b7f239a8cf",
       });
     } catch (err) {
       error = err;
@@ -198,6 +257,45 @@ describe("validateUpdateLegacyContactRequest", () => {
     try {
       validateUpdateLegacyContactRequest({
         emailFromAuthToken: "not_an_email",
+        userSubjectFromAuthToken: "f4852021-74df-4458-91ea-a0b7f239a8cf",
+      });
+    } catch (err) {
+      error = err;
+    } finally {
+      expect(error).not.toBeNull();
+    }
+  });
+  test("should raise an error when userSubjectFromAuthToken is missing", () => {
+    let error = null;
+    try {
+      validateUpdateLegacyContactRequest({
+        emailFromAuthToken: "test@permanent.org",
+      });
+    } catch (err) {
+      error = err;
+    } finally {
+      expect(error).not.toBeNull();
+    }
+  });
+  test("should raise an error when userSubjectFromAuthToken is wrong type", () => {
+    let error = null;
+    try {
+      validateUpdateLegacyContactRequest({
+        emailFromAuthToken: "test@permanent.org",
+        userSubjectFromAuthToken: 1,
+      });
+    } catch (err) {
+      error = err;
+    } finally {
+      expect(error).not.toBeNull();
+    }
+  });
+  test("should raise an error when emailFromAuthToken is wrong format", () => {
+    let error = null;
+    try {
+      validateUpdateLegacyContactRequest({
+        emailFromAuthToken: "test@permanent.org",
+        userSubjectFromAuthToken: "not_a_uuid",
       });
     } catch (err) {
       error = err;
@@ -210,6 +308,7 @@ describe("validateUpdateLegacyContactRequest", () => {
     try {
       validateUpdateLegacyContactRequest({
         emailFromAuthToken: "test@permanent.org",
+        userSubjectFromAuthToken: "f4852021-74df-4458-91ea-a0b7f239a8cf",
         email: 1,
       });
     } catch (err) {
@@ -223,6 +322,7 @@ describe("validateUpdateLegacyContactRequest", () => {
     try {
       validateUpdateLegacyContactRequest({
         emailFromAuthToken: "test@permanent.org",
+        userSubjectFromAuthToken: "f4852021-74df-4458-91ea-a0b7f239a8cf",
         email: "not_an_email",
       });
     } catch (err) {
@@ -236,6 +336,7 @@ describe("validateUpdateLegacyContactRequest", () => {
     try {
       validateUpdateLegacyContactRequest({
         emailFromAuthToken: "test@permanent.org",
+        userSubjectFromAuthToken: "f4852021-74df-4458-91ea-a0b7f239a8cf",
         email: "test@permanent.org",
       });
     } catch (err) {
@@ -249,6 +350,7 @@ describe("validateUpdateLegacyContactRequest", () => {
     try {
       validateUpdateLegacyContactRequest({
         emailFromAuthToken: "test@permanent.org",
+        userSubjectFromAuthToken: "f4852021-74df-4458-91ea-a0b7f239a8cf",
         email: "contact@permanent.org",
         name: 1,
       });

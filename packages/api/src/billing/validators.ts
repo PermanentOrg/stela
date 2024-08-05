@@ -1,12 +1,13 @@
 import Joi from "joi";
 import type { GiftStorageRequest } from "./models";
+import { fieldsFromUserAuthentication } from "../validators";
 
 export function validateGiftStorageRequest(
   data: unknown
 ): asserts data is GiftStorageRequest {
   const validation = Joi.object()
     .keys({
-      emailFromAuthToken: Joi.string().email().required(),
+      ...fieldsFromUserAuthentication,
       storageAmount: Joi.number().integer().min(1).required(),
       recipientEmails: Joi.array()
         .min(1)

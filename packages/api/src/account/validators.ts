@@ -1,6 +1,9 @@
 import Joi from "joi";
 import type { UpdateTagsRequest } from "./models";
-import { validateBodyFromAuthentication } from "../validators";
+import {
+  fieldsFromUserAuthentication,
+  validateBodyFromAuthentication,
+} from "../validators";
 
 export { validateBodyFromAuthentication };
 
@@ -9,7 +12,7 @@ export function validateUpdateTagsRequest(
 ): asserts data is UpdateTagsRequest {
   const validation = Joi.object()
     .keys({
-      emailFromAuthToken: Joi.string().email().required(),
+      ...fieldsFromUserAuthentication,
       addTags: Joi.array().items(Joi.string()),
       removeTags: Joi.array().items(Joi.string()),
     })
@@ -47,9 +50,8 @@ export function validateLeaveArchiveRequest(data: unknown): asserts data is {
 } {
   const validation = Joi.object()
     .keys({
+      ...fieldsFromUserAuthentication,
       ip: Joi.string().ip().required(),
-      emailFromAuthToken: Joi.string().email().required(),
-      userSubjectFromAuthToken: Joi.string().uuid().required(),
     })
     .validate(data);
   if (validation.error) {

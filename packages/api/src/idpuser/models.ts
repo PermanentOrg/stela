@@ -6,12 +6,14 @@ export interface TwoFactorRequestResponse {
 
 export interface SendEnableCodeRequest {
   emailFromAuthToken: string;
+  userSubjectFromAuthToken: string;
   method: TwoFactorMethod;
   value: string;
 }
 
 export interface CreateTwoFactorMethodRequest {
   emailFromAuthToken: string;
+  userSubjectFromAuthToken: string;
   code: string;
   method: TwoFactorMethod;
   value: string;
@@ -19,11 +21,13 @@ export interface CreateTwoFactorMethodRequest {
 
 export interface SendDisableCodeRequest {
   emailFromAuthToken: string;
+  userSubjectFromAuthToken: string;
   methodId: string;
 }
 
 export interface DisableTwoFactorRequest {
   emailFromAuthToken: string;
+  userSubjectFromAuthToken: string;
   methodId: string;
   code: string;
 }
