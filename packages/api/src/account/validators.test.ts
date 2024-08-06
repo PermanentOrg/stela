@@ -10,6 +10,7 @@ describe("validateUpdateTagsRequest", () => {
     try {
       validateUpdateTagsRequest({
         emailFromAuthToken: "test@permanent.org",
+        userSubjectFromAuthToken: "c0caa7e3-4396-4ec9-997c-ce09d939946c",
         addTags: ["tag1", "tag2"],
         removeTags: ["tag3", "tag4"],
       });
@@ -23,6 +24,7 @@ describe("validateUpdateTagsRequest", () => {
     let error = null;
     try {
       validateUpdateTagsRequest({
+        userSubjectFromAuthToken: "c0caa7e3-4396-4ec9-997c-ce09d939946c",
         addTags: ["tag1", "tag2"],
         removeTags: ["tag3", "tag4"],
       });
@@ -37,6 +39,7 @@ describe("validateUpdateTagsRequest", () => {
     try {
       validateUpdateTagsRequest({
         emailFromAuthToken: 1,
+        userSubjectFromAuthToken: "c0caa7e3-4396-4ec9-997c-ce09d939946c",
         addTags: ["tag1", "tag2"],
         removeTags: ["tag3", "tag4"],
       });
@@ -51,6 +54,51 @@ describe("validateUpdateTagsRequest", () => {
     try {
       validateUpdateTagsRequest({
         emailFromAuthToken: "not_an_email",
+        userSubjectFromAuthToken: "c0caa7e3-4396-4ec9-997c-ce09d939946c",
+        addTags: ["tag1", "tag2"],
+        removeTags: ["tag3", "tag4"],
+      });
+    } catch (err) {
+      error = err;
+    } finally {
+      expect(error).not.toBeNull();
+    }
+  });
+  test("should raise an error if userSubjectFromAuthToken is missing", () => {
+    let error = null;
+    try {
+      validateUpdateTagsRequest({
+        emailFromAuthToken: "test@permanent.org",
+        addTags: ["tag1", "tag2"],
+        removeTags: ["tag3", "tag4"],
+      });
+    } catch (err) {
+      error = err;
+    } finally {
+      expect(error).not.toBeNull();
+    }
+  });
+  test("should raise an error if userSubjectFromAuthToken is wrong type", () => {
+    let error = null;
+    try {
+      validateUpdateTagsRequest({
+        emailFromAuthToken: "test@permanent.org",
+        userSubjectFromAuthToken: 1,
+        addTags: ["tag1", "tag2"],
+        removeTags: ["tag3", "tag4"],
+      });
+    } catch (err) {
+      error = err;
+    } finally {
+      expect(error).not.toBeNull();
+    }
+  });
+  test("should raise an error if userSubjectFromAuthToken is wrong format", () => {
+    let error = null;
+    try {
+      validateUpdateTagsRequest({
+        emailFromAuthToken: "test@permanent.org",
+        userSubjectFromAuthToken: "not_a_uuid",
         addTags: ["tag1", "tag2"],
         removeTags: ["tag3", "tag4"],
       });
@@ -65,6 +113,7 @@ describe("validateUpdateTagsRequest", () => {
     try {
       validateUpdateTagsRequest({
         emailFromAuthToken: "test@permanent.org",
+        userSubjectFromAuthToken: "c0caa7e3-4396-4ec9-997c-ce09d939946c",
         addTags: "tag1, tag2",
         removeTags: ["tag3", "tag4"],
       });
@@ -79,6 +128,7 @@ describe("validateUpdateTagsRequest", () => {
     try {
       validateUpdateTagsRequest({
         emailFromAuthToken: "test@permanent.org",
+        userSubjectFromAuthToken: "c0caa7e3-4396-4ec9-997c-ce09d939946c",
         addTags: ["tag1", 2],
         removeTags: ["tag3", "tag4"],
       });
@@ -93,6 +143,7 @@ describe("validateUpdateTagsRequest", () => {
     try {
       validateUpdateTagsRequest({
         emailFromAuthToken: "test@permanent.org",
+        userSubjectFromAuthToken: "c0caa7e3-4396-4ec9-997c-ce09d939946c",
         addTags: ["tag1", "tag2"],
         removeTags: "tag3, tag4",
       });
@@ -107,6 +158,7 @@ describe("validateUpdateTagsRequest", () => {
     try {
       validateUpdateTagsRequest({
         emailFromAuthToken: "test@permanent.org",
+        userSubjectFromAuthToken: "c0caa7e3-4396-4ec9-997c-ce09d939946c",
         addTags: ["tag1", "tag2"],
         removeTags: ["tag3", 4],
       });
@@ -121,6 +173,7 @@ describe("validateUpdateTagsRequest", () => {
     try {
       validateUpdateTagsRequest({
         emailFromAuthToken: "test@permanent.org",
+        userSubjectFromAuthToken: "c0caa7e3-4396-4ec9-997c-ce09d939946c",
       });
     } catch (err) {
       error = err;

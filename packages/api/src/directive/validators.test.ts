@@ -12,6 +12,7 @@ describe("validateCreateDirectiveRequest", () => {
     try {
       validateCreateDirectiveRequest({
         emailFromAuthToken: "test@permanent.org",
+        userSubjectFromAuthToken: "13bb917e-7c75-4971-a8ee-b22e82432888",
         archiveId: "1",
         stewardEmail: "test+1@permanent.org",
         type: "transfer",
@@ -30,6 +31,7 @@ describe("validateCreateDirectiveRequest", () => {
     try {
       validateCreateDirectiveRequest({
         emailFromAuthToken: "test@permanent.org",
+        userSubjectFromAuthToken: "13bb917e-7c75-4971-a8ee-b22e82432888",
         stewardEmail: "test+1@permanent.org",
         type: "transfer",
         trigger: {
@@ -47,6 +49,7 @@ describe("validateCreateDirectiveRequest", () => {
     try {
       validateCreateDirectiveRequest({
         emailFromAuthToken: "test@permanent.org",
+        userSubjectFromAuthToken: "13bb917e-7c75-4971-a8ee-b22e82432888",
         archiveId: "1",
         type: "transfer",
         trigger: {
@@ -64,6 +67,7 @@ describe("validateCreateDirectiveRequest", () => {
     try {
       validateCreateDirectiveRequest({
         emailFromAuthToken: "test@permanent.org",
+        userSubjectFromAuthToken: "13bb917e-7c75-4971-a8ee-b22e82432888",
         stewardEmail: "test@permanent.org",
         archiveId: "1",
         type: "transfer",
@@ -82,6 +86,7 @@ describe("validateCreateDirectiveRequest", () => {
     try {
       validateCreateDirectiveRequest({
         emailFromAuthToken: "test@permanent.org",
+        userSubjectFromAuthToken: "13bb917e-7c75-4971-a8ee-b22e82432888",
         archiveId: "1",
         stewardEmail: "test+1@permanent.org",
         trigger: {
@@ -99,6 +104,7 @@ describe("validateCreateDirectiveRequest", () => {
     try {
       validateCreateDirectiveRequest({
         emailFromAuthToken: "test@permanent.org",
+        userSubjectFromAuthToken: "13bb917e-7c75-4971-a8ee-b22e82432888",
         archiveId: "1",
         stewardEmail: "test+1@permanent.org",
         type: "transfer",
@@ -115,6 +121,7 @@ describe("validateCreateDirectiveRequest", () => {
     try {
       validateCreateDirectiveRequest({
         emailFromAuthToken: "test@permanent.org",
+        userSubjectFromAuthToken: "13bb917e-7c75-4971-a8ee-b22e82432888",
         archiveId: "1",
         stewardEmail: "test+1@permanent.org",
         type: "transfer",
@@ -130,6 +137,7 @@ describe("validateCreateDirectiveRequest", () => {
     try {
       validateCreateDirectiveRequest({
         emailFromAuthToken: "test@permanent.org",
+        userSubjectFromAuthToken: "13bb917e-7c75-4971-a8ee-b22e82432888",
         archiveId: 1,
         stewardEmail: "test+1@permanent.org",
         type: "transfer",
@@ -148,6 +156,7 @@ describe("validateCreateDirectiveRequest", () => {
     try {
       validateCreateDirectiveRequest({
         emailFromAuthToken: "test@permanent.org",
+        userSubjectFromAuthToken: "13bb917e-7c75-4971-a8ee-b22e82432888",
         archiveId: "1",
         stewardEmail: "test+1",
         type: "transfer",
@@ -166,6 +175,7 @@ describe("validateCreateDirectiveRequest", () => {
     try {
       validateCreateDirectiveRequest({
         emailFromAuthToken: "test@permanent.org",
+        userSubjectFromAuthToken: "13bb917e-7c75-4971-a8ee-b22e82432888",
         archiveId: "1",
         stewardEmail: "test+1@permanent.org",
         type: 1,
@@ -184,6 +194,7 @@ describe("validateCreateDirectiveRequest", () => {
     try {
       validateCreateDirectiveRequest({
         emailFromAuthToken: "test@permanent.org",
+        userSubjectFromAuthToken: "13bb917e-7c75-4971-a8ee-b22e82432888",
         archiveId: "1",
         stewardEmail: "test+1@permanent.org",
         type: "transfer",
@@ -203,6 +214,7 @@ describe("validateCreateDirectiveRequest", () => {
     try {
       validateCreateDirectiveRequest({
         emailFromAuthToken: "test@permanent.org",
+        userSubjectFromAuthToken: "13bb917e-7c75-4971-a8ee-b22e82432888",
         archiveId: "1",
         type: "transfer",
         stewardEmail: "test+1@permanent.org",
@@ -221,6 +233,7 @@ describe("validateCreateDirectiveRequest", () => {
     try {
       validateCreateDirectiveRequest({
         emailFromAuthToken: "test@permanent.org",
+        userSubjectFromAuthToken: "13bb917e-7c75-4971-a8ee-b22e82432888",
         archiveId: "1",
         stewardEmail: "test+1@permanent.org",
         type: "transfer",
@@ -236,6 +249,7 @@ describe("validateCreateDirectiveRequest", () => {
     let error = null;
     try {
       validateCreateDirectiveRequest({
+        userSubjectFromAuthToken: "13bb917e-7c75-4971-a8ee-b22e82432888",
         archiveId: "1",
         stewardEmail: "test+1@permanent.org",
         type: "transfer",
@@ -254,6 +268,7 @@ describe("validateCreateDirectiveRequest", () => {
     try {
       validateCreateDirectiveRequest({
         emailFromAuthToken: "not_an_email",
+        userSubjectFromAuthToken: "13bb917e-7c75-4971-a8ee-b22e82432888",
         archiveId: "1",
         stewardEmail: "test+1@permanent.org",
         type: "transfer",
@@ -272,7 +287,64 @@ describe("validateCreateDirectiveRequest", () => {
     try {
       validateCreateDirectiveRequest({
         emailFromAuthToken: 1,
+        userSubjectFromAuthToken: "13bb917e-7c75-4971-a8ee-b22e82432888",
         archiveId: 1,
+        stewardEmail: "test+1@permanent.org",
+        type: "transfer",
+        trigger: {
+          type: "admin",
+        },
+      });
+    } catch (err) {
+      error = err;
+    } finally {
+      expect(error).not.toBeNull();
+    }
+  });
+  test("should raise an error if userSubjectFromAuthToken is missing", () => {
+    let error = null;
+    try {
+      validateCreateDirectiveRequest({
+        emailFromAuthToken: "test@permanent.org",
+        archiveId: "1",
+        stewardEmail: "test+1@permanent.org",
+        type: "transfer",
+        trigger: {
+          type: "admin",
+        },
+      });
+    } catch (err) {
+      error = err;
+    } finally {
+      expect(error).not.toBeNull();
+    }
+  });
+  test("should raise an error if userSubjectFromAuthToken is wrong type", () => {
+    let error = null;
+    try {
+      validateCreateDirectiveRequest({
+        emailFromAuthToken: "test@permanent.org",
+        userSubjectFromAuthToken: 1,
+        archiveId: "1",
+        stewardEmail: "test+1@permanent.org",
+        type: "transfer",
+        trigger: {
+          type: "admin",
+        },
+      });
+    } catch (err) {
+      error = err;
+    } finally {
+      expect(error).not.toBeNull();
+    }
+  });
+  test("should raise an error if userSubjectFromAuthToken is wrong format", () => {
+    let error = null;
+    try {
+      validateCreateDirectiveRequest({
+        emailFromAuthToken: "test@permanent.org",
+        userSubjectFromAuthToken: "not a uuid",
+        archiveId: "1",
         stewardEmail: "test+1@permanent.org",
         type: "transfer",
         trigger: {
@@ -379,6 +451,7 @@ describe("validateUpdateDirectiveRequest", () => {
     try {
       validateUpdateDirectiveRequest({
         emailFromAuthToken: "test@permanent.org",
+        userSubjectFromAuthToken: "13bb917e-7c75-4971-a8ee-b22e82432888",
         stewardEmail: "test+1@permanent.org",
         type: "transfer",
         note: "note",
@@ -396,6 +469,7 @@ describe("validateUpdateDirectiveRequest", () => {
     let error = null;
     try {
       validateUpdateDirectiveRequest({
+        userSubjectFromAuthToken: "13bb917e-7c75-4971-a8ee-b22e82432888",
         stewardEmail: "test+1@permanent.org",
         type: "transfer",
         trigger: {
@@ -412,6 +486,7 @@ describe("validateUpdateDirectiveRequest", () => {
     let error = null;
     try {
       validateUpdateDirectiveRequest({
+        userSubjectFromAuthToken: "13bb917e-7c75-4971-a8ee-b22e82432888",
         emailFromAuthToken: 1,
         stewardEmail: "test+1@permanent.org",
         type: "transfer",
@@ -430,6 +505,60 @@ describe("validateUpdateDirectiveRequest", () => {
     try {
       validateUpdateDirectiveRequest({
         emailFromAuthToken: "not_an_email",
+        userSubjectFromAuthToken: "13bb917e-7c75-4971-a8ee-b22e82432888",
+        stewardEmail: "test+1@permanent.org",
+        type: "transfer",
+        trigger: {
+          type: "admin",
+        },
+      });
+    } catch (err) {
+      error = err;
+    } finally {
+      expect(error).not.toBeNull();
+    }
+  });
+  test("should raise an error if userSubjectFromAuthToken is missing", () => {
+    let error = null;
+    try {
+      validateUpdateDirectiveRequest({
+        emailFromAuthToken: "test@permanent.org",
+        stewardEmail: "test+1@permanent.org",
+        type: "transfer",
+        trigger: {
+          type: "admin",
+        },
+      });
+    } catch (err) {
+      error = err;
+    } finally {
+      expect(error).not.toBeNull();
+    }
+  });
+  test("should raise an error if userSubjectFromAuthToken is wrong type", () => {
+    let error = null;
+    try {
+      validateUpdateDirectiveRequest({
+        emailFromAuthToken: "test@permanent.org",
+        userSubjectFromAuthToken: 1,
+        stewardEmail: "test+1@permanent.org",
+        type: "transfer",
+        trigger: {
+          type: "admin",
+        },
+      });
+    } catch (err) {
+      error = err;
+    } finally {
+      expect(error).not.toBeNull();
+    }
+  });
+  test("should raise an error if userSubjectFromAuthToken is wrong format", () => {
+    let error = null;
+    try {
+      validateUpdateDirectiveRequest({
+        emailFromAuthToken: "test@permanent.org",
+        userSubjectFromAuthToken: "test_subject",
         stewardEmail: "test+1@permanent.org",
         type: "transfer",
         trigger: {
@@ -447,6 +576,7 @@ describe("validateUpdateDirectiveRequest", () => {
     try {
       validateUpdateDirectiveRequest({
         emailFromAuthToken: "test@permanent.org",
+        userSubjectFromAuthToken: "13bb917e-7c75-4971-a8ee-b22e82432888",
         stewardEmail: 1,
         type: "transfer",
         trigger: {
@@ -464,6 +594,7 @@ describe("validateUpdateDirectiveRequest", () => {
     try {
       validateUpdateDirectiveRequest({
         emailFromAuthToken: "test@permanent.org",
+        userSubjectFromAuthToken: "13bb917e-7c75-4971-a8ee-b22e82432888",
         stewardEmail: "not_an_email",
         type: "transfer",
         trigger: {
@@ -481,6 +612,7 @@ describe("validateUpdateDirectiveRequest", () => {
     try {
       validateUpdateDirectiveRequest({
         emailFromAuthToken: "test@permanent.org",
+        userSubjectFromAuthToken: "13bb917e-7c75-4971-a8ee-b22e82432888",
         stewardEmail: "test+1@permanent.org",
         type: "delete",
         trigger: {
@@ -498,6 +630,7 @@ describe("validateUpdateDirectiveRequest", () => {
     try {
       validateUpdateDirectiveRequest({
         emailFromAuthToken: "test@permanent.org",
+        userSubjectFromAuthToken: "13bb917e-7c75-4971-a8ee-b22e82432888",
         stewardEmail: "test@permanent.org",
         type: "transfer",
         trigger: {
@@ -515,6 +648,7 @@ describe("validateUpdateDirectiveRequest", () => {
     try {
       validateUpdateDirectiveRequest({
         emailFromAuthToken: "test@permanent.org",
+        userSubjectFromAuthToken: "13bb917e-7c75-4971-a8ee-b22e82432888",
         stewardEmail: "test+1@permanent.org",
         type: 1,
         trigger: {
@@ -532,6 +666,7 @@ describe("validateUpdateDirectiveRequest", () => {
     try {
       validateUpdateDirectiveRequest({
         emailFromAuthToken: "test@permanent.org",
+        userSubjectFromAuthToken: "13bb917e-7c75-4971-a8ee-b22e82432888",
         stewardEmail: "test+1@permanent.org",
         type: "transfer",
         note: 1,
@@ -550,6 +685,7 @@ describe("validateUpdateDirectiveRequest", () => {
     try {
       validateUpdateDirectiveRequest({
         emailFromAuthToken: "test@permanent.org",
+        userSubjectFromAuthToken: "13bb917e-7c75-4971-a8ee-b22e82432888",
         stewardEmail: "test+1@permanent.org",
         type: "transfer",
         note: "note",
@@ -566,6 +702,7 @@ describe("validateUpdateDirectiveRequest", () => {
     try {
       validateUpdateDirectiveRequest({
         emailFromAuthToken: "test@permanent.org",
+        userSubjectFromAuthToken: "13bb917e-7c75-4971-a8ee-b22e82432888",
         stewardEmail: "test+1@permanent.org",
         type: "transfer",
         note: "note",

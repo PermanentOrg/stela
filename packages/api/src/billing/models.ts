@@ -1,5 +1,6 @@
 export interface GiftStorageRequest {
   emailFromAuthToken: string;
+  userSubjectFromAuthToken: string;
   storageAmount: number;
   recipientEmails: string[];
   note: string;

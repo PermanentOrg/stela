@@ -6,6 +6,7 @@ import {
   verifyUserOrAdminAuthentication,
 } from "./authentication";
 import { fusionAuthClient } from "../fusionauth";
+import { validateBodyFromAuthentication } from "../validators";
 
 jest.mock("../fusionauth");
 
@@ -102,6 +103,25 @@ describe("verifyUserAuthentication", () => {
     await verifyUserAuthentication(request, {} as Response, () => {});
 
     expect(request.body.userSubjectFromAuthToken).toBe(testSubject);
+  });
+
+  test("should produce a request body that passes auth-only request validation", async () => {
+    const request = {
+      body: {},
+      get: (_: string) => "Bearer test",
+    } as Request<
+      unknown,
+      unknown,
+      { userSubjectFromAuthToken?: string; userEmailFromAuthToken?: string }
+    >;
+    jest
+      .spyOn(fusionAuthClient, "introspectAccessToken")
+      .mockImplementation(async () => successfulIntrospectionResponse);
+    await verifyUserAuthentication(request, {} as Response, () => {});
+
+    expect(() => {
+      validateBodyFromAuthentication(request.body);
+    }).not.toThrow();
   });
 
   test("should throw unauthorized if authorization header is missing", async () => {

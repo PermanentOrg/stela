@@ -1,5 +1,6 @@
 export interface CreatePromoRequest {
   emailFromAuthToken: string;
+  userSubjectFromAuthToken: string;
   code: string;
   storageInMB: number;
   expirationTimestamp: string;

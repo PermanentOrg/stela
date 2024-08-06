@@ -1,6 +1,9 @@
 import Joi from "joi";
 import type { CreateDirectiveRequest, UpdateDirectiveRequest } from "./model";
-import { validateBodyFromAuthentication } from "../validators";
+import {
+  validateBodyFromAuthentication,
+  fieldsFromUserAuthentication,
+} from "../validators";
 
 export { validateBodyFromAuthentication };
 
@@ -9,7 +12,7 @@ export function validateCreateDirectiveRequest(
 ): asserts data is CreateDirectiveRequest {
   const validation = Joi.object()
     .keys({
-      emailFromAuthToken: Joi.string().email().required(),
+      ...fieldsFromUserAuthentication,
       archiveId: Joi.string().required(),
       stewardEmail: Joi.when("type", {
         is: Joi.string().valid("transfer"),
@@ -51,7 +54,7 @@ export function validateUpdateDirectiveRequest(
 ): asserts data is UpdateDirectiveRequest {
   const validation = Joi.object()
     .keys({
-      emailFromAuthToken: Joi.string().email().required(),
+      ...fieldsFromUserAuthentication,
       stewardEmail: Joi.when("type", {
         is: Joi.string().valid("transfer"),
         then: Joi.string().invalid(Joi.ref("emailFromAuthToken")).email(),

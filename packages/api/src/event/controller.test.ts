@@ -541,6 +541,9 @@ describe("GET /event/checklist", () => {
         (
           req.body as unknown as { emailFromAuthToken: string }
         ).emailFromAuthToken = testEmail;
+        (
+          req.body as unknown as { userSubjectFromAuthToken: string }
+        ).userSubjectFromAuthToken = testSubject;
         next();
       }
     );
@@ -649,6 +652,9 @@ describe("GET /event/checklist", () => {
         (
           req.body as unknown as { emailFromAuthToken: string }
         ).emailFromAuthToken = testNoProgressEmail;
+        (
+          req.body as unknown as { userSubjectFromAuthToken: string }
+        ).userSubjectFromAuthToken = testSubject;
         next();
       }
     );
@@ -679,6 +685,9 @@ describe("GET /event/checklist", () => {
         (
           req.body as unknown as { emailFromAuthToken: string }
         ).emailFromAuthToken = testNoProgressEmail;
+        (
+          req.body as unknown as { userSubjectFromAuthToken: string }
+        ).userSubjectFromAuthToken = testSubject;
         next();
       }
     );
@@ -709,6 +718,9 @@ describe("GET /event/checklist", () => {
         (
           req.body as unknown as { emailFromAuthToken: string }
         ).emailFromAuthToken = testNoProgressEmail;
+        (
+          req.body as unknown as { userSubjectFromAuthToken: string }
+        ).userSubjectFromAuthToken = testSubject;
         next();
       }
     );
@@ -739,6 +751,9 @@ describe("GET /event/checklist", () => {
         (
           req.body as unknown as { emailFromAuthToken: string }
         ).emailFromAuthToken = testNoProgressEmail;
+        (
+          req.body as unknown as { userSubjectFromAuthToken: string }
+        ).userSubjectFromAuthToken = testSubject;
         next();
       }
     );
@@ -769,6 +784,9 @@ describe("GET /event/checklist", () => {
         (
           req.body as unknown as { emailFromAuthToken: string }
         ).emailFromAuthToken = testNoProgressEmail;
+        (
+          req.body as unknown as { userSubjectFromAuthToken: string }
+        ).userSubjectFromAuthToken = testSubject;
         next();
       }
     );
@@ -798,6 +816,9 @@ describe("GET /event/checklist", () => {
         (
           req.body as unknown as { emailFromAuthToken: string }
         ).emailFromAuthToken = testNoProgressEmail;
+        (
+          req.body as unknown as { userSubjectFromAuthToken: string }
+        ).userSubjectFromAuthToken = testSubject;
         next();
       }
     );
@@ -827,6 +848,9 @@ describe("GET /event/checklist", () => {
         (
           req.body as unknown as { emailFromAuthToken: string }
         ).emailFromAuthToken = testNoProgressEmail;
+        (
+          req.body as unknown as { userSubjectFromAuthToken: string }
+        ).userSubjectFromAuthToken = testSubject;
         next();
       }
     );

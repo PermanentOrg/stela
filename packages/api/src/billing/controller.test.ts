@@ -123,6 +123,8 @@ describe("/billing/gift", () => {
       (req: Request, __, next: NextFunction) => {
         (req.body as GiftStorageRequest).emailFromAuthToken =
           "test@permanent.org";
+        (req.body as GiftStorageRequest).userSubjectFromAuthToken =
+          "13bb917e-7c75-4971-a8ee-b22e82432888";
         next();
       }
     );
@@ -141,7 +143,9 @@ describe("/billing/gift", () => {
 
   test("should return invalid request status if email from auth token is missing", async () => {
     (verifyUserAuthentication as jest.Mock).mockImplementation(
-      (_, __, next: NextFunction) => {
+      (req: Request, __, next: NextFunction) => {
+        (req.body as GiftStorageRequest).userSubjectFromAuthToken =
+          "13bb917e-7c75-4971-a8ee-b22e82432888";
         next();
       }
     );
@@ -153,6 +157,8 @@ describe("/billing/gift", () => {
       (req: Request, __, next: NextFunction) => {
         (req.body as GiftStorageRequest).emailFromAuthToken =
           1 as unknown as string;
+        (req.body as GiftStorageRequest).userSubjectFromAuthToken =
+          "13bb917e-7c75-4971-a8ee-b22e82432888";
         next();
       }
     );
@@ -163,6 +169,45 @@ describe("/billing/gift", () => {
     (verifyUserAuthentication as jest.Mock).mockImplementation(
       (req: Request, __, next: NextFunction) => {
         (req.body as GiftStorageRequest).emailFromAuthToken = "test";
+        (req.body as GiftStorageRequest).userSubjectFromAuthToken =
+          "13bb917e-7c75-4971-a8ee-b22e82432888";
+        next();
+      }
+    );
+    await agent.post("/api/v2/billing/gift").expect(400);
+  });
+
+  test("should return invalid request status if subject from auth token is missing", async () => {
+    (verifyUserAuthentication as jest.Mock).mockImplementation(
+      (req: Request, __, next: NextFunction) => {
+        (req.body as GiftStorageRequest).emailFromAuthToken =
+          "test@permanent.org";
+        next();
+      }
+    );
+    await agent.post("/api/v2/billing/gift").expect(400);
+  });
+
+  test("should return invalid request status if subject from auth token is wrong type", async () => {
+    (verifyUserAuthentication as jest.Mock).mockImplementation(
+      (req: Request, __, next: NextFunction) => {
+        (req.body as GiftStorageRequest).emailFromAuthToken =
+          "test@permanent.org";
+        (req.body as GiftStorageRequest).userSubjectFromAuthToken =
+          1 as unknown as string;
+        next();
+      }
+    );
+    await agent.post("/api/v2/billing/gift").expect(400);
+  });
+
+  test("should return invalid request status if subject from auth token is not a uuid", async () => {
+    (verifyUserAuthentication as jest.Mock).mockImplementation(
+      (req: Request, __, next: NextFunction) => {
+        (req.body as GiftStorageRequest).emailFromAuthToken =
+          "test@permanent.org";
+        (req.body as GiftStorageRequest).userSubjectFromAuthToken =
+          "not_a_uuid";
         next();
       }
     );
@@ -256,6 +301,8 @@ describe("/billing/gift", () => {
       (req: Request, __, next: NextFunction) => {
         (req.body as GiftStorageRequest).emailFromAuthToken =
           "not_a_user@permanent.org";
+        (req.body as GiftStorageRequest).userSubjectFromAuthToken =
+          "13bb917e-7c75-4971-a8ee-b22e82432888";
         next();
       }
     );
