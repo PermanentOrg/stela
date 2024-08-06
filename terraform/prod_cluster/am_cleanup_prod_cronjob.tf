@@ -14,7 +14,7 @@ resource "kubernetes_cron_job_v1" "archivematica_cleanup_prod" {
     job_template {
       metadata {}
       spec {
-        backoff_limit              = 2
+        backoff_limit = 2
         template {
           metadata {}
           spec {
