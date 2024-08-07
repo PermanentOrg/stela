@@ -19,6 +19,7 @@ export const createEvent = async (data: CreateEventRequest): Promise<void> => {
       analyticsData["$browser"] = browser.name;
       analyticsData["$os"] = os.name;
       analyticsData["$device"] = device.type;
+      analyticsData["ip"] = data.ip;
       mixpanelClient.track(data.body.analytics.event, analyticsData);
     } catch (err) {
       logger.error(err);

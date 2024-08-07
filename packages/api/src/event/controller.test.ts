@@ -18,6 +18,7 @@ jest.mock("../mixpanel");
 const testSubject = "fcb2b59b-df07-4e79-ad20-bf7f067a965e";
 const testEmail = "test+1@permanent.org";
 const testNoProgressEmail = "test+no_progress@permanent.org";
+const testIp = "192.168.0.1";
 
 describe("POST /event", () => {
   const agent = request(app);
@@ -36,7 +37,7 @@ describe("POST /event", () => {
     );
     (extractIp as jest.Mock).mockImplementation(
       (req: Request, __, next: NextFunction) => {
-        (req.body as unknown as CreateEventRequest).ip = "192.168.0.1";
+        (req.body as unknown as CreateEventRequest).ip = testIp;
         next();
       }
     );
@@ -452,6 +453,7 @@ describe("POST /event", () => {
       $browser: "Chrome",
       $device: "mobile",
       $os: "iOS",
+      ip: testIp,
     });
   });
 
