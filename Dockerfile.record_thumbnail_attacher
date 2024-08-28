@@ -1,0 +1,29 @@
+FROM public.ecr.aws/lambda/nodejs:18 as builder
+WORKDIR /usr/local/apps/stela/
+
+COPY package.json ./
+COPY tsconfig.build.json ./
+COPY tsconfig.json ./
+COPY jest.config.js ./
+COPY packages ./packages
+
+RUN npm install -g npm@8.19.3
+RUN npm install
+RUN npm install -ws
+RUN npm run build -ws
+
+
+FROM public.ecr.aws/lambda/nodejs:18 as final
+WORKDIR ${LAMBDA_TASK_ROOT}
+
+COPY --from=builder /usr/local/apps/stela/packages/record_thumbnail_attacher/dist ./packages/record_thumbnail_attacher/dist
+COPY --from=builder /usr/local/apps/stela/packages/record_thumbnail_attacher/package.json ./packages/record_thumbnail_attacher/package.json
+COPY --from=builder /usr/local/apps/stela/packages/logger/dist ./packages/logger/dist
+COPY --from=builder /usr/local/apps/stela/packages/logger/package.json ./packages/logger/package.json
+COPY --from=builder /usr/local/apps/stela/package.json ./package.json
+COPY --from=builder /usr/local/apps/stela/package-lock.json ./package-lock.json
+
+RUN npm install -g npm@8.19.3
+RUN npm install --workspace @stela/record_thumbnail_attacher
+
+CMD ["packages/record_thumbnail_attacher/dist/index.handler"]
