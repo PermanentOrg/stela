@@ -25,7 +25,7 @@ describe("POST /promo", () => {
       (req: Request, __, next: NextFunction) => {
         (req.body as CreatePromoRequest).emailFromAuthToken =
           "test@permanent.org";
-        (req.body as CreatePromoRequest).userSubjectFromAuthToken =
+        (req.body as CreatePromoRequest).adminSubjectFromAuthToken =
           "6b640c73-4963-47de-a096-4a05ff8dc5f5";
         next();
       }
@@ -65,7 +65,7 @@ describe("POST /promo", () => {
   test("should respond with 400 status code if missing emailFromAuthToken", async () => {
     (verifyAdminAuthentication as jest.Mock).mockImplementation(
       (req: Request, __, next: NextFunction) => {
-        (req.body as CreatePromoRequest).userSubjectFromAuthToken =
+        (req.body as CreatePromoRequest).adminSubjectFromAuthToken =
           "6b640c73-4963-47de-a096-4a05ff8dc5f5";
         next();
       }
@@ -85,7 +85,7 @@ describe("POST /promo", () => {
     (verifyAdminAuthentication as jest.Mock).mockImplementation(
       (req: Request, __, next: NextFunction) => {
         (req.body as { emailFromAuthToken: number }).emailFromAuthToken = 123;
-        (req.body as CreatePromoRequest).userSubjectFromAuthToken =
+        (req.body as CreatePromoRequest).adminSubjectFromAuthToken =
           "6b640c73-4963-47de-a096-4a05ff8dc5f5";
         next();
       }
@@ -105,7 +105,7 @@ describe("POST /promo", () => {
     (verifyAdminAuthentication as jest.Mock).mockImplementation(
       (req: Request, __, next: NextFunction) => {
         (req.body as CreatePromoRequest).emailFromAuthToken = "not_an_email";
-        (req.body as CreatePromoRequest).userSubjectFromAuthToken =
+        (req.body as CreatePromoRequest).adminSubjectFromAuthToken =
           "6b640c73-4963-47de-a096-4a05ff8dc5f5";
         next();
       }
@@ -121,7 +121,7 @@ describe("POST /promo", () => {
       .expect(400);
   });
 
-  test("should respond with 400 status code if missing userSubjectFromAuthToken", async () => {
+  test("should respond with 400 status code if missing adminSubjectFromAuthToken", async () => {
     (verifyAdminAuthentication as jest.Mock).mockImplementation(
       (req: Request, __, next: NextFunction) => {
         (req.body as CreatePromoRequest).emailFromAuthToken =
@@ -140,14 +140,14 @@ describe("POST /promo", () => {
       .expect(400);
   });
 
-  test("should respond with 400 status code if userSubjectFromAuthToken is not a string", async () => {
+  test("should respond with 400 status code if adminSubjectFromAuthToken is not a string", async () => {
     (verifyAdminAuthentication as jest.Mock).mockImplementation(
       (req: Request, __, next: NextFunction) => {
         (req.body as CreatePromoRequest).emailFromAuthToken =
           "test@permanent.org";
         (
-          req.body as { userSubjectFromAuthToken: number }
-        ).userSubjectFromAuthToken = 123;
+          req.body as { adminSubjectFromAuthToken: number }
+        ).adminSubjectFromAuthToken = 123;
         next();
       }
     );
@@ -162,12 +162,12 @@ describe("POST /promo", () => {
       .expect(400);
   });
 
-  test("should respond with 400 status code if userSubjectFromAuthToken is not a uuid", async () => {
+  test("should respond with 400 status code if adminSubjectFromAuthToken is not a uuid", async () => {
     (verifyAdminAuthentication as jest.Mock).mockImplementation(
       (req: Request, __, next: NextFunction) => {
         (req.body as CreatePromoRequest).emailFromAuthToken =
           "test@permanent.org";
-        (req.body as CreatePromoRequest).userSubjectFromAuthToken =
+        (req.body as CreatePromoRequest).adminSubjectFromAuthToken =
           "not_a_uuid";
         next();
       }

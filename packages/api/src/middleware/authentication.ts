@@ -127,7 +127,11 @@ const verifyUserAuthentication = async (
 };
 
 const verifyAdminAuthentication = async (
-  req: Request<unknown, unknown, { emailFromAuthToken?: string }>,
+  req: Request<
+    unknown,
+    unknown,
+    { emailFromAuthToken?: string; adminSubjectFromAuthToken?: string }
+  >,
   _: Response,
   next: NextFunction
 ): Promise<void> => {
@@ -136,12 +140,12 @@ const verifyAdminAuthentication = async (
     if (authenticationToken === "") {
       throw new createError.Unauthorized("Invalid Authorization header format");
     }
-    const email = await getValueFromAuthToken(
+    const { email, subject } = await getValuesFromAuthToken(
       authenticationToken,
-      emailKey,
       process.env["FUSIONAUTH_ADMIN_APPLICATION_ID"] ?? ""
     );
     req.body.emailFromAuthToken = email;
+    req.body.adminSubjectFromAuthToken = subject;
     next();
   } catch (err) {
     next(err);
