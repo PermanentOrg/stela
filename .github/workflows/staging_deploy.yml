@@ -107,16 +107,64 @@ jobs:
       # -target option restricts terraform to just updating the staging deployment
       - name: Terraform Plan for API
         id: plan_api
-        run: terraform plan -no-color -input=false -var="stela_dev_image=$API_IMAGE_TAG" -var="stela_staging_image=$API_IMAGE_TAG" -var="archivematica_cleanup_dev_image=$AM_CLEANUP_IMAGE_TAG" -var="archivematica_cleanup_staging_image=$AM_CLEANUP_IMAGE_TAG" -var="record_thumbnail_dev_lambda_image=$RECORD_THUMBNAIL_LAMBDA_IMAGE_TAG" -var="record_thumbnail_staging_lambda_image=$RECORD_THUMBNAIL_LAMBDA_IMAGE_TAG" -target=kubernetes_deployment.stela_staging
+        run: |
+          terraform plan -no-color -input=false \
+          -var="stela_dev_image=$API_IMAGE_TAG" \
+          -var="stela_staging_image=$API_IMAGE_TAG" \
+          -var="archivematica_cleanup_dev_image=$AM_CLEANUP_IMAGE_TAG" \
+          -var="archivematica_cleanup_staging_image=$AM_CLEANUP_IMAGE_TAG" \
+          -var="record_thumbnail_dev_lambda_image=$RECORD_THUMBNAIL_LAMBDA_IMAGE_TAG" \
+          -var="record_thumbnail_staging_lambda_image=$RECORD_THUMBNAIL_LAMBDA_IMAGE_TAG" \
+          -target=kubernetes_deployment.stela_staging
       - name: Terraform Apply for API
-        run: terraform apply -auto-approve -input=false -var="stela_dev_image=$API_IMAGE_TAG" -var="stela_staging_image=$API_IMAGE_TAG" -var="archivematica_cleanup_dev_image=$AM_CLEANUP_IMAGE_TAG" -var="archivematica_cleanup_staging_image=$AM_CLEANUP_IMAGE_TAG" -var="record_thumbnail_dev_lambda_image=$RECORD_THUMBNAIL_LAMBDA_IMAGE_TAG" -var="record_thumbnail_staging_lambda_image=$RECORD_THUMBNAIL_LAMBDA_IMAGE_TAG" -target=kubernetes_deployment.stela_staging
+        run: |
+          terraform apply -auto-approve -input=false \
+          -var="stela_dev_image=$API_IMAGE_TAG" \
+          -var="stela_staging_image=$API_IMAGE_TAG" \
+          -var="archivematica_cleanup_dev_image=$AM_CLEANUP_IMAGE_TAG" \
+          -var="archivematica_cleanup_staging_image=$AM_CLEANUP_IMAGE_TAG" \
+          -var="record_thumbnail_dev_lambda_image=$RECORD_THUMBNAIL_LAMBDA_IMAGE_TAG" \
+          -var="record_thumbnail_staging_lambda_image=$RECORD_THUMBNAIL_LAMBDA_IMAGE_TAG" \
+          -target=kubernetes_deployment.stela_staging
       - name: Terraform Plan for Archivematica cleanup
         id: plan_am_cleanup
-        run: terraform plan -no-color -input=false -var="stela_dev_image=$API_IMAGE_TAG" -var="stela_staging_image=$API_IMAGE_TAG" -var="archivematica_cleanup_dev_image=$AM_CLEANUP_IMAGE_TAG" -var="archivematica_cleanup_staging_image=$AM_CLEANUP_IMAGE_TAG" -var="record_thumbnail_dev_lambda_image=$RECORD_THUMBNAIL_LAMBDA_IMAGE_TAG" -var="record_thumbnail_staging_lambda_image=$RECORD_THUMBNAIL_LAMBDA_IMAGE_TAG" -target=kubernetes_cron_job_v1.archivematica_cleanup_staging
+        run: |
+          terraform plan -no-color -input=false \
+          -var="stela_dev_image=$API_IMAGE_TAG" \
+          -var="stela_staging_image=$API_IMAGE_TAG" \
+          -var="archivematica_cleanup_dev_image=$AM_CLEANUP_IMAGE_TAG" \
+          -var="archivematica_cleanup_staging_image=$AM_CLEANUP_IMAGE_TAG" \
+          -var="record_thumbnail_dev_lambda_image=$RECORD_THUMBNAIL_LAMBDA_IMAGE_TAG" \
+          -var="record_thumbnail_staging_lambda_image=$RECORD_THUMBNAIL_LAMBDA_IMAGE_TAG" \
+          -target=kubernetes_cron_job_v1.archivematica_cleanup_staging
       - name: Terraform Apply for Archivematica cleanup
-        run: terraform apply -auto-approve -input=false -var="stela_dev_image=$API_IMAGE_TAG" -var="stela_staging_image=$API_IMAGE_TAG" -var="archivematica_cleanup_dev_image=$AM_CLEANUP_IMAGE_TAG" -var="archivematica_cleanup_staging_image=$AM_CLEANUP_IMAGE_TAG" -var="record_thumbnail_dev_lambda_image=$RECORD_THUMBNAIL_LAMBDA_IMAGE_TAG" -var="record_thumbnail_staging_lambda_image=$RECORD_THUMBNAIL_LAMBDA_IMAGE_TAG" -target=kubernetes_cron_job_v1.archivematica_cleanup_staging
+        run: |
+          terraform apply -auto-approve -input=false \
+          -var="stela_dev_image=$API_IMAGE_TAG" \
+          -var="stela_staging_image=$API_IMAGE_TAG" \
+          -var="archivematica_cleanup_dev_image=$AM_CLEANUP_IMAGE_TAG" \
+          -var="archivematica_cleanup_staging_image=$AM_CLEANUP_IMAGE_TAG" \
+          -var="record_thumbnail_dev_lambda_image=$RECORD_THUMBNAIL_LAMBDA_IMAGE_TAG" \
+          -var="record_thumbnail_staging_lambda_image=$RECORD_THUMBNAIL_LAMBDA_IMAGE_TAG" \
+          -target=kubernetes_cron_job_v1.archivematica_cleanup_staging
       - name: Terraform Plan for Record Thumbnail Lambda
         id: plan_record_thumbnail_lambda
-        run: terraform plan -no-color -input=false -var="stela_dev_image=$API_IMAGE_TAG" -var="stela_staging_image=$API_IMAGE_TAG" -var="archivematica_cleanup_dev_image=$AM_CLEANUP_IMAGE_TAG" -var="archivematica_cleanup_staging_image=$AM_CLEANUP_IMAGE_TAG" -var="record_thumbnail_dev_lambda_image=$RECORD_THUMBNAIL_LAMBDA_IMAGE_TAG" -var="record_thumbnail_staging_lambda_image=$RECORD_THUMBNAIL_LAMBDA_IMAGE_TAG" -target=aws_lambda_function.record_thumbnail_lambda_staging
+        run: |
+          terraform plan -no-color -input=false \
+          -var="stela_dev_image=$API_IMAGE_TAG" \
+          -var="stela_staging_image=$API_IMAGE_TAG" \
+          -var="archivematica_cleanup_dev_image=$AM_CLEANUP_IMAGE_TAG" \
+          -var="archivematica_cleanup_staging_image=$AM_CLEANUP_IMAGE_TAG" \
+          -var="record_thumbnail_dev_lambda_image=$RECORD_THUMBNAIL_LAMBDA_IMAGE_TAG" \
+          -var="record_thumbnail_staging_lambda_image=$RECORD_THUMBNAIL_LAMBDA_IMAGE_TAG" \
+          -target=aws_lambda_function.record_thumbnail_lambda_staging
       - name: Terraform Apply for Record Thumbnail Lambda
-        run: terraform apply -auto-approve -input=false -var="stela_dev_image=$API_IMAGE_TAG" -var="stela_staging_image=$API_IMAGE_TAG" -var="archivematica_cleanup_dev_image=$AM_CLEANUP_IMAGE_TAG" -var="archivematica_cleanup_staging_image=$AM_CLEANUP_IMAGE_TAG" -var="record_thumbnail_dev_lambda_image=$RECORD_THUMBNAIL_LAMBDA_IMAGE_TAG" -var="record_thumbnail_staging_lambda_image=$RECORD_THUMBNAIL_LAMBDA_IMAGE_TAG" -target=aws_lambda_function.record_thumbnail_lambda_staging
+        run: |
+          terraform apply -auto-approve -input=false \
+          -var="stela_dev_image=$API_IMAGE_TAG" \
+          -var="stela_staging_image=$API_IMAGE_TAG" \
+          -var="archivematica_cleanup_dev_image=$AM_CLEANUP_IMAGE_TAG" \
+          -var="archivematica_cleanup_staging_image=$AM_CLEANUP_IMAGE_TAG" \
+          -var="record_thumbnail_dev_lambda_image=$RECORD_THUMBNAIL_LAMBDA_IMAGE_TAG" \
+          -var="record_thumbnail_staging_lambda_image=$RECORD_THUMBNAIL_LAMBDA_IMAGE_TAG" \
+          -target=aws_lambda_function.record_thumbnail_lambda_staging

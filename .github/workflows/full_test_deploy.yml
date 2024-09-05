@@ -105,6 +105,20 @@ jobs:
         run: terraform validate -no-color
       - name: Terraform Plan
         id: plan
-        run: terraform plan -no-color -input=false -var="stela_dev_image=$API_IMAGE_TAG" -var="stela_staging_image=$API_IMAGE_TAG" -var="archivematica_cleanup_dev_image=$AM_CLEANUP_IMAGE_TAG" -var="archivematica_cleanup_staging_image=$AM_CLEANUP_IMAGE_TAG" -var="record_thumbnail_dev_lambda_image=$RECORD_THUMBNAIL_LAMBDA_IMAGE_TAG" -var="record_thumbnail_staging_lambda_image=$RECORD_THUMBNAIL_LAMBDA_IMAGE_TAG"
+        run: |
+          terraform plan -no-color -input=false \
+          -var="stela_dev_image=$API_IMAGE_TAG" \
+          -var="stela_staging_image=$API_IMAGE_TAG" \
+          -var="archivematica_cleanup_dev_image=$AM_CLEANUP_IMAGE_TAG" \
+          -var="archivematica_cleanup_staging_image=$AM_CLEANUP_IMAGE_TAG" \
+          -var="record_thumbnail_dev_lambda_image=$RECORD_THUMBNAIL_LAMBDA_IMAGE_TAG" \
+          -var="record_thumbnail_staging_lambda_image=$RECORD_THUMBNAIL_LAMBDA_IMAGE_TAG"
       - name: Terraform Apply
-        run: terraform apply -auto-approve -input=false -var="stela_dev_image=$API_IMAGE_TAG" -var="stela_staging_image=$API_IMAGE_TAG" -var="archivematica_cleanup_dev_image=$AM_CLEANUP_IMAGE_TAG" -var="archivematica_cleanup_staging_image=$AM_CLEANUP_IMAGE_TAG" -var="record_thumbnail_dev_lambda_image=$RECORD_THUMBNAIL_LAMBDA_IMAGE_TAG" -var="record_thumbnail_staging_lambda_image=$RECORD_THUMBNAIL_LAMBDA_IMAGE_TAG"
+        run: |
+          terraform apply -auto-approve -input=false \
+          -var="stela_dev_image=$API_IMAGE_TAG" \
+          -var="stela_staging_image=$API_IMAGE_TAG" \
+          -var="archivematica_cleanup_dev_image=$AM_CLEANUP_IMAGE_TAG" \
+          -var="archivematica_cleanup_staging_image=$AM_CLEANUP_IMAGE_TAG" \
+          -var="record_thumbnail_dev_lambda_image=$RECORD_THUMBNAIL_LAMBDA_IMAGE_TAG" \
+          -var="record_thumbnail_staging_lambda_image=$RECORD_THUMBNAIL_LAMBDA_IMAGE_TAG"
