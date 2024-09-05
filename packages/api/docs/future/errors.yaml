@@ -1,0 +1,30 @@
+errorResponse:
+  description: An object representing an error response
+  type: object
+  properties:
+    errors:
+      type: array
+      items:
+        type: object
+        required: [name, message]
+        properties:
+          name:
+            type: string
+          message:
+            type: string
+          source:
+            description: < 
+              The name of the input field that caused the error. 
+            type: string
+'400':
+  description: Invalid Request
+  content:
+    application/json:
+      schema: 
+        $ref: "#/errorResponse"
+'500':
+  description: Internal Server Error
+  content:
+    application/json:
+      schema:
+        $ref: "./errors.yaml#/errorResponse"

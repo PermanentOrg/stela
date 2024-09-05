@@ -1,0 +1,170 @@
+login:
+  post:
+    summary: Log in to the Permanent API. May require two-factor authentication.
+    security: []
+    operationId: login
+    tags:
+      - authentication
+    requestBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [email, password, applicationId]
+            properties:
+              email:
+                type: string
+              password:
+                type: string
+              applicationId:
+                type: string
+    responses:
+      '200':
+        description: > 
+          A successful login - the email and password were correct. If two-factor authentication is
+          required, the response will include `twoFactorId` and `twoFactorMethods`. Otherwise, it will include
+          `authenticationToken`, `refreshToken`, and `account`. The `result` field can be used to determine
+          whether the login is complete or if two-factor authentication is required.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                data:
+                  type: object
+                  required: [result]
+                  properties:
+                    result:
+                      type: string
+                      enum:
+                        - success
+                        - mfa-required
+                    authenticationToken:
+                      type: string
+                    refreshToken:
+                      type: string
+                    account:
+                      $ref: "../models/account.yaml#/account" 
+                    twoFactorId:
+                      type: string
+                    twoFactorMethods:
+                      type: array
+                      items:
+                        $ref: "../models/mfa.yaml#/mfaMethod"
+      '400':
+        $ref: "../errors.yaml#/400"
+      '500':
+        $ref: "../errors.yaml#/500"
+start-mfa:
+  post:
+    summary: Start two-factor authentication
+    description: >
+      Start two-factor authentication as part of the login process, or in order to add or delete an MFA method.
+      Requires authentication when adding or deleting an MFA method, but not during login (since at that point the
+      user is not yet authenticated).
+    security:
+      - bearerHttpAuthentication: []
+    operationId: startMfa
+    tags:
+      - authentication
+      - mfa-management
+    requestBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              twoFactorId:
+                description: Required when starting two-factor authentication as part of the login process.
+                type: string
+              methodId:
+                description: >
+                  Required when starting two-factor authentication as part of the login process, or in
+                  order to delete an MFA method.
+                type: string
+              destination:
+                description: > 
+                  The "address" to which the two-factor code will be sent. This could be an email address
+                  or a phone number. Required when sending a two-factor code to a new device in order to add an
+                  MFA method
+                type: string
+              method:
+                description: Required when sending a two-factor code to a new device in order to add an MFA method
+                type: string
+                enum:
+                  - sms
+                  - email
+    responses:
+      '201':
+        description: > 
+          A two-factor code has been sent to the user via the specified method.  
+      '400':
+        $ref: "../errors.yaml#/400"
+      '500':
+        $ref: "../errors.yaml#/500"
+complete-mfa:
+  post:
+    summary: Complete two-factor authentication
+    security: []
+    operationId: completeMfa
+    tags:
+      - authentication
+    requestBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [twoFactorId, code]
+            properties:
+              twoFactorId:
+                type: string
+              code:
+                type: string
+    responses:
+      '200':
+        description: > 
+          The two-factor authentication was successful.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                data:
+                  type: object
+                  properties:
+                    authenticationToken:
+                      type: string
+                    refreshToken:
+                      description: Not yet used, but included for future use
+                      type: string
+                    account:
+                      $ref: "../models/account.yaml#/account"
+      '400':
+        $ref: "../errors.yaml#/400"
+      '500':
+        $ref: "../errors.yaml#/500"
+logout:
+  post:
+    summary: Log out of the Permanent API
+    security:
+      - bearerHttpAuthentication: []
+    operationId: logout
+    tags:
+      - authentication
+    requestBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [refreshToken]
+            properties:
+              refreshToken:
+                type: string
+    responses:
+      '200':
+        description: > 
+          The user has been logged out.
+      '400':
+        $ref: "../errors.yaml#/400"
+      '500':
+        $ref: "../errors.yaml#/500"

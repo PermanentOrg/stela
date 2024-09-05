@@ -1,0 +1,42 @@
+account:
+  post:
+    summary: Create a new account
+    operationId: createAccount
+    security: []
+    tags:
+      - account
+    requestBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [email, password, name]
+            properties:
+              email:
+                type: string
+              password:
+                type: string
+              name:
+                type: string
+    responses:
+      '201':
+        description: > 
+          The account has been created.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                data:
+                  type: object
+                  properties:
+                    authenticationToken:
+                      type: string
+                    refreshToken:
+                      type: string
+                    account:
+                      $ref: "../models/account.yaml#/account"
+      '400':
+        $ref: "../errors.yaml#/400"
+      '500':
+        $ref: "../errors.yaml#/500"
