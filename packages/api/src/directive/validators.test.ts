@@ -364,12 +364,96 @@ describe("validateTriggerAdminDirectivesParams", () => {
     let error = null;
     try {
       validateTriggerAdminDirectivesParams({
+        emailFromAuthToken: "test@permanent.org",
+        adminSubjectFromAuthToken: "5c3473b6-cf2e-4c55-a80e-8db51d1bc5fd",
         accountId: "1",
       });
     } catch (err) {
       error = err;
     } finally {
       expect(error).toBeNull();
+    }
+  });
+  test("should raise an error if emailFromAuthToken is missing", () => {
+    let error = null;
+    try {
+      validateTriggerAdminDirectivesParams({
+        adminSubjectFromAuthToken: "5c3473b6-cf2e-4c55-a80e-8db51d1bc5fd",
+        accountId: "1",
+      });
+    } catch (err) {
+      error = err;
+    } finally {
+      expect(error).not.toBeNull();
+    }
+  });
+  test("should raise an error if emailFromAuthToken is wrong type", () => {
+    let error = null;
+    try {
+      validateTriggerAdminDirectivesParams({
+        emailFromAuthToken: 1234,
+        adminSubjectFromAuthToken: "5c3473b6-cf2e-4c55-a80e-8db51d1bc5fd",
+        accountId: "1",
+      });
+    } catch (err) {
+      error = err;
+    } finally {
+      expect(error).not.toBeNull();
+    }
+  });
+  test("should raise an error if emailFromAuthToken is wrong format", () => {
+    let error = null;
+    try {
+      validateTriggerAdminDirectivesParams({
+        emailFromAuthToken: "not an email",
+        adminSubjectFromAuthToken: "5c3473b6-cf2e-4c55-a80e-8db51d1bc5fd",
+        accountId: "1",
+      });
+    } catch (err) {
+      error = err;
+    } finally {
+      expect(error).not.toBeNull();
+    }
+  });
+  test("should raise an error if adminSubjectFromAuthToken is missing", () => {
+    let error = null;
+    try {
+      validateTriggerAdminDirectivesParams({
+        emailFromAuthToken: "test@permanent.org",
+        accountId: "1",
+      });
+    } catch (err) {
+      error = err;
+    } finally {
+      expect(error).not.toBeNull();
+    }
+  });
+  test("should raise an error if adminSubjectFromAuthToken is the wrong type", () => {
+    let error = null;
+    try {
+      validateTriggerAdminDirectivesParams({
+        emailFromAuthToken: "test@permanent.org",
+        adminSubjectFromAuthToken: 12345,
+        accountId: "1",
+      });
+    } catch (err) {
+      error = err;
+    } finally {
+      expect(error).not.toBeNull();
+    }
+  });
+  test("should raise an error if adminSubjectFromAuthToken is the wrong format", () => {
+    let error = null;
+    try {
+      validateTriggerAdminDirectivesParams({
+        emailFromAuthToken: "test@permanent.org",
+        adminSubjectFromAuthToken: "not a uuid",
+        accountId: "1",
+      });
+    } catch (err) {
+      error = err;
+    } finally {
+      expect(error).not.toBeNull();
     }
   });
   test("should raise an error if accountId is missing", () => {

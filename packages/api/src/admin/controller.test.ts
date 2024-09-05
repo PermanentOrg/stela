@@ -26,13 +26,14 @@ describe("recalculateFolderThumbnails", () => {
   beforeEach(async () => {
     (verifyAdminAuthentication as jest.Mock).mockImplementation(
       (req: Request, __, next: NextFunction) => {
-        (
-          req.body as {
-            beginTimestamp: Date;
-            endTimestamp: Date;
-            emailFromAuthToken: string;
-          }
-        ).emailFromAuthToken = "test@permanent.org";
+        const body = req.body as {
+          beginTimestamp: Date;
+          endTimestamp: Date;
+          emailFromAuthToken: string;
+          adminSubjectFromAuthToken: string;
+        };
+        body.emailFromAuthToken = "test@permanent.org";
+        body.adminSubjectFromAuthToken = "5c3473b6-cf2e-4c55-a80e-8db51d1bc5fd";
         next();
       }
     );
@@ -133,13 +134,12 @@ describe("set_null_subjects", () => {
   beforeEach(async () => {
     (verifyAdminAuthentication as jest.Mock).mockImplementation(
       (req: Request, __, next: NextFunction) => {
-        (
-          req.body as {
-            beginTimestamp: Date;
-            endTimestamp: Date;
-            emailFromAuthToken: string;
-          }
-        ).emailFromAuthToken = "test@permanent.org";
+        const body = req.body as {
+          emailFromAuthToken: string;
+          adminSubjectFromAuthToken: string;
+        };
+        body.emailFromAuthToken = "test@permanent.org";
+        body.adminSubjectFromAuthToken = "5c3473b6-cf2e-4c55-a80e-8db51d1bc5fd";
         next();
       }
     );
@@ -399,13 +399,14 @@ describe("/record/:recordId/recalculate_thumbnail", () => {
   beforeEach(async () => {
     (verifyAdminAuthentication as jest.Mock).mockImplementation(
       (req: Request, __, next: NextFunction) => {
-        (
-          req.body as {
-            beginTimestamp: Date;
-            endTimestamp: Date;
-            emailFromAuthToken: string;
-          }
-        ).emailFromAuthToken = "test@permanent.org";
+        const body = req.body as {
+          beginTimestamp: Date;
+          endTimestamp: Date;
+          emailFromAuthToken: string;
+          adminSubjectFromAuthToken: string;
+        };
+        body.emailFromAuthToken = "test@permanent.org";
+        body.adminSubjectFromAuthToken = "5c3473b6-cf2e-4c55-a80e-8db51d1bc5fd";
         next();
       }
     );
