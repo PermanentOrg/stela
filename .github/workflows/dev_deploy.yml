@@ -9,16 +9,19 @@ jobs:
     uses: ./.github/workflows/test.yml
     secrets: inherit
 
+  generate_image_tags:
+    uses: ./.github/workflows/generate_image_tags.yml
+    secrets: inherit
+
   build_api:
     needs:
       - run_tests
+      - generate_image_tags
     runs-on: ubuntu-20.04
+    env:
+      API_IMAGE_TAG: ${{ needs.generate_image_tags.outputs.API_IMAGE_TAG }}
     steps:
       - uses: actions/checkout@v3
-      - name: Generate Image Tag
-        run: echo "API_IMAGE_TAG=364159549467.dkr.ecr.$AWS_REGION.amazonaws.com/stela:api-$([[ ${GITHUB_REF##*/} = main ]] && echo main || echo feature)-$(git rev-parse --short $GITHUB_SHA)" >> $GITHUB_ENV
-        env:
-          AWS_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
       - name: Build Image
         run: docker build -t $API_IMAGE_TAG --build-arg="AWS_RDS_CERT_BUNDLE=$AWS_RDS_CERT_BUNDLE" -f Dockerfile.api .
         env:
@@ -34,13 +37,12 @@ jobs:
   build_am_cleanup:
     needs:
       - run_tests
+      - generate_image_tags
     runs-on: ubuntu-20.04
+    env:
+      AM_CLEANUP_IMAGE_TAG: ${{ needs.generate_image_tags.outputs.AM_CLEANUP_IMAGE_TAG }}
     steps:
       - uses: actions/checkout@v3
-      - name: Generate Image Tag
-        run: echo "AM_CLEANUP_IMAGE_TAG=364159549467.dkr.ecr.$AWS_REGION.amazonaws.com/stela:am_cleanup-$([[ ${GITHUB_REF##*/} = main ]] && echo main || echo feature)-$(git rev-parse --short $GITHUB_SHA)" >> $GITHUB_ENV
-        env:
-          AWS_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
       - name: Build Image
         run: docker build -t $AM_CLEANUP_IMAGE_TAG -f Dockerfile.am_cleanup .
       - name: AWS Login
@@ -54,13 +56,12 @@ jobs:
   build_record_thumbnail_lambda:
     needs:
       - run_tests
+      - generate_image_tags
     runs-on: ubuntu-20.04
+    env:
+      RECORD_THUMBNAIL_LAMBDA_IMAGE_TAG: ${{ needs.generate_image_tags.outputs.RECORD_THUMBNAIL_LAMBDA_IMAGE_TAG }}
     steps:
       - uses: actions/checkout@v3
-      - name: Generate Image Tag
-        run: echo "RECORD_THUMBNAIL_LAMBDA_IMAGE_TAG=364159549467.dkr.ecr.$AWS_REGION.amazonaws.com/stela:record_thumbnail-$([[ ${GITHUB_REF##*/} = main ]] && echo main || echo feature)-$(git rev-parse --short $GITHUB_SHA)" >> $GITHUB_ENV
-        env:
-          AWS_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
       - name: Build Image
         run: docker build -t $RECORD_THUMBNAIL_LAMBDA_IMAGE_TAG --build-arg="AWS_RDS_CERT_BUNDLE=$AWS_RDS_CERT_BUNDLE" -f Dockerfile.record_thumbnail_attacher .
         env:
@@ -78,7 +79,12 @@ jobs:
       - build_api
       - build_am_cleanup
       - build_record_thumbnail_lambda
+      - generate_image_tags
     runs-on: ubuntu-20.04
+    env:
+      API_IMAGE_TAG: ${{ needs.generate_image_tags.outputs.API_IMAGE_TAG }}
+      AM_CLEANUP_IMAGE_TAG: ${{ needs.generate_image_tags.outputs.AM_CLEANUP_IMAGE_TAG }}
+      RECORD_THUMBNAIL_LAMBDA_IMAGE_TAG: ${{ needs.generate_image_tags.outputs.RECORD_THUMBNAIL_LAMBDA_IMAGE_TAG }}
     defaults:
       run:
         working-directory: ./terraform/test_cluster
@@ -88,18 +94,6 @@ jobs:
         uses: hashicorp/setup-terraform@v1
         with:
           cli_config_credentials_token: ${{ secrets.TERRAFORM_API_TOKEN }}
-      - name: Generate API Image Tag
-        run: echo "API_IMAGE_TAG=364159549467.dkr.ecr.$AWS_REGION.amazonaws.com/stela:api-$([[ ${GITHUB_REF##*/} = main ]] && echo main || echo feature)-$(git rev-parse --short $GITHUB_SHA)" >> $GITHUB_ENV
-        env:
-          AWS_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
-      - name: Generate Archivematica Cleanup Image Tag
-        run: echo "AM_CLEANUP_IMAGE_TAG=364159549467.dkr.ecr.$AWS_REGION.amazonaws.com/stela:am_cleanup-$([[ ${GITHUB_REF##*/} = main ]] && echo main || echo feature)-$(git rev-parse --short $GITHUB_SHA)" >> $GITHUB_ENV
-        env:
-          AWS_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
-      - name: Generate Record Thumbnail Image Tag
-        run: echo "RECORD_THUMBNAIL_LAMBDA_IMAGE_TAG=364159549467.dkr.ecr.$AWS_REGION.amazonaws.com/stela:record_thumbnail-$([[ ${GITHUB_REF##*/} = main ]] && echo main || echo feature)-$(git rev-parse --short $GITHUB_SHA)" >> $GITHUB_ENV
-        env:
-          AWS_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
       - name: Terraform Init
         id: init
         run: terraform init

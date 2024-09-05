@@ -1,0 +1,34 @@
+name: Generate Image Tags
+on:
+  workflow_call:
+    outputs:
+      API_IMAGE_TAG:
+        value: ${{ jobs.generate_image_tags.outputs.API_IMAGE_TAG }}
+      AM_CLEANUP_IMAGE_TAG:
+        value: ${{ jobs.generate_image_tags.outputs.AM_CLEANUP_IMAGE_TAG }}
+      RECORD_THUMBNAIL_LAMBDA_IMAGE_TAG:
+        value: ${{ jobs.generate_image_tags.outputs.RECORD_THUMBNAIL_LAMBDA_IMAGE_TAG }}
+jobs:
+  generate_image_tags:
+    runs-on: ubuntu-20.04
+    outputs:
+      API_IMAGE_TAG: ${{ steps.generate_api_image_tag.outputs.API_IMAGE_TAG }}
+      AM_CLEANUP_IMAGE_TAG: ${{ steps.generate_am_cleanup_image_tag.outputs.AM_CLEANUP_IMAGE_TAG }}
+      RECORD_THUMBNAIL_LAMBDA_IMAGE_TAG: ${{ steps.generate_record_thumbnail_lambda_image_tag.outputs.RECORD_THUMBNAIL_LAMBDA_IMAGE_TAG }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: Generate API Image Tag
+        id: generate_api_image_tag
+        run: echo "API_IMAGE_TAG=364159549467.dkr.ecr.$AWS_REGION.amazonaws.com/stela:api-$([[ ${GITHUB_REF##*/} = main ]] && echo main || echo feature)-$(git rev-parse --short $GITHUB_SHA)" >> "$GITHUB_OUTPUT"
+        env:
+          AWS_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+      - name: Generate Archivematica Cleanup Image Tag
+        id: generate_am_cleanup_image_tag
+        run: echo "AM_CLEANUP_IMAGE_TAG=364159549467.dkr.ecr.$AWS_REGION.amazonaws.com/stela:am_cleanup-$([[ ${GITHUB_REF##*/} = main ]] && echo main || echo feature)-$(git rev-parse --short $GITHUB_SHA)" >> "$GITHUB_OUTPUT"
+        env:
+          AWS_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+      - name: Generate Record Thumbnail Image Tag
+        id: generate_record_thumbnail_lambda_image_tag
+        run: echo "RECORD_THUMBNAIL_LAMBDA_IMAGE_TAG=364159549467.dkr.ecr.$AWS_REGION.amazonaws.com/stela:record_thumbnail-$([[ ${GITHUB_REF##*/} = main ]] && echo main || echo feature)-$(git rev-parse --short $GITHUB_SHA)" >> "$GITHUB_OUTPUT"
+        env:
+          AWS_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
