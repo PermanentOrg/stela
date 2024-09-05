@@ -58,6 +58,16 @@ variable "archivematica_cleanup_staging_image" {
   type        = string
 }
 
+variable "record_thumbnail_dev_lambda_image" {
+  description = "Tag of record thumbnail lambda image to deploy to dev"
+  type        = string
+}
+
+variable "record_thumbnail_staging_lambda_image" {
+  description = "Tag of record thumbnail lambda image to deploy to staging"
+  type        = string
+}
+
 variable "dev_security_group_id" {
   description = "ID of the Development security group"
   type        = string
@@ -263,4 +273,29 @@ variable "staging_new_relic_app_name" {
   description = "New Relic app name for the dev environment"
   type        = string
   default     = "stela-api-staging"
+}
+
+variable "dev_cloudfront_url" {
+  description = "URL of the CloudFront distribution for the dev environment"
+  type        = string
+}
+
+variable "staging_cloudfront_url" {
+  description = "URL of the CloudFront distribution for the staging environment"
+  type        = string
+}
+
+variable "cloudfront_key_pair_id" {
+  description = "ID of the CloudFront key pair"
+  type        = string
+}
+
+variable "cloudfront_private_key" {
+  description = "Private key for signing CloudFront URLs"
+  type        = string
+}
+
+variable "aws_account_id" {
+  description = "AWS account ID"
+  type        = string
 }

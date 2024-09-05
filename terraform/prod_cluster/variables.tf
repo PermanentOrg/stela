@@ -37,6 +37,11 @@ variable "archivematica_cleanup_image" {
   type        = string
 }
 
+variable "record_thumbnail_lambda_image" {
+  description = "Tag of record thumbnail lambda image to deploy"
+  type        = string
+}
+
 variable "prod_security_group_id" {
   description = "ID of the Production security group"
   type        = string
@@ -155,4 +160,24 @@ variable "new_relic_app_name" {
   description = "New Relic app name for the dev environment"
   type        = string
   default     = "stela-api-prod"
+}
+
+variable "cloudfront_url" {
+  description = "URL of the Cloudfront distribution for the prod environment"
+  type        = string
+}
+
+variable "cloudfront_key_pair_id" {
+  description = "ID of the CloudFront key pair"
+  type        = string
+}
+
+variable "cloudfront_private_key" {
+  description = "Private key for signing CloudFront URLs"
+  type        = string
+}
+
+variable "aws_account_id" {
+  description = "AWS account ID"
+  type        = string
 }
