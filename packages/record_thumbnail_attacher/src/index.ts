@@ -3,12 +3,25 @@ import { getSignedUrl } from "aws-cloudfront-sign";
 import * as Sentry from "@sentry/aws-serverless";
 import { logger } from "@stela/logger";
 import { db } from "./database";
-import { validateNewDisseminationPackageJpgEvent } from "./validators";
+import {
+  validateNewDisseminationPackageJpgEvent,
+  validateSqsMessage,
+} from "./validators";
 
 const getKeyFromS3Message = (message: SQSRecord): string => {
   const { body } = message;
   const parsedBody: unknown = JSON.parse(body);
-  if (!validateNewDisseminationPackageJpgEvent(parsedBody)) {
+  if (!validateSqsMessage(parsedBody)) {
+    logger.error(
+      `Invalid message body: ${JSON.stringify(validateSqsMessage.errors)}`
+    );
+    throw new Error("Invalid message body");
+  }
+  const parsedMessage: unknown = JSON.parse(parsedBody.Message);
+  if (
+    !validateNewDisseminationPackageJpgEvent(parsedMessage) ||
+    !parsedMessage.Records[0]
+  ) {
     logger.error(
       `Invalid message body: ${JSON.stringify(
         validateNewDisseminationPackageJpgEvent.errors
@@ -17,7 +30,7 @@ const getKeyFromS3Message = (message: SQSRecord): string => {
     throw new Error("Invalid message body");
   }
 
-  const { key } = parsedBody.s3.object;
+  const { key } = parsedMessage.Records[0].s3.object;
   return key;
 };
 
