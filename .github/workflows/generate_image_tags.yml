@@ -17,18 +17,23 @@ jobs:
       RECORD_THUMBNAIL_LAMBDA_IMAGE_TAG: ${{ steps.generate_record_thumbnail_lambda_image_tag.outputs.RECORD_THUMBNAIL_LAMBDA_IMAGE_TAG }}
     steps:
       - uses: actions/checkout@v3
+      - name: Set ECR domain env var
+        id: set_ecr_domain
+        run: echo "ECR_DOMAIN=364159549467.dkr.ecr.$AWS_REGION.amazonaws.com" >> "$GITHUB_ENV"
+        env:
+          AWS_REGION: ${{ vars.AWS_DEFAULT_REGION }}
+      - name: Set branch type env var
+        id: set_branch_type
+        run: echo "BRANCH_TYPE=$([[ ${GITHUB_REF##*/} = main ]] && echo main || echo feature)" >> "$GITHUB_ENV"
+      - name: Set abbreviated commit hash env var
+        id: set_abbreviated_commit_hash
+        run: echo "ABBREVIATED_COMMIT_HASH=$(git rev-parse --short $GITHUB_SHA)" >> "$GITHUB_ENV"
       - name: Generate API Image Tag
         id: generate_api_image_tag
-        run: echo "API_IMAGE_TAG=364159549467.dkr.ecr.$AWS_REGION.amazonaws.com/stela:api-$([[ ${GITHUB_REF##*/} = main ]] && echo main || echo feature)-$(git rev-parse --short $GITHUB_SHA)" >> "$GITHUB_OUTPUT"
-        env:
-          AWS_REGION: ${{ vars.AWS_DEFAULT_REGION }}
+        run: echo "API_IMAGE_TAG=$ECR_DOMAIN/stela:api-$BRANCH_TYPE-$ABBREVIATED_COMMIT_HASH" >> "$GITHUB_OUTPUT"
       - name: Generate Archivematica Cleanup Image Tag
         id: generate_am_cleanup_image_tag
-        run: echo "AM_CLEANUP_IMAGE_TAG=364159549467.dkr.ecr.$AWS_REGION.amazonaws.com/stela:am_cleanup-$([[ ${GITHUB_REF##*/} = main ]] && echo main || echo feature)-$(git rev-parse --short $GITHUB_SHA)" >> "$GITHUB_OUTPUT"
-        env:
-          AWS_REGION: ${{ vars.AWS_DEFAULT_REGION }}
+        run: echo "AM_CLEANUP_IMAGE_TAG=$ECR_DOMAIN/stela:am_cleanup-$BRANCH_TYPE-$ABBREVIATED_COMMIT_HASH" >> "$GITHUB_OUTPUT"
       - name: Generate Record Thumbnail Image Tag
         id: generate_record_thumbnail_lambda_image_tag
-        run: echo "RECORD_THUMBNAIL_LAMBDA_IMAGE_TAG=364159549467.dkr.ecr.$AWS_REGION.amazonaws.com/stela:record_thumbnail-$([[ ${GITHUB_REF##*/} = main ]] && echo main || echo feature)-$(git rev-parse --short $GITHUB_SHA)" >> "$GITHUB_OUTPUT"
-        env:
-          AWS_REGION: ${{ vars.AWS_DEFAULT_REGION }}
+        run: echo "RECORD_THUMBNAIL_LAMBDA_IMAGE_TAG=$ECR_DOMAIN/stela:record_thumbnail-$BRANCH_TYPE-$ABBREVIATED_COMMIT_HASH" >> "$GITHUB_OUTPUT"
