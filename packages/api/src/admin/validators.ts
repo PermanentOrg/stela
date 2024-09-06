@@ -1,11 +1,12 @@
 import Joi from "joi";
+import { fieldsFromAdminAuthentication } from "../validators";
 
 export function validateRecalculateFolderThumbnailsRequest(
   data: unknown
 ): asserts data is { beginTimestamp: Date; endTimestamp: Date } {
   const validation = Joi.object()
     .keys({
-      emailFromAuthToken: Joi.string().email().required(),
+      ...fieldsFromAdminAuthentication,
       beginTimestamp: Joi.date().iso().required(),
       endTimestamp: Joi.date().iso().required(),
     })
@@ -20,7 +21,7 @@ export function validateAccountSetNullSubjectsRequest(
 ): asserts data is { accounts: { email: string; subject: string }[] } {
   const validation = Joi.object()
     .keys({
-      emailFromAuthToken: Joi.string().email().required(),
+      ...fieldsFromAdminAuthentication,
       accounts: Joi.array()
         .items(
           Joi.object({

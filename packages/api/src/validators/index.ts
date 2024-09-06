@@ -1,6 +1,5 @@
-import {
+export {
+  fieldsFromAdminAuthentication,
   fieldsFromUserAuthentication,
   validateBodyFromAuthentication,
 } from "./shared";
-
-export { fieldsFromUserAuthentication, validateBodyFromAuthentication };

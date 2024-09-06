@@ -5,6 +5,11 @@ export const fieldsFromUserAuthentication = {
   userSubjectFromAuthToken: Joi.string().uuid().required(),
 };
 
+export const fieldsFromAdminAuthentication = {
+  emailFromAuthToken: Joi.string().email().required(),
+  adminSubjectFromAuthToken: Joi.string().uuid().required(),
+};
+
 export function validateBodyFromAuthentication(data: unknown): asserts data is {
   emailFromAuthToken: string;
   userSubjectFromAuthToken: string;
