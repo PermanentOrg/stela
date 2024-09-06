@@ -21,14 +21,14 @@ jobs:
         id: generate_api_image_tag
         run: echo "API_IMAGE_TAG=364159549467.dkr.ecr.$AWS_REGION.amazonaws.com/stela:api-$([[ ${GITHUB_REF##*/} = main ]] && echo main || echo feature)-$(git rev-parse --short $GITHUB_SHA)" >> "$GITHUB_OUTPUT"
         env:
-          AWS_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+          AWS_REGION: ${{ vars.AWS_DEFAULT_REGION }}
       - name: Generate Archivematica Cleanup Image Tag
         id: generate_am_cleanup_image_tag
         run: echo "AM_CLEANUP_IMAGE_TAG=364159549467.dkr.ecr.$AWS_REGION.amazonaws.com/stela:am_cleanup-$([[ ${GITHUB_REF##*/} = main ]] && echo main || echo feature)-$(git rev-parse --short $GITHUB_SHA)" >> "$GITHUB_OUTPUT"
         env:
-          AWS_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+          AWS_REGION: ${{ vars.AWS_DEFAULT_REGION }}
       - name: Generate Record Thumbnail Image Tag
         id: generate_record_thumbnail_lambda_image_tag
         run: echo "RECORD_THUMBNAIL_LAMBDA_IMAGE_TAG=364159549467.dkr.ecr.$AWS_REGION.amazonaws.com/stela:record_thumbnail-$([[ ${GITHUB_REF##*/} = main ]] && echo main || echo feature)-$(git rev-parse --short $GITHUB_SHA)" >> "$GITHUB_OUTPUT"
         env:
-          AWS_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+          AWS_REGION: ${{ vars.AWS_DEFAULT_REGION }}
