@@ -1,4 +1,4 @@
-name: API server unit tests
+name: Unit tests
 on:
     push:
         branches-ignore:
@@ -38,4 +38,6 @@ jobs:
             - run: (cd stela; npm run test -w @stela/account_space_updater)
             - uses: codecov/codecov-action@v2
             - run: (cd stela; npm run test -w @stela/record_thumbnail_attacher)
+            - uses: codecov/codecov-action@v2
+            - run: (cd stela; npm run test -w @stela/archivematica_cleanup)
             - uses: codecov/codecov-action@v2
