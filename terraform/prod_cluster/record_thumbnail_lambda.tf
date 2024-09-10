@@ -8,7 +8,7 @@ resource "aws_sns_topic" "record_thumbnail_topic" {
         Principal = {
           Service = "s3.amazonaws.com"
         },
-        Action = "sns:Publish",
+        Action   = "sns:Publish",
         Resource = "*",
         Condition = {
           StringEquals = {
@@ -42,12 +42,12 @@ resource "aws_sqs_queue_policy" "record_thumbnail_queue_policy" {
     Version = "2012-10-17",
     Statement = [
       {
-        Effect    = "Allow",
+        Effect = "Allow",
         Principal = {
           Service = "sns.amazonaws.com"
         },
-        Action    = "sqs:SendMessage",
-        Resource  = aws_sqs_queue.record_thumbnail_queue.arn,
+        Action   = "sqs:SendMessage",
+        Resource = aws_sqs_queue.record_thumbnail_queue.arn,
         Condition = {
           ArnEquals = {
             "aws:SourceArn" = aws_sns_topic.record_thumbnail_topic.arn
@@ -121,10 +121,10 @@ resource "aws_lambda_function" "record_thumbnail_lambda" {
 
   environment {
     variables = {
-      ENV                    = var.prod_env
+      ENV                    = var.env
       SENTRY_DSN             = var.sentry_dsn
       DATABASE_URL           = var.prod_database_url
-      CLOUDFRONT_URL         = var.prod_cloudfront_url
+      CLOUDFRONT_URL         = var.cloudfront_url
       CLOUDFRONT_KEY_PAIR_ID = var.cloudfront_key_pair_id
       CLOUDFRONT_PRIVATE_KEY = var.cloudfront_private_key
     }
