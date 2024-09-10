@@ -1,0 +1,30 @@
+openapi: 3.0.0
+info:
+  title: Permanent Core API
+  version: 1.0.0
+  license:
+    name: AGPL-3.0
+    url: https://www.gnu.org/licenses/agpl-3.0.html
+servers:
+  - url: https://api.permanent.org/v2
+components:
+  securitySchemes:
+    bearerHttpAuthentication:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+paths:
+  /login:
+    $ref: "./paths/authentication.yaml#/login"
+  /start-mfa:
+    $ref: "./paths/authentication.yaml#/start-mfa"
+  /complete-mfa:
+    $ref: "./paths/authentication.yaml#/complete-mfa"
+  /logout:
+    $ref: "./paths/authentication.yaml#/logout"
+  /mfa-method:
+    $ref: "./paths/mfa_management.yaml#/mfa-method"
+  /mfa-method/{methodId}:
+    $ref: "./paths/mfa_management.yaml#/mfa-method-with-id"
+  /account:
+    $ref: "./paths/account.yaml#/account"

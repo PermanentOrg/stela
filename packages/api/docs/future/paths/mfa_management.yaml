@@ -1,0 +1,83 @@
+mfa-method:
+  post:
+    summary: Add a new MFA method
+    security:
+      - bearerHttpAuthentication: []
+    operationId: addMfaMethod
+    tags:
+      - mfa-management
+    requestBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [method, destination, validationCode]
+            properties:
+              method:
+                type: string
+                enum:
+                  - sms
+                  - email
+              destination:
+                $ref: "../models/mfa.yaml#/mfaDestination"
+              validationCode:
+                description: >
+                  The validation code that was sent to the user via the /start-mfa endpoint. Required to verify
+                  that the user has access to the specified destination.
+                type: string
+    responses:
+      '201':
+        description: > 
+          The new MFA method has been added.
+        content:
+          application/json:
+            schema:
+              $ref: "../models/mfa.yaml#/mfaMethod"
+      '400':
+        $ref: "../errors.yaml#/400"
+      '500':
+        $ref: "../errors.yaml#/500"
+mfa-method-with-id:
+  parameters:
+    - name: methodId
+      in: path
+      required: true
+      description: The ID of the MFA method to delete
+      schema:
+        type: string
+  delete:
+    summary: Delete an MFA method
+    security:
+      - bearerHttpAuthentication: []
+    operationId: deleteMfaMethod
+    tags:
+      - mfa-management
+    requestBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [validationCode]
+            properties:
+              validationCode:
+                description: >
+                  The validation code that was sent to the user via the /start-mfa endpoint. Required to verify
+                  that the user has access to the specified destination.
+                type: string
+    responses:
+      '200':
+        description: > 
+          The MFA method has been deleted. The response will include the remaining MFA methods.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                items:
+                  type: array
+                  items:
+                    $ref: "../models/mfa.yaml#/mfaMethod"
+      '400':
+        $ref: "../errors.yaml#/400"
+      '500':
+        $ref: "../errors.yaml#/500"

@@ -1,0 +1,17 @@
+mfaDestination:
+  description: > 
+    The "address" to which the two-factor code will be sent. This could be an email address
+    or a phone number.
+  type: string
+mfaMethod:
+  type: object
+  properties:
+    id:
+      type: string
+    type:
+      type: string
+      enum:
+        - sms
+        - email
+    destination:
+      $ref: "#/mfaDestination"

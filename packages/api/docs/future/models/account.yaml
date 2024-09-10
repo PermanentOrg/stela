@@ -1,0 +1,98 @@
+notificationTypesEnabled:
+  description: An object containing boolean toggles to represent whether each category of notifications is enabled
+  type: object
+  properties:
+    apps:
+      type: object
+      properties:
+        confirmations:
+          type: boolean
+    share:
+      type: object
+      properties:
+        requests:
+          type: boolean
+        activities:
+          type: boolean
+        confirmations:
+          type: boolean
+    account:
+      type: object
+      properties:
+        confirmations:
+          type: boolean
+        recommendations:
+          type: boolean
+    archive:
+      type: object
+      properties:
+        requests:
+          type: boolean
+        confirmations:
+          type: boolean
+    relationships:
+      type: object
+      properties:
+        requests:
+          type: boolean
+        confirmations:
+          type: boolean
+account:
+  description: An object representing a user account on permanent.org
+  type: object
+  required: [id, primaryEmail, fullName, address, settings]
+  properties:
+    id:
+      type: string
+    primaryEmail:
+      type: object
+      required: [address, verified]
+      properties:
+        address:
+          type: string
+        verified:
+          type: boolean
+    primaryPhone:
+      type: object
+      required: [number, verified]
+      properties:
+        number:
+          type: string
+        verified:
+          type: boolean
+    fullName:
+      type: string
+    defaultArchiveId:
+      type: string
+    address:
+      type: object
+      properties:
+        lineOne:
+          type: string
+        lineTwo:
+          type: string
+        city:
+          type: string
+        state:
+          type: string
+        zip:
+          type: string
+        country:
+          type: string
+    settings:
+      type: object
+      required: [hideChecklist, allowSftpDeletion, notificationsEnabled]
+      properties:
+        hideChecklist:
+          type: boolean
+        allowSftpDeletion:
+          type: boolean
+        notificationsEnabled:
+          type: object
+          properties:
+            sms: 
+              $ref: "#/notificationTypesEnabled"
+            email: 
+              $ref: "#/notificationTypesEnabled"
+            inApp:
+              $ref: "#/notificationTypesEnabled"
