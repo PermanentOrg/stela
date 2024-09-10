@@ -48,11 +48,17 @@ describe("handler", () => {
           messageId: "1",
           receiptHandle: "1",
           body: JSON.stringify({
-            s3: {
-              object: {
-                key: "_Liam/access_copies/e38e/8582/b417/430c/953d/5c7e/8040/1ae2/2_upload-cb45fa84-f0ea-4a9e-b1da-309e485a4f4a/object/710a1def-caf8-48f2-8eee-0848b4cfda10.jpg",
-              },
-            },
+            Message: JSON.stringify({
+              Records: [
+                {
+                  s3: {
+                    object: {
+                      key: "_Liam/access_copies/b38e/8582/b417/430c/953d/5c7e/8040/1ae2/2_upload-cb45fa84-f0ea-4a9e-b1da-309e485a4f4a/object/710a1def-caf8-48f2-8eee-0848b4cfda10.jpg",
+                    },
+                  },
+                },
+              ],
+            }),
           }),
           attributes: {
             ApproximateReceiveCount: "1",
@@ -122,7 +128,19 @@ describe("handler", () => {
         {
           messageId: "1",
           receiptHandle: "1",
-          body: JSON.stringify({ s3: { object: { key: "1" } } }),
+          body: JSON.stringify({
+            Message: JSON.stringify({
+              Records: [
+                {
+                  s3: {
+                    object: {
+                      key: "_Liam/access_copies/e38e/8582/b417/430c/953d/5c7e/8040/1ae2/2_upload-cb45fa84-f0ea-4a9e-b1da-309e485a4f4a/object/710a1def-caf8-48f2-8eee-0848b4cfda10.jpg",
+                    },
+                  },
+                },
+              ],
+            }),
+          }),
           attributes: {
             ApproximateReceiveCount: "1",
             SentTimestamp: "1",
@@ -169,11 +187,17 @@ describe("handler", () => {
           messageId: "1",
           receiptHandle: "1",
           body: JSON.stringify({
-            s3: {
-              object: {
-                key: "_Liam/access_copies/e38e/8582/b417/430c/953d/5c7e/8040/1ae2/2_load-cb45fa84-f0ea-4a9e-b1da-309e485a4f4a/thumbnails/710a1def-caf8-48f2-8eee-0848b4cfda10.jpg",
-              },
-            },
+            Message: JSON.stringify({
+              Records: [
+                {
+                  s3: {
+                    object: {
+                      key: "_Liam/access_copies/e38e/8582/b417/430c/953d/5c7e/8040/1ae2/thumbnails/2_load-cb45fa84-f0ea-4a9e-b1da-309e485a4f4a/object/710a1def-caf8-48f2-8eee-0848b4cfda10.jpg",
+                    },
+                  },
+                },
+              ],
+            }),
           }),
           attributes: {
             ApproximateReceiveCount: "1",
@@ -212,11 +236,17 @@ describe("handler", () => {
           messageId: "1",
           receiptHandle: "1",
           body: JSON.stringify({
-            s3: {
-              object: {
-                key: testKey,
-              },
-            },
+            Message: JSON.stringify({
+              Records: [
+                {
+                  s3: {
+                    object: {
+                      key: testKey,
+                    },
+                  },
+                },
+              ],
+            }),
           }),
           attributes: {
             ApproximateReceiveCount: "1",
@@ -303,11 +333,17 @@ describe("handler", () => {
           messageId: "1",
           receiptHandle: "1",
           body: JSON.stringify({
-            s3: {
-              object: {
-                key: testKey,
-              },
-            },
+            Message: JSON.stringify({
+              Records: [
+                {
+                  s3: {
+                    object: {
+                      key: testKey,
+                    },
+                  },
+                },
+              ],
+            }),
           }),
           attributes: {
             ApproximateReceiveCount: "1",
@@ -365,11 +401,17 @@ describe("handler", () => {
           messageId: "1",
           receiptHandle: "1",
           body: JSON.stringify({
-            s3: {
-              object: {
-                key: testKey,
-              },
-            },
+            Message: JSON.stringify({
+              Records: [
+                {
+                  s3: {
+                    object: {
+                      key: testKey,
+                    },
+                  },
+                },
+              ],
+            }),
           }),
           attributes: {
             ApproximateReceiveCount: "1",

@@ -14,7 +14,13 @@ RUN npm run build -ws
 
 
 FROM public.ecr.aws/lambda/nodejs:18 as final
+
+ARG AWS_RDS_CERT_BUNDLE
+
 WORKDIR ${LAMBDA_TASK_ROOT}
+
+RUN mkdir /etc/ca-certificates
+RUN echo -e $AWS_RDS_CERT_BUNDLE > /etc/ca-certificates/rds-us-west-2-ca-bundle.pem
 
 COPY --from=builder /usr/local/apps/stela/packages/record_thumbnail_attacher/dist ./packages/record_thumbnail_attacher/dist
 COPY --from=builder /usr/local/apps/stela/packages/record_thumbnail_attacher/package.json ./packages/record_thumbnail_attacher/package.json
