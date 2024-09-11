@@ -75,14 +75,14 @@ data "aws_iam_policy_document" "assume_role" {
   }
 }
 
-resource "aws_iam_role" "record_thumbnail_lambda_role" {
-  name               = "record-thumbnail-lambda-role"
+resource "aws_iam_role" "record_thumbnail_dev_lambda_role" {
+  name               = "record-thumbnail-dev-lambda-role"
   assume_role_policy = data.aws_iam_policy_document.assume_role.json
 }
 
-resource "aws_iam_role_policy" "record_thumbnail_lambda_policy" {
+resource "aws_iam_role_policy" "record_thumbnail_dev_lambda_policy" {
   name = "record-thumbnail-lambda-policy"
-  role = aws_iam_role.record_thumbnail_lambda_role.name
+  role = aws_iam_role.record_thumbnail_dev_lambda_role.name
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -107,11 +107,11 @@ resource "aws_iam_role_policy" "record_thumbnail_lambda_policy" {
   })
 }
 
-resource "aws_lambda_function" "record_thumbnail_lambda" {
+resource "aws_lambda_function" "record_thumbnail_dev_lambda" {
   package_type  = "Image"
   image_uri     = var.record_thumbnail_dev_lambda_image
   function_name = "record-thumbnail-dev-lambda"
-  role          = aws_iam_role.record_thumbnail_lambda_role.arn
+  role          = aws_iam_role.record_thumbnail_dev_lambda_role.arn
   timeout       = 30
 
   vpc_config {
@@ -133,7 +133,7 @@ resource "aws_lambda_function" "record_thumbnail_lambda" {
 
 resource "aws_lambda_event_source_mapping" "record_thumbnail_dev_event_source_mapping" {
   event_source_arn                   = aws_sqs_queue.record_thumbnail_dev_queue.arn
-  function_name                      = aws_lambda_function.record_thumbnail_lambda.arn
+  function_name                      = aws_lambda_function.record_thumbnail_dev_lambda.arn
   batch_size                         = 10
   maximum_batching_window_in_seconds = 0
 }
