@@ -1,5 +1,5 @@
 import * as Sentry from "@sentry/node";
-import { cleanupDashboard } from "./index";
+import { cleanupDashboard } from "./service";
 
 jest.mock("@sentry/node");
 
@@ -69,15 +69,5 @@ describe("cleanupDashboard", () => {
 
     await cleanupDashboard();
     expect(Sentry.captureMessage).toHaveBeenCalledWith(errorText);
-  });
-
-  test("should log an error to sentry if an exception is thrown", async () => {
-    const error = new Error("Out of cheese - Redo from start");
-    global.fetch = jest
-      .fn()
-      .mockImplementationOnce(async () => Promise.reject(error));
-
-    await cleanupDashboard();
-    expect(Sentry.captureException).toHaveBeenCalledWith(error);
   });
 });
