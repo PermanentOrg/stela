@@ -42,6 +42,11 @@ variable "record_thumbnail_lambda_image" {
   type        = string
 }
 
+variable "thumbnail_refresh_image" {
+  description = "Tag of thumbnail refresh image to deploy"
+  type        = string
+}
+
 variable "prod_security_group_id" {
   description = "ID of the Production security group"
   type        = string

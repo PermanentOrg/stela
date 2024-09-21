@@ -68,6 +68,16 @@ variable "record_thumbnail_staging_lambda_image" {
   type        = string
 }
 
+variable "thumbnail_refresh_dev_image" {
+  description = "Tag of thumbnail refresh image to deploy to dev"
+  type        = string
+}
+
+variable "thumbnail_refresh_staging_image" {
+  description = "Tag of thumbnail refresh image to deploy to staging"
+  type        = string
+}
+
 variable "dev_security_group_id" {
   description = "ID of the Development security group"
   type        = string
