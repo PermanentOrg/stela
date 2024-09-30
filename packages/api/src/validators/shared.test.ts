@@ -2,6 +2,7 @@ import {
   validateBodyFromAuthentication,
   validateBodyFromAdminAuthentication,
   fieldsFromUserOrAdminAuthentication,
+  validateIsAdminFromAuthentication,
 } from "./shared";
 
 describe("validateBodyFromAuthentication", () => {
@@ -261,5 +262,44 @@ describe("fieldsFromUserOrAdminAuthentication", () => {
       adminSubjectFromAuthToken: "51d9cca8-b260-4173-a194-8e10bcf6721e",
       userEmailFromAuthToken: "test@permanent.org",
     });
+  });
+});
+
+describe("validateIsAdminFromAuthentication", () => {
+  test("should find no errors in valid parameter set", () => {
+    let error = null;
+    try {
+      validateIsAdminFromAuthentication({
+        admin: true,
+      });
+    } catch (err) {
+      error = err;
+    } finally {
+      expect(error).toBeNull();
+    }
+  });
+  test("should raise an error if admin is missing", () => {
+    let error = null;
+    try {
+      validateIsAdminFromAuthentication({
+        userSubjectFromAuthToken: "b2a6787c-f255-465a-8eb0-1583004d4a4f",
+      });
+    } catch (err) {
+      error = err;
+    } finally {
+      expect(error).not.toBeNull();
+    }
+  });
+  test("should raise an error if admin is the wrong type", () => {
+    let error = null;
+    try {
+      validateIsAdminFromAuthentication({
+        admin: "a string",
+      });
+    } catch (err) {
+      error = err;
+    } finally {
+      expect(error).not.toBeNull();
+    }
   });
 });
