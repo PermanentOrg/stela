@@ -1,0 +1,26 @@
+featureFlag:
+  description: >
+    A flag controlling whether a feature is enabled. These can enable features globally, or they can be attached
+    to a cohort of accounts, enabling the feature for only those accounts.
+  type: object
+  required:
+    - id
+    - name
+    - globallyEnabled
+    - createdAt
+    - updatedAt
+  properties:
+    id:
+      type: string
+    name:
+      type: string
+    description:
+      type: string
+    globallyEnabled:
+      type: boolean
+    createdAt:
+      type: string
+      format: date-time
+    updatedAt:
+      type: string
+      format: date-time
