@@ -19,8 +19,8 @@ account:
               name:
                 type: string
     responses:
-      '201':
-        description: > 
+      "201":
+        description: >
           The account has been created.
         content:
           application/json:
@@ -36,7 +36,7 @@ account:
                       type: string
                     account:
                       $ref: "../models/account.yaml#/account"
-      '400':
-        $ref: "../errors.yaml#/400"
-      '500':
-        $ref: "../errors.yaml#/500"
+      "400":
+        $ref: "../../shared/errors.yaml#/400"
+      "500":
+        $ref: "../../shared/errors.yaml#/500"

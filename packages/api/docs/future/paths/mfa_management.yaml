@@ -26,17 +26,17 @@ mfa-method:
                   that the user has access to the specified destination.
                 type: string
     responses:
-      '201':
-        description: > 
+      "201":
+        description: >
           The new MFA method has been added.
         content:
           application/json:
             schema:
               $ref: "../models/mfa.yaml#/mfaMethod"
-      '400':
-        $ref: "../errors.yaml#/400"
-      '500':
-        $ref: "../errors.yaml#/500"
+      "400":
+        $ref: "../../shared/errors.yaml#/400"
+      "500":
+        $ref: "../../shared/errors.yaml#/500"
 mfa-method-with-id:
   parameters:
     - name: methodId
@@ -65,8 +65,8 @@ mfa-method-with-id:
                   that the user has access to the specified destination.
                 type: string
     responses:
-      '200':
-        description: > 
+      "200":
+        description: >
           The MFA method has been deleted. The response will include the remaining MFA methods.
         content:
           application/json:
@@ -77,7 +77,7 @@ mfa-method-with-id:
                   type: array
                   items:
                     $ref: "../models/mfa.yaml#/mfaMethod"
-      '400':
-        $ref: "../errors.yaml#/400"
-      '500':
-        $ref: "../errors.yaml#/500"
+      "400":
+        $ref: "../../shared/errors.yaml#/400"
+      "500":
+        $ref: "../../shared/errors.yaml#/500"
