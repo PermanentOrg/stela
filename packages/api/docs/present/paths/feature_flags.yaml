@@ -1,0 +1,116 @@
+feature-flags:
+  get:
+    summary: Retrieve feature flags. If admin authentication is provided, retrieves all feature flags. If not, retrieves the names of global feature flags.
+    security:
+      - {}
+      - bearerHttpAuthentication: []
+    operationId: get-feature-flags
+    tags:
+      - feature-flags
+    responses:
+      "200":
+        description: >
+          A list of feature flags. The list will include all fields of all feature flags if the caller is an authenticated admin, otherwise it will include only
+          the names of globally enabled feature flags.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                items:
+                  type: array
+                  items:
+                    type: object
+                    required:
+                      - name
+                    properties:
+                      id:
+                        type: string
+                      name:
+                        type: string
+                      description:
+                        type: string
+                      globallyEnabled:
+                        type: boolean
+                      createdAt:
+                        type: string
+                        format: date-time
+                      updatedAt:
+                        type: string
+                        format: date-time
+      "400":
+        $ref: "../../shared/errors.yaml#/400"
+      "500":
+        $ref: "../../shared/errors.yaml#/500"
+  post:
+    summary: Create a feature flag
+    security:
+      - bearerHttpAuthentication: []
+    operationId: post-feature-flags
+    tags:
+      - feature-flags
+    requestBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [name]
+            properties:
+              name:
+                type: string
+              description:
+                type: string
+    responses:
+      "200":
+        description: The newly created feature flag
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                data:
+                  $ref: "../models/feature_flags.yaml#/featureFlag"
+      "400":
+        $ref: "../../shared/errors.yaml#/400"
+      "500":
+        $ref: "../../shared/errors.yaml#/500"
+feature-flags/{id}:
+  put:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    summary: Update a feature flag
+    security:
+      - bearerHttpAuthentication: []
+    operationId: put-feature-flags
+    requestBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - description
+              - globallyEnabled
+            properties:
+              description:
+                type: string
+              globallyEnabled:
+                type: boolean
+    responses:
+      "200":
+        description: The updated feature flag
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                data:
+                  $ref: "../models/feature_flags.yaml#/featureFlag"
+      "400":
+        $ref: "../../shared/errors.yaml#/400"
+      "500":
+        $ref: "../../shared/errors.yaml#/500"
