@@ -1,6 +1,8 @@
 export interface CreateEventRequest {
   userSubjectFromAuthToken?: string;
+  userEmailFromAuthToken?: string;
   adminSubjectFromAuthToken?: string;
+  adminEmailFromAuthToken?: string;
   entity: string;
   action: string;
   version: number;

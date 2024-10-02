@@ -6,7 +6,10 @@ import {
   verifyUserOrAdminAuthentication,
 } from "./authentication";
 import { fusionAuthClient } from "../fusionauth";
-import { validateBodyFromAuthentication } from "../validators";
+import {
+  validateBodyFromAuthentication,
+  fieldsFromUserOrAdminAuthentication,
+} from "../validators";
 
 jest.mock("../fusionauth");
 
@@ -248,14 +251,19 @@ describe("verifyAdminAuthentication", () => {
 });
 
 describe("verifyUserOrAdminAuthentication", () => {
-  test("should add email to the request body if user token is valid", async () => {
+  test("should add subject and email to the request body if user token is valid", async () => {
     const request = {
       body: {},
       get: (_: string) => "Bearer test",
     } as Request<
       unknown,
       unknown,
-      { userSubjectFromAuthToken?: string; adminSubjectFromAuthToken?: string }
+      {
+        userSubjectFromAuthToken?: string;
+        adminSubjectFromAuthToken?: string;
+        userEmailFromAuthToken?: string;
+        adminEmailFromAuthToken?: string;
+      }
     >;
     jest
       .spyOn(fusionAuthClient, "introspectAccessToken")
@@ -263,16 +271,25 @@ describe("verifyUserOrAdminAuthentication", () => {
 
     await verifyUserOrAdminAuthentication(request, {} as Response, () => {});
     expect(request.body.userSubjectFromAuthToken).toBe(testSubject);
+    expect(request.body.userEmailFromAuthToken).toBe(testEmail);
+    expect(
+      fieldsFromUserOrAdminAuthentication.validate(request.body).error
+    ).toBeFalsy();
   });
 
-  test("should add email to the request body if admin token is valid", async () => {
+  test("should add subject and email to the request body if admin token is valid", async () => {
     const request = {
       body: {},
       get: (_: string) => "Bearer test",
     } as Request<
       unknown,
       unknown,
-      { userSubjectFromAuthToken?: string; adminSubjectFromAuthToken?: string }
+      {
+        userSubjectFromAuthToken?: string;
+        adminSubjectFromAuthToken?: string;
+        userEmailFromAuthToken?: string;
+        adminEmailFromAuthToken?: string;
+      }
     >;
     jest
       .spyOn(fusionAuthClient, "introspectAccessToken")
@@ -281,6 +298,10 @@ describe("verifyUserOrAdminAuthentication", () => {
 
     await verifyUserOrAdminAuthentication(request, {} as Response, () => {});
     expect(request.body.adminSubjectFromAuthToken).toBe(testSubject);
+    expect(request.body.adminEmailFromAuthToken).toBe(testEmail);
+    expect(
+      fieldsFromUserOrAdminAuthentication.validate(request.body).error
+    ).toBeFalsy();
   });
 
   test("should throw unauthorized if both tokens are invalid", async () => {

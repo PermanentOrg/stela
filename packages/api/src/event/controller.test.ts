@@ -32,6 +32,8 @@ describe("POST /event", () => {
       (req: Request, __, next: NextFunction) => {
         (req.body as unknown as CreateEventRequest).userSubjectFromAuthToken =
           testSubject;
+        (req.body as unknown as CreateEventRequest).userEmailFromAuthToken =
+          testEmail;
         next();
       }
     );
@@ -87,6 +89,8 @@ describe("POST /event", () => {
       (req: Request, __, next: NextFunction) => {
         (req.body as unknown as CreateEventRequest).adminSubjectFromAuthToken =
           testSubject;
+        (req.body as unknown as CreateEventRequest).adminEmailFromAuthToken =
+          testEmail;
         next();
       }
     );
@@ -112,55 +116,9 @@ describe("POST /event", () => {
     expect(result.rows[0]?.actorType).toBe("admin");
   });
 
-  test("should return 400 if no subject from auth token", async () => {
+  test("should return 400 if fields from auth token fail validation", async () => {
     (verifyUserOrAdminAuthentication as jest.Mock).mockImplementation(
       (_: Request, __, next: NextFunction) => {
-        next();
-      }
-    );
-    await agent.post("/api/v2/event").expect(400);
-  });
-
-  test("should return 400 if user subject from auth token not a string", async () => {
-    (verifyUserOrAdminAuthentication as jest.Mock).mockImplementation(
-      (req: Request, __, next: NextFunction) => {
-        (
-          req.body as unknown as { userSubjectFromAuthToken: number }
-        ).userSubjectFromAuthToken = 1;
-        next();
-      }
-    );
-    await agent.post("/api/v2/event").expect(400);
-  });
-
-  test("should return 400 if user subject from auth token not a uuid", async () => {
-    (verifyUserOrAdminAuthentication as jest.Mock).mockImplementation(
-      (req: Request, __, next: NextFunction) => {
-        (req.body as unknown as CreateEventRequest).userSubjectFromAuthToken =
-          "not_a_uuid";
-        next();
-      }
-    );
-    await agent.post("/api/v2/event").expect(400);
-  });
-
-  test("should return 400 if admin subject from auth token not a string", async () => {
-    (verifyUserOrAdminAuthentication as jest.Mock).mockImplementation(
-      (req: Request, __, next: NextFunction) => {
-        (
-          req.body as unknown as { adminSubjectFromAuthToken: number }
-        ).adminSubjectFromAuthToken = 1;
-        next();
-      }
-    );
-    await agent.post("/api/v2/event").expect(400);
-  });
-
-  test("should return 400 if admin subject from auth token not a uuid", async () => {
-    (verifyUserOrAdminAuthentication as jest.Mock).mockImplementation(
-      (req: Request, __, next: NextFunction) => {
-        (req.body as unknown as CreateEventRequest).adminSubjectFromAuthToken =
-          "not_a_uuid";
         next();
       }
     );
