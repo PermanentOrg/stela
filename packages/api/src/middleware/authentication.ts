@@ -156,7 +156,12 @@ const verifyUserOrAdminAuthentication = async (
   req: Request<
     unknown,
     unknown,
-    { userSubjectFromAuthToken?: string; adminSubjectFromAuthToken?: string }
+    {
+      userSubjectFromAuthToken?: string;
+      adminSubjectFromAuthToken?: string;
+      userEmailFromAuthToken?: string;
+      adminEmailFromAuthToken?: string;
+    }
   >,
   _: Response,
   next: NextFunction
@@ -172,7 +177,13 @@ const verifyUserOrAdminAuthentication = async (
         subjectKey,
         process.env["FUSIONAUTH_BACKEND_APPLICATION_ID"] ?? ""
       );
+      const email = await getValueFromAuthToken(
+        authenticationToken,
+        emailKey,
+        process.env["FUSIONAUTH_BACKEND_APPLICATION_ID"] ?? ""
+      );
       req.body.userSubjectFromAuthToken = subject;
+      req.body.userEmailFromAuthToken = email;
       next();
     } catch (err) {
       try {
@@ -181,7 +192,13 @@ const verifyUserOrAdminAuthentication = async (
           subjectKey,
           process.env["FUSIONAUTH_ADMIN_APPLICATION_ID"] ?? ""
         );
+        const email = await getValueFromAuthToken(
+          authenticationToken,
+          emailKey,
+          process.env["FUSIONAUTH_ADMIN_APPLICATION_ID"] ?? ""
+        );
         req.body.adminSubjectFromAuthToken = subject;
+        req.body.adminEmailFromAuthToken = email;
         next();
       } catch (innerErr) {
         next(innerErr);

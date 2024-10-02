@@ -1,13 +1,12 @@
 import Joi from "joi";
 import type { CreateEventRequest } from "./models";
+import { fieldsFromUserOrAdminAuthentication } from "../validators";
 
 export function validateCreateEventRequest(
   data: unknown
 ): asserts data is CreateEventRequest {
-  const validation = Joi.object()
-    .keys({
-      userSubjectFromAuthToken: Joi.string().uuid(),
-      adminSubjectFromAuthToken: Joi.string().uuid(),
+  const validation = fieldsFromUserOrAdminAuthentication
+    .append({
       entity: Joi.string().required(),
       action: Joi.string().required(),
       version: Joi.number().required(),
@@ -25,7 +24,6 @@ export function validateCreateEventRequest(
         .unknown(true)
         .required(),
     })
-    .or("userSubjectFromAuthToken", "adminSubjectFromAuthToken")
     .validate(data);
   if (validation.error) {
     throw validation.error;
