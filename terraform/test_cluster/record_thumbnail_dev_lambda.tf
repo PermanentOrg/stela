@@ -8,7 +8,7 @@ resource "aws_sns_topic" "record_thumbnail_dev_topic" {
         Principal = {
           Service = "s3.amazonaws.com"
         },
-        Action = "sns:Publish",
+        Action   = "sns:Publish",
         Resource = "*",
         Condition = {
           StringEquals = {
@@ -42,12 +42,12 @@ resource "aws_sqs_queue_policy" "record_thumbnail_dev_queue_policy" {
     Version = "2012-10-17",
     Statement = [
       {
-        Effect    = "Allow",
+        Effect = "Allow",
         Principal = {
           Service = "sns.amazonaws.com"
         },
-        Action    = "sqs:SendMessage",
-        Resource  = aws_sqs_queue.record_thumbnail_dev_queue.arn,
+        Action   = "sqs:SendMessage",
+        Resource = aws_sqs_queue.record_thumbnail_dev_queue.arn,
         Condition = {
           ArnEquals = {
             "aws:SourceArn" = aws_sns_topic.record_thumbnail_dev_topic.arn

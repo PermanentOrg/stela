@@ -41,3 +41,5 @@ jobs:
             - uses: codecov/codecov-action@v2
             - run: (cd stela; npm run test -w @stela/archivematica_cleanup)
             - uses: codecov/codecov-action@v2
+            - run: (cd stela; npm run test -w @stela/thumbnail_refresh)
+            - uses: codecov/codecov-action@v2
