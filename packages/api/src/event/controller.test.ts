@@ -408,6 +408,51 @@ describe("POST /event", () => {
       distinct_id: "local:123",
       accountId: "123",
       email: "test+sign_up@permanent.org",
+      $email: "test+1@permanent.org",
+      $browser: "Chrome",
+      $device: "mobile",
+      $os: "iOS",
+      ip: testIp,
+    });
+  });
+
+  test("should send pass the caller email to Mixpanel when the caller is an admin", async () => {
+    (verifyUserOrAdminAuthentication as jest.Mock).mockImplementation(
+      (req: Request, __, next: NextFunction) => {
+        (req.body as unknown as CreateEventRequest).adminSubjectFromAuthToken =
+          testSubject;
+        (req.body as unknown as CreateEventRequest).adminEmailFromAuthToken =
+          testEmail;
+        next();
+      }
+    );
+    await agent
+      .post("/api/v2/event")
+      .set(
+        "User-Agent",
+        "Mozilla/5.0 (iPhone; CPU iPhone OS 17_4 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/125.0.6422.33 Mobile/15E148 Safari/604.1"
+      )
+      .send({
+        entity: "account",
+        action: "update",
+        version: 1,
+        entityId: "123",
+        body: {
+          analytics: {
+            event: "Account Frozen",
+            distinctId: "local:123",
+            data: {
+              accountId: "123",
+            },
+          },
+        },
+      })
+      .expect(200);
+
+    expect(mixpanelClient.track).toHaveBeenCalledWith("Account Frozen", {
+      distinct_id: "local:123",
+      accountId: "123",
+      $email: "test+1@permanent.org",
       $browser: "Chrome",
       $device: "mobile",
       $os: "iOS",
