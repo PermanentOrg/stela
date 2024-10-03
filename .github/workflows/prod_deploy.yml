@@ -106,6 +106,7 @@ jobs:
       API_IMAGE_TAG: ${{ needs.generate_image_tags.outputs.API_IMAGE_TAG }}
       AM_CLEANUP_IMAGE_TAG: ${{ needs.generate_image_tags.outputs.AM_CLEANUP_IMAGE_TAG }}
       RECORD_THUMBNAIL_LAMBDA_IMAGE_TAG: ${{ needs.generate_image_tags.outputs.RECORD_THUMBNAIL_LAMBDA_IMAGE_TAG }}
+      THUMBNAIL_REFRESH_IMAGE_TAG: ${{ needs.generate_image_tags.outputs.THUMBNAIL_REFRESH_IMAGE_TAG }}
     defaults:
       run:
         working-directory: ./terraform/test_cluster
