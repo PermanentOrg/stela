@@ -199,7 +199,7 @@ jobs:
           -var="thumbnail_refresh_staging_image=$THUMBNAIL_REFRESH_IMAGE_TAG" \
           -target=aws_lambda_function.record_thumbnail_lambda_staging
       - name: Terraform Plan for Thumbnail Refresh Cron
-        id: plan_record_thumbnail_lambda
+        id: plan_thumbnail_refresh_cron
         run: |
           terraform plan -no-color -input=false \
           -var="stela_dev_image=$API_IMAGE_TAG" \
