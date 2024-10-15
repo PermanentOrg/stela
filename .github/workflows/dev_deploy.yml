@@ -13,94 +13,14 @@ jobs:
     uses: ./.github/workflows/generate_image_tags.yml
     secrets: inherit
 
-  build_api:
-    needs:
-      - run_tests
-      - generate_image_tags
-    runs-on: ubuntu-20.04
-    env:
-      API_IMAGE_TAG: ${{ needs.generate_image_tags.outputs.API_IMAGE_TAG }}
-    steps:
-      - uses: actions/checkout@v3
-      - name: Build Image
-        run: docker build -t $API_IMAGE_TAG --build-arg="AWS_RDS_CERT_BUNDLE=$AWS_RDS_CERT_BUNDLE" -f Dockerfile.api .
-        env:
-          AWS_RDS_CERT_BUNDLE: ${{ secrets.AWS_RDS_CERT_BUNDLE }}
-      - name: AWS Login
-        run: aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin 364159549467.dkr.ecr.$AWS_REGION.amazonaws.com
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      - name: Publish Image to ECR
-        run: docker push $API_IMAGE_TAG
-  build_am_cleanup:
-    needs:
-      - run_tests
-      - generate_image_tags
-    runs-on: ubuntu-20.04
-    env:
-      AM_CLEANUP_IMAGE_TAG: ${{ needs.generate_image_tags.outputs.AM_CLEANUP_IMAGE_TAG }}
-    steps:
-      - uses: actions/checkout@v3
-      - name: Build Image
-        run: docker build -t $AM_CLEANUP_IMAGE_TAG -f Dockerfile.am_cleanup .
-      - name: AWS Login
-        run: aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin 364159549467.dkr.ecr.$AWS_REGION.amazonaws.com
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      - name: Publish Image to ECR
-        run: docker push $AM_CLEANUP_IMAGE_TAG
-  build_record_thumbnail_lambda:
-    needs:
-      - run_tests
-      - generate_image_tags
-    runs-on: ubuntu-20.04
-    env:
-      RECORD_THUMBNAIL_LAMBDA_IMAGE_TAG: ${{ needs.generate_image_tags.outputs.RECORD_THUMBNAIL_LAMBDA_IMAGE_TAG }}
-    steps:
-      - uses: actions/checkout@v3
-      - name: Build Image
-        run: docker build -t $RECORD_THUMBNAIL_LAMBDA_IMAGE_TAG --build-arg="AWS_RDS_CERT_BUNDLE=$AWS_RDS_CERT_BUNDLE" -f Dockerfile.record_thumbnail_attacher .
-        env:
-          AWS_RDS_CERT_BUNDLE: ${{ secrets.AWS_RDS_CERT_BUNDLE }}
-      - name: AWS Login
-        run: aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin 364159549467.dkr.ecr.$AWS_REGION.amazonaws.com
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      - name: Publish Image to ECR
-        run: docker push $RECORD_THUMBNAIL_LAMBDA_IMAGE_TAG
-  build_thumbnail_refresh:
-    needs:
-      - run_tests
-      - generate_image_tags
-    runs-on: ubuntu-20.04
-    env:
-      THUMBNAIL_REFRESH_IMAGE_TAG: ${{ needs.generate_image_tags.outputs.THUMBNAIL_REFRESH_IMAGE_TAG }}
-    steps:
-      - uses: actions/checkout@v3
-      - name: Build Image
-        run: docker build -t $THUMBNAIL_REFRESH_IMAGE_TAG --build-arg="AWS_RDS_CERT_BUNDLE=$AWS_RDS_CERT_BUNDLE" -f Dockerfile.thumbnail_refresh .
-        env:
-          AWS_RDS_CERT_BUNDLE: ${{ secrets.AWS_RDS_CERT_BUNDLE }}
-      - name: AWS Login
-        run: aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin 364159549467.dkr.ecr.$AWS_REGION.amazonaws.com
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      - name: Publish Image to ECR
-        run: docker push $THUMBNAIL_REFRESH_IMAGE_TAG
+  build_images:
+    uses: ./.github/workflows/build.yml
+    secrets: inherit
+
   deploy:
     needs:
-      - build_api
-      - build_am_cleanup
-      - build_record_thumbnail_lambda
-      - build_thumbnail_refresh
+      - run_tests
+      - build_images
       - generate_image_tags
     runs-on: ubuntu-20.04
     env:
@@ -125,8 +45,8 @@ jobs:
         run: terraform validate -no-color
       # Note that while Terraform requires us to pass a values for the staging images below, they won't be used because
       # the -target option restricts terraform to just updating the dev deployment
-      - name: Terraform Plan for API
-        id: plan_api
+      - name: Terraform Plan
+        id: plan
         run: |
           terraform plan -no-color -input=false \
           -var="stela_dev_image=$API_IMAGE_TAG" \
@@ -137,83 +57,11 @@ jobs:
           -var="record_thumbnail_staging_lambda_image=$RECORD_THUMBNAIL_LAMBDA_IMAGE_TAG" \
           -var="thumbnail_refresh_dev_image=$THUMBNAIL_REFRESH_IMAGE_TAG" \
           -var="thumbnail_refresh_staging_image=$THUMBNAIL_REFRESH_IMAGE_TAG" \
-          -target=kubernetes_deployment.stela_dev
-      - name: Terraform Apply for API
-        run: | 
-          terraform apply -auto-approve -input=false \
-          -var="stela_dev_image=$API_IMAGE_TAG" \
-          -var="stela_staging_image=$API_IMAGE_TAG" \
-          -var="archivematica_cleanup_dev_image=$AM_CLEANUP_IMAGE_TAG" \
-          -var="archivematica_cleanup_staging_image=$AM_CLEANUP_IMAGE_TAG" \
-          -var="record_thumbnail_dev_lambda_image=$RECORD_THUMBNAIL_LAMBDA_IMAGE_TAG" \
-          -var="record_thumbnail_staging_lambda_image=$RECORD_THUMBNAIL_LAMBDA_IMAGE_TAG" \
-          -var="thumbnail_refresh_dev_image=$THUMBNAIL_REFRESH_IMAGE_TAG" \
-          -var="thumbnail_refresh_staging_image=$THUMBNAIL_REFRESH_IMAGE_TAG" \
-          -target=kubernetes_deployment.stela_dev
-      - name: Terraform Plan for Archivematica cleanup
-        id: plan_am_cleanup
-        run: |
-          terraform plan -no-color -input=false \
-          -var="stela_dev_image=$API_IMAGE_TAG" \
-          -var="stela_staging_image=$API_IMAGE_TAG" \
-          -var="archivematica_cleanup_dev_image=$AM_CLEANUP_IMAGE_TAG" \
-          -var="archivematica_cleanup_staging_image=$AM_CLEANUP_IMAGE_TAG" \
-          -var="record_thumbnail_dev_lambda_image=$RECORD_THUMBNAIL_LAMBDA_IMAGE_TAG" \
-          -var="record_thumbnail_staging_lambda_image=$RECORD_THUMBNAIL_LAMBDA_IMAGE_TAG" \
-          -var="thumbnail_refresh_dev_image=$THUMBNAIL_REFRESH_IMAGE_TAG" \
-          -var="thumbnail_refresh_staging_image=$THUMBNAIL_REFRESH_IMAGE_TAG" \
-          -target=kubernetes_cron_job_v1.archivematica_cleanup_dev
-      - name: Terraform Apply for Archivematica cleanup
-        run: |
-          terraform apply -auto-approve -input=false \
-          -var="stela_dev_image=$API_IMAGE_TAG" \
-          -var="stela_staging_image=$API_IMAGE_TAG" \
-          -var="archivematica_cleanup_dev_image=$AM_CLEANUP_IMAGE_TAG" \
-          -var="archivematica_cleanup_staging_image=$AM_CLEANUP_IMAGE_TAG" \
-          -var="record_thumbnail_dev_lambda_image=$RECORD_THUMBNAIL_LAMBDA_IMAGE_TAG" \
-          -var="record_thumbnail_staging_lambda_image=$RECORD_THUMBNAIL_LAMBDA_IMAGE_TAG" \
-          -var="thumbnail_refresh_dev_image=$THUMBNAIL_REFRESH_IMAGE_TAG" \
-          -var="thumbnail_refresh_staging_image=$THUMBNAIL_REFRESH_IMAGE_TAG" \
-          -target=kubernetes_cron_job_v1.archivematica_cleanup_dev
-      - name: Terraform Plan for Record Thumbnail Lambda
-        id: plan_record_thumbnail_lambda
-        run: |
-          terraform plan -no-color -input=false \
-          -var="stela_dev_image=$API_IMAGE_TAG" \
-          -var="stela_staging_image=$API_IMAGE_TAG" \
-          -var="archivematica_cleanup_dev_image=$AM_CLEANUP_IMAGE_TAG" \
-          -var="archivematica_cleanup_staging_image=$AM_CLEANUP_IMAGE_TAG" \
-          -var="record_thumbnail_dev_lambda_image=$RECORD_THUMBNAIL_LAMBDA_IMAGE_TAG" \
-          -var="record_thumbnail_staging_lambda_image=$RECORD_THUMBNAIL_LAMBDA_IMAGE_TAG" \
-          -var="thumbnail_refresh_dev_image=$THUMBNAIL_REFRESH_IMAGE_TAG" \
-          -var="thumbnail_refresh_staging_image=$THUMBNAIL_REFRESH_IMAGE_TAG" \
-          -target=aws_lambda_function.record_thumbnail_lambda
-      - name: Terraform Apply for Record Thumbnail Lambda
-        run: |
-          terraform apply -auto-approve -input=false \
-          -var="stela_dev_image=$API_IMAGE_TAG" \
-          -var="stela_staging_image=$API_IMAGE_TAG" \
-          -var="archivematica_cleanup_dev_image=$AM_CLEANUP_IMAGE_TAG" \
-          -var="archivematica_cleanup_staging_image=$AM_CLEANUP_IMAGE_TAG" \
-          -var="record_thumbnail_dev_lambda_image=$RECORD_THUMBNAIL_LAMBDA_IMAGE_TAG" \
-          -var="record_thumbnail_staging_lambda_image=$RECORD_THUMBNAIL_LAMBDA_IMAGE_TAG" \
-          -var="thumbnail_refresh_dev_image=$THUMBNAIL_REFRESH_IMAGE_TAG" \
-          -var="thumbnail_refresh_staging_image=$THUMBNAIL_REFRESH_IMAGE_TAG" \
-          -target=aws_lambda_function.record_thumbnail_lambda
-      - name: Terraform Plan for Thumbnail Refresh Cron
-        id: plan_thumbnail_refresh_cron
-        run: |
-          terraform plan -no-color -input=false \
-          -var="stela_dev_image=$API_IMAGE_TAG" \
-          -var="stela_staging_image=$API_IMAGE_TAG" \
-          -var="archivematica_cleanup_dev_image=$AM_CLEANUP_IMAGE_TAG" \
-          -var="archivematica_cleanup_staging_image=$AM_CLEANUP_IMAGE_TAG" \
-          -var="record_thumbnail_dev_lambda_image=$RECORD_THUMBNAIL_LAMBDA_IMAGE_TAG" \
-          -var="record_thumbnail_staging_lambda_image=$RECORD_THUMBNAIL_LAMBDA_IMAGE_TAG" \
-          -var="thumbnail_refresh_dev_image=$THUMBNAIL_REFRESH_IMAGE_TAG" \
-          -var="thumbnail_refresh_staging_image=$THUMBNAIL_REFRESH_IMAGE_TAG" \
+          -target=kubernetes_deployment.stela_dev \
+          -target=kubernetes_cron_job_v1.archivematica_cleanup_dev \
+          -target=aws_lambda_function.record_thumbnail_lambda \
           -target=kubernetes_cron_job_v1.thumbnail_refresh_dev
-      - name: Terraform Apply for Thumbnail Refresh Cron
+      - name: Terraform Apply
         run: |
           terraform apply -auto-approve -input=false \
           -var="stela_dev_image=$API_IMAGE_TAG" \
@@ -224,4 +72,7 @@ jobs:
           -var="record_thumbnail_staging_lambda_image=$RECORD_THUMBNAIL_LAMBDA_IMAGE_TAG" \
           -var="thumbnail_refresh_dev_image=$THUMBNAIL_REFRESH_IMAGE_TAG" \
           -var="thumbnail_refresh_staging_image=$THUMBNAIL_REFRESH_IMAGE_TAG" \
+          -target=kubernetes_deployment.stela_dev \
+          -target=kubernetes_cron_job_v1.archivematica_cleanup_dev \
+          -target=aws_lambda_function.record_thumbnail_lambda \
           -target=kubernetes_cron_job_v1.thumbnail_refresh_dev
