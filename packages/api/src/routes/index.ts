@@ -10,6 +10,7 @@ import { eventController } from "../event";
 import { promoController } from "../promo";
 import { idpUserController } from "../idpuser";
 import { recordController } from "../record";
+import { featureController } from "../feature_flag";
 
 const apiRoutes = express.Router();
 apiRoutes.get("/health", healthController.getHealth);
@@ -23,5 +24,6 @@ apiRoutes.use("/event", eventController);
 apiRoutes.use("/promo", promoController);
 apiRoutes.use("/idpuser", idpUserController);
 apiRoutes.use("/record", recordController);
+apiRoutes.use("/feature-flags", featureController);
 
 export { apiRoutes };
