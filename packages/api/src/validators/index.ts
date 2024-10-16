@@ -3,4 +3,5 @@ export {
   fieldsFromUserAuthentication,
   fieldsFromUserOrAdminAuthentication,
   validateBodyFromAuthentication,
+  validateBodyFromAdminAuthentication,
 } from "./shared";

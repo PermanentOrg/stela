@@ -34,6 +34,20 @@ export function validateBodyFromAuthentication(data: unknown): asserts data is {
   }
 }
 
+export function validateBodyFromAdminAuthentication(
+  data: unknown
+): asserts data is {
+  emailFromAuthToken: string;
+  userSubjectFromAuthToken: string;
+} {
+  const validation = Joi.object()
+    .keys(fieldsFromAdminAuthentication)
+    .validate(data);
+  if (validation.error) {
+    throw validation.error;
+  }
+}
+
 export function validateOptionalEmailFromAuthentication(
   data: unknown
 ): asserts data is { emailFromAuthToken: string } {
