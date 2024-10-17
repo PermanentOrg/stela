@@ -3,7 +3,6 @@ import type { CreateDirectiveRequest, UpdateDirectiveRequest } from "./model";
 import {
   validateBodyFromAuthentication,
   fieldsFromUserAuthentication,
-  fieldsFromAdminAuthentication,
 } from "../validators";
 
 export { validateBodyFromAuthentication };
@@ -78,7 +77,6 @@ export function validateTriggerAdminDirectivesParams(
 ): asserts data is { accountId: string } {
   const validation = Joi.object()
     .keys({
-      ...fieldsFromAdminAuthentication,
       accountId: Joi.string().required(),
     })
     .validate(data);

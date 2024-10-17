@@ -13,6 +13,7 @@ import {
   validateGetDirectivesByArchiveIdParams,
   validateBodyFromAuthentication,
 } from "./validators";
+import { validateBodyFromAdminAuthentication } from "../validators";
 import { isValidationError } from "../validators/validator_util";
 
 export const directiveController = Router();
@@ -62,6 +63,7 @@ directiveController.post(
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       validateTriggerAdminDirectivesParams(req.params);
+      validateBodyFromAdminAuthentication(req.body);
       const responseBody = await directiveService.triggerAccountAdminDirectives(
         req.params.accountId
       );
