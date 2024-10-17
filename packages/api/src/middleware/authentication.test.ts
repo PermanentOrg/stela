@@ -315,6 +315,42 @@ describe("verifyUserOrAdminAuthentication", () => {
     >;
     jest
       .spyOn(fusionAuthClient, "introspectAccessToken")
+      .mockImplementation(async () => failedIntrospectionResponse);
+
+    await verifyUserOrAdminAuthentication(request, {} as Response, (err) => {
+      expect((err as { statusCode: number }).statusCode).toBe(401);
+    });
+  });
+
+  test("should throw unauthorized if both tokens are expired", async () => {
+    const request = {
+      body: {},
+      get: (_: string) => "Bearer test",
+    } as Request<
+      unknown,
+      unknown,
+      { userSubjectFromAuthToken?: string; adminSubjectFromAuthToken?: string }
+    >;
+    jest
+      .spyOn(fusionAuthClient, "introspectAccessToken")
+      .mockImplementation(async () => expiredTokenIntrospectionResponse);
+
+    await verifyUserOrAdminAuthentication(request, {} as Response, (err) => {
+      expect((err as { statusCode: number }).statusCode).toBe(401);
+    });
+  });
+
+  test("should throw unauthorized if the authentication header is formatted incorrectly", async () => {
+    const request = {
+      body: {},
+      get: (_: string) => "test",
+    } as Request<
+      unknown,
+      unknown,
+      { userSubjectFromAuthToken?: string; adminSubjectFromAuthToken?: string }
+    >;
+    jest
+      .spyOn(fusionAuthClient, "introspectAccessToken")
       .mockImplementation(async () => expiredTokenIntrospectionResponse);
 
     await verifyUserOrAdminAuthentication(request, {} as Response, (err) => {
@@ -353,6 +389,18 @@ describe("extractUserEmailFromAuthToken", () => {
     jest
       .spyOn(fusionAuthClient, "introspectAccessToken")
       .mockImplementationOnce(async () => failedIntrospectionResponse);
+    await extractUserEmailFromAuthToken(request, {} as Response, () => {});
+    expect(request.body.emailFromAuthToken).toBeUndefined();
+  });
+
+  test("Request body has undefined emailFromAuthToken if auth token is expired", async () => {
+    const request = {
+      body: {},
+      get: (_: string) => "Bearer test",
+    } as Request<unknown, unknown, { emailFromAuthToken?: string }>;
+    jest
+      .spyOn(fusionAuthClient, "introspectAccessToken")
+      .mockImplementationOnce(async () => expiredTokenIntrospectionResponse);
     await extractUserEmailFromAuthToken(request, {} as Response, () => {});
     expect(request.body.emailFromAuthToken).toBeUndefined();
   });
