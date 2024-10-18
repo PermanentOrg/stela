@@ -228,9 +228,25 @@ const extractUserEmailFromAuthToken = async (
   next();
 };
 
+const extractUserIsAdminFromAuthToken = async (
+  req: Request<unknown, unknown, { admin?: boolean }>,
+  _: Response,
+  next: NextFunction
+): Promise<void> => {
+  const authenticationToken = getAuthTokenFromRequest(req);
+  const email = await getOptionalValueFromAuthToken(
+    authenticationToken,
+    emailKey,
+    process.env["FUSIONAUTH_ADMIN_APPLICATION_ID"] ?? ""
+  );
+  req.body.admin = email !== "";
+  next();
+};
+
 export {
   verifyUserAuthentication,
   verifyAdminAuthentication,
   verifyUserOrAdminAuthentication,
   extractUserEmailFromAuthToken,
+  extractUserIsAdminFromAuthToken,
 };
