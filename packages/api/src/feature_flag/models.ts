@@ -11,6 +11,13 @@ export interface FeatureFlagNameRow {
   name: string;
 }
 
+export interface CreateFeatureFlagRequest {
+  emailFromAuthToken: string;
+  adminSubjectFromAuthToken: string;
+  name: string;
+  description: string;
+}
+
 export interface FeatureFlagRequest {
   admin: boolean;
 }
