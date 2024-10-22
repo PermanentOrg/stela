@@ -1,25 +1,29 @@
 import request from "supertest";
 import type { NextFunction, Request } from "express";
 import { logger } from "@stela/logger";
+import createError from "http-errors";
 import { db } from "../database";
 import { app } from "../app";
-import { extractUserIsAdminFromAuthToken } from "../middleware";
-import type { FeatureFlagRequest } from "./models";
+import {
+  extractUserIsAdminFromAuthToken,
+  verifyAdminAuthentication,
+} from "../middleware";
+import type { CreateFeatureFlagRequest, FeatureFlagRequest } from "./models";
 
 jest.mock("../database");
 jest.mock("../middleware");
 jest.mock("@stela/logger");
 
+const loadFixtures = async (): Promise<void> => {
+  await db.sql("fixtures.create_test_feature_flags");
+};
+
+const clearDatabase = async (): Promise<void> => {
+  await db.query("TRUNCATE feature_flag CASCADE");
+};
+
 describe("GET /feature-flags", () => {
   const agent = request(app);
-
-  const loadFixtures = async (): Promise<void> => {
-    await db.sql("fixtures.create_test_feature_flags");
-  };
-
-  const clearDatabase = async (): Promise<void> => {
-    await db.query("TRUNCATE feature_flag CASCADE");
-  };
 
   beforeEach(async () => {
     await clearDatabase();
@@ -108,5 +112,174 @@ describe("GET /feature-flags", () => {
 
     const response = await agent.get("/api/v2/feature-flags").expect(200);
     expect(response.body).toEqual(expected);
+  });
+});
+
+describe("POST /feature-flag", () => {
+  const agent = request(app);
+  beforeEach(async () => {
+    (verifyAdminAuthentication as jest.Mock).mockImplementation(
+      (req: Request, __, next: NextFunction) => {
+        (req.body as CreateFeatureFlagRequest).emailFromAuthToken =
+          "test@permanent.org";
+        (req.body as CreateFeatureFlagRequest).adminSubjectFromAuthToken =
+          "6b640c73-4963-47de-a096-4a05ff8dc5f5";
+        next();
+      }
+    );
+    jest.restoreAllMocks();
+    jest.clearAllMocks();
+    await loadFixtures();
+    await clearDatabase();
+  });
+
+  afterEach(async () => {
+    jest.restoreAllMocks();
+    jest.clearAllMocks();
+    await clearDatabase();
+  });
+
+  test("should respond with a 200 status code", async () => {
+    await agent
+      .post("/api/v2/feature-flags")
+      .send({
+        name: "TEST",
+        description: "description",
+      })
+      .expect(200);
+  });
+
+  test("should respond with a 400 if feature flag already exists", async () => {
+    await agent
+      .post("/api/v2/feature-flags")
+      .send({
+        name: "TEST",
+        description: "description",
+      })
+      .expect(200);
+
+    // trying to create again the same feature flag should fail
+    await agent
+      .post("/api/v2/feature-flags")
+      .send({
+        name: "TEST",
+        description: "description",
+      })
+      .expect(400);
+  });
+
+  test("should respond with 401 status code if lacking admin authentication", async () => {
+    (verifyAdminAuthentication as jest.Mock).mockImplementation(
+      (_: Request, __, next: NextFunction) => {
+        next(new createError.Unauthorized("You aren't logged in"));
+      }
+    );
+    await agent.post("/api/v2/feature-flags").expect(401);
+  });
+
+  test("should respond with 400 status code if missing emailFromAuthToken", async () => {
+    (verifyAdminAuthentication as jest.Mock).mockImplementation(
+      (req: Request, __, next: NextFunction) => {
+        (req.body as CreateFeatureFlagRequest).adminSubjectFromAuthToken =
+          "6b640c73-4963-47de-a096-4a05ff8dc5f5";
+        next();
+      }
+    );
+    await agent
+      .post("/api/v2/feature-flags")
+      .send({
+        name: "TEST",
+        description: "description",
+      })
+      .expect(400);
+  });
+
+  test("should respond with 400 status code if emailFromAuthToken is not a string", async () => {
+    (verifyAdminAuthentication as jest.Mock).mockImplementation(
+      (req: Request, __, next: NextFunction) => {
+        (req.body as { emailFromAuthToken: number }).emailFromAuthToken = 123;
+        (req.body as CreateFeatureFlagRequest).adminSubjectFromAuthToken =
+          "6b640c73-4963-47de-a096-4a05ff8dc5f5";
+        next();
+      }
+    );
+    await agent
+      .post("/api/v2/feature-flags")
+      .send({
+        name: "TEST",
+        description: "description",
+      })
+      .expect(400);
+  });
+
+  test("should respond with 400 status name if code is missing", async () => {
+    await agent
+      .post("/api/v2/feature-flags")
+      .send({
+        description: "description",
+      })
+      .expect(400);
+  });
+
+  test("should respond with 400 status code if name is not a string", async () => {
+    await agent
+      .post("/api/v2/feature-flags")
+      .send({
+        name: 123,
+        description: "description",
+      })
+      .expect(400);
+  });
+
+  test("should store the new feature flag in the database", async () => {
+    await agent
+      .post("/api/v2/feature-flags")
+      .send({
+        name: "name",
+        description: "description",
+      })
+      .expect(200);
+    const result = await db.query(
+      `SELECT
+        name,
+        description,
+        globally_enabled::boolean as "globallyEnabled"
+      FROM
+        feature_flag
+      WHERE
+        name = 'name'`
+    );
+    expect(result.rows.length).toBe(1);
+    expect(result.rows[0]).toEqual({
+      name: "name",
+      description: "description",
+      globallyEnabled: false,
+    });
+  });
+
+  test("should respond with 500 if the database call fails", async () => {
+    jest.spyOn(db, "sql").mockImplementation(() => {
+      throw new Error("SQL error");
+    });
+    await agent
+      .post("/api/v2/feature-flags")
+      .send({
+        name: "name",
+        description: "description",
+      })
+      .expect(500);
+  });
+
+  test("should log the error if the database call fails", async () => {
+    const testError = new Error("SQL error");
+    jest.spyOn(db, "sql").mockRejectedValueOnce(testError);
+    await agent
+      .post("/api/v2/feature-flags")
+      .send({
+        name: "name",
+        description: "description",
+      })
+      .expect(500);
+    expect(logger.error).toHaveBeenCalled();
   });
 });
