@@ -58,3 +58,16 @@ export function validateOptionalEmailFromAuthentication(
     throw validation.error;
   }
 }
+
+export function validateIsAdminFromAuthentication(
+  data: unknown
+): asserts data is {
+  admin: boolean;
+} {
+  const validation = Joi.object()
+    .keys({ admin: Joi.boolean().required() })
+    .validate(data);
+  if (validation.error) {
+    throw validation.error;
+  }
+}

@@ -9,3 +9,4 @@ tags
 .terraform/
 aws-iam-authenticator
 .vimspector.json
+.idea/
