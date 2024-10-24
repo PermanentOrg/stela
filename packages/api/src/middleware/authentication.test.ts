@@ -441,3 +441,38 @@ describe("extractUserIsAdminFromAuthToken", () => {
     expect(request.body.admin).toBe(false);
   });
 });
+
+describe("extractUserIsAdminFromAuthToken", () => {
+  test("is admin will be true if there is an valid auth token", async () => {
+    const request = {
+      body: {},
+      get: (_: string) => "Bearer test",
+    } as Request<unknown, unknown, { admin?: boolean }>;
+    jest
+      .spyOn(fusionAuthClient, "introspectAccessToken")
+      .mockImplementationOnce(async () => successfulIntrospectionResponse);
+    await extractUserIsAdminFromAuthToken(request, {} as Response, () => {});
+    expect(request.body.admin).toBe(true);
+  });
+
+  test("is admin will be false if there is no auth token", async () => {
+    const request = {
+      body: {},
+      get: (_: string) => "",
+    } as Request<unknown, unknown, { admin?: boolean }>;
+    await extractUserIsAdminFromAuthToken(request, {} as Response, () => {});
+    expect(request.body.admin).toBe(false);
+  });
+
+  test("is admin will be false if there is an invalid auth token", async () => {
+    const request = {
+      body: {},
+      get: (_: string) => "Bearer test",
+    } as Request<unknown, unknown, { admin?: boolean }>;
+    jest
+      .spyOn(fusionAuthClient, "introspectAccessToken")
+      .mockImplementationOnce(async () => failedIntrospectionResponse);
+    await extractUserIsAdminFromAuthToken(request, {} as Response, () => {});
+    expect(request.body.admin).toBe(false);
+  });
+});
