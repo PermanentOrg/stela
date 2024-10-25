@@ -8,7 +8,11 @@ import {
   extractUserIsAdminFromAuthToken,
   verifyAdminAuthentication,
 } from "../middleware";
-import type { CreateFeatureFlagRequest, FeatureFlagRequest } from "./models";
+import type {
+  CreateFeatureFlagRequest,
+  UpdateFeatureFlagRequest,
+  FeatureFlagRequest,
+} from "./models";
 
 jest.mock("../database");
 jest.mock("../middleware");
@@ -21,6 +25,8 @@ const loadFixtures = async (): Promise<void> => {
 const clearDatabase = async (): Promise<void> => {
   await db.query("TRUNCATE feature_flag CASCADE");
 };
+
+const notExistingFeatureFlagId = "1bdf2da6-026b-4e8e-9b57-a86b1817be4d";
 
 describe("GET /feature-flags", () => {
   const agent = request(app);
@@ -281,5 +287,175 @@ describe("POST /feature-flag", () => {
       })
       .expect(500);
     expect(logger.error).toHaveBeenCalled();
+  });
+});
+
+describe("PUT /feature-flag/:featureFlagId", () => {
+  const agent = request(app);
+  beforeEach(async () => {
+    (verifyAdminAuthentication as jest.Mock).mockImplementation(
+      (req: Request, __, next: NextFunction) => {
+        (req.body as UpdateFeatureFlagRequest).emailFromAuthToken =
+          "test@permanent.org";
+        (req.body as UpdateFeatureFlagRequest).adminSubjectFromAuthToken =
+          "6b640c73-4963-47de-a096-4a05ff8dc5f5";
+        next();
+      }
+    );
+    jest.restoreAllMocks();
+    jest.clearAllMocks();
+    await clearDatabase();
+    await loadFixtures();
+  });
+
+  afterEach(async () => {
+    jest.restoreAllMocks();
+    jest.clearAllMocks();
+    await clearDatabase();
+  });
+
+  test("should respond with a 200 status code", async () => {
+    await agent
+      .put("/api/v2/feature-flags/1bdf2da6-026b-4e8e-9b57-a86b1817be5d")
+      .send({
+        description: "a description",
+        globallyEnabled: false,
+      })
+      .expect(200);
+  });
+
+  test("should respond with 401 status code if lacking admin authentication", async () => {
+    (verifyAdminAuthentication as jest.Mock).mockImplementation(
+      (_: Request, __, next: NextFunction) => {
+        next(new createError.Unauthorized("You aren't logged in"));
+      }
+    );
+    await agent
+      .put("/api/v2/feature-flags/1bdf2da6-026b-4e8e-9b57-a86b1817be5d")
+      .expect(401);
+  });
+
+  test("should respond with 400 status code if missing emailFromAuthToken", async () => {
+    (verifyAdminAuthentication as jest.Mock).mockImplementation(
+      (req: Request, __, next: NextFunction) => {
+        (req.body as UpdateFeatureFlagRequest).adminSubjectFromAuthToken =
+          "6b640c73-4963-47de-a096-4a05ff8dc5f5";
+        next();
+      }
+    );
+    await agent
+      .put("/api/v2/feature-flags/1bdf2da6-026b-4e8e-9b57-a86b1817be5d")
+      .send({
+        description: "description",
+        globallyEnabled: true,
+      })
+      .expect(400);
+  });
+
+  test("should respond with 400 status code if emailFromAuthToken is not a string", async () => {
+    (verifyAdminAuthentication as jest.Mock).mockImplementation(
+      (req: Request, __, next: NextFunction) => {
+        (req.body as { emailFromAuthToken: number }).emailFromAuthToken = 123;
+        (req.body as UpdateFeatureFlagRequest).adminSubjectFromAuthToken =
+          "6b640c73-4963-47de-a096-4a05ff8dc5f5";
+        next();
+      }
+    );
+    await agent
+      .put("/api/v2/feature-flags/1bdf2da6-026b-4e8e-9b57-a86b1817be5d")
+      .send({
+        description: "description",
+        globallyEnabled: true,
+      })
+      .expect(400);
+  });
+
+  test("should respond with 400 status if globallyEnabled is missing", async () => {
+    await agent
+      .put("/api/v2/feature-flags/1bdf2da6-026b-4e8e-9b57-a86b1817be5d")
+      .send({
+        description: "description",
+      })
+      .expect(400);
+  });
+
+  test("should respond with 400 status code if globallyEnabled is not a boolean", async () => {
+    await agent
+      .put("/api/v2/feature-flags/1bdf2da6-026b-4e8e-9b57-a86b1817be5d")
+      .send({
+        description: "description",
+        globallyEnabled: "a string",
+      })
+      .expect(400);
+  });
+
+  test("should respond with 400 status code if description is not a text", async () => {
+    await agent
+      .put("/api/v2/feature-flags/1bdf2da6-026b-4e8e-9b57-a86b1817be5d")
+      .send({
+        description: 1,
+        globallyEnabled: true,
+      })
+      .expect(400);
+  });
+
+  test("should update the feature flag in the database", async () => {
+    await agent
+      .put("/api/v2/feature-flags/1bdf2da6-026b-4e8e-9b57-a86b1817be5d")
+      .send({
+        description: "a description",
+        globallyEnabled: false,
+      })
+      .expect(200);
+    const result = await db.query(
+      `SELECT
+        description,
+        globally_enabled::boolean as "globallyEnabled"
+      FROM
+        feature_flag
+      WHERE
+        id = '1bdf2da6-026b-4e8e-9b57-a86b1817be5d'`
+    );
+    expect(result.rows.length).toBe(1);
+    expect(result.rows[0]).toEqual({
+      description: "a description",
+      globallyEnabled: false,
+    });
+  });
+
+  test("should respond with 500 if the database call fails", async () => {
+    jest.spyOn(db, "sql").mockImplementation(() => {
+      throw new Error("SQL error");
+    });
+    await agent
+      .put("/api/v2/feature-flags/1bdf2da6-026b-4e8e-9b57-a86b1817be5d")
+      .send({
+        description: "description",
+        globallyEnabled: true,
+      })
+      .expect(500);
+  });
+
+  test("should log the error if the database call fails", async () => {
+    const testError = new Error("SQL error");
+    jest.spyOn(db, "sql").mockRejectedValueOnce(testError);
+    await agent
+      .put("/api/v2/feature-flags/1bdf2da6-026b-4e8e-9b57-a86b1817be5d")
+      .send({
+        description: "description",
+        globallyEnabled: true,
+      })
+      .expect(500);
+    expect(logger.error).toHaveBeenCalled();
+  });
+
+  test("should respond with 404 status code if feature flag does not exist", async () => {
+    await agent
+      .put(`/api/v2/feature-flags/${notExistingFeatureFlagId}`)
+      .send({
+        description: "description",
+        globallyEnabled: true,
+      })
+      .expect(404);
   });
 });

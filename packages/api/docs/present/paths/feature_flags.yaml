@@ -93,7 +93,6 @@ feature-flags/{id}:
           schema:
             type: object
             required:
-              - description
               - globallyEnabled
             properties:
               description:
