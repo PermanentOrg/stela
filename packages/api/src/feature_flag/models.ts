@@ -28,3 +28,8 @@ export interface UpdateFeatureFlagRequest {
   description: string;
   globallyEnabled: boolean;
 }
+
+export interface DeleteFeatureFlagRequest {
+  emailFromAuthToken: string;
+  adminSubjectFromAuthToken: string;
+}

@@ -113,3 +113,22 @@ feature-flags/{id}:
         $ref: "../../shared/errors.yaml#/400"
       "500":
         $ref: "../../shared/errors.yaml#/500"
+  delete:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    summary: Delete a feature flag
+    security:
+      - bearerHttpAuthentication: []
+    operationId: delete-feature-flags
+    responses:
+      "204":
+        description: Empty response if delete was successful
+      "400":
+        $ref: "../../shared/errors.yaml#/400"
+      "500":
+        $ref: "../../shared/errors.yaml#/500"
