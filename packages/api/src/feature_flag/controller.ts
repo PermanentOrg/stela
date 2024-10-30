@@ -4,13 +4,18 @@ import type { Request, Response, NextFunction } from "express";
 import { logger } from "@stela/logger";
 import { featureService } from "./service";
 import { createFeatureService } from "./service/create";
+import { updateFeatureService } from "./service/update";
 import {
   extractUserIsAdminFromAuthToken,
   verifyAdminAuthentication,
 } from "../middleware";
-import { validateCreateFeatureFlagRequest } from "./validators";
-import { validateIsAdminFromAuthentication } from "../validators/shared";
 import { isValidationError } from "../validators/validator_util";
+import {
+  validateCreateFeatureFlagRequest,
+  validateUpdateFeatureFlagRequest,
+  validateFeatureFlagParams,
+} from "./validators";
+import { validateIsAdminFromAuthentication } from "../validators/shared";
 
 export const featureController = Router();
 
@@ -43,6 +48,28 @@ featureController.post(
         req.body
       );
       res.status(200).send({ data: insertedFeatureFlag });
+    } catch (err) {
+      if (isValidationError(err)) {
+        res.status(400).json({ error: err.message });
+        return;
+      }
+      next(err);
+    }
+  }
+);
+
+featureController.put(
+  "/:featureId",
+  verifyAdminAuthentication,
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      validateUpdateFeatureFlagRequest(req.body);
+      validateFeatureFlagParams(req.params);
+      const featureFlag = await updateFeatureService.updateFeatureFlag(
+        req.params.featureId,
+        req.body
+      );
+      res.status(200).send({ data: featureFlag });
     } catch (err) {
       if (isValidationError(err)) {
         res.status(400).json({ error: err.message });

@@ -21,3 +21,10 @@ export interface CreateFeatureFlagRequest {
 export interface FeatureFlagRequest {
   admin: boolean;
 }
+
+export interface UpdateFeatureFlagRequest {
+  emailFromAuthToken: string;
+  adminSubjectFromAuthToken: string;
+  description: string;
+  globallyEnabled: boolean;
+}
