@@ -34,6 +34,21 @@ describe("validateCreateFeatureFlagRequest", () => {
       expect(error).toBeNull();
     }
   });
+  test("should not raise an error when optional fields are null", () => {
+    let error = null;
+    try {
+      validateCreateFeatureFlagRequest({
+        emailFromAuthToken: "user@example.com",
+        adminSubjectFromAuthToken: "5c3473b6-cf2e-4c55-a80e-8db51d1bc5fd",
+        name: "test-feature-flag",
+        description: null,
+      });
+    } catch (err) {
+      error = err;
+    } finally {
+      expect(error).toBeNull();
+    }
+  });
   test("should raise an error if name is missing", () => {
     let error = null;
     try {
@@ -105,6 +120,21 @@ describe("validateUpdateFeatureFlagRequest", () => {
         adminSubjectFromAuthToken: "5c3473b6-cf2e-4c55-a80e-8db51d1bc5fd",
         globallyEnabled: false,
         description: "feature flag description",
+      });
+    } catch (err) {
+      error = err;
+    } finally {
+      expect(error).toBeNull();
+    }
+  });
+  test("should not raise an error when optional fields are null", () => {
+    let error = null;
+    try {
+      validateUpdateFeatureFlagRequest({
+        emailFromAuthToken: "user@example.com",
+        adminSubjectFromAuthToken: "5c3473b6-cf2e-4c55-a80e-8db51d1bc5fd",
+        globallyEnabled: false,
+        description: null,
       });
     } catch (err) {
       error = err;
