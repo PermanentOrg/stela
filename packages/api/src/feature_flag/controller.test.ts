@@ -11,6 +11,7 @@ import {
 import type {
   CreateFeatureFlagRequest,
   UpdateFeatureFlagRequest,
+  DeleteFeatureFlagRequest,
   FeatureFlagRequest,
 } from "./models";
 
@@ -456,6 +457,92 @@ describe("PUT /feature-flag/:featureFlagId", () => {
         description: "description",
         globallyEnabled: true,
       })
+      .expect(404);
+  });
+});
+
+describe("DELETE /feature-flag/:featureFlagId", () => {
+  const agent = request(app);
+  beforeEach(async () => {
+    (verifyAdminAuthentication as jest.Mock).mockImplementation(
+      (req: Request, __, next: NextFunction) => {
+        (req.body as DeleteFeatureFlagRequest).emailFromAuthToken =
+          "test@permanent.org";
+        (req.body as DeleteFeatureFlagRequest).adminSubjectFromAuthToken =
+          "6b640c73-4963-47de-a096-4a05ff8dc5f5";
+        next();
+      }
+    );
+    jest.restoreAllMocks();
+    jest.clearAllMocks();
+    await clearDatabase();
+    await loadFixtures();
+  });
+
+  afterEach(async () => {
+    jest.restoreAllMocks();
+    jest.clearAllMocks();
+    await clearDatabase();
+  });
+
+  test("should respond with a 200 status code", async () => {
+    await agent
+      .delete("/api/v2/feature-flags/1bdf2da6-026b-4e8e-9b57-a86b1817be5d")
+      .send({})
+      .expect(204);
+  });
+
+  test("should respond with 401 status code if lacking admin authentication", async () => {
+    (verifyAdminAuthentication as jest.Mock).mockImplementation(
+      (_: Request, __, next: NextFunction) => {
+        next(new createError.Unauthorized("You aren't logged in"));
+      }
+    );
+    await agent
+      .delete("/api/v2/feature-flags/1bdf2da6-026b-4e8e-9b57-a86b1817be5d")
+      .expect(401);
+  });
+
+  test("should delete the feature flag in the database", async () => {
+    await agent
+      .delete("/api/v2/feature-flags/1bdf2da6-026b-4e8e-9b57-a86b1817be5d")
+      .send({})
+      .expect(204);
+    const result = await db.query(
+      `SELECT
+        name
+      FROM
+        feature_flag
+      WHERE
+        id = '1bdf2da6-026b-4e8e-9b57-a86b1817be5d'`
+    );
+    expect(result.rows.length).toBe(0);
+  });
+
+  test("should respond with 500 if the database call fails", async () => {
+    jest.spyOn(db, "sql").mockImplementation(() => {
+      throw new Error("SQL error");
+    });
+    await agent
+      .delete("/api/v2/feature-flags/1bdf2da6-026b-4e8e-9b57-a86b1817be5d")
+      .send({})
+      .expect(500);
+  });
+
+  test("should log the error if the database call fails", async () => {
+    const testError = new Error("SQL error");
+    jest.spyOn(db, "sql").mockRejectedValueOnce(testError);
+    await agent
+      .delete("/api/v2/feature-flags/1bdf2da6-026b-4e8e-9b57-a86b1817be5d")
+      .send({})
+      .expect(500);
+    expect(logger.error).toHaveBeenCalled();
+  });
+
+  test("should respond with 404 status code if feature flag does not exist", async () => {
+    await agent
+      .delete(`/api/v2/feature-flags/${notExistingFeatureFlagId}`)
+      .send({})
       .expect(404);
   });
 });

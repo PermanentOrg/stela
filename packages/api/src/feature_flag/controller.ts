@@ -5,6 +5,7 @@ import { logger } from "@stela/logger";
 import { featureService } from "./service";
 import { createFeatureService } from "./service/create";
 import { updateFeatureService } from "./service/update";
+import { deleteFeatureService } from "./service/delete";
 import {
   extractUserIsAdminFromAuthToken,
   verifyAdminAuthentication,
@@ -70,6 +71,24 @@ featureController.put(
         req.body
       );
       res.status(200).send({ data: featureFlag });
+    } catch (err) {
+      if (isValidationError(err)) {
+        res.status(400).json({ error: err.message });
+        return;
+      }
+      next(err);
+    }
+  }
+);
+
+featureController.delete(
+  "/:featureId",
+  verifyAdminAuthentication,
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      validateFeatureFlagParams(req.params);
+      await deleteFeatureService.deleteFeatureFlag(req.params.featureId);
+      res.status(204).send();
     } catch (err) {
       if (isValidationError(err)) {
         res.status(400).json({ error: err.message });
