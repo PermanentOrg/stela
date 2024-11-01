@@ -12,7 +12,7 @@ export function validateCreateFeatureFlagRequest(
     .keys({
       ...fieldsFromAdminAuthentication,
       name: Joi.string().required(),
-      description: Joi.string(),
+      description: Joi.string().allow(null),
     })
     .validate(data);
 
@@ -27,7 +27,7 @@ export function validateUpdateFeatureFlagRequest(
   const validation = Joi.object()
     .keys({
       ...fieldsFromAdminAuthentication,
-      description: Joi.string(),
+      description: Joi.string().allow(null),
       globallyEnabled: Joi.boolean().required(),
     })
     .validate(data);
