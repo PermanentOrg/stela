@@ -4,6 +4,18 @@
 
 # Stela: A Monolithic Typescript Backend for Permanent.org
 
+## Documentation
+
+Historically, documentation of this repo's API server was kept in https://github.com/PermanentOrg/stela/blob/main/API.md.
+We are now adopting the OpenAPI specification format for API documentation; new endpoints are documented in this fashion.
+To generate an HTML copy of the OpenAPI documentation, run
+
+```bash
+redocly build-docs packages/api/docs/present/api.yaml
+```
+
+Then open redoc-static.html to view the docs in browser.
+
 ## Setup
 
 1. Create a `.env` file
