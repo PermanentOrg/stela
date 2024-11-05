@@ -4,6 +4,7 @@
   "description": "A monolithic backend for Permanent.org",
   "workspaces": [
     "./packages/logger",
+    "./packages/s3-utils",
     "./packages/api",
     "./packages/archivematica_cleanup",
     "./packages/account_space_updater",
