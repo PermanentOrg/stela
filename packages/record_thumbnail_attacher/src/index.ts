@@ -1,6 +1,6 @@
 import type { SQSHandler, SQSEvent, SQSRecord } from "aws-lambda";
-import { getSignedUrl } from "aws-cloudfront-sign";
 import * as Sentry from "@sentry/aws-serverless";
+import { constructSignedCdnUrl } from "@stela/s3-utils";
 import { logger } from "@stela/logger";
 import { db } from "./database";
 import {
@@ -44,17 +44,6 @@ const getFileIdFromKey = (key: string): string => {
     throw new Error("Invalid file key");
   }
   return match[1];
-};
-
-const constructSignedCdnUrl = (key: string): string => {
-  const expirationTime = new Date();
-  expirationTime.setFullYear(expirationTime.getFullYear() + 1);
-
-  return getSignedUrl(`${process.env["CLOUDFRONT_URL"] ?? ""}${key}`, {
-    expireTime: expirationTime.getTime(),
-    keypairId: process.env["CLOUDFRONT_KEY_PAIR_ID"] ?? "",
-    privateKeyString: process.env["CLOUDFRONT_PRIVATE_KEY"] ?? "",
-  });
 };
 
 export const handler: SQSHandler = Sentry.wrapHandler(

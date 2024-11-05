@@ -34,8 +34,8 @@
     "@sentry/node": "^7.57.0",
     "@sentry/profiling-node": "^8.26.0",
     "@stela/logger": "^1.0.0",
+    "@stela/s3-utils": "^1.0.0",
     "ajv": "^8.17.1",
-    "aws-cloudfront-sign": "^3.0.2",
     "dotenv": "^8.2.0",
     "require-env-variable": "^3.1.2",
     "tinypg": "^7.0.0"
