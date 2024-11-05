@@ -25,6 +25,11 @@
     "test": "node --experimental-vm-modules ../../node_modules/jest/bin/jest.js -i --silent=false"
   },
   "dependencies": {
-    "aws-cloudfront-sign": "^3.0.2"
+    "ajv": "^8.17.1",
+    "aws-cloudfront-sign": "^3.0.2",
+    "@stela/logger": "^1.0.0"
+  },
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.119"
   }
 }
