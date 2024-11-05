@@ -1,38 +1,11 @@
-import type { SQSHandler, SQSEvent, SQSRecord } from "aws-lambda";
+import type { SQSHandler, SQSEvent } from "aws-lambda";
 import * as Sentry from "@sentry/aws-serverless";
-import { constructSignedCdnUrl } from "@stela/s3-utils";
+import {
+  constructSignedCdnUrl,
+  getS3ObjectFromS3Message,
+} from "@stela/s3-utils";
 import { logger } from "@stela/logger";
 import { db } from "./database";
-import {
-  validateNewDisseminationPackageJpgEvent,
-  validateSqsMessage,
-} from "./validators";
-
-const getKeyFromS3Message = (message: SQSRecord): string => {
-  const { body } = message;
-  const parsedBody: unknown = JSON.parse(body);
-  if (!validateSqsMessage(parsedBody)) {
-    logger.error(
-      `Invalid message body: ${JSON.stringify(validateSqsMessage.errors)}`
-    );
-    throw new Error("Invalid message body");
-  }
-  const parsedMessage: unknown = JSON.parse(parsedBody.Message);
-  if (
-    !validateNewDisseminationPackageJpgEvent(parsedMessage) ||
-    !parsedMessage.Records[0]
-  ) {
-    logger.error(
-      `Invalid message body: ${JSON.stringify(
-        validateNewDisseminationPackageJpgEvent.errors
-      )}`
-    );
-    throw new Error("Invalid message body");
-  }
-
-  const { key } = parsedMessage.Records[0].s3.object;
-  return key;
-};
 
 const getFileIdFromKey = (key: string): string => {
   // The key will inlude the substring /{fileId}_upload, which is what this regex looks for. The fileId is either
@@ -50,7 +23,7 @@ export const handler: SQSHandler = Sentry.wrapHandler(
   async (event: SQSEvent, _, __) => {
     await Promise.all(
       event.Records.map(async (message) => {
-        const key = getKeyFromS3Message(message);
+        const { key } = getS3ObjectFromS3Message(message);
         if (!key.includes("/thumbnails/")) {
           // If we don't have "thumbnails" in the key, this is the access copy, so irrelevant to this lambda
           return;

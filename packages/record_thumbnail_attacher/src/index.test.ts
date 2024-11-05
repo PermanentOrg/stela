@@ -1,12 +1,13 @@
 import type { Context } from "aws-lambda";
-import { getSignedUrl } from "aws-cloudfront-sign";
+import { constructSignedCdnUrl } from "@stela/s3-utils";
 import { logger } from "@stela/logger";
 import { db } from "./database";
 import { handler } from "./index";
 
 jest.mock("./database");
-jest.mock("aws-cloudfront-sign", () => ({
-  getSignedUrl: jest.fn(),
+jest.mock("@stela/s3-utils", () => ({
+  ...jest.requireActual("@stela/s3-utils"),
+  constructSignedCdnUrl: jest.fn(),
 }));
 jest.mock("@stela/logger");
 
@@ -228,7 +229,7 @@ describe("handler", () => {
     const testUrl =
       "https://localcdn.permanent.org/_Liam/access_copies/e38e/8582/b417/430c/953d/5c7e/8040/1ae2/1_upload-cb45fa84-f0ea-4a9e-b1da-309e485a4f4a/thumbnails/710a1def-caf8-48f2-8eee-0848b4cfda10.jpg?&Expires=1739554780&Signature=testSignature&Key-Pair-Id=testKeyPairId";
 
-    (getSignedUrl as jest.Mock).mockReturnValue(testUrl);
+    (constructSignedCdnUrl as jest.Mock).mockReturnValue(testUrl);
 
     const event = {
       Records: [
@@ -313,7 +314,7 @@ describe("handler", () => {
     const testUrl =
       "https://localcdn.permanent.org/_Liam/access_copies/e38e/8582/b417/430c/953d/5c7e/8040/1ae2/1_upload-cb45fa84-f0ea-4a9e-b1da-309e485a4f4a/thumbnails/710a1def-caf8-48f2-8eee-0848b4cfda10.jpg?&Expires=1739554780&Signature=testSignature&Key-Pair-Id=testKeyPairId";
 
-    (getSignedUrl as jest.Mock).mockReturnValue(testUrl);
+    (constructSignedCdnUrl as jest.Mock).mockReturnValue(testUrl);
 
     const oneWeekFromNow = new Date();
     oneWeekFromNow.setDate(oneWeekFromNow.getDate() + 7);
@@ -390,7 +391,7 @@ describe("handler", () => {
     const testUrl =
       "https://localcdn.permanent.org/_Liam/access_copies/e38e/8582/b417/430c/953d/5c7e/8040/1ae2/1_upload-cb45fa84-f0ea-4a9e-b1da-309e485a4f4a/thumbnails/710a1def-caf8-48f2-8eee-0848b4cfda10.jpg?&Expires=1739554780&Signature=testSignature&Key-Pair-Id=testKeyPairId";
 
-    (getSignedUrl as jest.Mock).mockReturnValue(testUrl);
+    (constructSignedCdnUrl as jest.Mock).mockReturnValue(testUrl);
 
     const dbError = new Error("Database error");
     jest.spyOn(db, "sql").mockRejectedValue(dbError);
