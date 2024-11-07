@@ -47,6 +47,11 @@ variable "thumbnail_refresh_image" {
   type        = string
 }
 
+variable "access_copy_lambda_image" {
+  description = "Tag of access copy lambda image to deploy"
+  type        = string
+}
+
 variable "prod_security_group_id" {
   description = "ID of the Production security group"
   type        = string
@@ -184,5 +189,15 @@ variable "cloudfront_private_key" {
 
 variable "aws_account_id" {
   description = "AWS account ID"
+  type        = string
+}
+
+variable "s3_bucket" {
+  description = "The name of the S3 bucket where files are stored"
+  type        = string
+}
+
+variable "backblaze_bucket" {
+  description = "The name of the Backblaze bucket where files are stored"
   type        = string
 }

@@ -26,6 +26,10 @@ COPY --from=builder /usr/local/apps/stela/packages/record_thumbnail_attacher/dis
 COPY --from=builder /usr/local/apps/stela/packages/record_thumbnail_attacher/package.json ./packages/record_thumbnail_attacher/package.json
 COPY --from=builder /usr/local/apps/stela/packages/logger/dist ./packages/logger/dist
 COPY --from=builder /usr/local/apps/stela/packages/logger/package.json ./packages/logger/package.json
+COPY --from=builder /usr/local/apps/stela/packages/s3-utils/dist ./packages/s3-utils/dist
+COPY --from=builder /usr/local/apps/stela/packages/s3-utils/package.json ./packages/s3-utils/package.json
+COPY --from=builder /usr/local/apps/stela/packages/archivematica-utils/dist ./packages/archivematica-utils/dist
+COPY --from=builder /usr/local/apps/stela/packages/archivematica-utils/package.json ./packages/archivematica-utils/package.json
 COPY --from=builder /usr/local/apps/stela/package.json ./package.json
 COPY --from=builder /usr/local/apps/stela/package-lock.json ./package-lock.json
 
