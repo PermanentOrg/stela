@@ -465,6 +465,13 @@ for valid values of `action` and `entity`.
 
 See also [internal documentation on
 MixPanel](https://permanent.atlassian.net/wiki/spaces/EN/pages/2086862849/Mixpanel+Events).
+This endpoint auto-populates a handful of fields on the Mixpanel event. These are:
+
+- `$browser`, taken from the request's user agent
+- `$os`, also taken from the user agent
+- `$device`, also take from the user agent
+- `$email`, taken from the authentication token used to make the request
+- `ip`, taken from request headers
 
 - Response
 
