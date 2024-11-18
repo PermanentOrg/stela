@@ -1,0 +1,17 @@
+archiveFile:
+  description: >
+    Archive File Object
+  type: object
+  properties:
+    fileId:
+      type: string
+    size:
+      type: number
+    format:
+      type: string
+    type:
+      type: string
+    fileUrl:
+      type: string
+    downloadUrl:
+      type: string

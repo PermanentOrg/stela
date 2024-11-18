@@ -1,9 +1,12 @@
-import type { Request, Response, NextFunction } from "express";
+import type { Request, NextFunction } from "express";
 import { logger } from "@stela/logger";
 import request from "supertest";
 import { app } from "../app";
 import { db } from "../database";
-import { extractUserEmailFromAuthToken } from "../middleware";
+import {
+  extractUserEmailFromAuthToken,
+  verifyUserAuthentication,
+} from "../middleware";
 import type { ArchiveFile, ArchiveRecord, Share, Tag } from "./models";
 
 jest.mock("../database");
@@ -61,6 +64,8 @@ describe("record", () => {
 
   afterEach(async () => {
     await clearDatabase();
+    jest.restoreAllMocks();
+    jest.clearAllMocks();
   });
 
   const agent = request(app);
@@ -316,6 +321,110 @@ describe("record", () => {
     });
 
     await agent.get("/api/v2/record?recordIds[]=14").expect(500);
+    expect(logger.error).toHaveBeenCalledWith(testError);
+  });
+});
+
+describe("patch record", () => {
+  const agent = request(app);
+
+  beforeEach(async () => {
+    (verifyUserAuthentication as jest.Mock).mockImplementation(
+      async (
+        req: Request<
+          unknown,
+          unknown,
+          { userSubjectFromAuthToken?: string; emailFromAuthToken?: string }
+        >,
+        __,
+        next: NextFunction
+      ) => {
+        req.body.emailFromAuthToken = "test+1@permanent.org";
+        req.body.userSubjectFromAuthToken =
+          "b5461dc2-1eb0-450e-b710-fef7b2cafe1e";
+
+        next();
+      }
+    );
+    await clearDatabase();
+    await setupDatabase();
+  });
+
+  afterEach(async () => {
+    await clearDatabase();
+    jest.restoreAllMocks();
+    jest.clearAllMocks();
+  });
+
+  test("expect an empty query to cause a 400 error", async () => {
+    await agent.patch("/api/v2/record/1").send({}).expect(400);
+  });
+
+  test("expect non existent record to cause a 404 error", async () => {
+    await agent
+      .patch("/api/v2/record/111111111")
+      .send({ description: "aa" })
+      .expect(404);
+  });
+
+  test("expect request to have an email from auth token if an auth token exists", async () => {
+    (extractUserEmailFromAuthToken as jest.Mock).mockImplementation(
+      (req: Request, __, next: NextFunction) => {
+        (req.body as { emailFromAuthToken: string }).emailFromAuthToken =
+          "not an email";
+        next();
+      }
+    );
+
+    await agent.patch("/api/v2/record/1").expect(400);
+  });
+
+  test("expect location id is updated", async () => {
+    await agent.patch("/api/v2/record/1").send({ locationId: 123 }).expect(200);
+
+    const result = await db.query(
+      "SELECT locnid FROM record WHERE recordId = :recordId",
+      {
+        recordId: 1,
+      }
+    );
+
+    expect(result.rows[0]).toEqual({ locnid: "123" });
+  });
+
+  test("expect location id is updated when set to null", async () => {
+    await agent
+      .patch("/api/v2/record/1")
+      .send({ locationId: null })
+      .expect(200);
+
+    const result = await db.query(
+      "SELECT locnid FROM record WHERE recordId = :recordId",
+      {
+        recordId: 1,
+      }
+    );
+
+    expect(result.rows[0]).toStrictEqual({ locnid: null });
+  });
+
+  test("expect 400 error if location id is wrong type", async () => {
+    await agent
+      .patch("/api/v2/record/1")
+      .send({
+        locationId: false,
+      })
+      .expect(400);
+  });
+
+  test("expect to log error and return 500 if database update fails", async () => {
+    const testError = new Error("test error");
+    jest.spyOn(db, "sql").mockImplementation(async () => {
+      throw testError;
+    });
+
+    await agent.patch("/api/v2/record/1").send({ locationId: 123 }).expect(500);
+
     expect(logger.error).toHaveBeenCalledWith(testError);
   });
 });
