@@ -539,8 +539,6 @@ This endpoint auto-populates a handful of fields on the Mixpanel event. These ar
 
 ## FusionAuth Users and Two-Factor Methods
 
-(Note: this section is not yet implemented)
-
 ### GET `/idpuser`
 
 The logged-in user should only be able to get information about
