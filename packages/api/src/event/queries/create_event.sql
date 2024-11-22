@@ -19,4 +19,6 @@ event (
   :ip,
   :userAgent,
   :body
-);
+)
+RETURNING
+id;

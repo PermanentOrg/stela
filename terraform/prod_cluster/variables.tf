@@ -141,6 +141,11 @@ variable "low_priority_topic_arn" {
   type        = string
 }
 
+variable "event_topic_arn" {
+  description = "ARN of the SNS topic for system events"
+  type        = string
+}
+
 variable "mixpanel_token" {
   description = "Mixpanel token"
   type        = string
