@@ -28,21 +28,17 @@ describe("handler", () => {
     );
   };
 
-  beforeEach(async () => {
-    await loadFixtures();
-  });
+  interface AccountSpaceStartingState {
+    spaceLeft: string;
+    spaceTotal: string;
+    fileLeft: string;
+    fileTotal: string;
+  }
 
-  afterEach(async () => {
-    await clearDatabase();
-  });
-
-  test("should correctly update account_space and ledger_nonfinancial", async () => {
-    const initialAccountSpaceResult = await db.query<{
-      spaceLeft: string;
-      spaceTotal: string;
-      fileLeft: string;
-      fileTotal: string;
-    }>(
+  const getInitialAccountSpace = async (): Promise<
+    AccountSpaceStartingState | undefined
+  > => {
+    const initialAccountSpaceResult = await db.query<AccountSpaceStartingState>(
       `SELECT 
         spaceLeft AS "spaceLeft",
         spaceTotal AS "spaceTotal",
@@ -53,37 +49,18 @@ describe("handler", () => {
       WHERE
         accountId = 2`
     );
-    const initialAccountSpace = initialAccountSpaceResult.rows[0];
-    await handler(
-      {
-        Records: [
-          {
-            messageId: "1",
-            receiptHandle: "1",
-            body: JSON.stringify({ recordId: "1" }),
-            attributes: {
-              ApproximateReceiveCount: "1",
-              SentTimestamp: "1",
-              SenderId: "1",
-              ApproximateFirstReceiveTimestamp: "1",
-            },
-            messageAttributes: {
-              Action: { stringValue: "submit", dataType: "string" },
-            },
-            md5OfBody: "1",
-            eventSource: "1",
-            eventSourceARN: "1",
-            awsRegion: "1",
-          },
-        ],
-      },
-      {} as Context,
-      () => {}
-    );
-    const updatedAccountSpaceResult = await db.query<{
-      spaceLeft: string;
-      fileLeft: string;
-    }>(
+    return initialAccountSpaceResult.rows[0];
+  };
+
+  interface AccountSpaceAfterUpdate {
+    spaceLeft: string;
+    fileLeft: string;
+  }
+
+  const getUpdatedAccountSpace = async (): Promise<
+    AccountSpaceAfterUpdate | undefined
+  > => {
+    const updatedAccountSpaceResult = await db.query<AccountSpaceAfterUpdate>(
       `SELECT 
         spaceLeft AS "spaceLeft",
         fileLeft AS "fileLeft"
@@ -92,24 +69,29 @@ describe("handler", () => {
       WHERE
         accountId = 2`
     );
-    const updatedAccountSpace = updatedAccountSpaceResult.rows[0];
-    const ledgerEntryResult = await db.query<{
-      type: string;
-      spaceDelta: string;
-      fileDelta: string;
-      fromSpaceBefore: string;
-      fromSpaceLeft: string;
-      fromSpaceTotal: string;
-      fromFileBefore: string;
-      fromFileLeft: string;
-      fromFileTotal: string;
-      toSpaceBefore: string;
-      toSpaceLeft: string;
-      toSpaceTotal: string;
-      toFileBefore: string;
-      toFileLeft: string;
-      toFileTotal: string;
-    }>(
+    return updatedAccountSpaceResult.rows[0];
+  };
+
+  interface LedgerEntry {
+    type: string;
+    spaceDelta: string;
+    fileDelta: string;
+    fromSpaceBefore: string;
+    fromSpaceLeft: string;
+    fromSpaceTotal: string;
+    fromFileBefore: string;
+    fromFileLeft: string;
+    fromFileTotal: string;
+    toSpaceBefore: string;
+    toSpaceLeft: string;
+    toSpaceTotal: string;
+    toFileBefore: string;
+    toFileLeft: string;
+    toFileTotal: string;
+  }
+
+  const getLedgerEntry = async (): Promise<LedgerEntry | undefined> => {
+    const ledgerEntryResult = await db.query<LedgerEntry>(
       `SELECT
         type,
         spaceDelta "spaceDelta",
@@ -131,7 +113,51 @@ describe("handler", () => {
       WHERE
         recordId = 1`
     );
-    const ledgerEntry = ledgerEntryResult.rows[0];
+    return ledgerEntryResult.rows[0];
+  };
+
+  beforeEach(async () => {
+    await loadFixtures();
+  });
+
+  afterEach(async () => {
+    await clearDatabase();
+  });
+
+  test("should correctly update account_space and ledger_nonfinancial when a record is created", async () => {
+    const initialAccountSpace = await getInitialAccountSpace();
+    await handler(
+      {
+        Records: [
+          {
+            messageId: "1",
+            receiptHandle: "1",
+            body: JSON.stringify({
+              Message: JSON.stringify({
+                entity: "record",
+                action: "create",
+                body: { record: { recordId: "1" } },
+              }),
+            }),
+            attributes: {
+              ApproximateReceiveCount: "1",
+              SentTimestamp: "1",
+              SenderId: "1",
+              ApproximateFirstReceiveTimestamp: "1",
+            },
+            messageAttributes: {},
+            md5OfBody: "1",
+            eventSource: "1",
+            eventSourceARN: "1",
+            awsRegion: "1",
+          },
+        ],
+      },
+      {} as Context,
+      () => {}
+    );
+    const updatedAccountSpace = await getUpdatedAccountSpace();
+    const ledgerEntry = await getLedgerEntry();
 
     if (!initialAccountSpace || !updatedAccountSpace || !ledgerEntry) {
       expect(false).toBe(true);
@@ -142,6 +168,68 @@ describe("handler", () => {
       });
       expect(ledgerEntry).toEqual({
         type: "type.billing.file_upload",
+        spaceDelta: "1024",
+        fileDelta: "1",
+        fromSpaceBefore: initialAccountSpace.spaceLeft,
+        fromSpaceLeft: updatedAccountSpace.spaceLeft,
+        fromSpaceTotal: initialAccountSpace.spaceTotal,
+        fromFileBefore: initialAccountSpace.fileLeft,
+        fromFileLeft: updatedAccountSpace.fileLeft,
+        fromFileTotal: initialAccountSpace.fileTotal,
+        toSpaceBefore: "0",
+        toSpaceLeft: "0",
+        toSpaceTotal: "0",
+        toFileBefore: "0",
+        toFileLeft: "0",
+        toFileTotal: "0",
+      });
+    }
+  });
+
+  test("should correctly update account_space and ledger_nonfinancial when a record is created", async () => {
+    const initialAccountSpace = await getInitialAccountSpace();
+    await handler(
+      {
+        Records: [
+          {
+            messageId: "1",
+            receiptHandle: "1",
+            body: JSON.stringify({
+              Message: JSON.stringify({
+                entity: "record",
+                action: "copy",
+                body: { newRecord: { recordId: "1" } },
+              }),
+            }),
+            attributes: {
+              ApproximateReceiveCount: "1",
+              SentTimestamp: "1",
+              SenderId: "1",
+              ApproximateFirstReceiveTimestamp: "1",
+            },
+            messageAttributes: {},
+            md5OfBody: "1",
+            eventSource: "1",
+            eventSourceARN: "1",
+            awsRegion: "1",
+          },
+        ],
+      },
+      {} as Context,
+      () => {}
+    );
+    const updatedAccountSpace = await getUpdatedAccountSpace();
+    const ledgerEntry = await getLedgerEntry();
+
+    if (!initialAccountSpace || !updatedAccountSpace || !ledgerEntry) {
+      expect(false).toBe(true);
+    } else {
+      expect(updatedAccountSpace).toEqual({
+        spaceLeft: (+initialAccountSpace.spaceLeft - 1024).toString(),
+        fileLeft: (+initialAccountSpace.fileLeft - 1).toString(),
+      });
+      expect(ledgerEntry).toEqual({
+        type: "type.billing.file_copy",
         spaceDelta: "1024",
         fileDelta: "1",
         fromSpaceBefore: initialAccountSpace.spaceLeft,
@@ -176,9 +264,7 @@ describe("handler", () => {
                 SenderId: "1",
                 ApproximateFirstReceiveTimestamp: "1",
               },
-              messageAttributes: {
-                Action: { stringValue: "submit", dataType: "string" },
-              },
+              messageAttributes: {},
               md5OfBody: "1",
               eventSource: "1",
               eventSourceARN: "1",
@@ -195,7 +281,7 @@ describe("handler", () => {
     expect(error).toEqual(new Error("Invalid message body"));
   });
 
-  test("should throw an error if the action attribute is missing", async () => {
+  test("should throw an error if the internal message is invalid", async () => {
     let error = null;
     try {
       await handler(
@@ -204,7 +290,9 @@ describe("handler", () => {
             {
               messageId: "1",
               receiptHandle: "1",
-              body: JSON.stringify({ recordId: "1" }),
+              body: JSON.stringify({
+                Message: JSON.stringify({ fileId: "1" }),
+              }),
               attributes: {
                 ApproximateReceiveCount: "1",
                 SentTimestamp: "1",
@@ -225,7 +313,91 @@ describe("handler", () => {
     } catch (err) {
       error = err;
     }
-    expect(error).toEqual(new Error("Action attribute is missing"));
+    expect(error).toEqual(new Error("Invalid message"));
+  });
+
+  test("should throw an error if record.create event is missing the record field", async () => {
+    let error = null;
+    try {
+      await handler(
+        {
+          Records: [
+            {
+              messageId: "1",
+              receiptHandle: "1",
+              body: JSON.stringify({
+                Message: JSON.stringify({
+                  entity: "record",
+                  action: "create",
+                  body: { newRecord: { recordId: "1" } },
+                }),
+              }),
+              attributes: {
+                ApproximateReceiveCount: "1",
+                SentTimestamp: "1",
+                SenderId: "1",
+                ApproximateFirstReceiveTimestamp: "1",
+              },
+              messageAttributes: {},
+              md5OfBody: "1",
+              eventSource: "1",
+              eventSourceARN: "1",
+              awsRegion: "1",
+            },
+          ],
+        },
+        {} as Context,
+        () => {}
+      );
+    } catch (err) {
+      error = err;
+    }
+    expect(error).toEqual(
+      new Error("record field missing in body of record.create")
+    );
+  });
+
+  test("should throw an error if record.copy event is missing the newRecord field", async () => {
+    let error = null;
+    try {
+      await handler(
+        {
+          Records: [
+            {
+              messageId: "1",
+              receiptHandle: "1",
+              body: JSON.stringify({
+                Message: JSON.stringify({
+                  entity: "record",
+                  action: "copy",
+                  body: { record: { recordId: "1" } },
+                }),
+              }),
+              attributes: {
+                ApproximateReceiveCount: "1",
+                SentTimestamp: "1",
+                SenderId: "1",
+                ApproximateFirstReceiveTimestamp: "1",
+              },
+              messageAttributes: {
+                Action: { stringValue: "copy", dataType: "string" },
+              },
+              md5OfBody: "1",
+              eventSource: "1",
+              eventSourceARN: "1",
+              awsRegion: "1",
+            },
+          ],
+        },
+        {} as Context,
+        () => {}
+      );
+    } catch (err) {
+      error = err;
+    }
+    expect(error).toEqual(
+      new Error("newRecord field missing in body of record.copy")
+    );
   });
 
   test("should not throw an error if the ledger entry already exists", async () => {
@@ -286,7 +458,13 @@ describe("handler", () => {
             {
               messageId: "1",
               receiptHandle: "1",
-              body: JSON.stringify({ recordId: "1" }),
+              body: JSON.stringify({
+                Message: JSON.stringify({
+                  entity: "record",
+                  action: "create",
+                  body: { record: { recordId: "1" } },
+                }),
+              }),
               attributes: {
                 ApproximateReceiveCount: "1",
                 SentTimestamp: "1",
@@ -294,7 +472,7 @@ describe("handler", () => {
                 ApproximateFirstReceiveTimestamp: "1",
               },
               messageAttributes: {
-                Action: { stringValue: "submit", dataType: "string" },
+                Action: { stringValue: "create", dataType: "string" },
               },
               md5OfBody: "1",
               eventSource: "1",
