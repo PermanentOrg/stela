@@ -21,7 +21,6 @@ export const extractFileAttributesFromS3Message = (
     logger.error(`Invalid message body: ${body}`);
     throw new Error("Invalid message body");
   }
-  const { recordId } = parsedBody;
   const action = message.messageAttributes["Action"]?.stringValue;
   if (action === undefined) {
     logger.error(
@@ -29,8 +28,32 @@ export const extractFileAttributesFromS3Message = (
     );
     throw new Error("Action attribute is missing");
   }
-  const operation = action === "submit" ? Operation.Upload : Operation.Copy;
-  return { recordId, operation };
+
+  if (action === "create") {
+    if (parsedBody.body.record === undefined) {
+      logger.error(
+        `record.create event missing record: ${JSON.stringify(parsedBody.body)}`
+      );
+      throw new Error("record field missing in body of record.create");
+    }
+    return {
+      recordId: parsedBody.body.record.recordId,
+      operation: Operation.Upload,
+    };
+  } else {
+    if (parsedBody.body.newRecord === undefined) {
+      logger.error(
+        `record.copy event missing newRecord: ${JSON.stringify(
+          parsedBody.body
+        )}`
+      );
+      throw new Error("newRecord field missing in body of record.copy");
+    }
+    return {
+      recordId: parsedBody.body.newRecord.recordId,
+      operation: Operation.Copy,
+    };
+  }
 };
 
 export const handler: SQSHandler = async (event: SQSEvent, _, __) => {

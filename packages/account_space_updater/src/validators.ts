@@ -4,15 +4,45 @@ import type { JSONSchemaType } from "ajv";
 const ajv = new Ajv({ coerceTypes: true });
 
 interface RecordSubmitEvent {
-  recordId: string;
+  body: {
+    record?: {
+      recordId: string;
+    };
+    newRecord?: {
+      recordId: string;
+    };
+  };
 }
 
 const recordSubmitEventSchema: JSONSchemaType<RecordSubmitEvent> = {
   type: "object",
   properties: {
-    recordId: { type: "string" },
+    body: {
+      type: "object",
+      properties: {
+        record: {
+          type: "object",
+          properties: {
+            recordId: { type: "string" },
+          },
+          required: ["recordId"],
+          additionalProperties: true,
+          nullable: true,
+        },
+        newRecord: {
+          type: "object",
+          properties: {
+            recordId: { type: "string" },
+          },
+          required: ["recordId"],
+          additionalProperties: true,
+          nullable: true,
+        },
+      },
+      additionalProperties: true,
+    },
   },
-  required: ["recordId"],
+  required: ["body"],
   additionalProperties: true,
 };
 
