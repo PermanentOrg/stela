@@ -10,6 +10,8 @@ on:
         value: ${{ jobs.generate_image_tags.outputs.RECORD_THUMBNAIL_LAMBDA_IMAGE_TAG }}
       THUMBNAIL_REFRESH_IMAGE_TAG:
         value: ${{ jobs.generate_image_tags.outputs.THUMBNAIL_REFRESH_IMAGE_TAG }}
+      ACCOUNT_SPACE_UPDATER_IMAGE_TAG:
+        value: ${{ jobs.generate_image_tags.outputs.ACCOUNT_SPACE_UPDATER_IMAGE_TAG }}
 jobs:
   generate_image_tags:
     runs-on: ubuntu-20.04
@@ -18,6 +20,7 @@ jobs:
       AM_CLEANUP_IMAGE_TAG: ${{ steps.generate_am_cleanup_image_tag.outputs.AM_CLEANUP_IMAGE_TAG }}
       RECORD_THUMBNAIL_LAMBDA_IMAGE_TAG: ${{ steps.generate_record_thumbnail_lambda_image_tag.outputs.RECORD_THUMBNAIL_LAMBDA_IMAGE_TAG }}
       THUMBNAIL_REFRESH_IMAGE_TAG: ${{ steps.generate_thumbnail_refresh_image_tag.outputs.THUMBNAIL_REFRESH_IMAGE_TAG }}
+      ACCOUNT_SPACE_UPDATER_IMAGE_TAG: ${{ steps.generate_account_space_updater_image_tag.outputs.ACCOUNT_SPACE_UPDATER_IMAGE_TAG }}
     steps:
       - uses: actions/checkout@v3
       - name: Set ECR domain env var
@@ -43,3 +46,6 @@ jobs:
       - name: Generate Thumbnail Refresh Image Tag
         id: generate_thumbnail_refresh_image_tag
         run: echo "THUMBNAIL_REFRESH_IMAGE_TAG=$ECR_DOMAIN/stela:thumbnail_refresh-$BRANCH_TYPE-$ABBREVIATED_COMMIT_HASH" >> "$GITHUB_OUTPUT"
+      - name: Generate Account Space Updater Image Tag
+        id: generate_account_space_updater_image_tag
+        run: echo "ACCOUNT_SPACE_UPDATER_IMAGE_TAG=$ECR_DOMAIN/stela:account_space_updater-$BRANCH_TYPE-$ABBREVIATED_COMMIT_HASH" >> "$GITHUB_OUTPUT"
