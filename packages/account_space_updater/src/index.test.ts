@@ -28,13 +28,17 @@ describe("handler", () => {
     );
   };
 
-  const getInitialAccountSpace = async () => {
-    const initialAccountSpaceResult = await db.query<{
-      spaceLeft: string;
-      spaceTotal: string;
-      fileLeft: string;
-      fileTotal: string;
-    }>(
+  interface AccountSpaceStartingState {
+    spaceLeft: string;
+    spaceTotal: string;
+    fileLeft: string;
+    fileTotal: string;
+  }
+
+  const getInitialAccountSpace = async (): Promise<
+    AccountSpaceStartingState | undefined
+  > => {
+    const initialAccountSpaceResult = await db.query<AccountSpaceStartingState>(
       `SELECT 
         spaceLeft AS "spaceLeft",
         spaceTotal AS "spaceTotal",
@@ -48,11 +52,15 @@ describe("handler", () => {
     return initialAccountSpaceResult.rows[0];
   };
 
-  const getUpdatedAccountSpace = async () => {
-    const updatedAccountSpaceResult = await db.query<{
-      spaceLeft: string;
-      fileLeft: string;
-    }>(
+  interface AccountSpaceAfterUpdate {
+    spaceLeft: string;
+    fileLeft: string;
+  }
+
+  const getUpdatedAccountSpace = async (): Promise<
+    AccountSpaceAfterUpdate | undefined
+  > => {
+    const updatedAccountSpaceResult = await db.query<AccountSpaceAfterUpdate>(
       `SELECT 
         spaceLeft AS "spaceLeft",
         fileLeft AS "fileLeft"
@@ -64,24 +72,26 @@ describe("handler", () => {
     return updatedAccountSpaceResult.rows[0];
   };
 
-  const getLedgerEntry = async () => {
-    const ledgerEntryResult = await db.query<{
-      type: string;
-      spaceDelta: string;
-      fileDelta: string;
-      fromSpaceBefore: string;
-      fromSpaceLeft: string;
-      fromSpaceTotal: string;
-      fromFileBefore: string;
-      fromFileLeft: string;
-      fromFileTotal: string;
-      toSpaceBefore: string;
-      toSpaceLeft: string;
-      toSpaceTotal: string;
-      toFileBefore: string;
-      toFileLeft: string;
-      toFileTotal: string;
-    }>(
+  interface LedgerEntry {
+    type: string;
+    spaceDelta: string;
+    fileDelta: string;
+    fromSpaceBefore: string;
+    fromSpaceLeft: string;
+    fromSpaceTotal: string;
+    fromFileBefore: string;
+    fromFileLeft: string;
+    fromFileTotal: string;
+    toSpaceBefore: string;
+    toSpaceLeft: string;
+    toSpaceTotal: string;
+    toFileBefore: string;
+    toFileLeft: string;
+    toFileTotal: string;
+  }
+
+  const getLedgerEntry = async (): Promise<LedgerEntry | undefined> => {
+    const ledgerEntryResult = await db.query<LedgerEntry>(
       `SELECT
         type,
         spaceDelta "spaceDelta",

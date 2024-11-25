@@ -40,20 +40,17 @@ export const extractFileAttributesFromS3Message = (
       recordId: parsedBody.body.record.recordId,
       operation: Operation.Upload,
     };
-  } else {
-    if (parsedBody.body.newRecord === undefined) {
-      logger.error(
-        `record.copy event missing newRecord: ${JSON.stringify(
-          parsedBody.body
-        )}`
-      );
-      throw new Error("newRecord field missing in body of record.copy");
-    }
-    return {
-      recordId: parsedBody.body.newRecord.recordId,
-      operation: Operation.Copy,
-    };
   }
+  if (parsedBody.body.newRecord === undefined) {
+    logger.error(
+      `record.copy event missing newRecord: ${JSON.stringify(parsedBody.body)}`
+    );
+    throw new Error("newRecord field missing in body of record.copy");
+  }
+  return {
+    recordId: parsedBody.body.newRecord.recordId,
+    operation: Operation.Copy,
+  };
 };
 
 export const handler: SQSHandler = async (event: SQSEvent, _, __) => {
