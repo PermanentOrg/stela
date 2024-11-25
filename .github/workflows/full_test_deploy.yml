@@ -25,6 +25,7 @@ jobs:
       AM_CLEANUP_IMAGE_TAG: ${{ needs.generate_image_tags.outputs.AM_CLEANUP_IMAGE_TAG }}
       RECORD_THUMBNAIL_LAMBDA_IMAGE_TAG: ${{ needs.generate_image_tags.outputs.RECORD_THUMBNAIL_LAMBDA_IMAGE_TAG }}
       THUMBNAIL_REFRESH_IMAGE_TAG: ${{ needs.generate_image_tags.outputs.THUMBNAIL_REFRESH_IMAGE_TAG }}
+      ACCOUNT_SPACE_UPDATER_IMAGE_TAG: ${{ needs.generate_image_tags.ACCOUNT_SPACE_UPDATER_IMAGE_TAG }}
     defaults:
       run:
         working-directory: ./terraform/test_cluster
@@ -51,7 +52,9 @@ jobs:
           -var="record_thumbnail_dev_lambda_image=$RECORD_THUMBNAIL_LAMBDA_IMAGE_TAG" \
           -var="record_thumbnail_staging_lambda_image=$RECORD_THUMBNAIL_LAMBDA_IMAGE_TAG" \
           -var="thumbnail_refresh_dev_image=$THUMBNAIL_REFRESH_IMAGE_TAG" \
-          -var="thumbnail_refresh_staging_image=$THUMBNAIL_REFRESH_IMAGE_TAG"
+          -var="thumbnail_refresh_staging_image=$THUMBNAIL_REFRESH_IMAGE_TAG" \
+          -var="account_space_updater_dev_lambda_image=$ACCOUNT_SPACE_UPDATER_IMAGE_TAG" \
+          -var="account_space_updater_staging_lambda_image=$ACCOUNT_SPACE_UPDATER_IMAGE_TAG"
       - name: Terraform Apply
         run: |
           terraform apply -auto-approve -input=false \
@@ -62,4 +65,6 @@ jobs:
           -var="record_thumbnail_dev_lambda_image=$RECORD_THUMBNAIL_LAMBDA_IMAGE_TAG" \
           -var="record_thumbnail_staging_lambda_image=$RECORD_THUMBNAIL_LAMBDA_IMAGE_TAG" \
           -var="thumbnail_refresh_dev_image=$THUMBNAIL_REFRESH_IMAGE_TAG" \
-          -var="thumbnail_refresh_staging_image=$THUMBNAIL_REFRESH_IMAGE_TAG"
+          -var="thumbnail_refresh_staging_image=$THUMBNAIL_REFRESH_IMAGE_TAG" \
+          -var="account_space_updater_dev_lambda_image=$ACCOUNT_SPACE_UPDATER_IMAGE_TAG" \
+          -var="account_space_updater_staging_lambda_image=$ACCOUNT_SPACE_UPDATER_IMAGE_TAG"
