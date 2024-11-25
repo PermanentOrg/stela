@@ -78,12 +78,12 @@ variable "thumbnail_refresh_staging_image" {
   type        = string
 }
 
-variable "account_space_updater_dev_image" {
+variable "account_space_updater_dev_lambda_image" {
   description = "Tag of account space updater image to deploy to dev"
   type        = string
 }
 
-variable "account_space_updater_staging_image" {
+variable "account_space_updater_staging_lambda_image" {
   description = "Tag of account space updater image to deploy to staging"
   type        = string
 }

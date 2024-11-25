@@ -25,7 +25,7 @@ resource "aws_sqs_queue_policy" "account_space_update_dev_queue_policy" {
         Resource = aws_sqs_queue.account_space_update_dev_queue.arn,
         Condition = {
           ArnEquals = {
-            "aws:SourceArn" = var.event_topic_arn
+            "aws:SourceArn" = var.dev_event_topic_arn
           }
         }
       }
@@ -34,7 +34,7 @@ resource "aws_sqs_queue_policy" "account_space_update_dev_queue_policy" {
 }
 
 resource "aws_sns_topic_subscription" "account_space_update_dev_subscription" {
-  topic_arn = var.event_topic_arn
+  topic_arn = var.dev_event_topic_arn
   protocol  = "sqs"
   endpoint  = aws_sqs_queue.account_space_update_dev_queue.arn
   filter_policy = json_encode({
@@ -100,9 +100,9 @@ resource "aws_lambda_function" "account_space_update_dev_lambda" {
 
   environment {
     variables = {
-      ENV                    = var.dev_env
-      SENTRY_DSN             = var.sentry_dsn
-      DATABASE_URL           = var.dev_database_url
+      ENV          = var.dev_env
+      SENTRY_DSN   = var.sentry_dsn
+      DATABASE_URL = var.dev_database_url
     }
   }
 }
