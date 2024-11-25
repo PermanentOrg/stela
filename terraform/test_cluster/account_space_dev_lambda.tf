@@ -37,7 +37,7 @@ resource "aws_sns_topic_subscription" "account_space_update_dev_subscription" {
   topic_arn = var.dev_event_topic_arn
   protocol  = "sqs"
   endpoint  = aws_sqs_queue.account_space_update_dev_queue.arn
-  filter_policy = json_encode({
+  filter_policy = jsonencode({
     Entity = ["record"],
     Action = ["create", "copy"]
   })
