@@ -27,6 +27,7 @@ jobs:
       RECORD_THUMBNAIL_LAMBDA_IMAGE_TAG: ${{ needs.generate_image_tags.outputs.RECORD_THUMBNAIL_LAMBDA_IMAGE_TAG }}
       THUMBNAIL_REFRESH_IMAGE_TAG: ${{ needs.generate_image_tags.outputs.THUMBNAIL_REFRESH_IMAGE_TAG }}
       ACCESS_COPY_LAMBDA_IMAGE_TAG: ${{ needs.generate_image_tags.outputs.ACCESS_COPY_LAMBDA_IMAGE_TAG }}
+      ACCOUNT_SPACE_UPDATER_IMAGE_TAG: ${{ needs.generate_image_tags.outputs.ACCOUNT_SPACE_UPDATER_IMAGE_TAG }}
     defaults:
       run:
         working-directory: ./terraform/test_cluster
@@ -58,11 +59,14 @@ jobs:
           -var="thumbnail_refresh_staging_image=$THUMBNAIL_REFRESH_IMAGE_TAG" \
           -var="access_copy_dev_lambda_image=$ACCESS_COPY_LAMBDA_IMAGE_TAG" \
           -var="access_copy_staging_lambda_image=$ACCESS_COPY_LAMBDA_IMAGE_TAG" \
+          -var="account_space_updater_dev_lambda_image=$ACCOUNT_SPACE_UPDATER_IMAGE_TAG" \
+          -var="account_space_updater_staging_lambda_image=$ACCOUNT_SPACE_UPDATER_IMAGE_TAG" \
           -target=kubernetes_deployment.stela_staging \
           -target=kubernetes_cron_job_v1.archivematica_cleanup_staging \
           -target=aws_lambda_function.record_thumbnail_lambda_staging \
           -target=kubernetes_cron_job_v1.thumbnail_refresh_staging \
-          -target=aws_lambda_function.access_copy_lambda_staging
+          -target=aws_lambda_function.access_copy_lambda_staging \
+          -target=aws_lambda_function.account_space_update_staging_lambda
       - name: Terraform Apply
         run: |
           terraform apply -auto-approve -input=false \
@@ -74,8 +78,13 @@ jobs:
           -var="record_thumbnail_staging_lambda_image=$RECORD_THUMBNAIL_LAMBDA_IMAGE_TAG" \
           -var="thumbnail_refresh_dev_image=$THUMBNAIL_REFRESH_IMAGE_TAG" \
           -var="thumbnail_refresh_staging_image=$THUMBNAIL_REFRESH_IMAGE_TAG" \
+          -var="access_copy_dev_lambda_image=$ACCESS_COPY_LAMBDA_IMAGE_TAG" \
+          -var="access_copy_staging_lambda_image=$ACCESS_COPY_LAMBDA_IMAGE_TAG" \
+          -var="account_space_updater_dev_lambda_image=$ACCOUNT_SPACE_UPDATER_IMAGE_TAG" \
+          -var="account_space_updater_staging_lambda_image=$ACCOUNT_SPACE_UPDATER_IMAGE_TAG" \
           -target=kubernetes_deployment.stela_staging \
           -target=kubernetes_cron_job_v1.archivematica_cleanup_staging \
           -target=aws_lambda_function.record_thumbnail_lambda_staging \
           -target=kubernetes_cron_job_v1.thumbnail_refresh_staging \
-          -target=aws_lambda_function.access_copy_lambda_staging
+          -target=aws_lambda_function.access_copy_lambda_staging \
+          -target=aws_lambda_function.account_space_update_staging_lambda

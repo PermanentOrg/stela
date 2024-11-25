@@ -52,6 +52,11 @@ variable "access_copy_lambda_image" {
   type        = string
 }
 
+variable "account_space_updater_lambda_image" {
+  description = "Tag of the account space updater lambda image to deploy"
+  type        = string
+}
+
 variable "prod_security_group_id" {
   description = "ID of the Production security group"
   type        = string

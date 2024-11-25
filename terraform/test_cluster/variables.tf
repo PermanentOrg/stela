@@ -88,6 +88,16 @@ variable "access_copy_staging_lambda_image" {
   type        = string
 }
 
+variable "account_space_updater_dev_lambda_image" {
+  description = "Tag of account space updater image to deploy to dev"
+  type        = string
+}
+
+variable "account_space_updater_staging_lambda_image" {
+  description = "Tag of account space updater image to deploy to staging"
+  type        = string
+}
+
 variable "dev_security_group_id" {
   description = "ID of the Development security group"
   type        = string
