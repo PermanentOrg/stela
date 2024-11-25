@@ -228,6 +228,11 @@ variable "dev_low_priority_topic_arn" {
   type        = string
 }
 
+variable "dev_event_topic_arn" {
+  description = "ARN of the SNS topic for system events"
+  type        = string
+}
+
 variable "staging_aws_access_key_id" {
   description = "AWS access key"
   type        = string
