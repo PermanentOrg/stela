@@ -1,46 +1,48 @@
 name: Unit tests
 on:
-    push:
-        branches-ignore:
-            - main
-    workflow_dispatch:
-    workflow_call:
+  push:
+    branches-ignore:
+      - main
+  workflow_dispatch:
+  workflow_call:
 jobs:
-    run_tests:
-        runs-on: ubuntu-20.04
-        steps:
-            - uses: actions/checkout@v3
-              with:
-                  path: ./stela
-            - uses: actions/setup-node@v1
-              with:
-                  node-version: "18"
-            - name: Checkout back-end
-              uses: actions/checkout@v3
-              with:
-                  ssh-key: ${{ secrets.BACKEND_ACCESS_PRIVATE_SSH_KEY }}
-                  repository: PermanentOrg/back-end
-                  ref: main
-                  path: ./back-end
-            - name: Checkout devenv
-              uses: actions/checkout@v3
-              with:
-                  ssh-key: ${{ secrets.DEVENV_ACCESS_PRIVATE_SSH_KEY }}
-                  repository: PermanentOrg/devenv
-                  ref: main
-                  path: ./devenv
-            - run: (cd stela; npm install --production=false)
-            - run : (cd stela; npm run build -ws)
-            - run: touch stela/.env
-            - run: touch devenv/.env
-            - run: (cd devenv; docker compose up database_setup -d; docker logs devenv-database_setup-1)
-            - run: (cd stela/packages/api; npm run start-containers)
-            - run: (cd stela/packages/api; docker compose run stela npm run test-ci)
-            - run: (cd stela; npm run test -w @stela/account_space_updater)
-            - uses: codecov/codecov-action@v2
-            - run: (cd stela; npm run test -w @stela/record_thumbnail_attacher)
-            - uses: codecov/codecov-action@v2
-            - run: (cd stela; npm run test -w @stela/archivematica_cleanup)
-            - uses: codecov/codecov-action@v2
-            - run: (cd stela; npm run test -w @stela/thumbnail_refresh)
-            - uses: codecov/codecov-action@v2
+  run_tests:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          path: ./stela
+      - uses: actions/setup-node@v1
+        with:
+          node-version: "18"
+      - name: Checkout back-end
+        uses: actions/checkout@v3
+        with:
+          ssh-key: ${{ secrets.BACKEND_ACCESS_PRIVATE_SSH_KEY }}
+          repository: PermanentOrg/back-end
+          ref: main
+          path: ./back-end
+      - name: Checkout devenv
+        uses: actions/checkout@v3
+        with:
+          ssh-key: ${{ secrets.DEVENV_ACCESS_PRIVATE_SSH_KEY }}
+          repository: PermanentOrg/devenv
+          ref: main
+          path: ./devenv
+      - run: (cd stela; npm install --production=false)
+      - run: (cd stela; npm run build -ws)
+      - run: touch stela/.env
+      - run: touch devenv/.env
+      - run: (cd devenv; docker compose up database_setup -d; docker logs devenv-database_setup-1)
+      - run: (cd stela/packages/api; npm run start-containers)
+      - run: (cd stela/packages/api; docker compose run stela npm run test-ci)
+      - run: (cd stela; npm run test -w @stela/account_space_updater)
+      - uses: codecov/codecov-action@v2
+      - run: (cd stela; npm run test -w @stela/record_thumbnail_attacher)
+      - uses: codecov/codecov-action@v2
+      - run: (cd stela; npm run test -w @stela/archivematica_cleanup)
+      - uses: codecov/codecov-action@v2
+      - run: (cd stela; npm run test -w @stela/thumbnail_refresh)
+      - uses: codecov/codecov-action@v2
+      - run: (cd stela; npm run test -w @stela/access_copy_attacher)
+      - uses: codecov/codecov-action@v2

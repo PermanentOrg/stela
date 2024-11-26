@@ -3,7 +3,7 @@ import type { JSONSchemaType } from "ajv";
 
 const ajv = new Ajv({ coerceTypes: true });
 
-interface SQSMessage {
+export interface SQSMessage {
   Message: string;
 }
 
@@ -18,12 +18,16 @@ const sqsMessageSchema: JSONSchemaType<SQSMessage> = {
 
 export const validateSqsMessage = ajv.compile(sqsMessageSchema);
 
-interface NewDisseminationPackageJpgEvent {
+export interface S3Object {
+  key: string;
+  size: number;
+  versionId: string;
+}
+
+export interface NewDisseminationPackageJpgEvent {
   Records: {
     s3: {
-      object: {
-        key: string;
-      };
+      object: S3Object;
     };
   }[];
 }
@@ -43,6 +47,8 @@ const newDisseminationPackageJpgEventSchema: JSONSchemaType<NewDisseminationPack
                   type: "object",
                   properties: {
                     key: { type: "string" },
+                    size: { type: "number" },
+                    versionId: { type: "string" },
                   },
                   required: ["key"],
                   additionalProperties: true,

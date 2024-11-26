@@ -78,6 +78,16 @@ variable "thumbnail_refresh_staging_image" {
   type        = string
 }
 
+variable "access_copy_dev_lambda_image" {
+  description = "Tag of the access copy lambda image to deploy to dev"
+  type        = string
+}
+
+variable "access_copy_staging_lambda_image" {
+  description = "Tag of the access copy lambda image to deploy to staging"
+  type        = string
+}
+
 variable "dev_security_group_id" {
   description = "ID of the Development security group"
   type        = string
@@ -307,5 +317,25 @@ variable "cloudfront_private_key" {
 
 variable "aws_account_id" {
   description = "AWS account ID"
+  type        = string
+}
+
+variable "dev_s3_bucket" {
+  description = "Name of the S3 bucket where files are stored in dev"
+  type        = string
+}
+
+variable "dev_backblaze_bucket" {
+  description = "Name of the Backblaze bucket where files are stored in dev"
+  type        = string
+}
+
+variable "staging_s3_bucket" {
+  description = "Name of the S3 bucket where files are stored in staging"
+  type        = string
+}
+
+variable "staging_backblaze_bucket" {
+  description = "Name of the Backblaze bucket where files are stored in staging"
   type        = string
 }

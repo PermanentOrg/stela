@@ -4,11 +4,15 @@
   "description": "A monolithic backend for Permanent.org",
   "workspaces": [
     "./packages/logger",
+    "./packages/s3-utils",
+    "./packages/archivematica-utils",
+    "./packages/file-utils",
     "./packages/api",
     "./packages/archivematica_cleanup",
     "./packages/account_space_updater",
     "./packages/record_thumbnail_attacher",
-    "./packages/thumbnail_refresh"
+    "./packages/thumbnail_refresh",
+    "./packages/access_copy_attacher"
   ],
   "repository": {
     "type": "git",
