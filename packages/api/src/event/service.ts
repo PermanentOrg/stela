@@ -2,6 +2,7 @@ import createError from "http-errors";
 import { UAParser } from "ua-parser-js";
 import { logger } from "@stela/logger";
 import { db } from "../database";
+import { publisherClient } from "../publisher_client";
 import { mixpanelClient } from "../mixpanel";
 import type { CreateEventRequest, ChecklistItem } from "./models";
 import {
@@ -30,19 +31,22 @@ export const createEvent = async (data: CreateEventRequest): Promise<void> => {
       );
     }
   }
+
   const actorType = data.userSubjectFromAuthToken ?? "" ? "user" : "admin";
-  await db
-    .sql("event.queries.create_event", {
-      entity: data.entity,
-      action: data.action,
-      version: data.version,
-      actorType,
-      actorId: data.userSubjectFromAuthToken ?? data.adminSubjectFromAuthToken,
-      entityId: data.entityId,
-      ip: data.ip,
-      userAgent: data.userAgent,
-      body: data.body,
-    })
+  const event = {
+    entity: data.entity,
+    action: data.action,
+    version: data.version,
+    actorType,
+    actorId: data.userSubjectFromAuthToken ?? data.adminSubjectFromAuthToken,
+    entityId: data.entityId,
+    ip: data.ip,
+    userAgent: data.userAgent,
+    body: data.body,
+  };
+
+  const result = await db
+    .sql<{ id: string }>("event.queries.create_event", event)
     .catch((err) => {
       if (isInvalidEnumError(err)) {
         const badValue = getInvalidValueFromInvalidEnumMessage(err.message);
@@ -54,6 +58,23 @@ export const createEvent = async (data: CreateEventRequest): Promise<void> => {
       logger.error(err);
       throw new createError.InternalServerError(`Failed to create event`);
     });
+
+  if (result.rows[0] === undefined) {
+    throw new createError.InternalServerError(`Failed to create event`);
+  }
+
+  try {
+    await publisherClient.publishMessage(process.env["EVENT_TOPIC_ARN"] ?? "", {
+      id: result.rows[0].id,
+      body: JSON.stringify(event),
+      attributes: { Entity: event.entity, Action: event.action },
+    });
+  } catch (err) {
+    logger.error(err);
+    throw new createError.InternalServerError(
+      `Failed to publish message to topic`
+    );
+  }
 };
 
 const checklistEvents: Record<string, string> = {

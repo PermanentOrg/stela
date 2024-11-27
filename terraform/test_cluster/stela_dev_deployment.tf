@@ -170,6 +170,17 @@ resource "kubernetes_deployment" "stela_dev" {
           }
 
           env {
+            name = "EVENT_TOPIC_ARN"
+            value_from {
+              secret_key_ref {
+                name     = "dev-secrets"
+                key      = "EVENT_TOPIC_ARN"
+                optional = false
+              }
+            }
+          }
+
+          env {
             name = "MIXPANEL_TOKEN"
             value_from {
               secret_key_ref {

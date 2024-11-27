@@ -2,6 +2,7 @@ import {
   SNSClient,
   PublishBatchCommand,
   type BatchResultErrorEntry,
+  type PublishBatchRequestEntry,
 } from "@aws-sdk/client-sns";
 
 export const lowPriorityTopicArn = process.env["LOW_PRIORITY_TOPIC_ARN"] ?? "";
@@ -9,6 +10,7 @@ export const lowPriorityTopicArn = process.env["LOW_PRIORITY_TOPIC_ARN"] ?? "";
 export interface Message {
   id: string;
   body: string;
+  attributes?: Record<string, string>;
 }
 
 const batchPublishMessages = async (
@@ -24,10 +26,21 @@ const batchPublishMessages = async (
     groupsOfTenMessages.map(async (groupOfTenMessages) => {
       const command = new PublishBatchCommand({
         TopicArn: topicArn,
-        PublishBatchRequestEntries: groupOfTenMessages.map((message) => ({
-          Id: message.id,
-          Message: message.body,
-        })),
+        PublishBatchRequestEntries: groupOfTenMessages.map((message) => {
+          const entry: PublishBatchRequestEntry = {
+            Id: message.id,
+            Message: message.body,
+          };
+          if (message.attributes !== undefined) {
+            entry.MessageAttributes = Object.fromEntries(
+              Object.entries(message.attributes).map(([key, value]) => [
+                key,
+                { DataType: "String", StringValue: value },
+              ])
+            );
+          }
+          return entry;
+        }),
       });
 
       const response = await snsClient.send(command);
@@ -51,6 +64,17 @@ const batchPublishMessages = async (
   };
 };
 
+const publishMessage = async (
+  topicArn: string,
+  message: Message
+): Promise<void> => {
+  const result = await batchPublishMessages(topicArn, [message]);
+  if (result.failedMessages.length !== 0) {
+    throw new Error(`Failed to send message ${JSON.stringify(message)}`);
+  }
+};
+
 export const publisherClient = {
   batchPublishMessages,
+  publishMessage,
 };

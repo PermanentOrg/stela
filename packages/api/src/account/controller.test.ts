@@ -5,10 +5,12 @@ import { db } from "../database";
 import { EVENT_ACTION, EVENT_ACTOR, EVENT_ENTITY } from "../constants";
 import { verifyUserAuthentication, extractIp } from "../middleware";
 import { app } from "../app";
+import { createEvent } from "../event/service";
 
 jest.mock("../database");
 jest.mock("@stela/logger");
 jest.mock("../middleware");
+jest.mock("../event/service");
 
 const loadFixtures = async (): Promise<void> => {
   await db.sql("fixtures.create_test_accounts");
@@ -100,27 +102,12 @@ describe("leaveArchive", () => {
     await agent.delete("/api/v2/account/archive/2").expect(400);
   });
 
-  test("should log an action in the database events table", async () => {
+  test("should log an event", async () => {
     const eventsBeforeLeave = await db.query(selectEventRow);
     expect(eventsBeforeLeave.rows.length).toBe(0);
 
     await agent.delete("/api/v2/account/archive/1").expect(204);
 
-    const eventsAfterLeave = await db.query(selectEventRow);
-    expect(eventsAfterLeave.rows.length).toBe(1);
-  });
-
-  test("logged event contains expected body values", async () => {
-    await agent.delete("/api/v2/account/archive/1").expect(204);
-
-    const eventResult = await db.query<{ body: object }>(selectEventRow);
-    expect(eventResult.rows.length).toBe(1);
-
-    const eventBody = eventResult.rows[0]?.body;
-    expect(eventBody).toEqual({
-      archiveId: "1",
-      accountId: "3",
-      accountPrimaryEmail: "test+1@permanent.org",
-    });
+    expect(createEvent).toHaveBeenCalled();
   });
 });

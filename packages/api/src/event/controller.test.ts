@@ -3,6 +3,7 @@ import type { NextFunction } from "express";
 import createError from "http-errors";
 import { db } from "../database";
 import { mixpanelClient } from "../mixpanel";
+import { publisherClient } from "../publisher_client";
 import { app } from "../app";
 import {
   verifyUserAuthentication,
@@ -14,6 +15,7 @@ import type { CreateEventRequest, ChecklistItem } from "./models";
 jest.mock("../database");
 jest.mock("../middleware");
 jest.mock("../mixpanel");
+jest.mock("../publisher_client");
 
 const testSubject = "fcb2b59b-df07-4e79-ad20-bf7f067a965e";
 const testEmail = "test+1@permanent.org";
@@ -379,6 +381,21 @@ describe("POST /event", () => {
     expect(result.rows).toHaveLength(1);
   });
 
+  test("should forward the event to SNS", async () => {
+    await agent
+      .post("/api/v2/event")
+      .send({
+        entity: "account",
+        action: "create",
+        version: 1,
+        entityId: "123",
+        body: {},
+      })
+      .expect(200);
+
+    expect(publisherClient.publishMessage).toHaveBeenCalled();
+  });
+
   test("should send Mixpanel event if body includes analytics", async () => {
     await agent
       .post("/api/v2/event")
@@ -488,6 +505,38 @@ describe("POST /event", () => {
   test("should return 500 error if database call fails", async () => {
     jest.spyOn(db, "sql").mockImplementation(() => {
       throw new Error("SQL error");
+    });
+    await agent
+      .post("/api/v2/event")
+      .send({
+        entity: "account",
+        action: "create",
+        version: 1,
+        entityId: "123",
+        body: {},
+      })
+      .expect(500);
+  });
+
+  test("should return 500 error if database call returns an empty result", async () => {
+    jest.spyOn(db, "sql").mockImplementation((() => ({
+      rows: [],
+    })) as unknown as typeof db.sql);
+    await agent
+      .post("/api/v2/event")
+      .send({
+        entity: "account",
+        action: "create",
+        version: 1,
+        entityId: "123",
+        body: {},
+      })
+      .expect(500);
+  });
+
+  test("should return 500 error if SNS publish fails", async () => {
+    jest.spyOn(publisherClient, "publishMessage").mockImplementation(() => {
+      throw new Error("SNS error");
     });
     await agent
       .post("/api/v2/event")

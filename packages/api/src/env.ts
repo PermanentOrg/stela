@@ -17,3 +17,4 @@ requireEnv("SENTRY_DSN");
 requireEnv("AWS_REGION");
 requireEnv("LOW_PRIORITY_TOPIC_ARN");
 requireEnv("MIXPANEL_TOKEN");
+requireEnv("EVENT_TOPIC_ARN");

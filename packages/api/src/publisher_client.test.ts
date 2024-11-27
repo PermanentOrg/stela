@@ -1,4 +1,4 @@
-import { SNSClient } from "@aws-sdk/client-sns";
+import { PublishBatchCommand, SNSClient } from "@aws-sdk/client-sns";
 import { publisherClient } from "./publisher_client";
 
 const mockSend = jest.fn();
@@ -63,5 +63,81 @@ describe("batchPublishMessages", () => {
     expect(mockSend).toHaveBeenCalledTimes(1);
     expect(result.failedMessages.length).toBe(1);
     expect(result.messagesSent).toBe(9);
+  });
+});
+
+describe("publishMessage", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  test("should publish a message", async () => {
+    (SNSClient as jest.Mock).mockImplementation(() => ({
+      send: mockSend.mockResolvedValue({ Failed: [] }),
+    }));
+
+    await publisherClient.publishMessage("topic", { id: "1", body: "message" });
+    expect(mockSend).toHaveBeenCalledTimes(1);
+  });
+
+  test("should include message attributes if provided", async () => {
+    (SNSClient as jest.Mock).mockImplementation(() => ({
+      send: mockSend.mockResolvedValue({ Failed: [] }),
+    }));
+
+    await publisherClient.publishMessage("topic", {
+      id: "1",
+      body: "message",
+      attributes: {
+        Entity: "account",
+        Action: "login",
+      },
+    });
+    expect(
+      (
+        (
+          (mockSend.mock.calls as unknown[])[0] as unknown[]
+        )[0] as PublishBatchCommand
+      ).input
+    ).toEqual(
+      new PublishBatchCommand({
+        TopicArn: "topic",
+        PublishBatchRequestEntries: [
+          {
+            Id: "1",
+            Message: "message",
+            MessageAttributes: {
+              Entity: {
+                DataType: "String",
+                StringValue: "account",
+              },
+              Action: {
+                DataType: "String",
+                StringValue: "login",
+              },
+            },
+          },
+        ],
+      }).input
+    );
+  });
+
+  test("should throw an error if the message fails to publish", async () => {
+    (SNSClient as jest.Mock).mockImplementation(() => ({
+      send: mockSend.mockResolvedValue({ Failed: [{ Id: "1" }] }),
+    }));
+
+    let error = null;
+    try {
+      await publisherClient.publishMessage("topic", {
+        id: "1",
+        body: "message",
+      });
+    } catch (err) {
+      error = err;
+    } finally {
+      expect(mockSend).toHaveBeenCalledTimes(1);
+      expect(error).not.toBeNull();
+    }
   });
 });
