@@ -1,0 +1,23 @@
+folder:
+  description: >
+    Folder object
+  type: object
+  required:
+    - folderId
+    - archiveNumber
+    - archiveId
+    - displayDate
+    - displayEndDate
+  properties:
+    folderId:
+      type: string
+    archiveNumber:
+      type: string
+    archiveId:
+      type: string
+    displayDate:
+      type: string
+      format: date-time
+    displayEndDate:
+      type: string
+      format: date-time
