@@ -1,0 +1,36 @@
+record/{id}:
+  patch:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+    summary: Update a record
+    security:
+      - bearerHttpAuthentication: []
+    operationId: patch-record
+    requestBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              locationId:
+                type: integer
+              description:
+                type: string
+    responses:
+      "200":
+        description: The updated record
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                data:
+                  $ref: "../models/record.yaml#/record"
+      "400":
+        $ref: "../../shared/errors.yaml#/400"
+      "500":
+        $ref: "../../shared/errors.yaml#/500"

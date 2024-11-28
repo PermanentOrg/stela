@@ -97,6 +97,18 @@ export interface ShareArchive {
   name: string;
 }
 
+export interface RecordColumnsForUpdate {
+  recordId: string;
+  locnid: bigint;
+  description: string;
+}
+
+export interface PatchRecordRequest {
+  emailFromAuthToken: string;
+  locationId: bigint;
+  description: string;
+}
+
 export enum AccessRole {
   Owner = "access.role.owner",
   Manager = "access.role.manager",

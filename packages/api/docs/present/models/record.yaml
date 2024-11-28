@@ -1,0 +1,125 @@
+tag:
+  description: >
+    Record Tag Object
+  type: object
+  properties:
+    tagId:
+      type: string
+    name:
+      type: string
+    type:
+      type: string
+share:
+  description: >
+    Record Tag Object
+  type: object
+  properties:
+    shareId:
+      type: string
+    archiveId:
+      type: string
+    accessRole:
+      type: string
+    status:
+      type: string
+    archive:
+      $ref: "../models/record.yaml#/shareArchive"
+shareArchive:
+  description: >
+    Record Share Archive Object
+  type: object
+  properties:
+    archiveId:
+      type: string
+    thumbUrl200:
+      type: string
+    name:
+      type: string
+record:
+  description: >
+    Generic Record object
+  type: object
+  required:
+    - recordId
+    - displayName
+    - archiveId
+    - status
+    - uploadFileName
+    - uploadAccountId
+    - createdAt
+    - updatedAt
+  properties:
+    recordId:
+      type: string
+    displayName:
+      type: string
+    archiveId:
+      type: string
+    archiveNumber:
+      type: string
+    description:
+      type: string
+    publicAt:
+      type: string
+    downloadName:
+      type: string
+    uploadFileName:
+      type: string
+    uploadAccountId:
+      type: string
+    uploadPayerAccountId:
+      type: string
+    size:
+      type: number
+    displayDate:
+      type: string
+      format: date-time
+    fileCreatedAt:
+      type: string
+      format: date-time
+    imageRatio:
+      type: number
+    thumbUrl200:
+      type: string
+    thumbUrl500:
+      type: string
+    thumbUrl1000:
+      type: string
+    thumbUrl2000:
+      type: string
+    status:
+      type: string
+    type:
+      type: string
+    createdAt:
+      type: string
+      format: date-time
+    updatedAt:
+      type: string
+      format: date-time
+    altText:
+      type: string
+    files:
+      type: array
+      items:
+        $ref: "../models/archive_file.yaml#/archiveFile"
+    folderLinkId:
+      type: string
+    folderLinkType:
+      type: string
+    parentFolderId:
+      type: string
+    parentFolderLinkId:
+      type: string
+    parentFolderArchiveNumber:
+      type: string
+    tags:
+      type: array
+      items:
+        $ref: "../models/record.yaml#/tag"
+    archiveArchiveNumber:
+      type: string
+    shares:
+      type: array
+      items:
+        $ref: "../models/record.yaml#/share"
