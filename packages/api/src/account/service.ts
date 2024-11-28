@@ -13,6 +13,7 @@ import type {
   SignupDetails,
   GetAccountArchiveResult,
   LeaveArchiveRequest,
+  GetCurrentAccountArchiveResult,
 } from "./models";
 
 const updateTags = async (requestBody: UpdateTagsRequest): Promise<void> => {
@@ -125,8 +126,45 @@ const leaveArchive = async ({
     return deleteResult.rows[0];
   });
 
+const getAccountArchive = async (
+  archiveId: string,
+  email: string
+): Promise<GetAccountArchiveResult | undefined> => {
+  const accountArchiveResult = await db
+    .sql<GetAccountArchiveResult>("account.queries.get_account_archive", {
+      archiveId,
+      email,
+    })
+    .catch((err) => {
+      logger.error(err);
+      throw new createError.InternalServerError(
+        "Failed to retrieve account archive"
+      );
+    });
+  return accountArchiveResult.rows[0];
+};
+
+const getCurrentAccountArchiveMemberships = async (
+  email: string
+): Promise<GetCurrentAccountArchiveResult[]> => {
+  const currentAccountArchiveResult = await db
+    .sql<GetCurrentAccountArchiveResult>(
+      "account.queries.get_current_account_archive_memberships",
+      { email }
+    )
+    .catch((err) => {
+      logger.error(err);
+      throw new createError.InternalServerError(
+        "Failed to retrieve current account archive memberships"
+      );
+    });
+  return currentAccountArchiveResult.rows;
+};
+
 export const accountService = {
   getSignupDetails,
   leaveArchive,
   updateTags,
+  getAccountArchive,
+  getCurrentAccountArchiveMemberships,
 };

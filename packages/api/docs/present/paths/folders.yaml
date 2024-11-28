@@ -1,0 +1,38 @@
+folder/{id}:
+  patch:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+    summary: Update a folder
+    security:
+      - bearerHttpAuthentication: []
+    operationId: patch-folder
+    requestBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              displayDate:
+                type: string
+                format: date-time
+              displayEndDate:
+                type: string
+                format: date-time
+    responses:
+      "200":
+        description: The updated folder
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                data:
+                  $ref: "../models/folder.yaml#/folder"
+      "400":
+        $ref: "../../shared/errors.yaml#/400"
+      "500":
+        $ref: "../../shared/errors.yaml#/500"
