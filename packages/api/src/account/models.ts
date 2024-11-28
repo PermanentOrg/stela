@@ -15,6 +15,14 @@ export interface GetAccountArchiveResult {
   type: string;
   status: string;
 }
+export interface GetCurrentAccountArchiveResult {
+  accountArchiveId: string;
+  accountId: string;
+  archiveId: string;
+  accessRole: string;
+  type: string;
+  status: string;
+}
 export interface LeaveArchiveRequest {
   emailFromAuthToken: string;
   userSubjectFromAuthToken: string;
