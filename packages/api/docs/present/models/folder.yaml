@@ -1,0 +1,17 @@
+folder:
+  description: >
+    Folder object
+  type: object
+  required:
+    - folderId
+    - displayDate
+    - displayEndDate
+  properties:
+    folderId:
+      type: string
+    displayDate:
+      type: string
+      format: date-time
+    displayEndDate:
+      type: string
+      format: date-time
