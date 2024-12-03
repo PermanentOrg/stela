@@ -29,6 +29,9 @@ export const getRecordById = async (requestQuery: {
     size: +(row.size ?? 0),
     imageRatio: +(row.imageRatio ?? 0),
   }));
+  console.log("records", records);
+  console.log(requestQuery.recordIds);
+  console.log(requestQuery.accountEmail);
   return records;
 };
 
@@ -69,4 +72,58 @@ export const patchRecord = async (
     throw new createError.NotFound("Record not found");
   }
   return result.rows[0].recordId;
+};
+
+export const getRecordByFolderLinkId = async (requestQuery: {
+  folderLinkId: number;
+}): Promise<ArchiveRecordRow[]> => {
+  const records = await db
+    .sql<ArchiveRecordRow>("record.queries.get_records_by_folder_link_id", {
+      folderLinkId: requestQuery.folderLinkId,
+    })
+    .catch((err) => {
+      logger.error(err);
+      throw new createError.InternalServerError("failed to retrieve records");
+    });
+
+  if (records.rows.length === 0) {
+    return [];
+  }
+  return records.rows;
+};
+
+export const getRecordByParentFolderId = async (requestQuery: {
+  folderId: number;
+}): Promise<ArchiveRecordRow[]> => {
+  const records = await db
+    .sql<ArchiveRecordRow>("record.queries.get_records_by_parent_folder_id", {
+      folderId: requestQuery.folderId,
+    })
+    .catch((err) => {
+      logger.error(err);
+      throw new createError.InternalServerError("failed to retrieve records");
+    });
+
+  if (records.rows.length === 0) {
+    return [];
+  }
+  return records.rows;
+};
+
+export const getRecordArchiveNbr = async (requestQuery: {
+  archiveNbr: string;
+}): Promise<ArchiveRecordRow[]> => {
+  const records = await db
+    .sql<ArchiveRecordRow>("record.queries.get_records_by_archive_nbr", {
+      archiveNbr: requestQuery.archiveNbr,
+    })
+    .catch((err) => {
+      logger.error(err);
+      throw new createError.InternalServerError("failed to retrieve records");
+    });
+
+  if (records.rows.length === 0) {
+    return [];
+  }
+  return records.rows;
 };
