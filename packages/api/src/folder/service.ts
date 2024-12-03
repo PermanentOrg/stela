@@ -29,6 +29,25 @@ export const getFolderById = async (requestQuery: {
   return folder.rows[0];
 };
 
+export const getFolderByFolderLinkId = async (requestQuery: {
+  folderLinkId: string;
+}): Promise<FolderRow> => {
+  const folder = await db
+    .sql<FolderRow>("folder.queries.get_folder_by_folder_link_id", {
+      folderLinkId: requestQuery.folderLinkId,
+    })
+    .catch((err) => {
+      logger.error(err);
+      throw new createError.InternalServerError("failed to retrieve folder");
+    });
+
+  if (folder.rows[0] === undefined) {
+    throw new createError.NotFound("Folder not found.");
+  }
+
+  return folder.rows[0];
+};
+
 function buildPatchQuery(patchFolderRequest: FolderColumnsForUpdate): string {
   const updates = Object.entries(patchFolderRequest)
     .filter(([key, value]) => value !== undefined && key !== "folderId")

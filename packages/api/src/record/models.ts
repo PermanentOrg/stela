@@ -109,6 +109,25 @@ export interface PatchRecordRequest {
   description: string;
 }
 
+export interface CopyRecordRequest {
+  RecordVO: RecordVO;
+  FolderDestVO: FolderDestVO;
+  archiveId: string; // this was in the session variable
+}
+
+export interface RecordVO {
+  recordId: number;
+  archiveNbr: string;
+  folder_linkId: number;
+  parentFolder_linkId: number;
+  parentFolderId: number;
+  uploadFileName: string;
+}
+
+export interface FolderDestVO {
+  folder_linkId: number;
+}
+
 export enum AccessRole {
   Owner = "access.role.owner",
   Manager = "access.role.manager",
@@ -136,6 +155,7 @@ export enum RecordStatus {
   Processing = "status.record.processing",
   Reprocessing = "status.record.reprocessing",
   Uploaded = "status.record.uploaded",
+  Copying = "status.record.copying",
 }
 
 export enum RecordType {

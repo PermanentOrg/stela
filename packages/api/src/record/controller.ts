@@ -10,12 +10,14 @@ import {
 } from "../middleware";
 import { getRecordById, patchRecord } from "./service";
 import {
+  validateCopyRecordRequest,
   validateGetRecordQuery,
   validatePatchRecordRequest,
   validateRecordRequest,
 } from "./validators";
 import { validateOptionalEmailFromAuthentication } from "../validators/shared";
 import { isValidationError } from "../validators/validator_util";
+import { copyRecord } from "./service/copy";
 
 export const recordController = Router();
 
@@ -55,6 +57,24 @@ recordController.patch(
       });
 
       res.status(200).send({ data: record });
+    } catch (err) {
+      if (isValidationError(err)) {
+        res.status(400).json({ error: err.message });
+        return;
+      }
+      next(err);
+    }
+  }
+);
+
+recordController.post(
+  "/copy",
+  verifyUserAuthentication,
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      validateCopyRecordRequest(req.body);
+      const result = await copyRecord(req.body);
+      res.status(200).send({ data: result });
     } catch (err) {
       if (isValidationError(err)) {
         res.status(400).json({ error: err.message });

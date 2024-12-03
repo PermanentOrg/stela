@@ -16,6 +16,10 @@ export interface CreateEventRequest {
       distinctId: string;
       data: Record<string, unknown>;
     };
+    record: {
+      recordId: string;
+      archiveId: string;
+    }; // ARE all properties required?
   };
 }
 
