@@ -9,6 +9,8 @@ import {
 
 const yearsUntilCdnUrlExpiration = 1;
 
+export { validateSqsMessage };
+
 export const constructSignedCdnUrl = (
   key: string,
   fileName?: string

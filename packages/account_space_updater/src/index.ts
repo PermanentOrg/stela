@@ -1,5 +1,6 @@
 import type { SQSHandler, SQSEvent, SQSRecord } from "aws-lambda";
 import { TinyPgError } from "tinypg";
+import { validateSqsMessage } from "@stela/s3-utils";
 import { logger } from "@stela/logger";
 import { db } from "./database";
 import { validateRecordSubmitEvent } from "./validators";
@@ -17,20 +18,43 @@ export const extractFileAttributesFromS3Message = (
 ): { recordId: string; operation: Operation } => {
   const { body } = message;
   const parsedBody: unknown = JSON.parse(body);
-  if (!validateRecordSubmitEvent(parsedBody)) {
+  if (!validateSqsMessage(parsedBody)) {
     logger.error(`Invalid message body: ${body}`);
     throw new Error("Invalid message body");
   }
-  const { recordId } = parsedBody;
-  const action = message.messageAttributes["Action"]?.stringValue;
-  if (action === undefined) {
-    logger.error(
-      `Action attribute is missing from request: ${JSON.stringify(message)}`
-    );
-    throw new Error("Action attribute is missing");
+  const parsedMessage: unknown = JSON.parse(parsedBody.Message);
+  if (!validateRecordSubmitEvent(parsedMessage)) {
+    logger.error(`Invalid message: ${parsedBody.Message}`);
+    throw new Error("Invalid message");
   }
-  const operation = action === "submit" ? Operation.Upload : Operation.Copy;
-  return { recordId, operation };
+  const { action } = parsedMessage;
+
+  if (action === "create") {
+    if (parsedMessage.body.record === undefined) {
+      logger.error(
+        `record.create event missing record: ${JSON.stringify(
+          parsedMessage.body
+        )}`
+      );
+      throw new Error("record field missing in body of record.create");
+    }
+    return {
+      recordId: parsedMessage.body.record.recordId,
+      operation: Operation.Upload,
+    };
+  }
+  if (parsedMessage.body.newRecord === undefined) {
+    logger.error(
+      `record.copy event missing newRecord: ${JSON.stringify(
+        parsedMessage.body
+      )}`
+    );
+    throw new Error("newRecord field missing in body of record.copy");
+  }
+  return {
+    recordId: parsedMessage.body.newRecord.recordId,
+    operation: Operation.Copy,
+  };
 };
 
 export const handler: SQSHandler = async (event: SQSEvent, _, __) => {
