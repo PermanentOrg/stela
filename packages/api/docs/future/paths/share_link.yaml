@@ -1,0 +1,167 @@
+share-link:
+  post:
+    summary: Create a shareable link to a record or folder
+    operationId: createShareLink
+    security:
+      - bearerHttpAuthentication: []
+    tags:
+      - share-links
+    requestBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [itemId, itemType]
+            properties:
+              itemId:
+                description: This must be the ID of a non-public record, folder, or, in the future, collection
+                type: string
+              itemType:
+                type: string
+                enum:
+                  - record
+                  - folder
+                  - collection
+              permissionsLevel:
+                type: string
+                enum:
+                  - viewer
+                  - editor
+                  - contributor
+                  - manager
+                  - owner
+              accessRestrictions:
+                description: The "none" value is not available for share links to public items
+                type: string
+                enum:
+                  - none
+                  - account
+                  - approval
+              maxUses:
+                type: integer
+                minimum: 1
+              expirationTimestamp:
+                type: string
+                format: date-time
+    responses:
+      "201":
+        description: >
+          The newly created share link object
+        content:
+          application/json:
+            schema:
+              $ref: "../models/share_link.yaml#/shareLink"
+      "400":
+        $ref: "../../shared/errors.yaml#/400"
+      "401":
+        $ref: "../../shared/errors.yaml#/401"
+      "403":
+        $ref: "../../shared/errors.yaml#/403"
+      "500":
+        $ref: "../../shared/errors.yaml#/500"
+share-link-with-id:
+  parameters:
+    - name: identifier
+      in: path
+      required: true
+      description: A share link's ID, or token
+      schema:
+        type: string
+  get:
+    summary: Retrieve a share link by ID or token
+    security:
+      - bearerHttpAuthentication: []
+    operationId: getShareLink
+    tags:
+      - share-links
+    responses:
+      "200":
+        description: >
+          The requested share link object
+        content:
+          application/json:
+            schema:
+              $ref: "../models/share_link.yaml#/shareLink"
+      "400":
+        $ref: "../../shared/errors.yaml#/400"
+      "401":
+        $ref: "../../shared/errors.yaml#/401"
+      "403":
+        $ref: "../../shared/errors.yaml#/403"
+      "404":
+        $ref: "../../shared/errors.yaml#/404"
+      "500":
+        $ref: "../../shared/errors.yaml#/500"
+  delete:
+    summary: Delete a share link by ID or token
+    security:
+      - bearerHttpAuthentication: []
+    operationId: deleteShareLink
+    tags:
+      - share-links
+    responses:
+      "204":
+        description: >
+          The share link has been deleted, nothing is returned
+      "400":
+        $ref: "../../shared/errors.yaml#/400"
+      "401":
+        $ref: "../../shared/errors.yaml#/401"
+      "403":
+        $ref: "../../shared/errors.yaml#/403"
+      "404":
+        $ref: "../../shared/errors.yaml#/404"
+      "500":
+        $ref: "../../shared/errors.yaml#/500"
+  patch:
+    summary: Update a share link by ID or token
+    security:
+      - bearerHttpAuthentication: []
+    operationId: updateShareLink
+    tags:
+      - share-links
+    requestBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              permissionsLevel:
+                type: string
+                enum:
+                  - viewer
+                  - contributor
+                  - editor
+                  - manager
+                  - owner
+              accessRestrictions:
+                description: The "none" value is not available for share links to public items
+                type: string
+                enum:
+                  - none
+                  - account
+                  - approval
+              expirationTimestamp:
+                type: string
+                format: date-time
+              maxUses:
+                type: integer
+                minimum: 1
+    responses:
+      "200":
+        description: >
+          The requested share link object
+        content:
+          application/json:
+            schema:
+              $ref: "../models/share_link.yaml#/shareLink"
+      "400":
+        $ref: "../../shared/errors.yaml#/400"
+      "401":
+        $ref: "../../shared/errors.yaml#/401"
+      "403":
+        $ref: "../../shared/errors.yaml#/403"
+      "404":
+        $ref: "../../shared/errors.yaml#/404"
+      "500":
+        $ref: "../../shared/errors.yaml#/500"
