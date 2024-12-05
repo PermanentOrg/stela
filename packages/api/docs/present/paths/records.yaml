@@ -29,7 +29,7 @@ record/{id}:
               type: object
               properties:
                 data:
-                  $ref: "../models/record.yaml#/record"
+                  $ref: "../../shared/models/record.yaml#/record"
       "400":
         $ref: "../../shared/errors.yaml#/400"
       "500":
