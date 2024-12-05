@@ -28,3 +28,7 @@ paths:
     $ref: "./paths/mfa_management.yaml#/mfa-method-with-id"
   /accounts:
     $ref: "./paths/account.yaml#/account"
+  /share-links:
+    $ref: "./paths/share_link.yaml#/share-link"
+  /share-links/{identifier}:
+    $ref: "./paths/share_link.yaml#/share-link-with-id"
