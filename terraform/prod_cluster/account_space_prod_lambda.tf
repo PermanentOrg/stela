@@ -100,7 +100,7 @@ resource "aws_lambda_function" "account_space_update_prod_lambda" {
 
   environment {
     variables = {
-      ENV          = var.prod_env
+      ENV          = var.env
       SENTRY_DSN   = var.sentry_dsn
       DATABASE_URL = var.prod_database_url
     }
