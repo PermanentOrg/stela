@@ -4,7 +4,7 @@ account:
     operationId: createAccount
     security: []
     tags:
-      - account
+      - accounts
     requestBody:
       content:
         application/json:

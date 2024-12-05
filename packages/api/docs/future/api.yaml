@@ -22,9 +22,9 @@ paths:
     $ref: "./paths/authentication.yaml#/complete-mfa"
   /logout:
     $ref: "./paths/authentication.yaml#/logout"
-  /mfa-method:
+  /mfa-methods:
     $ref: "./paths/mfa_management.yaml#/mfa-method"
-  /mfa-method/{methodId}:
+  /mfa-methods/{methodId}:
     $ref: "./paths/mfa_management.yaml#/mfa-method-with-id"
-  /account:
+  /accounts:
     $ref: "./paths/account.yaml#/account"
