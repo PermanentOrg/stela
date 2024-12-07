@@ -1,0 +1,15 @@
+folderLinkType:
+  type: string
+  enum:
+    - type.folder_link.private
+    - type.folder.private
+    - type.folder.root.app
+    - type.folder_link.public
+    - type.folder_link.vault
+    - type.folder_link.app
+    - type.folder_link.share
+    - type.folder_link.root.root
+    - type.folder_link.root.vault
+    - type.folder_link.root.app
+    - type.folder_link.root.share
+    - type.folder_link.root.private

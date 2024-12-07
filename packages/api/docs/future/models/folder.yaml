@@ -1,0 +1,158 @@
+folderWithChildren:
+  description: A folder in the Permanent filesystem, including its direct children
+  allOf:
+    - $ref: "#/folder"
+    - type: object
+      required: [children]
+      properties:
+        children:
+          type: array
+          items:
+            oneOf:
+              - $ref: "#/folder"
+              - $ref: "./record.yaml#/record"
+folder:
+  description: A folder in the Permanent filesystem
+  type: object
+  required:
+    - folderId
+    - displayName
+    - archive
+    - status
+    - createdAt
+    - updatedAt
+  properties:
+    id:
+      type: string
+    folderLink:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          $ref: "./enums.yaml#/folderLinkType"
+    size:
+      type: integer
+    location:
+      $ref: "../models/location.yaml#/location"
+    parentFolder:
+      type: object
+      properties:
+        id:
+          type: string
+        folderLinkId:
+          type: string
+    shares:
+      type: array
+      items:
+        $ref: "../models/share.yaml#/share"
+    tags:
+      type: array
+      items:
+        $ref: "../models/tag.yaml#/tag"
+    archive:
+      type: object
+      required: [id]
+      properties:
+        id:
+          type: string
+        archiveNumber:
+          type: string
+    createdAt:
+      type: string
+      format: date-time
+    updatedAt:
+      type: string
+      format: date-time
+    description:
+      type: string
+    displayTimestamp:
+      type: string
+      format: date-time
+    displayEndTimestamp:
+      type: string
+      format: date-time
+    displayName:
+      type: string
+    downloadName:
+      type: string
+    imageRatio:
+      type: number
+    paths:
+      type: object
+      properties:
+        archiveNumbers:
+          type: array
+          items:
+            type: string
+        folderLinkIds:
+          type: array
+          items:
+            type: string
+        names:
+          type: array
+          items:
+            type: string
+    publicAt:
+      type: string
+      format: date-time
+    sort:
+      type: string
+      enum:
+        - sort.display_date_desc
+        - sort.display_date_asc
+        - sort.type_desc
+        - sort.type_asc
+        - sort.alphabetical_desc
+        - sort.alphabetical_asc
+    thumbnailUrls:
+      type: object
+      properties:
+        200:
+          type: string
+        256:
+          type: string
+        500:
+          type: string
+        1000:
+          type: string
+        2000:
+          type: string
+    type:
+      type: string
+      enum:
+        - type.folder.root.root
+        - type.folder.root.public
+        - type.folder.root.vault
+        - type.folder.app
+        - type.folder.root.share
+        - type.folder.root.private
+        - type.folder.public
+        - type.folder.vault
+        - type.folder.private
+        - type.folder.root.app
+    status:
+      type: string
+      enum:
+        - status.generic.ok
+        - status.generic.deleted
+        - status.folder.copying
+        - status.folder.moving
+    view:
+      type: string
+      enum:
+        - folder.view.slideshow
+        - folder.view.storysimple
+        - folder.view.collagedetail
+        - folder.view.mosaic
+        - folder.view.map
+        - folder.view.date
+        - folder.view.list
+        - folder.view.collage
+        - folder.view.timeline
+        - folder.view.storyscroll
+        - folder.view.gliding
+        - folder.view.storyslider
+        - folder.view.grid
+        - folder.view.table
+        - folder.view.tile

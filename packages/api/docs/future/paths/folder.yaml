@@ -1,0 +1,66 @@
+folders-with-id:
+  parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: string
+  get:
+    summary: Get a folder, with its direct children
+    security:
+      - {}
+      - bearerHttpAuthentication: []
+      - permanentShareToken: []
+    tags:
+      - folders
+    operationId: get-folder
+    responses:
+      "200":
+        description: The requested folder
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                data:
+                  $ref: "../models/folder.yaml#/folderWithChildren"
+      "400":
+        $ref: "../../shared/errors.yaml#/400"
+      "401":
+        $ref: "../../shared/errors.yaml#/401"
+      "404":
+        $ref: "../../shared/errors.yaml#/404"
+      "500":
+        $ref: "../../shared/errors.yaml#/500"
+folders-id-share-links:
+  parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: string
+  get:
+    summary: Get a folder's share link
+    security:
+      - bearerHttpAuthentication: []
+    tags:
+      - folders
+    operationId: get-folder-share_link
+    responses:
+      "200":
+        description: The folder's share link, if it exists
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                data:
+                  $ref: "../models/share_link.yaml#/shareLink"
+      "400":
+        $ref: "../../shared/errors.yaml#/400"
+      "401":
+        $ref: "../../shared/errors.yaml#/401"
+      "404":
+        $ref: "../../shared/errors.yaml#/404"
+      "500":
+        $ref: "../../shared/errors.yaml#/500"
