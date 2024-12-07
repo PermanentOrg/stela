@@ -1,0 +1,115 @@
+record:
+  description: >
+    Generic Record object
+  type: object
+  required:
+    - recordId
+    - displayName
+    - archive
+    - status
+    - uploadFileName
+    - uploadAccountId
+    - createdAt
+    - updatedAt
+  properties:
+    id:
+      type: string
+    displayName:
+      type: string
+    archive:
+      type: object
+      required: [id]
+      properties:
+        id:
+          type: string
+    description:
+      type: string
+    publicAt:
+      type: string
+    downloadName:
+      type: string
+    uploadFileName:
+      type: string
+    uploadAccountId:
+      type: string
+    uploadPayerAccountId:
+      type: string
+    size:
+      type: number
+    displayDate:
+      type: string
+      format: date-time
+    fileCreatedAt:
+      type: string
+      format: date-time
+    imageRatio:
+      type: number
+    thumbnailUrls:
+      type: object
+      properties:
+        200:
+          type: string
+        256:
+          type: string
+        500:
+          type: string
+        1000:
+          type: string
+        2000:
+          type: string
+    status:
+      type: string
+      enum:
+        - ok
+        - deleted
+        - error
+        - manual-review
+        - converting
+        - needs-converting
+        - needs-processing
+        - only-meta
+        - processing
+        - reprocessing
+        - uploaded
+    type:
+      type: string
+      enum:
+        - document
+        - unknown
+        - spreadsheet
+        - presentation
+        - image
+        - genealogy-archive
+        - archive
+        - video
+        - audio
+        - genealogy
+        - pdf
+    createdAt:
+      type: string
+      format: date-time
+    updatedAt:
+      type: string
+      format: date-time
+    altText:
+      type: string
+    files:
+      type: array
+      items:
+        $ref: "../../shared/models/archive_file.yaml#/archiveFile"
+    parentFolder:
+      type: object
+      required: [id]
+      properties:
+        id:
+          type: string
+    tags:
+      type: array
+      items:
+        $ref: "../models/tag.yaml#/tag"
+    shares:
+      type: array
+      items:
+        $ref: "../models/share.yaml#/share"
+    location:
+      $ref: "../models/location.yaml#/location"

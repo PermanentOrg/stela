@@ -1,0 +1,66 @@
+records-with-id:
+  parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: string
+  get:
+    summary: Get a record by ID
+    security:
+      - {}
+      - bearerHttpAuthentication: []
+      - permanentShareToken: []
+    tags:
+      - records
+    operationId: get-record
+    responses:
+      "200":
+        description: The requested record
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                data:
+                  $ref: "../models/record.yaml#/record"
+      "400":
+        $ref: "../../shared/errors.yaml#/400"
+      "401":
+        $ref: "../../shared/errors.yaml#/401"
+      "404":
+        $ref: "../../shared/errors.yaml#/404"
+      "500":
+        $ref: "../../shared/errors.yaml#/500"
+records-id-share-links:
+  parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: string
+  get:
+    summary: Get a record's share link
+    security:
+      - bearerHttpAuthentication: []
+    tags:
+      - records
+    operationId: get-record-share-link
+    responses:
+      "200":
+        description: The record's share link, if it exists
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                data:
+                  $ref: "../models/share_link.yaml#/shareLink"
+      "400":
+        $ref: "../../shared/errors.yaml#/400"
+      "401":
+        $ref: "../../shared/errors.yaml#/401"
+      "404":
+        $ref: "../../shared/errors.yaml#/404"
+      "500":
+        $ref: "../../shared/errors.yaml#/500"

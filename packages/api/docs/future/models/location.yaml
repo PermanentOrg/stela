@@ -1,0 +1,25 @@
+location:
+  description: A geographic location object
+  type: object
+  required: [locationId]
+  properties:
+    id:
+      type: string
+    streetNumber:
+      type: string
+    streetName:
+      type: string
+    locality:
+      type: string
+    administrativeRegion:
+      type: string
+    latitude:
+      type: number
+    longitude:
+      type: number
+    country:
+      type: string
+    countryCode:
+      type: string
+    displayName:
+      type: string
