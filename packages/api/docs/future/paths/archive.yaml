@@ -1,0 +1,36 @@
+archive-id-folders-shared:
+  parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: string
+  get:
+    summary: Get all the top-level shared folders in an archive
+    security:
+      - bearerHttpAuthentication: []
+    tags:
+      - folders
+    operationId: get-archive-shared-folders
+    responses:
+      "200":
+        description: A list of shared folders
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                items:
+                  type: array
+                  items:
+                    $ref: "../models/folder.yaml#/folder"
+      "400":
+        $ref: "../../shared/errors.yaml#/400"
+      "401":
+        $ref: "../../shared/errors.yaml#/401"
+      "403":
+        $ref: "../../shared/errors.yaml#/403"
+      "404":
+        $ref: "../../shared/errors.yaml#/404"
+      "500":
+        $ref: "../../shared/errors.yaml#/500"
