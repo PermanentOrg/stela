@@ -1,0 +1,57 @@
+shareLink:
+  description: >
+    An object representing a sharable link to an item on Permanent, including various settings
+    governing the usage of that link
+  type: object
+  required:
+    [
+      id,
+      itemId,
+      itemType,
+      permissionsLevel,
+      accessRestrictions,
+      createdAt,
+      updatedAt,
+    ]
+  properties:
+    id:
+      type: string
+    itemId:
+      type: string
+    itemType:
+      type: string
+      enum:
+        - record
+        - folder
+        - collection
+    token:
+      type: string
+    permissionsLevel:
+      type: string
+      enum:
+        - viewer
+        - contributor
+        - editor
+        - manager
+        - owner
+    accessRestrictions:
+      type: string
+      enum:
+        - none
+        - account
+        - approval
+    maxUses:
+      type: integer
+      minimum: 1
+    usesExpended:
+      type: integer
+      minimum: 0
+    expirationTimestamp:
+      type: string
+      format: date-time
+    createdAt:
+      type: string
+      format: date-time
+    updatedAt:
+      type: string
+      format: date-time

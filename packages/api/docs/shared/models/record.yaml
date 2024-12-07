@@ -102,7 +102,7 @@ record:
     files:
       type: array
       items:
-        $ref: "../models/archive_file.yaml#/archiveFile"
+        $ref: "./archive_file.yaml#/archiveFile"
     folderLinkId:
       type: string
     folderLinkType:
@@ -116,10 +116,10 @@ record:
     tags:
       type: array
       items:
-        $ref: "../models/record.yaml#/tag"
+        $ref: "./record.yaml#/tag"
     archiveArchiveNumber:
       type: string
     shares:
       type: array
       items:
-        $ref: "../models/record.yaml#/share"
+        $ref: "./record.yaml#/share"

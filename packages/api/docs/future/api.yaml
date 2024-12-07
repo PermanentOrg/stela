@@ -13,6 +13,11 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
+    permanentShareToken:
+      description: A token provided via a share link, granting read-only access
+      type: apiKey
+      in: header
+      name: X-Permanent-Share-Token
 paths:
   /login:
     $ref: "./paths/authentication.yaml#/login"
@@ -22,9 +27,23 @@ paths:
     $ref: "./paths/authentication.yaml#/complete-mfa"
   /logout:
     $ref: "./paths/authentication.yaml#/logout"
-  /mfa-method:
+  /mfa-methods:
     $ref: "./paths/mfa_management.yaml#/mfa-method"
-  /mfa-method/{methodId}:
+  /mfa-methods/{methodId}:
     $ref: "./paths/mfa_management.yaml#/mfa-method-with-id"
-  /account:
+  /accounts:
     $ref: "./paths/account.yaml#/account"
+  /share-links:
+    $ref: "./paths/share_link.yaml#/share-link"
+  /share-links/{identifier}:
+    $ref: "./paths/share_link.yaml#/share-link-with-id"
+  /records/{id}:
+    $ref: "./paths/record.yaml#/records-with-id"
+  /records/{id}/share-links:
+    $ref: "./paths/record.yaml#/records-id-share-links"
+  /folders/{id}:
+    $ref: "./paths/folder.yaml#/folders-with-id"
+  /folders/{id}/share-links:
+    $ref: "./paths/folder.yaml#/folders-id-share-links"
+  /archive/{id}/folders/shared:
+    $ref: "./paths/archive.yaml#/archive-id-folders-shared"

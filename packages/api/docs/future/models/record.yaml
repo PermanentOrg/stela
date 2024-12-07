@@ -1,0 +1,126 @@
+record:
+  description: >
+    Generic Record object
+  type: object
+  required:
+    - recordId
+    - displayName
+    - archive
+    - status
+    - uploadFileName
+    - uploadAccountId
+    - createdAt
+    - updatedAt
+  properties:
+    id:
+      type: string
+    displayName:
+      type: string
+    archive:
+      type: object
+      required: [id]
+      properties:
+        id:
+          type: string
+        archiveNumber:
+          type: string
+    description:
+      type: string
+    publicAt:
+      type: string
+    downloadName:
+      type: string
+    uploadFileName:
+      type: string
+    uploadAccountId:
+      type: string
+    uploadPayerAccountId:
+      type: string
+    size:
+      type: number
+    displayDate:
+      type: string
+      format: date-time
+    fileCreatedAt:
+      type: string
+      format: date-time
+    imageRatio:
+      type: number
+    thumbnailUrls:
+      type: object
+      properties:
+        200:
+          type: string
+        256:
+          type: string
+        500:
+          type: string
+        1000:
+          type: string
+        2000:
+          type: string
+    status:
+      type: string
+      enum:
+        - status.generic.ok
+        - status.generic.deleted
+        - status.generic.error
+        - status.generic.manual_review
+        - status.record.converting
+        - status.record.needs_converting
+        - status.record.needs_processing
+        - status.record.only_meta
+        - status.record.processing
+        - status.record.reprocessing
+        - status.record.uploaded
+    type:
+      type: string
+      enum:
+        - type.record.document
+        - type.record.unknown
+        - type.record.spreadsheet
+        - type.record.presentation
+        - type.record.image
+        - Genealogy Archive
+        - type.record.archive
+        - type.record.video
+        - type.record.audio
+        - Genealogy
+        - type.record.pdf
+    createdAt:
+      type: string
+      format: date-time
+    updatedAt:
+      type: string
+      format: date-time
+    altText:
+      type: string
+    files:
+      type: array
+      items:
+        $ref: "../../shared/models/archive_file.yaml#/archiveFile"
+    folderLink:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+    parentFolderId:
+      type: string
+    parentFolderLinkId:
+      type: string
+    parentFolderArchiveNumber:
+      type: string
+    tags:
+      type: array
+      items:
+        $ref: "../models/tag.yaml#/tag"
+    archiveArchiveNumber:
+      type: string
+    shares:
+      type: array
+      items:
+        $ref: "../models/share.yaml#/share"
+    location:
+      $ref: "../models/location.yaml#/location"
