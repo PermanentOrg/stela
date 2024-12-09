@@ -1,0 +1,1 @@
+export { folderController } from "./controller";
