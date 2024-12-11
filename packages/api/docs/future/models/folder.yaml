@@ -1,0 +1,127 @@
+folderWithChildren:
+  description: A folder in the Permanent filesystem, including its direct children
+  allOf:
+    - $ref: "#/folder"
+    - type: object
+      required: [children]
+      properties:
+        children:
+          type: array
+          items:
+            oneOf:
+              - $ref: "#/folder"
+              - $ref: "./record.yaml#/record"
+folder:
+  description: A folder in the Permanent filesystem
+  type: object
+  required:
+    - folderId
+    - displayName
+    - archive
+    - status
+    - createdAt
+    - updatedAt
+  properties:
+    id:
+      type: string
+    size:
+      type: integer
+    location:
+      $ref: "../models/location.yaml#/location"
+    parentFolder:
+      type: object
+      properties:
+        id:
+          type: string
+    shares:
+      type: array
+      items:
+        $ref: "../models/share.yaml#/share"
+    tags:
+      type: array
+      items:
+        $ref: "../models/tag.yaml#/tag"
+    archive:
+      type: object
+      required: [id]
+      properties:
+        id:
+          type: string
+    createdAt:
+      type: string
+      format: date-time
+    updatedAt:
+      type: string
+      format: date-time
+    description:
+      type: string
+    displayTimestamp:
+      type: string
+      format: date-time
+    displayEndTimestamp:
+      type: string
+      format: date-time
+    displayName:
+      type: string
+    downloadName:
+      type: string
+    imageRatio:
+      type: number
+    paths:
+      type: object
+      properties:
+        names:
+          type: array
+          items:
+            type: string
+    publicAt:
+      type: string
+      format: date-time
+    sort:
+      type: string
+      enum:
+        - date-descending
+        - date-ascending
+        - type-descending
+        - type-ascending
+        - alphabetical-descending
+        - alphabetical-ascending
+    thumbnailUrls:
+      type: object
+      properties:
+        200:
+          type: string
+        256:
+          type: string
+        500:
+          type: string
+        1000:
+          type: string
+        2000:
+          type: string
+    type:
+      type: string
+      enum:
+        - app
+        - public
+        - private
+        - root
+        - app-root
+        - share-root
+        - private-root
+        - public-root
+        - deprecated
+    status:
+      type: string
+      enum:
+        - ok
+        - deleted
+        - copying
+        - moving
+    view:
+      type: string
+      enum:
+        - list
+        - timeline
+        - grid
+        - deprecated

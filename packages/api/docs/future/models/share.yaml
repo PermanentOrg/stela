@@ -1,0 +1,26 @@
+share:
+  description: >
+    Share Object
+  type: object
+  properties:
+    id:
+      type: string
+    archiveId:
+      type: string
+    accessRole:
+      type: string
+    status:
+      type: string
+    archive:
+      $ref: "#/shareArchive"
+shareArchive:
+  description: >
+    Record Share Archive Object
+  type: object
+  properties:
+    archiveId:
+      type: string
+    thumbUrl200:
+      type: string
+    name:
+      type: string
