@@ -168,3 +168,48 @@ logout:
         $ref: "../../shared/errors.yaml#/400"
       "500":
         $ref: "../../shared/errors.yaml#/500"
+token:
+  post:
+    summary: >
+      Exchange a code for an authentication JWT at the conclusion of the OAuth process
+    operationId: getAuthToken
+    security: []
+    tags:
+      - authentication
+    requestBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [applicationId, applicationSecret, code, redirectUri]
+            properties:
+              applicationId:
+                type: string
+              applicationSecret:
+                type: string
+              code:
+                description: The code received from the OAuth login page
+                type: string
+              redirectUri:
+                description: The same redirect URI passed to the OAuth login page
+                type: string
+                format: uri
+    responses:
+      "200":
+        description: The token exchange was successful, the response contains the authentication JWT
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                data:
+                  type: object
+                  properties:
+                    accessToken:
+                      type: string
+                    refreshToken:
+                      type: string
+      "400":
+        $ref: "../../shared/errors.yaml#/400"
+      "500":
+        $ref: "../../shared/errors.yaml#/500"

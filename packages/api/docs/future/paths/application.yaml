@@ -1,0 +1,152 @@
+applications:
+  post:
+    summary: >
+      Register a new application to use the Permanent API.
+      Authorization token must belong to a registered developer account.
+    operationId: createApplication
+    security:
+      - bearerHttpAuthentication: []
+    tags:
+      - application
+    requestBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [scopes]
+            properties:
+              redirectUris:
+                type: array
+                items:
+                  type: string
+                  format: uri
+              scopes:
+                type: array
+                items:
+                  $ref: "../models/application.yaml#/applicationScope"
+    responses:
+      "201":
+        description: The application created
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                data:
+                  $ref: "../models/application.yaml#/application"
+      "400":
+        $ref: "../../shared/errors.yaml#/400"
+      "401":
+        $ref: "../../shared/errors.yaml#/401"
+      "403":
+        $ref: "../../shared/errors.yaml#/403"
+      "500":
+        $ref: "../../shared/errors.yaml#/500"
+
+applications-with-id:
+  parameters:
+    - name: id
+      in: path
+      required: true
+      description: An application ID
+      schema:
+        type: string
+  get:
+    summary: >
+      Get application data by ID.
+      Authorization token must belong to a registered developer account.
+    operationId: getApplication
+    security:
+      - bearerHttpAuthentication: []
+    tags:
+      - application
+    responses:
+      "200":
+        description: The application requested
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                data:
+                  $ref: "../models/application.yaml#/application"
+      "400":
+        $ref: "../../shared/errors.yaml#/400"
+      "401":
+        $ref: "../../shared/errors.yaml#/401"
+      "403":
+        $ref: "../../shared/errors.yaml#/403"
+      "404":
+        $ref: "../../shared/errors.yaml#/404"
+      "500":
+        $ref: "../../shared/errors.yaml#/500"
+  patch:
+    summary: >
+      Update an application.
+      Authorization token must belong to a registered developer account.
+    operationId: updateApplication
+    security:
+      - bearerHttpAuthentication: []
+    tags:
+      - application
+    requestBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [scopes]
+            properties:
+              scopes:
+                type: array
+                items:
+                  $ref: "../models/application.yaml#/applicationScope"
+              redirectUris:
+                type: array
+                items:
+                  type: string
+                  format: uri
+    responses:
+      "200":
+        description: The updated application
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                data:
+                  $ref: "../models/application.yaml#/application"
+      "400":
+        $ref: "../../shared/errors.yaml#/400"
+      "401":
+        $ref: "../../shared/errors.yaml#/401"
+      "403":
+        $ref: "../../shared/errors.yaml#/403"
+      "404":
+        $ref: "../../shared/errors.yaml#/404"
+      "500":
+        $ref: "../../shared/errors.yaml#/500"
+  delete:
+    summary: >
+      Delete an application.
+      Authorization token must belong to a registered developer account.
+    operationId: deleteApplication
+    security:
+      - bearerHttpAuthentication: []
+    tags:
+      - application
+    responses:
+      "204":
+        description: An empty response, indicating a successful deletion
+      "400":
+        $ref: "../../shared/errors.yaml#/400"
+      "401":
+        $ref: "../../shared/errors.yaml#/401"
+      "403":
+        $ref: "../../shared/errors.yaml#/403"
+      "404":
+        $ref: "../../shared/errors.yaml#/404"
+      "500":
+        $ref: "../../shared/errors.yaml#/500"
+applications-id-register-user:
+  post:
+    summary: Register a user to an application
