@@ -21,6 +21,8 @@ components:
 paths:
   /login:
     $ref: "./paths/authentication.yaml#/login"
+  /token:
+    $ref: "./paths/authentication.yaml#/token"
   /start-mfa:
     $ref: "./paths/authentication.yaml#/start-mfa"
   /complete-mfa:
@@ -47,3 +49,9 @@ paths:
     $ref: "./paths/folder.yaml#/folders-id-share-links"
   /archive/{id}/folders/shared:
     $ref: "./paths/archive.yaml#/archive-id-folders-shared"
+  /applications:
+    $ref: "./paths/application.yaml#/applications"
+  /applications/{id}:
+    $ref: "./paths/application.yaml#/applications-with-id"
+  /developer-accounts:
+    $ref: "./paths/developer_account.yaml#/developer-accounts"
