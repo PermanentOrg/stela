@@ -1,5 +1,4 @@
-import Ajv from "ajv";
-import type { JSONSchemaType } from "ajv";
+import Ajv, { type JSONSchemaType } from "ajv";
 
 const ajv = new Ajv({ coerceTypes: true });
 
