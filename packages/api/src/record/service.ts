@@ -8,6 +8,9 @@ import type {
   RecordColumnsForUpdate,
 } from "./models";
 import { requestFieldsToDatabaseFields } from "./helper";
+import { permission } from "../access/permission";
+import { accountService } from "../account/service";
+import { recordAccess } from "./access";
 
 export const getRecordById = async (requestQuery: {
   recordIds: string[];
@@ -30,6 +33,64 @@ export const getRecordById = async (requestQuery: {
     imageRatio: +(row.imageRatio ?? 0),
   }));
   return records;
+};
+
+const validateCanPatchRecord = async (
+  recordId: string,
+  emailFromAuthToken: string
+): Promise<void> => {
+  const [record] = await getRecordById({
+    recordIds: [recordId],
+    accountEmail: emailFromAuthToken,
+  });
+  if (!record) {
+    throw new createError.NotFound("Record not found.");
+  }
+  let canEdit = false;
+  let canView = false;
+  const accountArchive = await accountService.getAccountArchive(
+    record.archiveId,
+    emailFromAuthToken
+  );
+  if (accountArchive) {
+    if (permission.checkCanEditAccountArchive(accountArchive)) {
+      canEdit = true;
+    }
+    if (permission.checkCanViewAccountArchive(accountArchive)) {
+      canView = true;
+    }
+  }
+  if (!canEdit) {
+    const archiveMemberships =
+      await accountService.getCurrentAccountArchiveMemberships(
+        emailFromAuthToken
+      );
+    await Promise.all(
+      archiveMemberships.map(async (archiveMembership) => {
+        if (permission.checkCanEditAccountArchive(archiveMembership)) {
+          const accessList = await recordAccess.getAccessByRecord(
+            record.recordId,
+            archiveMembership.archiveId
+          );
+          if (permission.checkCanEdit(accessList)) {
+            canEdit = true;
+          }
+          if (permission.checkCanView(accessList)) {
+            canView = true;
+          }
+        }
+        return archiveMembership;
+      })
+    );
+  }
+  if (!canView) {
+    throw new createError.NotFound("Record not found.");
+  }
+  if (!canEdit) {
+    throw new createError.Forbidden(
+      "User does not have permission to modify record."
+    );
+  }
 };
 
 function buildPatchQuery(columnsForUpdate: RecordColumnsForUpdate): string {
@@ -55,6 +116,7 @@ export const patchRecord = async (
   recordId: string,
   recordData: PatchRecordRequest
 ): Promise<string> => {
+  await validateCanPatchRecord(recordId, recordData.emailFromAuthToken);
   const columnsForUpdate = requestFieldsToDatabaseFields(recordData, recordId);
   const query = buildPatchQuery(columnsForUpdate);
 
