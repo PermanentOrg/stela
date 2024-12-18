@@ -8,6 +8,14 @@ import {
   verifyUserAuthentication,
 } from "../middleware";
 import type { ArchiveFile, ArchiveRecord, Share, Tag } from "./models";
+import { folderAccess } from "../folder/access";
+import {
+  type Access,
+  AccessRole,
+  AccessStatus,
+  AccessType,
+} from "../access/models";
+import { recordAccess } from "./access";
 
 jest.mock("../database");
 jest.mock("../middleware");
@@ -339,7 +347,7 @@ describe("patch record", () => {
         __,
         next: NextFunction
       ) => {
-        req.body.emailFromAuthToken = "test+1@permanent.org";
+        req.body.emailFromAuthToken = "test@permanent.org";
         req.body.userSubjectFromAuthToken =
           "b5461dc2-1eb0-450e-b710-fef7b2cafe1e";
 
@@ -392,6 +400,38 @@ describe("patch record", () => {
     expect(result.rows[0]).toEqual({ locnid: "123" });
   });
 
+  test("expect 200 if user has share rights", async () => {
+    (verifyUserAuthentication as jest.Mock).mockImplementation(
+      async (
+        req: Request<
+          unknown,
+          unknown,
+          { userSubjectFromAuthToken?: string; emailFromAuthToken?: string }
+        >,
+        __,
+        next: NextFunction
+      ) => {
+        req.body.emailFromAuthToken = "test+1@permanent.org";
+        req.body.userSubjectFromAuthToken =
+          "b5461dc2-1eb0-450e-b710-fef7b2cafe1e";
+        next();
+      }
+    );
+
+    jest
+      .spyOn(recordAccess, "getAccessByRecord")
+      .mockImplementation(async () => [
+        {
+          accessId: "1",
+          role: AccessRole.Editor,
+          status: AccessStatus.Ok,
+          type: AccessType.Share,
+        } as Access,
+      ]);
+
+    await agent.patch("/api/v2/record/1").send({ locationId: 123 }).expect(200);
+  });
+
   test("expect location id is updated when set to null", async () => {
     await agent
       .patch("/api/v2/record/1")
@@ -426,5 +466,79 @@ describe("patch record", () => {
     await agent.patch("/api/v2/record/1").send({ locationId: 123 }).expect(500);
 
     expect(logger.error).toHaveBeenCalledWith(testError);
+  });
+
+  test("expect 403 forbidden response if user doesn't have access rights", async () => {
+    (verifyUserAuthentication as jest.Mock).mockImplementation(
+      async (
+        req: Request<
+          unknown,
+          unknown,
+          { userSubjectFromAuthToken?: string; emailFromAuthToken?: string }
+        >,
+        __,
+        next: NextFunction
+      ) => {
+        req.body.emailFromAuthToken = "test+1@permanent.org";
+        req.body.userSubjectFromAuthToken =
+          "b5461dc2-1eb0-450e-b710-fef7b2cafe1e";
+        next();
+      }
+    );
+
+    await agent.patch("/api/v2/record/1").send({ locationId: 123 }).expect(403);
+  });
+
+  test("expect 403 forbidden response if user doesn't have edit access rights", async () => {
+    (verifyUserAuthentication as jest.Mock).mockImplementation(
+      async (
+        req: Request<
+          unknown,
+          unknown,
+          { userSubjectFromAuthToken?: string; emailFromAuthToken?: string }
+        >,
+        __,
+        next: NextFunction
+      ) => {
+        req.body.emailFromAuthToken = "test+1@permanent.org";
+        req.body.userSubjectFromAuthToken =
+          "b5461dc2-1eb0-450e-b710-fef7b2cafe1e";
+        next();
+      }
+    );
+
+    jest
+      .spyOn(folderAccess, "getAccessByFolder")
+      .mockImplementation(async () => [
+        {
+          accessId: "1",
+          role: AccessRole.Viewer,
+          status: AccessStatus.Ok,
+          type: AccessType.Share,
+        } as Access,
+      ]);
+
+    await agent.patch("/api/v2/record/1").send({ locationId: 123 }).expect(403);
+  });
+
+  test("expect 404 not found response if user doesn't have access rights", async () => {
+    (verifyUserAuthentication as jest.Mock).mockImplementation(
+      async (
+        req: Request<
+          unknown,
+          unknown,
+          { userSubjectFromAuthToken?: string; emailFromAuthToken?: string }
+        >,
+        __,
+        next: NextFunction
+      ) => {
+        req.body.emailFromAuthToken = "unknown@permanent.org";
+        req.body.userSubjectFromAuthToken =
+          "b5461dc2-1eb0-450e-b710-fef7b2cafe1e";
+        next();
+      }
+    );
+
+    await agent.patch("/api/v2/record/1").send({ locationId: 123 }).expect(404);
   });
 });

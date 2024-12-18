@@ -10,3 +10,4 @@ tags
 aws-iam-authenticator
 .vimspector.json
 .idea/
+.DS_Store
