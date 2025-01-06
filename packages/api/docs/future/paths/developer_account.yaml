@@ -1,0 +1,38 @@
+developer-accounts:
+  post:
+    summary: Create a new developer account
+    operationId: createDeveloperAccount
+    security: []
+    tags:
+      - application
+    requestBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [email, password]
+            properties:
+              email:
+                type: string
+              password:
+                type: string
+    responses:
+      "201":
+        description: >
+          Authentication tokens for the new developer account
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                data:
+                  type: object
+                  properties:
+                    authenticationToken:
+                      type: string
+                    refreshToken:
+                      type: string
+      "400":
+        $ref: "../../shared/errors.yaml#/400"
+      "500":
+        $ref: "../../shared/errors.yaml#/500"
