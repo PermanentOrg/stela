@@ -5,7 +5,7 @@ import { db } from "./database";
 import { handler } from "./index";
 
 jest.mock("./database");
-jest.mock("@stela/s3-utils", () => ({
+jest.mock("@stela/s3-utils", (): unknown => ({
   ...jest.requireActual("@stela/s3-utils"),
   constructSignedCdnUrl: jest.fn(),
 }));
