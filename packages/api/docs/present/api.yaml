@@ -20,3 +20,5 @@ paths:
     $ref: "./paths/feature_flags.yaml#/feature-flags~1{id}"
   /record/{id}:
     $ref: "./paths/records.yaml#/record~1{id}"
+  /folder/{id}:
+    $ref: "./paths/folders.yaml#/folder~1{id}"
