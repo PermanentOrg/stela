@@ -3,13 +3,13 @@ import type { Request, Response, NextFunction } from "express";
 import {
   verifyUserAuthentication,
   verifyAdminAuthentication,
-} from "../middleware";
+} from "../../middleware";
 import {
   validateArchiveIdFromParams,
   validateBodyFromAuthentication,
-} from "./validators";
-import { isValidationError } from "../validators/validator_util";
-import { archiveService } from "./service";
+} from "../validators";
+import { isValidationError } from "../../validators/validator_util";
+import { archiveService } from "../service";
 
 export const archiveController = Router();
 archiveController.get(
@@ -20,10 +20,6 @@ archiveController.get(
       const tags = await archiveService.getPublicTags(req.params.archiveId);
       res.json(tags);
     } catch (err) {
-      if (isValidationError(err)) {
-        res.status(400).json({ error: err });
-        return;
-      }
       next(err);
     }
   }
@@ -60,10 +56,6 @@ archiveController.post(
       await archiveService.makeFeatured(req.params.archiveId);
       res.sendStatus(200);
     } catch (err) {
-      if (isValidationError(err)) {
-        res.status(400).json({ error: err });
-        return;
-      }
       next(err);
     }
   }
@@ -78,10 +70,6 @@ archiveController.delete(
       await archiveService.unfeature(req.params.archiveId);
       res.sendStatus(200);
     } catch (err) {
-      if (isValidationError(err)) {
-        res.status(400).json({ error: err });
-        return;
-      }
       next(err);
     }
   }
