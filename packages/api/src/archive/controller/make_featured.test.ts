@@ -1,14 +1,13 @@
-import { BadRequest, InternalServerError } from "http-errors";
+import request from "supertest";
+import type { Request, NextFunction } from "express";
 import { logger } from "@stela/logger";
+import { app } from "../../app";
+import { verifyAdminAuthentication } from "../../middleware";
 import { db } from "../../database";
-import { archiveService } from "./index";
 
 jest.mock("../../database");
-jest.mock("@stela/logger", () => ({
-  logger: {
-    error: jest.fn(),
-  },
-}));
+jest.mock("../../middleware");
+jest.mock("@stela/logger");
 
 const loadFixtures = async (): Promise<void> => {
   await db.sql("archive.fixtures.create_test_accounts");
@@ -20,7 +19,18 @@ const clearDatabase = async (): Promise<void> => {
 };
 
 describe("makeFeatured", () => {
+  const agent = request(app);
   beforeEach(async () => {
+    (verifyAdminAuthentication as jest.Mock).mockImplementation(
+      (req: Request, _: Response, next: NextFunction) => {
+        (req.body as { emailFromAuthToken: string }).emailFromAuthToken =
+          "test+1@permanent.org";
+        (
+          req.body as { adminSubjectFromAuthToken: string }
+        ).adminSubjectFromAuthToken = "82bd483e-914b-4bfe-abf9-92ffe86d7803";
+        next();
+      }
+    );
     await loadFixtures();
   });
 
@@ -31,7 +41,7 @@ describe("makeFeatured", () => {
   test("should make an archive featured", async () => {
     const archiveId = "3";
 
-    await archiveService.makeFeatured(archiveId);
+    await agent.post(`/api/v2/archive/${archiveId}/make-featured`).expect(200);
 
     const result = await db.query<{ archiveId: string }>(
       'SELECT archive_id "archiveId" FROM featured_archive WHERE archive_id = :archiveId',
@@ -42,57 +52,26 @@ describe("makeFeatured", () => {
   });
 
   test("should throw a BadRequest error if archive doesn't exist", async () => {
-    let error = null;
     const archiveId = "1000000";
-
-    try {
-      await archiveService.makeFeatured(archiveId);
-    } catch (err) {
-      error = err;
-    } finally {
-      expect(error instanceof BadRequest).toBe(true);
-    }
+    await agent.post(`/api/v2/archive/${archiveId}/make-featured`).expect(400);
   });
 
   test("should throw a BadRequest error if archive isn't public", async () => {
-    let error = null;
     const archiveId = "1";
-
-    try {
-      await archiveService.makeFeatured(archiveId);
-    } catch (err) {
-      error = err;
-    } finally {
-      expect(error instanceof BadRequest).toBe(true);
-    }
+    await agent.post(`/api/v2/archive/${archiveId}/make-featured`).expect(400);
   });
 
   test("should throw a BadRequest error if archive is already featured", async () => {
-    let error = null;
     const archiveId = "3";
-    await archiveService.makeFeatured(archiveId);
-
-    try {
-      await archiveService.makeFeatured(archiveId);
-    } catch (err) {
-      error = err;
-    } finally {
-      expect(error instanceof BadRequest).toBe(true);
-    }
+    await agent.post(`/api/v2/archive/${archiveId}/make-featured`).expect(200);
+    await agent.post(`/api/v2/archive/${archiveId}/make-featured`).expect(400);
   });
 
   test("should throw an InternalServerError if database query fails", async () => {
-    let error = null;
     const archiveId = "3";
     const testError = new Error("error: out of cheese - redo from start");
     jest.spyOn(db, "sql").mockRejectedValueOnce(testError);
-    try {
-      await archiveService.makeFeatured(archiveId);
-    } catch (err) {
-      error = err;
-    } finally {
-      expect(logger.error).toHaveBeenCalledWith(testError);
-      expect(error instanceof InternalServerError).toBe(true);
-    }
+    await agent.post(`/api/v2/archive/${archiveId}/make-featured`).expect(500);
+    expect(logger.error).toHaveBeenCalledWith(testError);
   });
 });

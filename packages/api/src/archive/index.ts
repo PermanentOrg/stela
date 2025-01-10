@@ -1,1 +1,1 @@
-export { archiveController } from "./controller";
+export { archiveController } from "./controller/controller";
