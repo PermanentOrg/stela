@@ -15,7 +15,7 @@ jest.mock("../publisher_client");
 
 describe("recalculateFolderThumbnails", () => {
   const loadFixtures = async (): Promise<void> => {
-    await db.sql("fixtures.create_test_folders");
+    await db.sql("admin.fixtures.create_test_folders");
   };
 
   const clearDatabase = async (): Promise<void> => {
@@ -124,7 +124,7 @@ describe("set_null_subjects", () => {
   const agent = request(app);
 
   const loadFixtures = async (): Promise<void> => {
-    await db.sql("fixtures.create_test_accounts");
+    await db.sql("admin.fixtures.create_test_accounts");
   };
 
   const clearDatabase = async (): Promise<void> => {
@@ -383,11 +383,11 @@ describe("/record/:recordId/recalculate_thumbnail", () => {
   const agent = request(app);
 
   const loadFixtures = async (): Promise<void> => {
-    await db.sql("fixtures.create_test_accounts");
-    await db.sql("fixtures.create_test_archives");
-    await db.sql("fixtures.create_test_records");
-    await db.sql("fixtures.create_test_folders");
-    await db.sql("fixtures.create_test_folder_links");
+    await db.sql("admin.fixtures.create_test_accounts");
+    await db.sql("admin.fixtures.create_test_archives");
+    await db.sql("admin.fixtures.create_test_records");
+    await db.sql("admin.fixtures.create_test_folders");
+    await db.sql("admin.fixtures.create_test_folder_links");
   };
 
   const clearDatabase = async (): Promise<void> => {
