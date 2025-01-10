@@ -71,3 +71,18 @@ adminController.post(
     }
   }
 );
+
+// This endpoint exists to clean up corrupt data caused by a bug in the folder deletion logic.
+// It should be deleted once that cleanup is achieved.
+adminController.post(
+  "/folder/delete-orphaned-folders",
+  verifyAdminAuthentication,
+  async (_: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const response = await adminService.triggerOrphanedFolderDeletion();
+      res.status(200).json(response);
+    } catch (err) {
+      next(err);
+    }
+  }
+);
