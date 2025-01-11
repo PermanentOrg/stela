@@ -15,6 +15,6 @@ export interface LegacyContact {
   accountId: string;
   name: string;
   email: string;
-  createdDt: Date;
-  updatedDt: Date;
+  createdDt: string;
+  updatedDt: string;
 }
