@@ -1,17 +1,17 @@
 import { Router } from "express";
 import type { Request, Response, NextFunction } from "express";
 
-import { extractIp, verifyUserAuthentication } from "../middleware";
-import { isValidationError } from "../validators/validator_util";
+import { extractIp, verifyUserAuthentication } from "../../middleware";
+import { isValidationError } from "../../validators/validator_util";
 
 import {
   validateUpdateTagsRequest,
   validateBodyFromAuthentication,
   validateLeaveArchiveParams,
   validateLeaveArchiveRequest,
-} from "./validators";
-import { accountService } from "./service";
-import type { LeaveArchiveRequest } from "./models";
+} from "../validators";
+import { accountService } from "../service";
+import type { LeaveArchiveRequest } from "../models";
 
 export const accountController = Router();
 accountController.put(
