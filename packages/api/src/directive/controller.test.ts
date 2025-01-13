@@ -78,11 +78,11 @@ describe("GET /directive/archive/:archiveId", () => {
   const testEmail = "test@permanent.org";
 
   const loadFixtures = async (): Promise<void> => {
-    await db.sql("fixtures.create_test_accounts");
-    await db.sql("fixtures.create_test_archives");
-    await db.sql("fixtures.create_test_account_archives");
-    await db.sql("fixtures.create_test_directives");
-    await db.sql("fixtures.create_test_directive_triggers");
+    await db.sql("directive.fixtures.create_test_accounts");
+    await db.sql("directive.fixtures.create_test_archives");
+    await db.sql("directive.fixtures.create_test_account_archives");
+    await db.sql("directive.fixtures.create_test_directives");
+    await db.sql("directive.fixtures.create_test_directive_triggers");
   };
 
   const clearDatabase = async (): Promise<void> => {
@@ -151,9 +151,9 @@ describe("POST /directive", () => {
   const stewardEmail = "test+1@permanent.org";
 
   const loadFixtures = async (): Promise<void> => {
-    await db.sql("fixtures.create_test_accounts");
-    await db.sql("fixtures.create_test_archives");
-    await db.sql("fixtures.create_test_account_archives");
+    await db.sql("directive.fixtures.create_test_accounts");
+    await db.sql("directive.fixtures.create_test_archives");
+    await db.sql("directive.fixtures.create_test_account_archives");
   };
 
   const clearDatabase = async (): Promise<void> => {
@@ -390,11 +390,11 @@ describe("PUT /directive/:directiveId", () => {
   const testNote = "test note";
 
   const loadFixtures = async (): Promise<void> => {
-    await db.sql("fixtures.create_test_accounts");
-    await db.sql("fixtures.create_test_archives");
-    await db.sql("fixtures.create_test_account_archives");
-    await db.sql("fixtures.create_test_directives");
-    await db.sql("fixtures.create_test_directive_triggers");
+    await db.sql("directive.fixtures.create_test_accounts");
+    await db.sql("directive.fixtures.create_test_archives");
+    await db.sql("directive.fixtures.create_test_account_archives");
+    await db.sql("directive.fixtures.create_test_directives");
+    await db.sql("directive.fixtures.create_test_directive_triggers");
   };
 
   const clearDatabase = async (): Promise<void> => {
@@ -687,11 +687,11 @@ describe("POST /trigger/account/:accountId", () => {
   const testDirectiveId = "39b2a5fa-3508-4030-91b6-21dc6ec7a1ab";
 
   const loadFixtures = async (): Promise<void> => {
-    await db.sql("fixtures.create_test_accounts");
-    await db.sql("fixtures.create_test_archives");
-    await db.sql("fixtures.create_test_account_archives");
-    await db.sql("fixtures.create_test_directives");
-    await db.sql("fixtures.create_test_directive_triggers");
+    await db.sql("directive.fixtures.create_test_accounts");
+    await db.sql("directive.fixtures.create_test_archives");
+    await db.sql("directive.fixtures.create_test_account_archives");
+    await db.sql("directive.fixtures.create_test_directives");
+    await db.sql("directive.fixtures.create_test_directive_triggers");
   };
 
   const clearDatabase = async (): Promise<void> => {
