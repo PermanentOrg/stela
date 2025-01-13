@@ -195,7 +195,7 @@ describe("idpuser/send-enable-code", () => {
   const agent = request(app);
 
   const loadFixtures = async (): Promise<void> => {
-    await db.sql("fixtures.create_test_accounts");
+    await db.sql("idpuser.fixtures.create_test_accounts");
   };
 
   const clearDatabase = async (): Promise<void> => {
@@ -355,7 +355,7 @@ describe("POST /idpuser/enable-two-factor", () => {
   const agent = request(app);
 
   const loadFixtures = async (): Promise<void> => {
-    await db.sql("fixtures.create_test_accounts");
+    await db.sql("idpuser.fixtures.create_test_accounts");
   };
 
   const clearDatabase = async (): Promise<void> => {
@@ -535,7 +535,7 @@ describe("idpuser/send-disable-code", () => {
   const agent = request(app);
 
   const loadFixtures = async (): Promise<void> => {
-    await db.sql("fixtures.create_test_accounts");
+    await db.sql("idpuser.fixtures.create_test_accounts");
   };
 
   const clearDatabase = async (): Promise<void> => {
@@ -684,7 +684,7 @@ describe("/idpuser/disable-two-factor", () => {
   const agent = request(app);
 
   const loadFixtures = async (): Promise<void> => {
-    await db.sql("fixtures.create_test_accounts");
+    await db.sql("idpuser.fixtures.create_test_accounts");
   };
 
   const clearDatabase = async (): Promise<void> => {
