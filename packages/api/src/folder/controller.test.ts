@@ -16,10 +16,10 @@ jest.mock("../middleware");
 jest.mock("@stela/logger");
 
 const setupDatabase = async (): Promise<void> => {
-  await db.sql("fixtures.create_test_accounts");
-  await db.sql("fixtures.create_test_archives");
-  await db.sql("fixtures.create_test_account_archives");
-  await db.sql("fixtures.create_test_folders");
+  await db.sql("folder.fixtures.create_test_accounts");
+  await db.sql("folder.fixtures.create_test_archives");
+  await db.sql("folder.fixtures.create_test_account_archives");
+  await db.sql("folder.fixtures.create_test_folders");
 };
 
 const clearDatabase = async (): Promise<void> => {
