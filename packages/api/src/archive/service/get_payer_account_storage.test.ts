@@ -12,10 +12,10 @@ jest.mock("@stela/logger", () => ({
 }));
 
 const loadFixtures = async (): Promise<void> => {
-  await db.sql("fixtures.create_test_accounts");
-  await db.sql("fixtures.create_test_archives");
-  await db.sql("fixtures.create_test_account_archives");
-  await db.sql("fixtures.create_test_account_space");
+  await db.sql("archive.fixtures.create_test_accounts");
+  await db.sql("archive.fixtures.create_test_archives");
+  await db.sql("archive.fixtures.create_test_account_archives");
+  await db.sql("archive.fixtures.create_test_account_space");
 };
 
 const clearDatabase = async (): Promise<void> => {
