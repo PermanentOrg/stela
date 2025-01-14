@@ -12,7 +12,7 @@ jest.mock("../database");
 jest.mock("@stela/logger");
 
 const loadFixtures = async (): Promise<void> => {
-  await db.sql("fixtures.create_test_promos");
+  await db.sql("promo.fixtures.create_test_promos");
 };
 
 const clearDatabase = async (): Promise<void> => {
