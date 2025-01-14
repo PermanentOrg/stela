@@ -26,12 +26,12 @@ const testLegacyContactId = "0cb0738c-5607-42d0-8014-8666a8d6ba13";
 const testDirectiveId = "39b2a5fa-3508-4030-91b6-21dc6ec7a1ab";
 
 const loadFixtures = async (): Promise<void> => {
-  await db.sql("fixtures.create_test_accounts");
-  await db.sql("fixtures.create_test_legacy_contacts");
-  await db.sql("fixtures.create_test_archives");
-  await db.sql("fixtures.create_test_account_archives");
-  await db.sql("fixtures.create_test_directives");
-  await db.sql("fixtures.create_test_profile_items");
+  await db.sql("email.fixtures.create_test_accounts");
+  await db.sql("email.fixtures.create_test_legacy_contacts");
+  await db.sql("email.fixtures.create_test_archives");
+  await db.sql("email.fixtures.create_test_account_archives");
+  await db.sql("email.fixtures.create_test_directives");
+  await db.sql("email.fixtures.create_test_profile_items");
 };
 
 const clearDatabase = async (): Promise<void> => {
