@@ -581,8 +581,8 @@ describe("GET /event/checklist", () => {
   const agent = request(app);
 
   const loadFixtures = async (): Promise<void> => {
-    await db.sql("fixtures.create_test_accounts");
-    await db.sql("fixtures.create_test_events");
+    await db.sql("event.fixtures.create_test_accounts");
+    await db.sql("event.fixtures.create_test_events");
   };
 
   const clearDatabase = async (): Promise<void> => {
