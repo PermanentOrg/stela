@@ -13,9 +13,9 @@ jest.mock("../middleware");
 jest.mock("../event/service");
 
 const loadFixtures = async (): Promise<void> => {
-  await db.sql("fixtures.create_test_accounts");
-  await db.sql("fixtures.create_test_archives");
-  await db.sql("fixtures.create_test_account_archives");
+  await db.sql("account.fixtures.create_test_accounts");
+  await db.sql("account.fixtures.create_test_archives");
+  await db.sql("account.fixtures.create_test_account_archives");
 };
 
 const clearDatabase = async (): Promise<void> => {
