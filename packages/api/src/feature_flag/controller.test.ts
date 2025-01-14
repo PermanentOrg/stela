@@ -20,7 +20,7 @@ jest.mock("../middleware");
 jest.mock("@stela/logger");
 
 const loadFixtures = async (): Promise<void> => {
-  await db.sql("fixtures.create_test_feature_flags");
+  await db.sql("feature_flag.fixtures.create_test_feature_flags");
 };
 
 const clearDatabase = async (): Promise<void> => {
