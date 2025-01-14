@@ -22,22 +22,22 @@ jest.mock("../middleware");
 jest.mock("@stela/logger");
 
 const setupDatabase = async (): Promise<void> => {
-  await db.sql("fixtures.create_test_accounts");
-  await db.sql("fixtures.create_test_archives");
-  await db.sql("fixtures.create_test_account_archives");
-  await db.sql("fixtures.create_test_records");
-  await db.sql("fixtures.create_complete_test_record");
-  await db.sql("fixtures.create_test_folders");
-  await db.sql("fixtures.create_test_folder_links");
-  await db.sql("fixtures.create_test_accesses");
-  await db.sql("fixtures.create_test_files");
-  await db.sql("fixtures.create_complete_test_files");
-  await db.sql("fixtures.create_test_record_files");
-  await db.sql("fixtures.create_test_tags");
-  await db.sql("fixtures.create_test_tag_links");
-  await db.sql("fixtures.create_test_shares");
-  await db.sql("fixtures.create_test_profile_items");
-  await db.sql("fixtures.create_complete_test_folder_links");
+  await db.sql("record.fixtures.create_test_accounts");
+  await db.sql("record.fixtures.create_test_archives");
+  await db.sql("record.fixtures.create_test_account_archives");
+  await db.sql("record.fixtures.create_test_records");
+  await db.sql("record.fixtures.create_complete_test_record");
+  await db.sql("record.fixtures.create_test_folders");
+  await db.sql("record.fixtures.create_test_folder_links");
+  await db.sql("record.fixtures.create_test_accesses");
+  await db.sql("record.fixtures.create_test_files");
+  await db.sql("record.fixtures.create_complete_test_files");
+  await db.sql("record.fixtures.create_test_record_files");
+  await db.sql("record.fixtures.create_test_tags");
+  await db.sql("record.fixtures.create_test_tag_links");
+  await db.sql("record.fixtures.create_test_shares");
+  await db.sql("record.fixtures.create_test_profile_items");
+  await db.sql("record.fixtures.create_complete_test_folder_links");
 };
 
 const clearDatabase = async (): Promise<void> => {
