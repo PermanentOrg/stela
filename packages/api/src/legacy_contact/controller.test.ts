@@ -16,8 +16,8 @@ jest.mock("../email", () => ({
 
 describe("GET /legacy-contact", () => {
   const loadFixtures = async (): Promise<void> => {
-    await db.sql("fixtures.create_test_accounts");
-    await db.sql("fixtures.create_test_legacy_contacts");
+    await db.sql("legacy_contact.fixtures.create_test_accounts");
+    await db.sql("legacy_contact.fixtures.create_test_legacy_contacts");
   };
 
   const clearDatabase = async (): Promise<void> => {
@@ -86,7 +86,7 @@ describe("POST /legacy-contact", () => {
   const agent = request(app);
 
   const loadFixtures = async (): Promise<void> => {
-    await db.sql("fixtures.create_test_accounts");
+    await db.sql("legacy_contact.fixtures.create_test_accounts");
   };
 
   const clearDatabase = async (): Promise<void> => {
@@ -225,8 +225,8 @@ describe("PUT /legacy-contact/:legacyContactId", () => {
   const agent = request(app);
 
   const loadFixtures = async (): Promise<void> => {
-    await db.sql("fixtures.create_test_accounts");
-    await db.sql("fixtures.create_test_legacy_contacts");
+    await db.sql("legacy_contact.fixtures.create_test_accounts");
+    await db.sql("legacy_contact.fixtures.create_test_legacy_contacts");
   };
 
   const clearDatabase = async (): Promise<void> => {
