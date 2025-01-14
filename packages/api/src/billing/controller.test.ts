@@ -294,9 +294,9 @@ describe("/billing/gift", () => {
   });
 
   test("should return a 500 error if email from auth token has no permanent account", async () => {
-    await db.sql("fixtures.create_test_accounts");
-    await db.sql("fixtures.create_test_account_space");
-    await db.sql("fixtures.create_test_emails");
+    await db.sql("billing.fixtures.create_test_accounts");
+    await db.sql("billing.fixtures.create_test_account_space");
+    await db.sql("billing.fixtures.create_test_emails");
     (verifyUserAuthentication as jest.Mock).mockImplementation(
       (req: Request, __, next: NextFunction) => {
         (req.body as GiftStorageRequest).emailFromAuthToken =
@@ -317,9 +317,9 @@ describe("/billing/gift", () => {
   });
 
   test("should create a ledger entry with correct values if recipient already has an account", async () => {
-    await db.sql("fixtures.create_test_accounts");
-    await db.sql("fixtures.create_test_account_space");
-    await db.sql("fixtures.create_test_emails");
+    await db.sql("billing.fixtures.create_test_accounts");
+    await db.sql("billing.fixtures.create_test_account_space");
+    await db.sql("billing.fixtures.create_test_emails");
 
     const initialSenderSpace = await getAccountSpace(senderAccountId);
     const initialRecipientSpace = await getAccountSpace(recipientOneAccountId);
@@ -337,9 +337,9 @@ describe("/billing/gift", () => {
   });
 
   test("successful gift should update account_space for sender", async () => {
-    await db.sql("fixtures.create_test_accounts");
-    await db.sql("fixtures.create_test_account_space");
-    await db.sql("fixtures.create_test_emails");
+    await db.sql("billing.fixtures.create_test_accounts");
+    await db.sql("billing.fixtures.create_test_account_space");
+    await db.sql("billing.fixtures.create_test_emails");
 
     const initialAccountSpace = await getAccountSpace(senderAccountId);
     await agent
@@ -370,9 +370,9 @@ describe("/billing/gift", () => {
   });
 
   test("successful gift should update account_space for recipient", async () => {
-    await db.sql("fixtures.create_test_accounts");
-    await db.sql("fixtures.create_test_emails");
-    await db.sql("fixtures.create_test_account_space");
+    await db.sql("billing.fixtures.create_test_accounts");
+    await db.sql("billing.fixtures.create_test_emails");
+    await db.sql("billing.fixtures.create_test_account_space");
     const initialAccountSpace = await getAccountSpace(recipientOneAccountId);
     await agent
       .post("/api/v2/billing/gift")
@@ -402,9 +402,9 @@ describe("/billing/gift", () => {
   });
 
   test("should create a multiple correct ledger entries if there are multiple recipients", async () => {
-    await db.sql("fixtures.create_test_accounts");
-    await db.sql("fixtures.create_test_account_space");
-    await db.sql("fixtures.create_test_emails");
+    await db.sql("billing.fixtures.create_test_accounts");
+    await db.sql("billing.fixtures.create_test_account_space");
+    await db.sql("billing.fixtures.create_test_emails");
 
     const initialSenderSpace = await getAccountSpace(senderAccountId);
     const initialRecipientOneSpace = await getAccountSpace(
@@ -437,9 +437,9 @@ describe("/billing/gift", () => {
   });
 
   test("should return an invalid request status if sender doesn't have enough storage", async () => {
-    await db.sql("fixtures.create_test_accounts");
-    await db.sql("fixtures.create_test_account_space");
-    await db.sql("fixtures.create_test_emails");
+    await db.sql("billing.fixtures.create_test_accounts");
+    await db.sql("billing.fixtures.create_test_account_space");
+    await db.sql("billing.fixtures.create_test_emails");
 
     await agent
       .post("/api/v2/billing/gift")
@@ -451,9 +451,9 @@ describe("/billing/gift", () => {
   });
 
   test("should create an invite if recipient doesn't have an account", async () => {
-    await db.sql("fixtures.create_test_accounts");
-    await db.sql("fixtures.create_test_account_space");
-    await db.sql("fixtures.create_test_emails");
+    await db.sql("billing.fixtures.create_test_accounts");
+    await db.sql("billing.fixtures.create_test_account_space");
+    await db.sql("billing.fixtures.create_test_emails");
 
     const newUserEmails = [
       "test+not_a_user_yet@permanent.org",
@@ -479,10 +479,10 @@ describe("/billing/gift", () => {
   });
 
   test("should not create an invite if recipient already has an invite", async () => {
-    await db.sql("fixtures.create_test_accounts");
-    await db.sql("fixtures.create_test_account_space");
-    await db.sql("fixtures.create_test_emails");
-    await db.sql("fixtures.create_test_invites");
+    await db.sql("billing.fixtures.create_test_accounts");
+    await db.sql("billing.fixtures.create_test_account_space");
+    await db.sql("billing.fixtures.create_test_emails");
+    await db.sql("billing.fixtures.create_test_invites");
 
     const newUserEmails = ["test+already_invited@permanent.org"];
 
@@ -502,9 +502,9 @@ describe("/billing/gift", () => {
   });
 
   test("should create a gift purchase ledger entry if recipient doesn't have an account", async () => {
-    await db.sql("fixtures.create_test_accounts");
-    await db.sql("fixtures.create_test_account_space");
-    await db.sql("fixtures.create_test_emails");
+    await db.sql("billing.fixtures.create_test_accounts");
+    await db.sql("billing.fixtures.create_test_account_space");
+    await db.sql("billing.fixtures.create_test_emails");
 
     const initialSenderSpace = await getAccountSpace(senderAccountId);
 
@@ -528,9 +528,9 @@ describe("/billing/gift", () => {
   });
 
   test("should send invitation email if recipient doesn't have an account", async () => {
-    await db.sql("fixtures.create_test_accounts");
-    await db.sql("fixtures.create_test_account_space");
-    await db.sql("fixtures.create_test_emails");
+    await db.sql("billing.fixtures.create_test_accounts");
+    await db.sql("billing.fixtures.create_test_account_space");
+    await db.sql("billing.fixtures.create_test_emails");
 
     const newUserEmails = [
       "test+not_a_user_yet@permanent.org",
@@ -549,9 +549,9 @@ describe("/billing/gift", () => {
   });
 
   test("should send gift notification email if recipient does have an account", async () => {
-    await db.sql("fixtures.create_test_accounts");
-    await db.sql("fixtures.create_test_account_space");
-    await db.sql("fixtures.create_test_emails");
+    await db.sql("billing.fixtures.create_test_accounts");
+    await db.sql("billing.fixtures.create_test_account_space");
+    await db.sql("billing.fixtures.create_test_emails");
 
     const newUserEmails = ["test+1@permanent.org"];
 
@@ -567,10 +567,10 @@ describe("/billing/gift", () => {
   });
 
   test("should report what happened to each email passed in", async () => {
-    await db.sql("fixtures.create_test_accounts");
-    await db.sql("fixtures.create_test_account_space");
-    await db.sql("fixtures.create_test_emails");
-    await db.sql("fixtures.create_test_invites");
+    await db.sql("billing.fixtures.create_test_accounts");
+    await db.sql("billing.fixtures.create_test_account_space");
+    await db.sql("billing.fixtures.create_test_emails");
+    await db.sql("billing.fixtures.create_test_invites");
 
     const recipientEmails = [
       "test+already_invited@permanent.org",
