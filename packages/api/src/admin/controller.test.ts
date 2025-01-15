@@ -4,7 +4,7 @@ import createError from "http-errors";
 import { logger } from "@stela/logger";
 import { app } from "../app";
 import { db } from "../database";
-import { publisherClient } from "../publisher_client";
+import { lowPriorityTopicArn, publisherClient } from "../publisher_client";
 import { verifyAdminAuthentication } from "../middleware";
 import type { Message } from "../publisher_client";
 
@@ -49,7 +49,7 @@ describe("recalculateFolderThumbnails", () => {
   test("should send messages for folders created before the cutoff", async () => {
     jest
       .spyOn(publisherClient, "batchPublishMessages")
-      .mockResolvedValueOnce({ failedMessages: [], messagesSent: 4 });
+      .mockResolvedValueOnce({ failedMessages: [], messagesSent: 6 });
     const result = await agent
       .post("/api/v2/admin/folder/recalculate_thumbnails")
       .send({
@@ -66,8 +66,8 @@ describe("recalculateFolderThumbnails", () => {
           ]
         )[1] as unknown as Message[]
       ).length
-    ).toBe(4);
-    expect(result.body).toEqual({ failedFolders: [], messagesSent: 4 });
+    ).toBe(6);
+    expect(result.body).toEqual({ failedFolders: [], messagesSent: 6 });
   });
 
   test("should respond with 500 error if messages fail to send", async () => {
@@ -480,6 +480,108 @@ describe("/record/:recordId/recalculate_thumbnail", () => {
 
     await agent
       .post("/api/v2/admin/record/1/recalculate_thumbnail")
+      .expect(500);
+    expect(logger.error).toHaveBeenCalledWith(testError);
+  });
+});
+
+describe("/folder/delete-orphaned-folders", () => {
+  const agent = request(app);
+
+  const loadFixtures = async (): Promise<void> => {
+    await db.sql("admin.fixtures.create_test_accounts");
+    await db.sql("admin.fixtures.create_test_archives");
+    await db.sql("admin.fixtures.create_test_folders");
+    await db.sql("admin.fixtures.create_test_records");
+    await db.sql("admin.fixtures.create_test_folder_links");
+  };
+
+  beforeEach(async () => {
+    (verifyAdminAuthentication as jest.Mock).mockImplementation(
+      (req: Request, __, next: NextFunction) => {
+        const body = req.body as {
+          beginTimestamp: Date;
+          endTimestamp: Date;
+          emailFromAuthToken: string;
+          adminSubjectFromAuthToken: string;
+        };
+        body.emailFromAuthToken = "test@permanent.org";
+        body.adminSubjectFromAuthToken = "5c3473b6-cf2e-4c55-a80e-8db51d1bc5fd";
+        next();
+      }
+    );
+    (publisherClient.batchPublishMessages as jest.Mock).mockResolvedValue({
+      failedMessages: [],
+      messagesSent: 2,
+    });
+
+    await loadFixtures();
+  });
+
+  afterEach(async () => {
+    await db.query(
+      "TRUNCATE account, archive, folder, record, folder_link CASCADE"
+    );
+    jest.clearAllMocks();
+  });
+
+  test("should respond with 401 if not authenticated as an admin", async () => {
+    (verifyAdminAuthentication as jest.Mock).mockImplementation(
+      (_, __, next: NextFunction) => {
+        next(new createError.Unauthorized("Invalid token"));
+      }
+    );
+    await agent
+      .post("/api/v2/admin/folder/delete-orphaned-folders")
+      .expect(401);
+  });
+
+  test("should call batchPublishMessages with correct parameters", async () => {
+    const response = await agent
+      .post("/api/v2/admin/folder/delete-orphaned-folders")
+      .expect(200);
+
+    expect(publisherClient.batchPublishMessages).toHaveBeenCalledWith(
+      lowPriorityTopicArn,
+      [
+        {
+          id: "12",
+          body: JSON.stringify({
+            task: "task.folder.delete.all",
+            parameters: ["Folder_Delete_ALL", "1234-1234", "1", "16"],
+          }),
+        },
+        {
+          id: "13",
+          body: JSON.stringify({
+            task: "task.folder.delete.all",
+            parameters: ["Folder_Delete_ALL", "1234-1235", "1", "17"],
+          }),
+        },
+      ]
+    );
+
+    expect(response.body).toEqual({ messagesSent: 2, folderIdsWithErrors: [] });
+  });
+
+  test("should respond with a 500 error if publishing fails", async () => {
+    const testError = new Error("Out of cheese - redo from start");
+    (publisherClient.batchPublishMessages as jest.Mock).mockRejectedValue(
+      testError
+    );
+
+    await agent
+      .post("/api/v2/admin/folder/delete-orphaned-folders")
+      .expect(500);
+    expect(logger.error).toHaveBeenCalledWith(testError);
+  });
+
+  test("should respond with a 500 error if database call fails", async () => {
+    const testError = new Error("Out of cheese - redo from start");
+    jest.spyOn(db, "sql").mockRejectedValue(testError);
+
+    await agent
+      .post("/api/v2/admin/folder/delete-orphaned-folders")
       .expect(500);
     expect(logger.error).toHaveBeenCalledWith(testError);
   });

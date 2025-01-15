@@ -45,7 +45,7 @@ invitations AS (
     CURRENT_TIMESTAMP AS createddt,
     CURRENT_TIMESTAMP AS updateddt
   FROM
-    UNNEST(:emails::text [], :tokens::text []) AS "temp" (email, token)
+    UNNEST(:emails::text[], :tokens::text[]) AS "temp" (email, token)
   RETURNING
   inviteid
 )

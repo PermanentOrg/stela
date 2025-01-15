@@ -8,7 +8,8 @@ INSERT INTO folder_link (
   position,
   accessrole,
   status,
-  type
+  type,
+  linkcount
 )
 VALUES
 (
@@ -21,7 +22,8 @@ VALUES
   1,
   'access.role.owner',
   'status.generic.ok',
-  'type.folder_link.private'
+  'type.folder_link.private',
+  NULL
 ),
 (
   2,
@@ -33,7 +35,8 @@ VALUES
   1,
   'access.role.owner',
   'status.generic.ok',
-  'type.folder_link.public'
+  'type.folder_link.public',
+  NULL
 ),
 (
   3,
@@ -45,7 +48,8 @@ VALUES
   1,
   'access.role.owner',
   'status.generic.ok',
-  'type.folder_link.private'
+  'type.folder_link.private',
+  NULL
 ),
 (
   4,
@@ -57,7 +61,8 @@ VALUES
   1,
   'access.role.owner',
   'status.generic.ok',
-  'type.folder_link.private'
+  'type.folder_link.private',
+  NULL
 ),
 (
   5,
@@ -69,7 +74,8 @@ VALUES
   1,
   'access.role.owner',
   'status.generic.deleted',
-  'type.folder_link.public'
+  'type.folder_link.public',
+  NULL
 ),
 (
   6,
@@ -81,7 +87,8 @@ VALUES
   1,
   'access.role.owner',
   'status.generic.ok',
-  'type.folder_link.public'
+  'type.folder_link.public',
+  NULL
 ),
 (
   7,
@@ -93,7 +100,8 @@ VALUES
   1,
   'access.role.owner',
   'status.generic.ok',
-  'type.folder_link.private'
+  'type.folder_link.private',
+  NULL
 ),
 (
   9,
@@ -105,7 +113,8 @@ VALUES
   1,
   'access.role.owner',
   'status.generic.ok',
-  'type.folder_link.public'
+  'type.folder_link.public',
+  NULL
 ),
 (
   10,
@@ -117,7 +126,8 @@ VALUES
   1,
   'access.role.owner',
   'status.generic.ok',
-  'type.folder_link.private'
+  'type.folder_link.private',
+  NULL
 ),
 (
   11,
@@ -129,7 +139,8 @@ VALUES
   1,
   'access.role.owner',
   'status.generic.ok',
-  'type.folder_link.private'
+  'type.folder_link.private',
+  NULL
 ),
 (
   12,
@@ -141,7 +152,8 @@ VALUES
   1,
   'access.role.owner',
   'status.generic.ok',
-  'type.folder_link.private'
+  'type.folder_link.private',
+  NULL
 ),
 (
   13,
@@ -153,7 +165,8 @@ VALUES
   1,
   'access.role.owner',
   'status.generic.deleted',
-  'type.folder_link.private'
+  'type.folder_link.private',
+  NULL
 ),
 (
   14,
@@ -165,7 +178,8 @@ VALUES
   1,
   'access.role.owner',
   'status.generic.ok',
-  'type.folder_link.private'
+  'type.folder_link.private',
+  NULL
 ),
 (
   15,
@@ -177,5 +191,32 @@ VALUES
   1,
   'access.role.owner',
   'status.generic.ok',
-  'type.folder_link.private'
+  'type.folder_link.private',
+  NULL
+),
+(
+  16,
+  NULL,
+  12,
+  1,
+  9,
+  1,
+  1,
+  'access.role.owner',
+  'status.generic.deleted',
+  'type.folder_link.public',
+  2
+),
+(
+  17,
+  NULL,
+  13,
+  1,
+  9,
+  1,
+  1,
+  'access.role.owner',
+  'status.generic.deleted',
+  'type.folder_link.public',
+  2
 );

@@ -119,8 +119,54 @@ const setNullAccountSubjects = async (
   };
 };
 
+const triggerOrphanedFolderDeletion = async (): Promise<{
+  messagesSent: number;
+  folderIdsWithErrors: string[];
+}> => {
+  const folderResult = await db
+    .sql<{
+      folderId: string;
+      archiveNumber: string;
+      archiveId: number;
+      folderLinkId: number;
+    }>("admin.queries.get_orphaned_folders")
+    .catch((err) => {
+      logger.error(err);
+      throw new createError.InternalServerError("Failed to retrieve folders");
+    });
+
+  const folders = folderResult.rows;
+
+  const publishResults = await publisherClient
+    .batchPublishMessages(
+      lowPriorityTopicArn,
+      folders.map((folder) => ({
+        id: folder.folderId,
+        body: JSON.stringify({
+          task: "task.folder.delete.all",
+          parameters: [
+            "Folder_Delete_ALL",
+            folder.archiveNumber,
+            folder.archiveId,
+            folder.folderLinkId,
+          ],
+        }),
+      }))
+    )
+    .catch((err) => {
+      logger.error(err);
+      throw new createError.InternalServerError("Failed to publish messages");
+    });
+
+  return {
+    messagesSent: publishResults.messagesSent,
+    folderIdsWithErrors: publishResults.failedMessages,
+  };
+};
+
 export const adminService = {
   recalculateFolderThumbnails,
   recalculateRecordThumbnail,
   setNullAccountSubjects,
+  triggerOrphanedFolderDeletion,
 };

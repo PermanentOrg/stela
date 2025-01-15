@@ -8,3 +8,6 @@ tab_space_size = 2
 
 [sqlfluff:templater:placeholder]
 param_style = colon
+
+[sqlfluff:layout:type:data_type]
+spacing_within = touch:inline

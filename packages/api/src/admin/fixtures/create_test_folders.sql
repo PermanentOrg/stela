@@ -131,4 +131,26 @@ VALUES
   CURRENT_TIMESTAMP,
   'type.folder.root.private',
   'https://test-folder-thumbnail'
+),
+(
+  12,
+  1,
+  NULL,
+  'Orphaned Folder',
+  '1234-1234',
+  'status.generic.ok',
+  CURRENT_TIMESTAMP,
+  'type.folder.public',
+  'https://test-folder-thumbnail'
+),
+(
+  13,
+  1,
+  NULL,
+  'Orphaned Folder 2',
+  '1234-1235',
+  'status.generic.ok',
+  CURRENT_TIMESTAMP,
+  'type.folder.public',
+  'https://test-folder-thumbnail'
 );
