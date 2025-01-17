@@ -1,0 +1,1 @@
+export { notificationController } from "./controller";

@@ -12,6 +12,7 @@ import { idpUserController } from "../idpuser";
 import { recordController } from "../record";
 import { featureController } from "../feature_flag";
 import { folderController } from "../folder";
+import { notificationController } from "../notification";
 
 const apiRoutes = express.Router();
 apiRoutes.get("/health", healthController.getHealth);
@@ -27,5 +28,6 @@ apiRoutes.use("/idpuser", idpUserController);
 apiRoutes.use("/record", recordController);
 apiRoutes.use("/feature-flags", featureController);
 apiRoutes.use("/folder", folderController);
+apiRoutes.use("/notification", notificationController);
 
 export { apiRoutes };
