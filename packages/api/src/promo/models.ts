@@ -4,7 +4,7 @@ export interface CreatePromoRequest {
   code: string;
   storageInMB: number;
   expirationTimestamp: string;
-  totalUses: Date;
+  totalUses: number;
 }
 
 export interface Promo {
@@ -15,8 +15,8 @@ export interface Promo {
   remainingUses: number;
   status: string;
   type: string;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface PromoRow {
@@ -27,6 +27,6 @@ export interface PromoRow {
   remainingUses: string;
   status: string;
   type: string;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: string;
+  updatedAt: string;
 }

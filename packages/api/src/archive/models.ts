@@ -4,8 +4,8 @@ export interface Tag {
   archiveId: string;
   status: string;
   type: string;
-  createdDt: Date;
-  updatedDt: Date;
+  createdDt: string;
+  updatedDt: string;
 }
 
 export interface AccountStorage {
@@ -17,8 +17,8 @@ export interface AccountStorage {
   filesTotal: string;
   status: string;
   type: string;
-  createdDt: Date;
-  updatedDt: Date;
+  createdDt: string;
+  updatedDt: string;
 }
 
 export interface FeaturedArchive {

@@ -23,20 +23,20 @@ export interface DirectiveTrigger {
   directiveTriggerId: string;
   directiveId: string;
   type: string;
-  createdDt: Date;
-  updatedDt: Date;
+  createdDt: string;
+  updatedDt: string;
 }
 
 export interface Directive {
   directiveId: string;
   archiveId: string;
   type: string;
-  createdDt: Date;
-  updatedDt: Date;
+  createdDt: string;
+  updatedDt: string;
   trigger: DirectiveTrigger;
   steward?: DirectiveSteward;
   note?: string;
-  executionDt?: Date;
+  executionDt?: string;
 }
 
 export interface DirectiveExecutionResult {
