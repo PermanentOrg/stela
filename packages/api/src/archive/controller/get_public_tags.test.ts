@@ -1,14 +1,11 @@
-import { InternalServerError } from "http-errors";
+import request from "supertest";
 import { logger } from "@stela/logger";
+import { app } from "../../app";
 import { db } from "../../database";
-import { archiveService } from "./index";
+import type { Tag } from "../models";
 
 jest.mock("../../database");
-jest.mock("@stela/logger", () => ({
-  logger: {
-    error: jest.fn(),
-  },
-}));
+jest.mock("@stela/logger");
 
 const loadFixtures = async (): Promise<void> => {
   await db.sql("archive.fixtures.create_test_accounts");
@@ -26,6 +23,7 @@ const clearDatabase = async (): Promise<void> => {
 };
 
 describe("getPublicTags", () => {
+  const agent = request(app);
   beforeEach(async () => {
     await clearDatabase();
     await loadFixtures();
@@ -36,28 +34,31 @@ describe("getPublicTags", () => {
   });
 
   test("should return public tags and not private or deleted tags", async () => {
-    const tags = await archiveService.getPublicTags("1");
+    const response = await agent
+      .get("/api/v2/archive/1/tags/public")
+      .expect(200);
+    const tags = response.body as Tag[];
     expect(tags.length).toEqual(2);
-    expect(tags.map((tag) => tag.name)).toContain("test_public_file");
-    expect(tags.map((tag) => tag.name)).toContain("test_public_folder");
+    expect(tags.map((tag: { name: string }) => tag.name)).toContain(
+      "test_public_file"
+    );
+    expect(tags.map((tag: { name: string }) => tag.name)).toContain(
+      "test_public_folder"
+    );
   });
 
   test("should return empty list for nonexistent archive", async () => {
-    const tags = await archiveService.getPublicTags("1000");
+    const response = await agent
+      .get("/api/v2/archive/1000/tags/public")
+      .expect(200);
+    const tags = response.body as Tag[];
     expect(tags.length).toEqual(0);
   });
 
   test("should throw an internal server error if database query fails unexpectedly", async () => {
-    let error = null;
     const testError = new Error("out of cheese - redo from start");
-    try {
-      jest.spyOn(db, "sql").mockRejectedValueOnce(testError);
-      await archiveService.getPublicTags("1");
-    } catch (err) {
-      error = err;
-    } finally {
-      expect(error instanceof InternalServerError).toEqual(true);
-      expect(logger.error).toHaveBeenCalledWith(testError);
-    }
+    jest.spyOn(db, "sql").mockRejectedValueOnce(testError);
+    await agent.get("/api/v2/archive/1/tags/public").expect(500);
+    expect(logger.error).toHaveBeenCalledWith(testError);
   });
 });

@@ -1,14 +1,11 @@
-import { InternalServerError } from "http-errors";
+import request from "supertest";
 import { logger } from "@stela/logger";
+import { app } from "../../app";
 import { db } from "../../database";
-import { archiveService } from "./index";
+import type { FeaturedArchive } from "../models";
 
 jest.mock("../../database");
-jest.mock("@stela/logger", () => ({
-  logger: {
-    error: jest.fn(),
-  },
-}));
+jest.mock("@stela/logger");
 
 const loadFixtures = async (): Promise<void> => {
   await db.sql("archive.fixtures.create_test_accounts");
@@ -25,6 +22,7 @@ const clearDatabase = async (): Promise<void> => {
 };
 
 describe("getFeatured", () => {
+  const agent = request(app);
   beforeEach(async () => {
     await loadFixtures();
   });
@@ -34,27 +32,21 @@ describe("getFeatured", () => {
   });
 
   test("should retrieve featured archives", async () => {
-    const result = await archiveService.getFeatured();
-    expect(result).toHaveLength(1);
-    expect(result[0]?.archiveId).toBe("3");
-    expect(result[0]?.name).toBe("Jay Rando");
-    expect(result[0]?.type).toBe("type.archive.person");
-    expect(result[0]?.archiveNbr).toBe("0001-0003");
-    expect(result[0]?.profileImage).toBe("https://test-archive-thumbnail");
-    expect(result[0]?.bannerImage).toBe("https://test-folder-thumbnail");
+    const result = await agent.get("/api/v2/archive/featured").expect(200);
+    expect(result.body).toHaveLength(1);
+    const archive = (result.body as FeaturedArchive[])[0];
+    expect(archive?.archiveId).toBe("3");
+    expect(archive?.name).toBe("Jay Rando");
+    expect(archive?.type).toBe("type.archive.person");
+    expect(archive?.archiveNbr).toBe("0001-0003");
+    expect(archive?.profileImage).toBe("https://test-archive-thumbnail");
+    expect(archive?.bannerImage).toBe("https://test-folder-thumbnail");
   });
 
   test("should throw InternalServerError if database query fails", async () => {
-    let error = null;
     const testError = new Error("error: out of cheese - redo from start");
     jest.spyOn(db, "sql").mockRejectedValueOnce(testError);
-    try {
-      await archiveService.getFeatured();
-    } catch (err) {
-      error = err;
-    } finally {
-      expect(error).toBeInstanceOf(InternalServerError);
-      expect(logger.error).toHaveBeenCalledWith(testError);
-    }
+    await agent.get("/api/v2/archive/featured").expect(500);
+    expect(logger.error).toHaveBeenCalledWith(testError);
   });
 });
