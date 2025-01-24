@@ -1,0 +1,80 @@
+INSERT INTO access (
+  folder_linkid,
+  archiveid,
+  accessrole,
+  status,
+  type,
+  createddt,
+  updateddt
+) VALUES (
+  1,
+  1,
+  'access.role.viewer',
+  'status.generic.ok',
+  'type.access.share',
+  CURRENT_TIMESTAMP,
+  CURRENT_TIMESTAMP
+),
+(
+  2,
+  1,
+  'access.role.viewer',
+  'status.generic.ok',
+  'type.access.share',
+  CURRENT_TIMESTAMP,
+  CURRENT_TIMESTAMP
+),
+(
+  3,
+  1,
+  'access.role.viewer',
+  'status.generic.ok',
+  'type.access.share',
+  CURRENT_TIMESTAMP,
+  CURRENT_TIMESTAMP
+),
+(
+  4,
+  1,
+  'access.role.viewer',
+  'status.generic.ok',
+  'type.access.share',
+  CURRENT_TIMESTAMP,
+  CURRENT_TIMESTAMP
+),
+(
+  5,
+  1,
+  'access.role.viewer',
+  'status.generic.deleted',
+  'type.access.share',
+  CURRENT_TIMESTAMP,
+  CURRENT_TIMESTAMP
+),
+(
+  6,
+  1,
+  'access.role.viewer',
+  'status.generic.ok',
+  'type.access.share',
+  CURRENT_TIMESTAMP,
+  CURRENT_TIMESTAMP
+),
+(
+  7,
+  1,
+  'access.role.viewer',
+  'status.generic.deleted',
+  'type.access.share',
+  CURRENT_TIMESTAMP,
+  CURRENT_TIMESTAMP
+),
+(
+  8,
+  1,
+  'access.role.viewer',
+  'status.generic.ok',
+  'type.access.share',
+  CURRENT_TIMESTAMP,
+  CURRENT_TIMESTAMP
+);

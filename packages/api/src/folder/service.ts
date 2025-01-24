@@ -7,9 +7,8 @@ import type {
   PatchFolderRequest,
 } from "./models";
 import { requestFieldsToDatabaseFields } from "./helper";
-import { permission } from "../access/permission";
-import { folderAccess } from "./access";
-import { accountService } from "../account/service";
+import { getFolderAccessRole, accessRoleLessThan } from "../access/permission";
+import { AccessRole } from "../access/models";
 
 export const getFolderById = async (requestQuery: {
   folderId: string;
@@ -53,51 +52,8 @@ const validateCanPatchFolder = async (
   folderId: string,
   emailFromAuthToken: string
 ): Promise<void> => {
-  const folder = await getFolderById({ folderId });
-  let canEdit = false;
-  let canView = false;
-  const accountArchive = await accountService.getAccountArchive(
-    folder.archiveId,
-    emailFromAuthToken
-  );
-  if (accountArchive) {
-    if (permission.checkCanEditAccountArchive(accountArchive)) {
-      canEdit = true;
-    }
-    if (permission.checkCanViewAccountArchive(accountArchive)) {
-      canView = true;
-    }
-  }
-  if (!canEdit) {
-    const archiveMemberships =
-      await accountService.getCurrentAccountArchiveMemberships(
-        emailFromAuthToken
-      );
-    await Promise.all(
-      archiveMemberships.map(async (archiveMembership) => {
-        if (permission.checkCanViewAccountArchive(archiveMembership)) {
-          canView = true;
-        }
-        if (permission.checkCanEditAccountArchive(archiveMembership)) {
-          const accessList = await folderAccess.getAccessByFolder(
-            folderId,
-            archiveMembership.archiveId
-          );
-          if (permission.checkCanView(accessList)) {
-            canView = true;
-          }
-          if (permission.checkCanEdit(accessList)) {
-            canEdit = true;
-          }
-        }
-        return archiveMembership;
-      })
-    );
-  }
-  if (!canView) {
-    throw new createError.NotFound("Folder not found.");
-  }
-  if (!canEdit) {
+  const accessRole = await getFolderAccessRole(folderId, emailFromAuthToken);
+  if (accessRoleLessThan(accessRole, AccessRole.Editor)) {
     throw new createError.Forbidden(
       "User does not have permission to modify folder."
     );

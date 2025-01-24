@@ -1,90 +1,87 @@
-import { type Access, AccessRole, AccessStatus, AccessType } from "./models";
-import type {
-  GetAccountArchiveResult,
-  GetCurrentAccountArchiveResult,
-} from "../account/models";
+import createError from "http-errors";
+import { logger } from "@stela/logger";
+import { AccessRole } from "./models";
+import { db } from "../database";
 
-const checkCanEdit = (accessList: Access[]): boolean => {
-  let canEdit = false;
-  accessList.forEach((access) => {
-    if (access.status === AccessStatus.Ok && access.type === AccessType.Share) {
-      if (
-        [
-          AccessRole.Admin,
-          AccessRole.Curator,
-          AccessRole.Editor,
-          AccessRole.Owner,
-        ].includes(access.role)
-      ) {
-        canEdit = true;
-      }
-    }
-  });
-  return canEdit;
-};
-
-const checkCanView = (accessList: Access[]): boolean => {
-  let canView = false;
-  accessList.forEach((access) => {
-    if (access.status === AccessStatus.Ok && access.type === AccessType.Share) {
-      if (
-        [
-          AccessRole.Admin,
-          AccessRole.Contributor,
-          AccessRole.Curator,
-          AccessRole.Editor,
-          AccessRole.Owner,
-          AccessRole.Viewer,
-        ].includes(access.role)
-      ) {
-        canView = true;
-      }
-    }
-  });
-  return canView;
-};
-
-const checkCanEditAccountArchive = (
-  archive: GetAccountArchiveResult | GetCurrentAccountArchiveResult
+export const accessRoleLessThan = (
+  roleOne: AccessRole,
+  roleTwo: AccessRole
 ): boolean => {
-  let canEdit = false;
-  if (
-    [
-      AccessRole.Admin.toString(),
-      AccessRole.Curator.toString(),
-      AccessRole.Editor.toString(),
-      AccessRole.Owner.toString(),
-      AccessRole.Manager.toString(),
-    ].includes(archive.accessRole)
-  ) {
-    canEdit = true;
-  }
-  return canEdit;
+  const accessRoleRank = new Map();
+  accessRoleRank.set(AccessRole.Viewer, 1);
+  accessRoleRank.set(AccessRole.Contributor, 2);
+  accessRoleRank.set(AccessRole.Editor, 3);
+  accessRoleRank.set(AccessRole.Curator, 4);
+  accessRoleRank.set(AccessRole.Manager, 5);
+  accessRoleRank.set(AccessRole.Owner, 6);
+  accessRoleRank.set(AccessRole.Admin, 7);
+
+  return accessRoleRank.get(roleOne) < accessRoleRank.get(roleTwo);
 };
 
-const checkCanViewAccountArchive = (
-  archive: GetAccountArchiveResult | GetCurrentAccountArchiveResult
-): boolean => {
-  let canView = false;
-  if (
-    [
-      AccessRole.Admin.toString(),
-      AccessRole.Contributor.toString(),
-      AccessRole.Curator.toString(),
-      AccessRole.Editor.toString(),
-      AccessRole.Owner.toString(),
-      AccessRole.Manager.toString(),
-      AccessRole.Viewer.toString(),
-    ].includes(archive.accessRole)
-  ) {
-    canView = true;
+const moreLimitedAccessRole = (
+  roleOne: AccessRole | null,
+  roleTwo: AccessRole | null
+): AccessRole | null => {
+  if (roleOne === null) {
+    return roleTwo;
   }
-  return canView;
+  if (roleTwo === null) {
+    return roleOne;
+  }
+  return accessRoleLessThan(roleOne, roleTwo) ? roleOne : roleTwo;
 };
 
-export const permission = {
-  checkCanEdit,
-  checkCanView,
-  checkCanEditAccountArchive,
-  checkCanViewAccountArchive,
+export const getItemAccessRole = async (
+  itemId: string,
+  itemType: "folder" | "record",
+  callerEmail: string
+): Promise<AccessRole> => {
+  const query =
+    itemType === "record"
+      ? "access.queries.get_record_access_role"
+      : "access.queries.get_folder_access_role";
+  const result = await db
+    .sql<{
+      archiveAccessRole: AccessRole;
+      shareAccessRole: AccessRole;
+    }>(query, { itemId, email: callerEmail })
+    .catch((err) => {
+      logger.error(err);
+      throw createError.InternalServerError("Failed to access database");
+    });
+
+  if (result.rows[0] === undefined) {
+    throw createError.NotFound();
+  }
+
+  const accessRole = result.rows
+    .map((row) =>
+      moreLimitedAccessRole(row.archiveAccessRole, row.shareAccessRole)
+    )
+    .reduce((accumulator, role) => {
+      if (accumulator === null) {
+        return role;
+      }
+      if (role === null) {
+        return accumulator;
+      }
+      return accessRoleLessThan(accumulator, role) ? role : accumulator;
+    });
+
+  if (accessRole === null) {
+    throw createError.NotFound();
+  }
+
+  return accessRole;
 };
+
+export const getRecordAccessRole = async (
+  recordId: string,
+  callerEmail: string
+): Promise<AccessRole> => getItemAccessRole(recordId, "record", callerEmail);
+
+export const getFolderAccessRole = async (
+  folderId: string,
+  callerEmail: string
+): Promise<AccessRole> => getItemAccessRole(folderId, "folder", callerEmail);
