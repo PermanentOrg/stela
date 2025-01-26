@@ -1,0 +1,1 @@
+export { shareLinkController } from "./controller";

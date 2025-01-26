@@ -10,6 +10,7 @@ shareLink:
       itemType,
       permissionsLevel,
       accessRestrictions,
+      token,
       createdAt,
       updatedAt,
     ]

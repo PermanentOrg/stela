@@ -14,7 +14,7 @@ VALUES
 (
   1,
   1,
-  '2023-06-21',
+  NULL,
   'Private Folder',
   '0001-test',
   'status.generic.ok',
@@ -94,6 +94,17 @@ VALUES
   '2023-06-21',
   'Private Folder',
   '0001-test7',
+  'status.generic.ok',
+  CURRENT_TIMESTAMP - '2 days'::interval,
+  'type.folder.private',
+  NULL
+),
+(
+  9,
+  2,
+  '2023-06-21',
+  'Private Folder',
+  '0001-test8',
   'status.generic.ok',
   CURRENT_TIMESTAMP - '2 days'::interval,
   'type.folder.private',

@@ -85,3 +85,20 @@ export const getFolderAccessRole = async (
   folderId: string,
   callerEmail: string
 ): Promise<AccessRole> => getItemAccessRole(folderId, "folder", callerEmail);
+
+export const isItemPublic = async (
+  itemId: string,
+  itemType: "folder" | "record"
+): Promise<boolean> => {
+  const query =
+    itemType === "record"
+      ? "access.queries.is_record_public"
+      : "access.queries.is_folder_public";
+  const result = await db
+    .sql<{ isPublic: boolean }>(query, { itemId })
+    .catch((err) => {
+      logger.error(err);
+      throw createError.InternalServerError("Failed to access database");
+    });
+  return result.rows[0]?.isPublic ?? false;
+};

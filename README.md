@@ -71,6 +71,7 @@ For these, simply fill in any fake value to prevent `require-env-variable` from 
 | CLOUDFRONT_URL                    | none                                                  | Can be found as `CDN_URL` in `back-end`'s library/base/constants/base.constants.php. Not required for API server            |
 | CLOUDFRONT_KEY_PAIR_ID            | none                                                  | Can be found as `CLOUDFRONT_KEYPAIR` in `back-end`'s library/base/constants/base.constants.php. Not required for API server |
 | CLOUDFRONT_PRIVATE_KEY            | none                                                  | Can be found in `back-end`'s library/static/certs/pk-APKAJP2D34UGZ6IG443Q.pem. Not required for API server                  |
+| SITE_URL                          | local.permanent.org                                   |
 
 ## Linting
 

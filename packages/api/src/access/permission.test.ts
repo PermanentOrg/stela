@@ -1,5 +1,9 @@
 import createError from "http-errors";
-import { getRecordAccessRole, getFolderAccessRole } from "./permission";
+import {
+  getRecordAccessRole,
+  getFolderAccessRole,
+  isItemPublic,
+} from "./permission";
 import { AccessRole } from "./models";
 import { db } from "../database";
 
@@ -236,6 +240,47 @@ describe("getFolderAccessRole", () => {
       error = err;
     } finally {
       expect(error).toEqual(createError.NotFound());
+    }
+  });
+});
+
+describe("isItemPublic", () => {
+  beforeEach(async () => {
+    await clearDatabase();
+    await loadFixtures();
+  });
+
+  afterEach(async () => {
+    jest.restoreAllMocks();
+    await clearDatabase();
+  });
+  test("should return true for a public record", async () => {
+    const isPublic = await isItemPublic("9", "record");
+    expect(isPublic).toEqual(true);
+  });
+  test("should return false for a private record", async () => {
+    const isPublic = await isItemPublic("1", "record");
+    expect(isPublic).toEqual(false);
+  });
+  test("should return true for a public folder", async () => {
+    const isPublic = await isItemPublic("9", "folder");
+    expect(isPublic).toEqual(true);
+  });
+  test("should return false for a private folder", async () => {
+    const isPublic = await isItemPublic("1", "folder");
+    expect(isPublic).toEqual(false);
+  });
+  test("should throw a 500 error if database call fails", async () => {
+    jest.spyOn(db, "sql").mockRejectedValue(new Error("Test error"));
+    let error = null;
+    try {
+      await isItemPublic("1", "folder");
+    } catch (err) {
+      error = err;
+    } finally {
+      expect(error).toEqual(
+        createError.InternalServerError("Failed to access database")
+      );
     }
   });
 });

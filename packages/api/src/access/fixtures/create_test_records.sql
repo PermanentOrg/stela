@@ -107,4 +107,16 @@ VALUES
   'private_file.jpg',
   'status.generic.ok',
   'type.record.image'
+),
+(
+  9,
+  2,
+  NULL,
+  '2023-06-21',
+  'Public File',
+  3,
+  3,
+  'private_file.jpg',
+  'status.generic.ok',
+  'type.record.image'
 );
