@@ -6,6 +6,7 @@ import { db } from "../database";
 import {
   extractUserEmailFromAuthToken,
   verifyUserAuthentication,
+  extractShareTokenFromHeaders,
 } from "../middleware";
 import type { ArchiveFile, ArchiveRecord, Share, Tag } from "./models";
 import { folderAccess } from "../folder/access";
@@ -38,22 +39,24 @@ const setupDatabase = async (): Promise<void> => {
   await db.sql("record.fixtures.create_test_shares");
   await db.sql("record.fixtures.create_test_profile_items");
   await db.sql("record.fixtures.create_complete_test_folder_links");
+  await db.sql("record.fixtures.create_test_shareby_urls");
 };
 
 const clearDatabase = async (): Promise<void> => {
   await db.query(
     `TRUNCATE 
-       account,
-       archive,
-       account_archive,
-       record,
-       folder,
-       folder_link,
-       access,
-       tag,
-       tag_link,
-       share,
-       profile_item CASCADE`
+      account,
+      archive,
+      account_archive,
+      record,
+      folder,
+      folder_link,
+      access,
+      tag,
+      tag_link,
+      share,
+      shareby_url,
+      profile_item CASCADE`
   );
 };
 
@@ -63,6 +66,17 @@ describe("record", () => {
       (req: Request, _: Response, next: NextFunction) => {
         (req.body as { emailFromAuthToken: string }).emailFromAuthToken =
           "test@permanent.org";
+        next();
+      }
+    );
+    (extractShareTokenFromHeaders as jest.Mock).mockImplementation(
+      (req: Request, _: Response, next: NextFunction) => {
+        (
+          req.body as {
+            emailFromAuthToken: string;
+            shareToken: string | undefined;
+          }
+        ).shareToken = undefined;
         next();
       }
     );
@@ -86,6 +100,24 @@ describe("record", () => {
       }
     );
     await agent.get("/api/v2/record?recordIds[]=1").expect(400);
+  });
+  test("expect request to have a share token from the headers if such a token exists", async () => {
+    (extractShareTokenFromHeaders as jest.Mock).mockImplementation(
+      (req: Request, _: Response, next: NextFunction) => {
+        (
+          req.body as {
+            emailFromAuthToken: string;
+            shareToken: string | undefined;
+          }
+        ).shareToken = "2849c711-e72e-41b5-bb49-b0b86a052668";
+        next();
+      }
+    );
+    await agent
+      .get("/api/v2/record?recordIds[]=1")
+      .set("X-Permanent-Share-Token", "2849c711-e72e-41b5-bb49-b0b86a052668")
+      .expect(200);
+    expect(extractShareTokenFromHeaders).toHaveBeenCalled();
   });
   test("expect an empty query to cause a 400 error", async () => {
     await agent.get("/api/v2/record").expect(400);
@@ -151,6 +183,146 @@ describe("record", () => {
       .expect(200);
     expect((response.body as ArchiveRecord[]).length).toEqual(1);
     expect((response.body as ArchiveRecord[])[0]?.recordId).toEqual("1");
+  });
+  test("expect return a private record when not logged in but providing a valid unlisted share token", async () => {
+    (extractUserEmailFromAuthToken as jest.Mock).mockImplementation(
+      (_, __, next: NextFunction) => {
+        next();
+      }
+    );
+    (extractShareTokenFromHeaders as jest.Mock).mockImplementation(
+      (req: Request, _: Response, next: NextFunction) => {
+        (
+          req.body as {
+            emailFromAuthToken: string;
+            shareToken: string | undefined;
+          }
+        ).shareToken = "2849c711-e72e-41b5-bb49-b0b86a052668";
+        next();
+      }
+    );
+    const response = await agent
+      .get("/api/v2/record?recordIds[]=2")
+      .set("X-Permanent-Share-Token", "2849c711-e72e-41b5-bb49-b0b86a052668")
+      .expect(200);
+    expect((response.body as ArchiveRecord[]).length).toEqual(1);
+    expect((response.body as ArchiveRecord[])[0]?.recordId).toEqual("2");
+  });
+  test("expect not to return a private record when not logged in and share token provided is not unlisted", async () => {
+    (extractUserEmailFromAuthToken as jest.Mock).mockImplementation(
+      (_, __, next: NextFunction) => {
+        next();
+      }
+    );
+    (extractShareTokenFromHeaders as jest.Mock).mockImplementation(
+      (req: Request, _: Response, next: NextFunction) => {
+        (
+          req.body as {
+            emailFromAuthToken: string;
+            shareToken: string | undefined;
+          }
+        ).shareToken = "17e86544-30b3-4039-9f50-56681bcf3085";
+        next();
+      }
+    );
+    const response = await agent
+      .get("/api/v2/record?recordIds[]=2")
+      .set("X-Permanent-Share-Token", "17e86544-30b3-4039-9f50-56681bcf3085")
+      .expect(200);
+    expect((response.body as ArchiveRecord[]).length).toEqual(0);
+  });
+  test("expect not to return a private record when not logged in and share token provided is expired", async () => {
+    (extractUserEmailFromAuthToken as jest.Mock).mockImplementation(
+      (_, __, next: NextFunction) => {
+        next();
+      }
+    );
+    (extractShareTokenFromHeaders as jest.Mock).mockImplementation(
+      (req: Request, _: Response, next: NextFunction) => {
+        (
+          req.body as {
+            emailFromAuthToken: string;
+            shareToken: string | undefined;
+          }
+        ).shareToken = "1753eb10-ca46-4964-890b-0d4cdca1a783";
+        next();
+      }
+    );
+    const response = await agent
+      .get("/api/v2/record?recordIds[]=2")
+      .set("X-Permanent-Share-Token", "1753eb10-ca46-4964-890b-0d4cdca1a783")
+      .expect(200);
+    expect((response.body as ArchiveRecord[]).length).toEqual(0);
+  });
+  test("expect return a private record when not logged in but providing a valid share token for an ancestor folder", async () => {
+    (extractUserEmailFromAuthToken as jest.Mock).mockImplementation(
+      (_, __, next: NextFunction) => {
+        next();
+      }
+    );
+    (extractShareTokenFromHeaders as jest.Mock).mockImplementation(
+      (req: Request, _: Response, next: NextFunction) => {
+        (
+          req.body as {
+            emailFromAuthToken: string;
+            shareToken: string | undefined;
+          }
+        ).shareToken = "5b23ec69-3e37-4b83-9147-acf55d4654b5";
+        next();
+      }
+    );
+    const response = await agent
+      .get("/api/v2/record?recordIds[]=2")
+      .set("X-Permanent-Share-Token", "5b23ec69-3e37-4b83-9147-acf55d4654b5")
+      .expect(200);
+    expect((response.body as ArchiveRecord[]).length).toEqual(1);
+    expect((response.body as ArchiveRecord[])[0]?.recordId).toEqual("2");
+  });
+  test("expect not to return a private record when share token for ancestor folder is not an unlisted share", async () => {
+    (extractUserEmailFromAuthToken as jest.Mock).mockImplementation(
+      (_, __, next: NextFunction) => {
+        next();
+      }
+    );
+    (extractShareTokenFromHeaders as jest.Mock).mockImplementation(
+      (req: Request, _: Response, next: NextFunction) => {
+        (
+          req.body as {
+            emailFromAuthToken: string;
+            shareToken: string | undefined;
+          }
+        ).shareToken = "85018ca8-881e-4cb7-9a22-24f3e015f797";
+        next();
+      }
+    );
+    const response = await agent
+      .get("/api/v2/record?recordIds[]=2")
+      .set("X-Permanent-Share-Token", "85018ca8-881e-4cb7-9a22-24f3e015f797")
+      .expect(200);
+    expect((response.body as ArchiveRecord[]).length).toEqual(0);
+  });
+  test("expect not to return a private record when share token for ancestor folder is expired", async () => {
+    (extractUserEmailFromAuthToken as jest.Mock).mockImplementation(
+      (_, __, next: NextFunction) => {
+        next();
+      }
+    );
+    (extractShareTokenFromHeaders as jest.Mock).mockImplementation(
+      (req: Request, _: Response, next: NextFunction) => {
+        (
+          req.body as {
+            emailFromAuthToken: string;
+            shareToken: string | undefined;
+          }
+        ).shareToken = "fbff79db-3814-4a1e-86be-ae1326cd56a3";
+        next();
+      }
+    );
+    const response = await agent
+      .get("/api/v2/record?recordIds[]=2")
+      .set("X-Permanent-Share-Token", "fbff79db-3814-4a1e-86be-ae1326cd56a3")
+      .expect(200);
+    expect((response.body as ArchiveRecord[]).length).toEqual(0);
   });
   test("expect not to return a private record when not logged in", async () => {
     (extractUserEmailFromAuthToken as jest.Mock).mockImplementation(

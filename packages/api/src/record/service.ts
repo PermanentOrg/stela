@@ -14,18 +14,18 @@ import { recordAccess } from "./access";
 
 export const getRecordById = async (requestQuery: {
   recordIds: string[];
-  accountEmail: string;
+  accountEmail: string | undefined;
+  shareToken?: string | undefined;
 }): Promise<ArchiveRecord[]> => {
   const record = await db
     .sql<ArchiveRecordRow>("record.queries.get_record_by_id", {
       recordIds: requestQuery.recordIds,
       accountEmail: requestQuery.accountEmail,
+      shareToken: requestQuery.shareToken,
     })
     .catch((err) => {
       logger.error(err);
-      throw new createError.InternalServerError(
-        "failed to retrieve featured archives"
-      );
+      throw new createError.InternalServerError("failed to retrieve records");
     });
   const records = record.rows.map<ArchiveRecord>((row: ArchiveRecordRow) => ({
     ...row,

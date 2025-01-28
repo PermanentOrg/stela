@@ -5,6 +5,7 @@ import {
   verifyAdminAuthentication,
   verifyUserOrAdminAuthentication,
   extractUserIsAdminFromAuthToken,
+  extractShareTokenFromHeaders,
 } from "./authentication";
 import { fusionAuthClient } from "../fusionauth";
 import {
@@ -474,5 +475,17 @@ describe("extractUserIsAdminFromAuthToken", () => {
       .mockImplementationOnce(async () => failedIntrospectionResponse);
     await extractUserIsAdminFromAuthToken(request, {} as Response, () => {});
     expect(request.body.admin).toBe(false);
+  });
+});
+
+describe("extractShareTokenFromHeaders", () => {
+  test("should add the share token to the request body if the token present", async () => {
+    const testShareToken = "cfa6f6a2-7005-42d6-a6b1-1ec4645a5227";
+    const request = {
+      body: {},
+      get: (_: string) => testShareToken,
+    } as Request<unknown, unknown, { shareToken: string | undefined }>;
+    extractShareTokenFromHeaders(request, {} as Response, () => {});
+    expect(request.body.shareToken).toEqual(testShareToken);
   });
 });
