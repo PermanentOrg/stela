@@ -8,9 +8,8 @@ import type {
   RecordColumnsForUpdate,
 } from "./models";
 import { requestFieldsToDatabaseFields } from "./helper";
-import { permission } from "../access/permission";
-import { accountService } from "../account/service";
-import { recordAccess } from "./access";
+import { getRecordAccessRole, accessRoleLessThan } from "../access/permission";
+import { AccessRole } from "../access/models";
 
 export const getRecordById = async (requestQuery: {
   recordIds: string[];
@@ -39,54 +38,8 @@ const validateCanPatchRecord = async (
   recordId: string,
   emailFromAuthToken: string
 ): Promise<void> => {
-  const [record] = await getRecordById({
-    recordIds: [recordId],
-    accountEmail: emailFromAuthToken,
-  });
-  if (!record) {
-    throw new createError.NotFound("Record not found.");
-  }
-  let canEdit = false;
-  let canView = false;
-  const accountArchive = await accountService.getAccountArchive(
-    record.archiveId,
-    emailFromAuthToken
-  );
-  if (accountArchive) {
-    if (permission.checkCanEditAccountArchive(accountArchive)) {
-      canEdit = true;
-    }
-    if (permission.checkCanViewAccountArchive(accountArchive)) {
-      canView = true;
-    }
-  }
-  if (!canEdit) {
-    const archiveMemberships =
-      await accountService.getCurrentAccountArchiveMemberships(
-        emailFromAuthToken
-      );
-    await Promise.all(
-      archiveMemberships.map(async (archiveMembership) => {
-        if (permission.checkCanEditAccountArchive(archiveMembership)) {
-          const accessList = await recordAccess.getAccessByRecord(
-            record.recordId,
-            archiveMembership.archiveId
-          );
-          if (permission.checkCanEdit(accessList)) {
-            canEdit = true;
-          }
-          if (permission.checkCanView(accessList)) {
-            canView = true;
-          }
-        }
-        return archiveMembership;
-      })
-    );
-  }
-  if (!canView) {
-    throw new createError.NotFound("Record not found.");
-  }
-  if (!canEdit) {
+  const accessRole = await getRecordAccessRole(recordId, emailFromAuthToken);
+  if (accessRoleLessThan(accessRole, AccessRole.Editor)) {
     throw new createError.Forbidden(
       "User does not have permission to modify record."
     );

@@ -1,0 +1,65 @@
+INSERT INTO
+account_archive (
+  account_archiveid,
+  accountid,
+  archiveid,
+  accessrole,
+  position,
+  type,
+  status
+)
+VALUES
+(
+  3,
+  2,
+  1,
+  'access.role.owner',
+  0,
+  'type.account.standard',
+  'status.generic.ok'
+),
+(
+  4,
+  3,
+  2,
+  'access.role.owner',
+  0,
+  'type.account.standard',
+  'status.generic.ok'
+),
+(
+  5,
+  3,
+  3,
+  'access.role.owner',
+  0,
+  'type.account.standard',
+  'status.generic.ok'
+),
+(
+  6,
+  2,
+  3,
+  'access.role.manager',
+  0,
+  'type.account.standard',
+  'status.generic.ok'
+),
+(
+  7,
+  2,
+  4,
+  'access.role.manager',
+  0,
+  'type.account.standard',
+  'status.generic.deleted'
+),
+(
+  8,
+  4,
+  1,
+  'access.role.manager',
+  0,
+  'type.account.standard',
+  'status.generic.ok'
+);

@@ -8,8 +8,6 @@ import {
   extractUserEmailFromAuthToken,
   verifyUserAuthentication,
 } from "../middleware";
-import { folderAccess } from "./access";
-import { AccessRole, AccessStatus, AccessType } from "../access/models";
 
 jest.mock("../database");
 jest.mock("../middleware");
@@ -113,49 +111,6 @@ describe("patch folder", () => {
     expect(result.rows[0]).toStrictEqual({ displaydt: null });
   });
 
-  test("expect 200 if user has share rights", async () => {
-    (verifyUserAuthentication as jest.Mock).mockImplementation(
-      async (
-        req: Request<
-          unknown,
-          unknown,
-          { userSubjectFromAuthToken?: string; emailFromAuthToken?: string }
-        >,
-        __,
-        next: NextFunction
-      ) => {
-        req.body.emailFromAuthToken = "test+1@permanent.org";
-        req.body.userSubjectFromAuthToken =
-          "b5461dc2-1eb0-450e-b710-fef7b2cafe1e";
-        next();
-      }
-    );
-    const sqlSpy = jest.spyOn(db, "sql");
-    when(sqlSpy)
-      .calledWith("folder.queries.get_access_by_folder", {
-        folderId: "1",
-        archiveId: "2",
-      })
-      .mockImplementation(
-        (async () =>
-          ({
-            rows: [
-              {
-                accessId: "1",
-                role: AccessRole.Editor,
-                status: AccessStatus.Ok,
-                type: AccessType.Share,
-              },
-            ],
-          } as object)) as unknown as typeof db.sql
-      );
-
-    await agent
-      .patch("/api/v2/folder/1")
-      .send({ displayDate: "2024-09-26T15:09:52" })
-      .expect(200);
-  });
-
   test("expect 400 error if display date is wrong type", async () => {
     await agent
       .patch("/api/v2/folder/1")
@@ -197,78 +152,6 @@ describe("patch folder", () => {
     expect(logger.error).toHaveBeenCalledWith(testError);
   });
 
-  test("expect to log error and return 500 if database permission load for archive membership fails", async () => {
-    (verifyUserAuthentication as jest.Mock).mockImplementation(
-      async (
-        req: Request<
-          unknown,
-          unknown,
-          { userSubjectFromAuthToken?: string; emailFromAuthToken?: string }
-        >,
-        __,
-        next: NextFunction
-      ) => {
-        req.body.emailFromAuthToken = "test+1@permanent.org";
-        req.body.userSubjectFromAuthToken =
-          "b5461dc2-1eb0-450e-b710-fef7b2cafe1e";
-        next();
-      }
-    );
-    const testError = new Error("test error");
-    const sqlSpy = jest.spyOn(db, "sql");
-    when(sqlSpy)
-      .calledWith("account.queries.get_current_account_archive_memberships", {
-        email: "test+1@permanent.org",
-      })
-      .mockImplementation(async () => {
-        throw testError;
-      });
-
-    await agent
-      .patch("/api/v2/folder/1")
-      .send({ displayDate: "2024-09-26T15:09:52.000Z" })
-      .expect(500);
-
-    expect(logger.error).toHaveBeenCalledWith(testError);
-  });
-
-  test("expect to log error and return 500 if get access for folder database call is made ", async () => {
-    const testError = new Error("test error");
-    const sqlSpy = jest.spyOn(db, "sql");
-    when(sqlSpy)
-      .calledWith("folder.queries.get_access_by_folder", {
-        folderId: "1",
-        archiveId: "2",
-      })
-      .mockImplementation(async () => {
-        throw testError;
-      });
-
-    (verifyUserAuthentication as jest.Mock).mockImplementation(
-      async (
-        req: Request<
-          unknown,
-          unknown,
-          { userSubjectFromAuthToken?: string; emailFromAuthToken?: string }
-        >,
-        __,
-        next: NextFunction
-      ) => {
-        req.body.emailFromAuthToken = "test+1@permanent.org";
-        req.body.userSubjectFromAuthToken =
-          "b5461dc2-1eb0-450e-b710-fef7b2cafe1e";
-        next();
-      }
-    );
-
-    await agent
-      .patch("/api/v2/folder/1")
-      .send({ displayDate: "2024-09-26T15:09:52.000Z" })
-      .expect(500);
-
-    expect(logger.error).toHaveBeenCalledWith(testError);
-  });
-
   test("expect to log error and return 404 if database update is ok but the database select has empty result", async () => {
     const sqlSpy = jest.spyOn(db, "sql");
     when(sqlSpy)
@@ -284,34 +167,6 @@ describe("patch folder", () => {
       .patch("/api/v2/folder/1")
       .send({ displayDate: "2024-09-26T15:09:52.000Z" })
       .expect(404);
-  });
-
-  test("expect 403 forbidden response if user doesn't have access rights", async () => {
-    (verifyUserAuthentication as jest.Mock).mockImplementation(
-      async (
-        req: Request<
-          unknown,
-          unknown,
-          { userSubjectFromAuthToken?: string; emailFromAuthToken?: string }
-        >,
-        __,
-        next: NextFunction
-      ) => {
-        req.body.emailFromAuthToken = "test+1@permanent.org";
-        req.body.userSubjectFromAuthToken =
-          "b5461dc2-1eb0-450e-b710-fef7b2cafe1e";
-        next();
-      }
-    );
-
-    jest
-      .spyOn(folderAccess, "getAccessByFolder")
-      .mockImplementation(async () => []);
-
-    await agent
-      .patch("/api/v2/folder/1")
-      .send({ displayDate: "2024-09-26T15:09:52" })
-      .expect(403);
   });
 
   test("expect 403 forbidden response if user doesn't have edit access rights", async () => {

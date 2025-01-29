@@ -1,0 +1,61 @@
+INSERT INTO folder_link (
+  folder_linkid,
+  recordid,
+  folderid,
+  parentfolderid,
+  parentfolder_linkid,
+  archiveid,
+  position,
+  accessrole,
+  status,
+  type
+)
+VALUES
+(
+  1,
+  2,
+  NULL,
+  5,
+  NULL,
+  1,
+  1,
+  'access.role.owner',
+  'status.generic.ok',
+  'type.folder_link.private'
+),
+(
+  2,
+  3,
+  NULL,
+  7,
+  NULL,
+  2,
+  1,
+  'access.role.owner',
+  'status.generic.ok',
+  'type.folder_link.private'
+),
+(
+  3,
+  NULL,
+  1,
+  5,
+  NULL,
+  1,
+  1,
+  'access.role.owner',
+  'status.generic.ok',
+  'type.folder_link.private'
+),
+(
+  4,
+  5,
+  NULL,
+  5,
+  NULL,
+  1,
+  1,
+  'access.role.owner',
+  'status.generic.ok',
+  'type.folder_link.public'
+);

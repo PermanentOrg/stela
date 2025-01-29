@@ -1,0 +1,109 @@
+INSERT INTO folder_link (
+  folder_linkid,
+  recordid,
+  folderid,
+  parentfolderid,
+  parentfolder_linkid,
+  archiveid,
+  position,
+  accessrole,
+  status,
+  type
+)
+VALUES
+(
+  1,
+  3,
+  NULL,
+  5,
+  NULL,
+  2,
+  1,
+  'access.role.owner',
+  'status.generic.ok',
+  'type.folder_link.private'
+),
+(
+  2,
+  4,
+  NULL,
+  5,
+  NULL,
+  3,
+  1,
+  'access.role.owner',
+  'status.generic.ok',
+  'type.folder_link.private'
+),
+(
+  3,
+  NULL,
+  3,
+  5,
+  NULL,
+  2,
+  1,
+  'access.role.owner',
+  'status.generic.ok',
+  'type.folder_link.private'
+),
+(
+  4,
+  NULL,
+  4,
+  5,
+  NULL,
+  3,
+  1,
+  'access.role.owner',
+  'status.generic.ok',
+  'type.folder_link.private'
+),
+(
+  5,
+  7,
+  NULL,
+  5,
+  NULL,
+  2,
+  1,
+  'access.role.owner',
+  'status.generic.ok',
+  'type.folder_link.private'
+),
+(
+  6,
+  8,
+  NULL,
+  5,
+  NULL,
+  2,
+  1,
+  'access.role.owner',
+  'status.generic.deleted',
+  'type.folder_link.private'
+),
+(
+  7,
+  NULL,
+  7,
+  5,
+  NULL,
+  2,
+  1,
+  'access.role.owner',
+  'status.generic.ok',
+  'type.folder_link.private'
+),
+(
+  8,
+  NULL,
+  8,
+  5,
+  NULL,
+  2,
+  1,
+  'access.role.owner',
+  'status.generic.deleted',
+  'type.folder_link.private'
+);

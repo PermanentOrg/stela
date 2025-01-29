@@ -23,6 +23,7 @@ share-link:
                   - folder
                   - collection
               permissionsLevel:
+                description: defaults to "viewer"
                 type: string
                 enum:
                   - viewer
@@ -31,7 +32,9 @@ share-link:
                   - manager
                   - owner
               accessRestrictions:
-                description: The "none" value is not available for share links to public items
+                description: |
+                  The "none" value is not available for share links to public items;
+                  defaults to "none" for private items and "account" for public items.
                 type: string
                 enum:
                   - none
@@ -50,7 +53,10 @@ share-link:
         content:
           application/json:
             schema:
-              $ref: "../models/share_link.yaml#/shareLink"
+              type: object
+              properties:
+                data:
+                  $ref: "../models/share_link.yaml#/shareLink"
       "400":
         $ref: "../../shared/errors.yaml#/400"
       "401":
@@ -81,7 +87,10 @@ share-link-with-id:
         content:
           application/json:
             schema:
-              $ref: "../models/share_link.yaml#/shareLink"
+              type: object
+              properties:
+                data:
+                  $ref: "../models/share_link.yaml#/shareLink"
       "400":
         $ref: "../../shared/errors.yaml#/400"
       "401":
@@ -154,7 +163,10 @@ share-link-with-id:
         content:
           application/json:
             schema:
-              $ref: "../models/share_link.yaml#/shareLink"
+              type: object
+              properties:
+                data:
+                  $ref: "../models/share_link.yaml#/shareLink"
       "400":
         $ref: "../../shared/errors.yaml#/400"
       "401":
