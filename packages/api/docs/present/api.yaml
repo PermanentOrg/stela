@@ -18,6 +18,10 @@ paths:
     $ref: "./paths/feature_flags.yaml#/feature-flags"
   /feature-flags/{id}:
     $ref: "./paths/feature_flags.yaml#/feature-flags~1{id}"
+  /invite-codes:
+    $ref: "./paths/invite_codes.yaml#/invite-codes"
+  /invite-codes/{id}:
+    $ref: "./paths/invite_codes.yaml#/invite-codes~1{id}"
   /record/{id}:
     $ref: "./paths/records.yaml#/record~1{id}"
   /folder/{id}:

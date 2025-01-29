@@ -1,0 +1,26 @@
+inviteCode:
+  description: >
+    A code determining how much storage to grant to a new user on signup. These are used to track which page a new account used to sign up.
+  type: object
+  required:
+    - invitecodeid
+    - codename
+    - sizeinbytes
+    - monetaryvalue
+    - createdAt
+    - updatedAt
+  properties:
+    invitecodeid:
+      type: string
+    codename:
+      type: string
+    sizeinbytes:
+      type: bigint
+    monetaryvalue:
+      type: bigint
+    createdAt:
+      type: string
+      format: date-time
+    updatedAt:
+      type: string
+      format: date-time

@@ -1,0 +1,142 @@
+invite-codes:
+  get:
+    summary: Retrieve invite codes if admin authentication is provided.
+    security:
+      - {}
+      - bearerHttpAuthentication: []
+    operationId: get-invite-codes
+    tags:
+      - invite-codes
+    responses:
+      "200":
+        description: >
+          A list of invite codes. The list will include all fields of all invite codes if the caller is an authenticated admin.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                items:
+                  type: array
+                  items:
+                    type: object
+                    required:
+                      - codename
+                      - sizeinbytes
+                      - monetaryvalue
+                    properties:
+                      invitecodeid:
+                        type: string
+                      codename:
+                        type: string
+                      sizeinbytes:
+                        type: bigint
+                      monetaryvalue:
+                        type: number
+                      createdAt:
+                        type: string
+                        format: date-time
+                      updatedAt:
+                        type: string
+                        format: date-time
+      "400":
+        $ref: "../../shared/errors.yaml#/400"
+      "500":
+        $ref: "../../shared/errors.yaml#/500"
+
+  post:
+    summary: Create an invite code
+    security:
+      - bearerHttpAuthentication: []
+    operationId: post-invite-codes
+    tags:
+      - invite-codes
+    requestBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [codename, sizeinbytes, monetaryvalue]
+            properties:
+              codename:
+                type: string
+              sizeinbytes:
+                type: number
+              monetaryvalue:
+                type: number
+    responses:
+      "200":
+        description: The newly created invite code
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                data:
+                  $ref: "../models/invite_codes.yaml#/inviteCode"
+      "400":
+        $ref: "../../shared/errors.yaml#/400"
+      "500":
+        $ref: "../../shared/errors.yaml#/500"
+invite-codes/{id}:
+  put:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: bigint
+          format: int
+    summary: Update an invite code
+    security:
+      - bearerHttpAuthentication: []
+    operationId: put-invite-codes
+    tags:
+      - invite-codes
+    requestBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - invitecodeid
+            properties:
+              codename:
+                type: number
+              sizeinbytes:
+                type: number
+    responses:
+      "200":
+        description: The updated invite code
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                data:
+                  $ref: "../models/invite_codes.yaml#/inviteCode"
+      "400":
+        $ref: "../../shared/errors.yaml#/400"
+      "500":
+        $ref: "../../shared/errors.yaml#/500"
+  delete:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: int
+    summary: Delete an invite code
+    security:
+      - bearerHttpAuthentication: []
+    operationId: delete-invite-codes
+    tags:
+      - invite-codes
+    responses:
+      "204":
+        description: Empty response if delete was successful
+      "400":
+        $ref: "../../shared/errors.yaml#/400"
+      "500":
+        $ref: "../../shared/errors.yaml#/500"
