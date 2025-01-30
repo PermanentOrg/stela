@@ -207,6 +207,11 @@ resource "kubernetes_deployment" "stela_prod" {
             value = var.new_relic_app_name
           }
 
+          env {
+            name  = "SITE_URL"
+            value = var.site_url
+          }
+
           port {
             container_port = 80
           }
