@@ -207,6 +207,11 @@ resource "kubernetes_deployment" "stela_staging" {
             value = var.staging_new_relic_app_name
           }
 
+          env {
+            name  = "SITE_URL"
+            value = var.staging_site_url
+          }
+
           port {
             container_port = 80
           }

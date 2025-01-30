@@ -211,3 +211,9 @@ variable "backblaze_bucket" {
   description = "The name of the Backblaze bucket where files are stored"
   type        = string
 }
+
+variable "site_url" {
+  description = "The URL of the site"
+  type        = string
+  default     = "www.permanent.org"
+}

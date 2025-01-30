@@ -359,3 +359,15 @@ variable "staging_backblaze_bucket" {
   description = "Name of the Backblaze bucket where files are stored in staging"
   type        = string
 }
+
+variable "dev_site_url" {
+  description = "URL of the dev site"
+  type        = string
+  default     = "dev.permanent.org"
+}
+
+variable "staging_site_url" {
+  description = "URL of the staging site"
+  type        = string
+  default     = "staging.permanent.org"
+}
