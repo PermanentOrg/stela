@@ -36,7 +36,7 @@ const createShareLink = async (
     .sql<ShareLink>("share_link.queries.create_share_link", {
       itemId: data.itemId,
       itemType: data.itemType,
-      permissionsLevel: data.permissionsLevel ?? "viewer",
+      permissionsLevel: `access.role.${data.permissionsLevel ?? "viewer"}`,
       unlisted:
         (data.accessRestrictions === "none" ||
           data.accessRestrictions === undefined) &&

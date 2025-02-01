@@ -164,7 +164,7 @@ describe("POST /share-links", () => {
     expect(shareLink?.uses).toBeNull();
     expect(shareLink?.unrestricted).toEqual(true);
     expect(shareLink?.autoapprovetoggle).toEqual(1);
-    expect(shareLink?.defaultaccessrole).toEqual("viewer");
+    expect(shareLink?.defaultaccessrole).toEqual("access.role.viewer");
     expect(shareLink?.expiresdt).toBeNull();
     expect(shareLink?.byaccountid).toEqual("2");
     expect(shareLink?.byarchiveid).toEqual("1");
@@ -187,7 +187,7 @@ describe("POST /share-links", () => {
     expect(shareLink?.maxuses).toEqual("5");
     expect(shareLink?.unrestricted).toEqual(false);
     expect(shareLink?.autoapprovetoggle).toEqual(0);
-    expect(shareLink?.defaultaccessrole).toEqual("editor");
+    expect(shareLink?.defaultaccessrole).toEqual("access.role.editor");
     expect(shareLink?.expiresdt).toEqual(new Date("2022-01-01T00:00:00.000Z"));
   });
 
@@ -264,7 +264,7 @@ describe("POST /share-links", () => {
       .calledWith("share_link.queries.create_share_link", {
         itemId: "2",
         itemType: "record",
-        permissionsLevel: "viewer",
+        permissionsLevel: "access.role.viewer",
         unlisted: true,
         noApproval: 1,
         maxUses: 0,
@@ -289,7 +289,7 @@ describe("POST /share-links", () => {
       .calledWith("share_link.queries.create_share_link", {
         itemId: "2",
         itemType: "record",
-        permissionsLevel: "viewer",
+        permissionsLevel: "access.role.viewer",
         unlisted: true,
         noApproval: 1,
         maxUses: 0,
