@@ -1,5 +1,5 @@
 import Joi from "joi";
-import type { CreateShareLinkRequest } from "./models";
+import type { CreateShareLinkRequest, UpdateShareLinkRequest } from "./models";
 import { fieldsFromUserAuthentication } from "../validators";
 
 export function validateCreateShareLinkRequest(
@@ -44,6 +44,48 @@ export function validateCreateShareLinkRequest(
         }),
       expirationTimestamp: Joi.string().isoDate().optional(),
     })
+    .validate(data);
+  if (validation.error) {
+    throw validation.error;
+  }
+}
+
+export function validateUpdateShareLinkRequest(
+  data: unknown
+): asserts data is UpdateShareLinkRequest {
+  const validation = Joi.object()
+    .keys({
+      ...fieldsFromUserAuthentication,
+      permissionsLevel: Joi.string()
+        .when("accessRestrictions", {
+          is: "none",
+          then: Joi.valid("viewer"),
+          otherwise: Joi.valid(
+            "viewer",
+            "editor",
+            "contributor",
+            "manager",
+            "owner"
+          ),
+        })
+        .optional(),
+      accessRestrictions: Joi.string()
+        .valid("none", "account", "approval")
+        .optional(),
+      expirationTimestamp: Joi.string().isoDate().allow(null).optional(),
+      maxUses: Joi.number()
+        .integer()
+        .min(1)
+        .allow(null)
+        .when("accessRestrictions", { is: "none", then: Joi.valid(null) })
+        .optional(),
+    })
+    .or(
+      "permissionsLevel",
+      "accessRestrictions",
+      "expirationTimestamp",
+      "maxUses"
+    )
     .validate(data);
   if (validation.error) {
     throw validation.error;
