@@ -1,4 +1,4 @@
-WITH aggregated_files AS (
+WITH RECURSIVE aggregated_files AS (
   (SELECT
     record_file.recordid,
     array_agg(jsonb_build_object(
@@ -80,6 +80,56 @@ aggregated_shares AS (
     AND profile_item.string1 IS NOT NULL
     AND share.status != 'status.generic.deleted'
   GROUP BY share.folder_linkid
+),
+
+ancestor_unrestricted_share_tokens (
+  parentfolder_linkid,
+  recordid,
+  urltoken
+) AS (
+  SELECT
+    folder_link.parentfolder_linkid,
+    folder_link.recordid,
+    shareby_url.urltoken
+  FROM folder_link
+  LEFT JOIN shareby_url
+    ON
+      folder_link.folder_linkid = shareby_url.folder_linkid
+      AND shareby_url.unrestricted
+      AND (
+        shareby_url.expiresdt IS NULL
+        OR shareby_url.expiresdt > current_timestamp
+      )
+  WHERE
+    folder_link.recordid = any(:recordIds)
+  UNION
+  SELECT
+    folder_link.parentfolder_linkid,
+    ancestor_unrestricted_share_tokens.recordid,
+    shareby_url.urltoken
+  FROM folder_link
+  INNER JOIN
+    ancestor_unrestricted_share_tokens
+    ON
+      folder_link.folder_linkid
+      = ancestor_unrestricted_share_tokens.parentfolder_linkid
+  LEFT JOIN shareby_url
+    ON
+      folder_link.folder_linkid = shareby_url.folder_linkid
+      AND shareby_url.unrestricted
+      AND (
+        shareby_url.expiresdt IS NULL
+        OR shareby_url.expiresdt > current_timestamp
+      )
+),
+
+aggregated_ancestor_unrestricted_share_tokens AS (
+  SELECT
+    recordid,
+    array_agg(urltoken) FILTER (WHERE urltoken IS NOT NULL) AS "tokens"
+  FROM
+    ancestor_unrestricted_share_tokens
+  GROUP BY recordid
 )
 
 SELECT DISTINCT ON (record.recordid)
@@ -163,11 +213,20 @@ LEFT JOIN
 LEFT JOIN
   aggregated_shares
   ON folder_link.folder_linkid = aggregated_shares.folder_linkid
+LEFT JOIN
+  aggregated_ancestor_unrestricted_share_tokens
+  ON record.recordid = aggregated_ancestor_unrestricted_share_tokens.recordid
 WHERE
   record.recordid = any(:recordIds)
   AND (
     record_account.primaryemail = :accountEmail
     OR share_account.primaryemail = :accountEmail
     OR (record.publicdt IS NOT NULL AND record.publicdt <= now())
+    OR (
+      :shareToken::TEXT IS NOT NULL
+      AND :shareToken = any(
+        aggregated_ancestor_unrestricted_share_tokens.tokens
+      )
+    )
   )
   AND record.status != 'status.generic.deleted';

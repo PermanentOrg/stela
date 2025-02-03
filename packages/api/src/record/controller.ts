@@ -5,6 +5,7 @@ import {
   type NextFunction,
 } from "express";
 import {
+  extractShareTokenFromHeaders,
   extractUserEmailFromAuthToken,
   verifyUserAuthentication,
 } from "../middleware";
@@ -13,8 +14,8 @@ import {
   validateGetRecordQuery,
   validatePatchRecordRequest,
   validateRecordRequest,
+  validateGetRecordRequestBody,
 } from "./validators";
-import { validateOptionalEmailFromAuthentication } from "../validators/shared";
 import { isValidationError } from "../validators/validator_util";
 
 export const recordController = Router();
@@ -22,13 +23,15 @@ export const recordController = Router();
 recordController.get(
   "/",
   extractUserEmailFromAuthToken,
+  extractShareTokenFromHeaders,
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      validateOptionalEmailFromAuthentication(req.body);
+      validateGetRecordRequestBody(req.body);
       validateGetRecordQuery(req.query);
       const records = await getRecordById({
         recordIds: req.query.recordIds,
         accountEmail: req.body.emailFromAuthToken,
+        shareToken: req.body.shareToken,
       });
       res.send(records);
     } catch (error) {

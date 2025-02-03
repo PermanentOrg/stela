@@ -246,10 +246,24 @@ const extractUserIsAdminFromAuthToken = async (
   next();
 };
 
+const extractShareTokenFromHeaders = (
+  req: Request<
+    unknown,
+    unknown,
+    { emailFromAuthToken?: string; shareToken: string | undefined }
+  >,
+  __: Response,
+  next: NextFunction
+): void => {
+  req.body.shareToken = req.get("X-Permanent-Share-Token");
+  next();
+};
+
 export {
   verifyUserAuthentication,
   verifyAdminAuthentication,
   verifyUserOrAdminAuthentication,
   extractUserEmailFromAuthToken,
   extractUserIsAdminFromAuthToken,
+  extractShareTokenFromHeaders,
 };
