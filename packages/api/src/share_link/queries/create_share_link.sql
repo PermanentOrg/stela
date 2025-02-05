@@ -36,7 +36,9 @@ shareby_urlid AS "id",
 :itemId AS "itemId",
 :itemType AS "itemType",
 urltoken AS "token",
-defaultaccessrole AS "permissionsLevel",
+SUBSTRING(
+  defaultaccessrole FROM (LENGTH('access.role.') + 1)
+) AS "permissionsLevel",
 CASE
   WHEN unrestricted THEN 'none'
   WHEN autoapprovetoggle = 1 THEN 'account'
