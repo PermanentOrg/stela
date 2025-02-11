@@ -1,3 +1,6 @@
+import type { Share } from "../share/models";
+import type { Tag } from "../tag/models";
+
 export interface ArchiveRecord {
   recordId: string;
   archiveId: string;
@@ -77,26 +80,6 @@ export interface ArchiveFile {
   downloadUrl: string;
 }
 
-export interface Tag {
-  tagId: string;
-  name: string;
-  type: string;
-}
-
-export interface Share {
-  shareId: string;
-  archiveId: string;
-  accessRole: AccessRole;
-  status: ShareStatus;
-  archive: ShareArchive;
-}
-
-export interface ShareArchive {
-  archiveId: string;
-  thumbUrl200?: string;
-  name: string;
-}
-
 export interface RecordColumnsForUpdate {
   recordId: string;
   locnid: bigint;
@@ -107,21 +90,6 @@ export interface PatchRecordRequest {
   emailFromAuthToken: string;
   locationId: bigint;
   description: string;
-}
-
-export enum AccessRole {
-  Owner = "access.role.owner",
-  Manager = "access.role.manager",
-  Editor = "access.role.editor",
-  Viewer = "access.role.viewer",
-  Contributor = "access.role.contributor",
-  Curator = "access.role.curator",
-}
-
-export enum ShareStatus {
-  Ok = "status.generic.ok",
-  Pending = "status.generic.pending",
-  Deleted = "status.generic.deleted",
 }
 
 export enum RecordStatus {

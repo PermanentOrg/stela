@@ -3,6 +3,7 @@ import {
   validateBodyFromAdminAuthentication,
   fieldsFromUserOrAdminAuthentication,
   validateIsAdminFromAuthentication,
+  validateOptionalAuthenticationValues,
 } from "./shared";
 
 describe("validateBodyFromAuthentication", () => {
@@ -295,6 +296,71 @@ describe("validateIsAdminFromAuthentication", () => {
     try {
       validateIsAdminFromAuthentication({
         admin: "a string",
+      });
+    } catch (err) {
+      error = err;
+    } finally {
+      expect(error).not.toBeNull();
+    }
+  });
+});
+
+describe("validateOptionalAuthenticationValues", () => {
+  test("should find no error if request body is empty", () => {
+    let error = null;
+    try {
+      validateOptionalAuthenticationValues({});
+    } catch (err) {
+      error = err;
+    } finally {
+      expect(error).toBeNull();
+    }
+  });
+  test("should accept a request with an email and a share token", () => {
+    let error = null;
+    try {
+      validateOptionalAuthenticationValues({
+        emailFromAuthToken: "test@permanent.org",
+        shareToken: "45e049b8-82c4-4d19-97d5-ff240cf95d73",
+      });
+    } catch (err) {
+      error = err;
+    } finally {
+      expect(error).toBeNull();
+    }
+  });
+  test("should error if emailFromAuthToken is not a string", () => {
+    let error = null;
+    try {
+      validateOptionalAuthenticationValues({
+        emailFromAuthToken: 0,
+        shareToken: "45e049b8-82c4-4d19-97d5-ff240cf95d73",
+      });
+    } catch (err) {
+      error = err;
+    } finally {
+      expect(error).not.toBeNull();
+    }
+  });
+  test("should error if emailFromAuthToken is not an email", () => {
+    let error = null;
+    try {
+      validateOptionalAuthenticationValues({
+        emailFromAuthToken: "not_an_email",
+        shareToken: "45e049b8-82c4-4d19-97d5-ff240cf95d73",
+      });
+    } catch (err) {
+      error = err;
+    } finally {
+      expect(error).not.toBeNull();
+    }
+  });
+  test("should error if shareToken is not a string", () => {
+    let error = null;
+    try {
+      validateOptionalAuthenticationValues({
+        emailFromAuthToken: "test@permanent.org",
+        shareToken: 0,
       });
     } catch (err) {
       error = err;

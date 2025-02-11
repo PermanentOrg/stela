@@ -1,34 +1,88 @@
-export interface Folder {
+import type { Share } from "../share/models";
+import type { Tag } from "../tag/models";
+
+export interface FolderRow {
   folderId: string;
-  archiveNumber: string;
-  archiveId: string;
+  size: string;
+  location?: Location;
+  parentFolder?: {
+    id: string;
+  };
+  shares?: Share[];
+  tags?: Tag[];
+  archive: {
+    id: string;
+  };
+  createdAt: string;
+  updatedAt: string;
+  description?: string;
+  displayTimestamp?: string;
+  displayEndTimestamp?: string;
   displayName: string;
   downloadName?: string;
-  downloadNameOk?: boolean;
-  displayDate?: string;
-  displayEndDate?: string;
-  timeZoneId?: bigint;
-  note?: string;
-  description?: string;
-  special?: string;
-  sort?: string;
-  locationId?: bigint;
-  view?: string;
-  viewProperty?: string;
-  thumbArchiveNumber?: string;
-  imageRatio?: number;
-  thumbStatus?: string;
-  thumbUrl200?: string;
-  thumbUrl500?: string;
-  thumbUrl1000?: string;
-  thumbUrl2000?: string;
-  status: FolderStatus;
+  imageRatio?: string;
+  paths: {
+    names: string[];
+  };
+  publicAt?: string;
+  sort: FolderSortOrder;
+  thumbnailUrls?: ThumbnailUrls;
   type: FolderType;
-  publicAt: string;
+  status: FolderStatus;
+  view: FolderView;
+}
+
+export interface ThumbnailUrls {
+  "200": string;
+  "256": string;
+  "500": string;
+  "1000": string;
+  "2000": string;
+}
+
+export interface Location {
+  id: string;
+  streetNumber?: string;
+  streetName?: string;
+  locality?: string;
+  county?: string;
+  state?: string;
+  latitude?: number;
+  longitude?: number;
+  country?: string;
+  countryCode?: string;
+  displayName?: string;
+}
+
+export interface Folder {
+  folderId: string;
+  size: number;
+  location?: Location;
+  parentFolder?: {
+    id: string;
+  };
+  shares?: Share[];
+  tags?: Tag[];
+  archive: {
+    id: string;
+  };
   createdAt: string;
-  updatedAt?: string;
-  thumbnail256?: string;
-  thumbnail256CloudPath?: string;
+  updatedAt: string;
+  description?: string;
+  displayTimestamp?: string;
+  displayEndTimestamp?: string;
+  displayName: string;
+  downloadName?: string;
+  imageRatio?: number;
+  paths: {
+    names: string[];
+  };
+  publicAt?: string;
+  sort: PrettyFolderSortOrder;
+  thumbnailUrls?: ThumbnailUrls;
+  type: PrettyFolderType;
+  status: PrettyFolderStatus;
+  view: PrettyFolderView;
 }
 
 export interface FolderLink {
@@ -61,18 +115,10 @@ export interface PatchFolderRequest {
 }
 
 export enum FolderStatus {
-  Deleted = "status.generic.deleted",
-  Error = "status.generic.error",
-  ManualReview = "status.generic.manual_review",
   Ok = "status.generic.ok",
   Copying = "status.folder.copying",
   Moving = "status.folder.moving",
-  New = "status.folder.new",
-  ThumbnailGenerating = "status.folder.genthumb",
-  ThumbnailBroken = "status.folder.broken_thumbnail",
-  NoThumbnailCandidates = "status.folder.no_thumbnail_candidates",
-  Nested = "status.folder.nested",
-  Empty = "status.folder.empty",
+  Deleted = "status.generic.deleted",
 }
 
 export enum FolderType {
@@ -84,4 +130,67 @@ export enum FolderType {
   RootPrivate = "type.folder.root.private",
   RootPublic = "type.folder.root.public",
   RootRoot = "type.folder.root.root",
+  RootShare = "type.folder.share.root",
+}
+
+export enum FolderView {
+  Slideshow = "folder.view.slideshow",
+  Grid = "folder.view.grid",
+  List = "folder.view.list",
+  StorySimple = "folder.view.storysimple",
+  StoryScroll = "folder.view.storyscroll",
+  StorySlider = "folder.view.storyslider",
+  Collage = "folder.view.collage",
+  CollageDetail = "folder.view.collagedetail",
+  Mosaic = "folder.view.mosaic",
+  Map = "folder.view.map",
+  Date = "folder.view.date",
+  Timeline = "folder.view.timeline",
+  Gliding = "folder.view.gliding",
+  Table = "folder.view.table",
+  Tile = "folder.view.tile",
+}
+
+export enum FolderSortOrder {
+  AlphabeticalAscending = "sort.alphabetical_asc",
+  AlphabeticalDescending = "sort.alphabetical_desc",
+  DisplayDateAscending = "sort.display_date_asc",
+  DisplayDateDescending = "sort.display_date_desc",
+  TypeAscending = "sort.type_asc",
+  TypeDescending = "sort.type_desc",
+}
+
+export enum PrettyFolderSortOrder {
+  AlphabeticalAscending = "alphabetical-ascending",
+  AlphabeticalDescending = "alphabetical-descending",
+  DateAscending = "date-ascending",
+  DateDescending = "date-descending",
+  TypeAscending = "type-ascending",
+  TypeDescending = "type-descending",
+}
+
+export enum PrettyFolderType {
+  AppRoot = "app-root",
+  App = "app",
+  Deprecated = "deprecated",
+  PrivateRoot = "private-root",
+  Private = "private",
+  PublicRoot = "public-root",
+  Public = "public",
+  Root = "root",
+  ShareRoot = "share-root",
+}
+
+export enum PrettyFolderStatus {
+  Copying = "copying",
+  Deleted = "deleted",
+  Moving = "moving",
+  Ok = "ok",
+}
+
+export enum PrettyFolderView {
+  Grid = "grid",
+  List = "list",
+  Timeline = "timeline",
+  Deprecated = "deprecated",
 }

@@ -30,3 +30,16 @@ export function validatePatchFolderRequest(
     throw validation.error;
   }
 }
+
+export function validateGetFoldersQuery(
+  data: unknown
+): asserts data is { folderIds: string[] } {
+  const validation = Joi.object()
+    .keys({
+      folderIds: Joi.array().items(Joi.string().required()).required(),
+    })
+    .validate(data);
+  if (validation.error) {
+    throw validation.error;
+  }
+}

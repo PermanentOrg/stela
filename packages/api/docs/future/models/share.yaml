@@ -5,8 +5,6 @@ share:
   properties:
     id:
       type: string
-    archiveId:
-      type: string
     accessRole:
       type: string
     status:
@@ -18,7 +16,7 @@ shareArchive:
     Record Share Archive Object
   type: object
   properties:
-    archiveId:
+    id:
       type: string
     thumbUrl200:
       type: string

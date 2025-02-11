@@ -4,13 +4,19 @@ import {
   type Response,
   type NextFunction,
 } from "express";
-import { verifyUserAuthentication } from "../middleware";
-import { getFolderById, patchFolder } from "./service";
+import {
+  extractShareTokenFromHeaders,
+  extractUserEmailFromAuthToken,
+  verifyUserAuthentication,
+} from "../middleware";
+import { patchFolder, getFolders } from "./service";
 import {
   validatePatchFolderRequest,
   validateFolderRequest,
+  validateGetFoldersQuery,
 } from "./validators";
 import { isValidationError } from "../validators/validator_util";
+import { validateOptionalAuthenticationValues } from "../validators/shared";
 
 export const folderController = Router();
 
@@ -22,11 +28,38 @@ folderController.patch(
       validateFolderRequest(req.params);
       validatePatchFolderRequest(req.body);
       const folderId = await patchFolder(req.params.folderId, req.body);
-      const folder = await getFolderById({
-        folderId,
-      });
+      const folder = (
+        await getFolders([folderId], req.body.emailFromAuthToken)
+      )[0];
+      if (folder === undefined) {
+        res.status(404).json({ error: "Folder not found" });
+      }
 
       res.status(200).send({ data: folder });
+    } catch (err) {
+      if (isValidationError(err)) {
+        res.status(400).json({ error: err.message });
+        return;
+      }
+      next(err);
+    }
+  }
+);
+
+folderController.get(
+  "/",
+  extractUserEmailFromAuthToken,
+  extractShareTokenFromHeaders,
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      validateOptionalAuthenticationValues(req.body);
+      validateGetFoldersQuery(req.query);
+      const folders = await getFolders(
+        req.query.folderIds,
+        req.body.emailFromAuthToken,
+        req.body.shareToken
+      );
+      res.status(200).send({ items: folders });
     } catch (err) {
       if (isValidationError(err)) {
         res.status(400).json({ error: err.message });

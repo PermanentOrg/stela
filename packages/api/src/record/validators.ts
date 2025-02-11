@@ -42,18 +42,3 @@ export function validatePatchRecordRequest(
     throw validation.error;
   }
 }
-
-export function validateGetRecordRequestBody(
-  data: unknown
-): asserts data is { emailFromAuthToken?: string; shareToken: string } {
-  const validation = Joi.object()
-    .keys({
-      emailFromAuthToken: Joi.string().email().optional(),
-      shareToken: Joi.string().optional(),
-    })
-    .validate(data);
-
-  if (validation.error) {
-    throw validation.error;
-  }
-}

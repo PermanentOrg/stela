@@ -47,7 +47,7 @@ VALUES
 ),
 (
   6,
-  'TEST+4@permanent.org',
+  'test+4@permanent.org',
   'status.auth.ok',
   '{}',
   'type.account.standard',

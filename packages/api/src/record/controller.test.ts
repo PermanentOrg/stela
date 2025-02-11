@@ -8,7 +8,9 @@ import {
   verifyUserAuthentication,
   extractShareTokenFromHeaders,
 } from "../middleware";
-import type { ArchiveFile, ArchiveRecord, Share, Tag } from "./models";
+import type { ArchiveFile, ArchiveRecord } from "./models";
+import type { Share } from "../share/models";
+import type { Tag } from "../tag/models";
 
 jest.mock("../database");
 jest.mock("../middleware");
@@ -402,9 +404,9 @@ describe("record", () => {
     expect(record?.parentFolderLinkId).toEqual("9");
     expect(record?.parentFolderArchiveNumber).toEqual("0001-test");
     expect(record?.tags.length).toEqual(3);
-    const firstTag = record?.tags.find((tag: Tag) => tag.tagId === "14");
-    const secondTag = record?.tags.find((tag: Tag) => tag.tagId === "15");
-    const thirdTag = record?.tags.find((tag: Tag) => tag.tagId === "16");
+    const firstTag = record?.tags.find((tag: Tag) => tag.id === "14");
+    const secondTag = record?.tags.find((tag: Tag) => tag.id === "15");
+    const thirdTag = record?.tags.find((tag: Tag) => tag.id === "16");
     expect(firstTag?.name).toEqual("Generic Tag 1");
     expect(secondTag?.name).toEqual("Generic Tag 2");
     expect(thirdTag?.name).toEqual("Generic Tag 3");
@@ -415,16 +417,14 @@ describe("record", () => {
     expect(record?.archiveArchiveNumber).toEqual("0001-0001");
 
     expect(record?.shares.length).toEqual(2);
-    expect(record?.shares[0]?.shareId).toEqual("1");
-    const shareViewer = record?.shares.find(
-      (share: Share) => share.shareId === "1"
-    );
+    expect(record?.shares[0]?.id).toEqual("1");
+    const shareViewer = record?.shares.find((share: Share) => share.id === "1");
     const shareContributor = record?.shares.find(
-      (share: Share) => share.shareId === "2"
+      (share: Share) => share.id === "2"
     );
     expect(shareViewer?.accessRole).toEqual("access.role.viewer");
     expect(shareViewer?.status).toEqual("status.generic.ok");
-    expect(shareViewer?.archive.archiveId).toEqual("3");
+    expect(shareViewer?.archive.id).toEqual("3");
     expect(shareViewer?.archive.thumbUrl200).toEqual(
       "https://test-archive-thumbnail"
     );
@@ -432,7 +432,7 @@ describe("record", () => {
 
     expect(shareContributor?.accessRole).toEqual("access.role.contributor");
     expect(shareContributor?.status).toEqual("status.generic.ok");
-    expect(shareContributor?.archive.archiveId).toEqual("2");
+    expect(shareContributor?.archive.id).toEqual("2");
     expect(shareContributor?.archive.thumbUrl200).toBeFalsy();
     expect(shareContributor?.archive.name).toEqual("Jane Rando");
   });
