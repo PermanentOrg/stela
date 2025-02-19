@@ -8,15 +8,15 @@ import {
   extractShareTokenFromHeaders,
   extractUserEmailFromAuthToken,
   verifyUserAuthentication,
-} from "../middleware";
-import { patchFolder, getFolders } from "./service";
+} from "../../middleware";
+import { patchFolder, getFolders } from "../service";
 import {
   validatePatchFolderRequest,
   validateFolderRequest,
   validateGetFoldersQuery,
-} from "./validators";
-import { isValidationError } from "../validators/validator_util";
-import { validateOptionalAuthenticationValues } from "../validators/shared";
+} from "../validators";
+import { isValidationError } from "../../validators/validator_util";
+import { validateOptionalAuthenticationValues } from "../../validators/shared";
 
 export const folderController = Router();
 
