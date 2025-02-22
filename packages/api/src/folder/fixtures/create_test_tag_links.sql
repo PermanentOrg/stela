@@ -36,4 +36,54 @@ INSERT INTO tag_link (
   'type.generic.placeholder',
   CURRENT_TIMESTAMP,
   CURRENT_TIMESTAMP
+),
+(
+  4,
+  14,
+  8,
+  'record',
+  'status.generic.ok',
+  'type.generic.placeholder',
+  CURRENT_TIMESTAMP,
+  CURRENT_TIMESTAMP
+),
+(
+  5,
+  15,
+  8,
+  'record',
+  'status.generic.ok',
+  'type.generic.placeholder',
+  CURRENT_TIMESTAMP,
+  CURRENT_TIMESTAMP
+),
+(
+  6,
+  16,
+  8,
+  'record',
+  'status.generic.ok',
+  'type.generic.placeholder',
+  CURRENT_TIMESTAMP,
+  CURRENT_TIMESTAMP
+),
+(
+  7,
+  5,
+  8,
+  'record',
+  'status.generic.ok',
+  'type.generic.placeholder',
+  CURRENT_TIMESTAMP,
+  CURRENT_TIMESTAMP
+),
+(
+  8,
+  3,
+  8,
+  'record',
+  'status.generic.deleted',
+  'type.generic.placeholder',
+  CURRENT_TIMESTAMP,
+  CURRENT_TIMESTAMP
 );

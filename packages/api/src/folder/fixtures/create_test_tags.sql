@@ -32,4 +32,40 @@ INSERT INTO tag (
   'type.generic.placeholder',
   CURRENT_TIMESTAMP,
   CURRENT_TIMESTAMP
+),
+(
+  5,
+  'test_deleted_tag',
+  1,
+  'status.generic.deleted',
+  'type.generic.placeholder',
+  CURRENT_TIMESTAMP,
+  CURRENT_TIMESTAMP
+),
+(
+  14,
+  'Generic Tag 1',
+  1,
+  'status.generic.ok',
+  'type.generic.placeholder',
+  CURRENT_TIMESTAMP,
+  CURRENT_TIMESTAMP
+),
+(
+  15,
+  'Generic Tag 2',
+  1,
+  'status.generic.ok',
+  'type.generic.placeholder',
+  CURRENT_TIMESTAMP,
+  CURRENT_TIMESTAMP
+),
+(
+  16,
+  'Generic Tag 3',
+  1,
+  'status.generic.ok',
+  'type.tag.metadata.CustomField',
+  CURRENT_TIMESTAMP,
+  CURRENT_TIMESTAMP
 );
