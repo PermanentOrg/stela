@@ -15,7 +15,7 @@ VALUES
   1,
   NULL,
   2,
-  5,
+  10,
   3,
   1,
   1,
@@ -94,4 +94,52 @@ VALUES
   'access.role.owner',
   'status.generic.ok',
   'type.folder_link.public'
+),
+(
+  8,
+  NULL,
+  12,
+  2,
+  1,
+  1,
+  1,
+  'access.role.owner',
+  'status.generic.ok',
+  'type.folder_link.private'
+),
+(
+  9,
+  NULL,
+  13,
+  12,
+  8,
+  1,
+  1,
+  'access.role.owner',
+  'status.generic.ok',
+  'type.folder_link.private'
+),
+(
+  10,
+  NULL,
+  10,
+  100,
+  NULL,
+  1,
+  1,
+  'access.role.owner',
+  'status.generic.ok',
+  'type.folder_link.private'
+),
+(
+  11,
+  8,
+  NULL,
+  10,
+  10,
+  1,
+  1,
+  'access.role.owner',
+  'status.generic.ok',
+  'type.folder_link.private'
 );

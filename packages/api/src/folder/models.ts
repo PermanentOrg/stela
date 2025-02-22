@@ -1,5 +1,15 @@
 import type { Share } from "../share/models";
 import type { Tag } from "../tag/models";
+import type { ArchiveRecord } from "../record/models";
+
+export interface GetFolderChildrenResponse {
+  items: (ArchiveRecord | Folder)[];
+  pagination: {
+    nextCursor: string | undefined;
+    nextPage: string | undefined;
+    totalPages: number;
+  };
+}
 
 export interface FolderRow {
   folderId: string;
@@ -30,6 +40,7 @@ export interface FolderRow {
   type: FolderType;
   status: FolderStatus;
   view: FolderView;
+  folderLinkId: string;
 }
 
 export interface ThumbnailUrls {
@@ -83,6 +94,7 @@ export interface Folder {
   type: PrettyFolderType;
   status: PrettyFolderStatus;
   view: PrettyFolderView;
+  folderLinkId: string;
 }
 
 export interface FolderLink {
