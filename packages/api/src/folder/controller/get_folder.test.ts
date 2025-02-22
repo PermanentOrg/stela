@@ -7,47 +7,11 @@ import {
   extractUserEmailFromAuthToken,
 } from "../../middleware";
 import type { Folder } from "../models";
+import { loadFixtures, clearDatabase } from "./utils_test";
 
 jest.mock("../../database");
 jest.mock("../../middleware");
 jest.mock("@stela/logger");
-
-const loadFixtures = async (): Promise<void> => {
-  await db.sql("folder.fixtures.create_test_accounts");
-  await db.sql("folder.fixtures.create_test_archives");
-  await db.sql("folder.fixtures.create_test_account_archives");
-  await db.sql("folder.fixtures.create_test_folders");
-  await db.sql("folder.fixtures.create_test_folder_links");
-  await db.sql("folder.fixtures.create_test_shareby_urls");
-  await db.sql("folder.fixtures.create_test_accesses");
-  await db.sql("folder.fixtures.create_test_folder_sizes");
-  await db.sql("folder.fixtures.create_test_locns");
-  await db.sql("folder.fixtures.create_test_shares");
-  await db.sql("folder.fixtures.create_test_profile_items");
-  await db.sql("folder.fixtures.create_test_tags");
-  await db.sql("folder.fixtures.create_test_tag_links");
-};
-
-const clearDatabase = async (): Promise<void> => {
-  await db.query(
-    `TRUNCATE 
-      event,
-      account_archive,
-      account,
-      archive,
-      folder,
-      folder_link,
-      shareby_url,
-      access,
-      folder_size,
-      locn,
-      share,
-      profile_item,
-      tag,
-      tag_link
-    CASCADE`
-  );
-};
 
 describe("GET /folder/{id}", () => {
   const agent = request(app);
@@ -381,7 +345,7 @@ describe("GET /folder/{id}", () => {
     expect(folders[0]?.location?.country).toEqual("France");
     expect(folders[0]?.location?.countryCode).toEqual("FR");
     expect(folders[0]?.location?.displayName).toEqual("Jean Valjean's House");
-    expect(folders[0]?.parentFolder?.id).toEqual("5");
+    expect(folders[0]?.parentFolder?.id).toEqual("10");
     expect(folders[0]?.shares?.length).toEqual(1);
     if (folders[0]?.shares?.length === 1) {
       expect(folders[0]?.shares[0]?.id).toEqual("1");

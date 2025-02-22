@@ -198,6 +198,7 @@ SELECT
   folder.type AS "type",
   folder.status AS "status",
   folder.view AS "view",
+  folder_link.folder_linkid AS "folderLinkId",
   JSON_BUILD_OBJECT(
     'id',
     locn.locnid::text,
