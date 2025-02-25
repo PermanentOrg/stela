@@ -1,0 +1,39 @@
+INSERT INTO tag_link (
+  tag_linkid,
+  tagid,
+  refid,
+  reftable,
+  status,
+  type,
+  createddt,
+  updateddt
+) VALUES (
+  1,
+  1,
+  2,
+  'folder',
+  'status.generic.ok',
+  'type.generic.placeholder',
+  CURRENT_TIMESTAMP,
+  CURRENT_TIMESTAMP
+),
+(
+  2,
+  2,
+  2,
+  'folder',
+  'status.generic.ok',
+  'type.generic.placeholder',
+  CURRENT_TIMESTAMP,
+  CURRENT_TIMESTAMP
+),
+(
+  3,
+  3,
+  2,
+  'folder',
+  'status.generic.deleted',
+  'type.generic.placeholder',
+  CURRENT_TIMESTAMP,
+  CURRENT_TIMESTAMP
+);

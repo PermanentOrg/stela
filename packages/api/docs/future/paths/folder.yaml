@@ -1,12 +1,14 @@
-folders-with-id:
+folders:
   parameters:
-    - name: id
-      in: path
+    - name: folderIds
+      in: query
       required: true
       schema:
-        type: string
+        type: array
+        items:
+          type: string
   get:
-    summary: Get a folder, with its direct children
+    summary: Get folders by their IDs
     security:
       - {}
       - bearerHttpAuthentication: []
@@ -16,14 +18,54 @@ folders-with-id:
     operationId: get-folder
     responses:
       "200":
-        description: The requested folder
+        description: The requested folders
         content:
           application/json:
             schema:
               type: object
               properties:
-                data:
-                  $ref: "../models/folder.yaml#/folderWithChildren"
+                items:
+                  type: array
+                  items:
+                    $ref: "../models/folder.yaml#/folder"
+      "400":
+        $ref: "../../shared/errors.yaml#/400"
+      "401":
+        $ref: "../../shared/errors.yaml#/401"
+      "404":
+        $ref: "../../shared/errors.yaml#/404"
+      "500":
+        $ref: "../../shared/errors.yaml#/500"
+folders-id-children:
+  parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: string
+  get:
+    summary: Get the children of the folder with the given ID
+    security:
+      - {}
+      - bearerHttpAuthentication: []
+      - permanentShareToken: []
+    tags:
+      - folders
+    operationId: get-folder-children
+    responses:
+      "200":
+        description: The folder's child objects
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                items:
+                  type: array
+                  items:
+                    oneOf:
+                      - $ref: "../models/folder.yaml#/folder"
+                      - $ref: "../models/record.yaml#/record"
       "400":
         $ref: "../../shared/errors.yaml#/400"
       "401":

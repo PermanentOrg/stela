@@ -29,7 +29,7 @@ aggregated_tags AS (
   SELECT
     tag_link.refid,
     array_agg(jsonb_build_object(
-      'tagId',
+      'id',
       tag.tagid::TEXT,
       'name',
       tag.name,
@@ -53,7 +53,7 @@ aggregated_shares AS (
   SELECT
     share.folder_linkid,
     array_agg(jsonb_build_object(
-      'shareId',
+      'id',
       share.shareid::TEXT,
       'accessRole',
       share.accessrole,
@@ -65,7 +65,7 @@ aggregated_shares AS (
         archive.thumburl200,
         'name',
         profile_item.string1,
-        'archiveId',
+        'id',
         archive.archiveid::TEXT
       )
     )) AS shares_as_json

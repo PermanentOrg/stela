@@ -1,7 +1,7 @@
 location:
   description: A geographic location object
   type: object
-  required: [locationId]
+  required: [id]
   properties:
     id:
       type: string
@@ -11,7 +11,9 @@ location:
       type: string
     locality:
       type: string
-    administrativeRegion:
+    county:
+      type: string
+    state:
       type: string
     latitude:
       type: number

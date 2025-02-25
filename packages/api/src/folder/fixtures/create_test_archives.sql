@@ -4,7 +4,15 @@ archive (
 )
 VALUES
 (1, '0001-0001', 2, false, 'type.archive.person', null, 'status.generic.ok'),
-(2, '0001-0002', null, false, 'type.archive.person', null, 'status.generic.ok'),
+(
+  2,
+  '0001-0002',
+  null,
+  false,
+  'type.archive.person',
+  'https://test-archive-thumbnail',
+  'status.generic.ok'
+),
 (
   3,
   '0001-0003',
@@ -22,4 +30,22 @@ VALUES
   'type.archive.person',
   'https://test-archive-thumbnail',
   'status.generic.deleted'
+),
+(
+  5,
+  '0001-0005',
+  null,
+  true,
+  'type.archive.person',
+  'https://test-archive-thumbnail',
+  'status.generic.ok'
+),
+(
+  6,
+  '0001-0006',
+  null,
+  true,
+  'type.archive.person',
+  'https://test-archive-thumbnail',
+  'status.generic.ok'
 );

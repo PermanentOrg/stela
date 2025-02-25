@@ -60,3 +60,18 @@ export function validateIsAdminFromAuthentication(
     throw validation.error;
   }
 }
+
+export function validateOptionalAuthenticationValues(
+  data: unknown
+): asserts data is { emailFromAuthToken?: string; shareToken: string } {
+  const validation = Joi.object()
+    .keys({
+      emailFromAuthToken: Joi.string().email().optional(),
+      shareToken: Joi.string().optional(),
+    })
+    .validate(data);
+
+  if (validation.error) {
+    throw validation.error;
+  }
+}

@@ -14,8 +14,8 @@ import {
   validateGetRecordQuery,
   validatePatchRecordRequest,
   validateRecordRequest,
-  validateGetRecordRequestBody,
 } from "./validators";
+import { validateOptionalAuthenticationValues } from "../validators/shared";
 import { isValidationError } from "../validators/validator_util";
 
 export const recordController = Router();
@@ -26,7 +26,7 @@ recordController.get(
   extractShareTokenFromHeaders,
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      validateGetRecordRequestBody(req.body);
+      validateOptionalAuthenticationValues(req.body);
       validateGetRecordQuery(req.query);
       const records = await getRecordById({
         recordIds: req.query.recordIds,

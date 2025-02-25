@@ -1,12 +1,14 @@
-records-with-id:
-  parameters:
-    - name: id
-      in: path
-      required: true
-      schema:
-        type: string
+records:
   get:
-    summary: Get a record by ID
+    summary: Get records by ID
+    parameters:
+      - name: recordIds
+        in: query
+        required: true
+        schema:
+          type: array
+          items:
+            type: string
     security:
       - {}
       - bearerHttpAuthentication: []
@@ -16,14 +18,16 @@ records-with-id:
     operationId: get-record
     responses:
       "200":
-        description: The requested record
+        description: The requested records
         content:
           application/json:
             schema:
               type: object
               properties:
-                data:
-                  $ref: "../models/record.yaml#/record"
+                items:
+                  type: array
+                  items:
+                    $ref: "../models/record.yaml#/record"
       "400":
         $ref: "../../shared/errors.yaml#/400"
       "401":

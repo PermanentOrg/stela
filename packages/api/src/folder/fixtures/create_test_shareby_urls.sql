@@ -1,0 +1,46 @@
+INSERT INTO
+shareby_url (
+  folder_linkid,
+  urltoken,
+  shareurl,
+  byaccountid,
+  byarchiveid,
+  unrestricted,
+  expiresdt
+)
+VALUES (
+  1,
+  'c0f523e4-48d8-4c39-8cda-5e95161532e4',
+  'https://local.permanent.org/share/c0f523e4-48d8-4c39-8cda-5e95161532e4',
+  2,
+  1,
+  true,
+  null
+),
+(
+  1,
+  '7d6412af-5abe-4acb-808a-64e9ce3b7535',
+  'https://local.permanent.org/share/7d6412af-5abe-4acb-808a-64e9ce3b7535',
+  2,
+  1,
+  false,
+  null
+),
+(
+  1,
+  '9cc057f0-d3e8-41df-94d6-9b315b4921af',
+  'https://local.permanent.org/share/9cc057f0-d3e8-41df-94d6-9b315b4921af',
+  2,
+  1,
+  true,
+  '2020-01-01'
+),
+(
+  3,
+  '56f7c246-e4ec-41f3-b117-6df4c9377075',
+  'https://local.permanent.org/share/56f7c246-e4ec-41f3-b117-6df4c9377075',
+  2,
+  1,
+  true,
+  null
+);

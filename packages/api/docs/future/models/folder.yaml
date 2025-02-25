@@ -15,7 +15,8 @@ folder:
   description: A folder in the Permanent filesystem
   type: object
   required:
-    - folderId
+    - id
+    - size
     - displayName
     - archive
     - status
