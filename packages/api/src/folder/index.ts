@@ -1,1 +1,1 @@
-export { folderController } from "./controller";
+export { folderController } from "./controller/controller";
