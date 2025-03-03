@@ -24,7 +24,7 @@ import { getFolderAccessRole, accessRoleLessThan } from "../access/permission";
 import { AccessRole } from "../access/models";
 import { getRecordById } from "../record/service";
 
-const prettifyFolderSortType = (
+export const prettifyFolderSortType = (
   sortType: FolderSortOrder
 ): PrettyFolderSortOrder => {
   switch (sortType) {
@@ -47,7 +47,7 @@ const prettifyFolderSortType = (
   }
 };
 
-const prettifyFolderType = (type: FolderType): PrettyFolderType => {
+export const prettifyFolderType = (type: FolderType): PrettyFolderType => {
   switch (type) {
     case FolderType.App:
       return PrettyFolderType.App;
@@ -70,7 +70,9 @@ const prettifyFolderType = (type: FolderType): PrettyFolderType => {
   }
 };
 
-const prettifyFolderStatus = (status: FolderStatus): PrettyFolderStatus => {
+export const prettifyFolderStatus = (
+  status: FolderStatus
+): PrettyFolderStatus => {
   switch (status) {
     case FolderStatus.Ok:
       return PrettyFolderStatus.Ok;
@@ -87,7 +89,7 @@ const prettifyFolderStatus = (status: FolderStatus): PrettyFolderStatus => {
   }
 };
 
-const prettifyFolderView = (view: FolderView): PrettyFolderView => {
+export const prettifyFolderView = (view: FolderView): PrettyFolderView => {
   switch (view) {
     case FolderView.Grid:
       return PrettyFolderView.Grid;
