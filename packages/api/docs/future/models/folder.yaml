@@ -16,7 +16,6 @@ folder:
   type: object
   required:
     - id
-    - size
     - displayName
     - archive
     - status

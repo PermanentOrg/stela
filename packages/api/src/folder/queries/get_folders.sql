@@ -253,7 +253,7 @@ INNER JOIN
   ON
     folder.folderid = folder_link.folderid
     AND folder_link.status != 'status.generic.deleted'
-INNER JOIN
+LEFT JOIN
   folder_size
   ON
     folder.folderid = folder_size.folderid
