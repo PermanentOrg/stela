@@ -65,15 +65,24 @@ share-link:
         $ref: "../../shared/errors.yaml#/403"
       "500":
         $ref: "../../shared/errors.yaml#/500"
-share-link-with-id:
-  parameters:
-    - name: identifier
-      in: path
-      required: true
-      description: A share link's ID, or token
-      schema:
-        type: string
   get:
+    parameters:
+      - name: shareTokens
+        in: query
+        required: false
+        description: An array of share links' tokens. Required if shareLinkIds is not set.
+        schema:
+          type: array
+          items:
+            type: string
+      - name: shareLinkIds
+        in: query
+        required: false
+        description: An array of share links' ids. Required if shareTokens is not set.
+        schema:
+          type: array
+          items:
+            type: string
     summary: Retrieve a share link by ID or token
     security:
       - bearerHttpAuthentication: []
@@ -89,8 +98,10 @@ share-link-with-id:
             schema:
               type: object
               properties:
-                data:
-                  $ref: "../models/share_link.yaml#/shareLink"
+                items:
+                  type: array
+                  items:
+                    $ref: "../models/share_link.yaml#/shareLink"
       "400":
         $ref: "../../shared/errors.yaml#/400"
       "401":
@@ -101,6 +112,14 @@ share-link-with-id:
         $ref: "../../shared/errors.yaml#/404"
       "500":
         $ref: "../../shared/errors.yaml#/500"
+share-link-with-id:
+  parameters:
+    - name: shareLinkId
+      in: path
+      required: true
+      description: The ID of a share link
+      schema:
+        type: string
   delete:
     summary: Delete a share link by ID or token
     security:

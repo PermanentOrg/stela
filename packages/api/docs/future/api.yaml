@@ -37,7 +37,7 @@ paths:
     $ref: "./paths/account.yaml#/account"
   /share-links:
     $ref: "./paths/share_link.yaml#/share-link"
-  /share-links/{identifier}:
+  /share-links/{shareLinkId}:
     $ref: "./paths/share_link.yaml#/share-link-with-id"
   /records:
     $ref: "./paths/record.yaml#/records"
