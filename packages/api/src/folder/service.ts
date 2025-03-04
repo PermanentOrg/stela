@@ -116,7 +116,7 @@ export const getFolders = async (
   const folders = result.rows.map<Folder>(
     (row: FolderRow): Folder => ({
       ...row,
-      size: +row.size,
+      size: row.size !== null ? +row.size : null,
       imageRatio: +(row.imageRatio ?? 0),
       sort: prettifyFolderSortType(row.sort),
       type: prettifyFolderType(row.type),

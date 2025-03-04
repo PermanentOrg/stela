@@ -663,12 +663,13 @@ describe("GET /folder/{id}", () => {
     expect(folders.length).toEqual(0);
   });
 
-  test("should not retrieve a folder with a deleted folder_size", async () => {
+  test("should omit size from a folder with a deleted folder_size", async () => {
     const response = await agent
       .get("/api/v2/folder?folderIds[]=7")
       .expect(200);
     const folders = (response.body as { items: Folder[] }).items;
-    expect(folders.length).toEqual(0);
+    expect(folders.length).toEqual(1);
+    expect(folders[0]?.size).toBeNull();
   });
 
   test("should throw a 500 error if database call fails", async () => {

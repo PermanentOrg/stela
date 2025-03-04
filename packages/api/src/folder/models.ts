@@ -3,7 +3,7 @@ import type { Tag } from "../tag/models";
 
 export interface FolderRow {
   folderId: string;
-  size: string;
+  size: string | null;
   location?: Location;
   parentFolder?: {
     id: string;
@@ -56,7 +56,7 @@ export interface Location {
 
 export interface Folder {
   folderId: string;
-  size: number;
+  size: number | null;
   location?: Location;
   parentFolder?: {
     id: string;
