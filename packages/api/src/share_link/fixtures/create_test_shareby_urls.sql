@@ -1,0 +1,51 @@
+INSERT INTO shareby_url (
+  shareby_urlid,
+  folder_linkid,
+  urltoken,
+  shareurl,
+  byaccountid,
+  byarchiveid,
+  unrestricted,
+  maxuses,
+  expiresdt,
+  defaultaccessrole,
+  autoapprovetoggle
+) VALUES (
+  1000,
+  5,
+  'e969f9dc-42b5-45c0-a496-1dcff2ca11f5',
+  'https://local.permanent.org/share/e969f9dc-42b5-45c0-a496-1dcff2ca11f5',
+  2,
+  1,
+  true,
+  null,
+  null,
+  'access.role.viewer',
+  0
+),
+(
+  1001,
+  6,
+  '0fcb840f-d22c-4a51-a358-2a61677e8fb2',
+  'https://local.permanent.org/share/0fcb840f-d22c-4a51-a358-2a61677e8fb2',
+  2,
+  1,
+  false,
+  100,
+  CURRENT_TIMESTAMP + INTERVAL '1 day',
+  'access.role.viewer',
+  0
+),
+(
+  1002,
+  7,
+  'd188df4b-7839-4d08-882f-78dc8988d864',
+  'https://local.permanent.org/share/d188df4b-7839-4d08-882f-78dc8988d864',
+  2,
+  1,
+  false,
+  100,
+  CURRENT_TIMESTAMP + INTERVAL '1 day',
+  'access.role.editor',
+  0
+);

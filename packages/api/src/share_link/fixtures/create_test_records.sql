@@ -59,4 +59,40 @@ VALUES
   'public.jpg',
   'status.generic.ok',
   'type.record.image'
+),
+(
+  6,
+  1,
+  NULL,
+  NULL,
+  'Private File',
+  2,
+  2,
+  'private_file.jpg',
+  'status.generic.ok',
+  'type.record.image'
+),
+(
+  7,
+  1,
+  NULL,
+  NULL,
+  'Private File',
+  2,
+  2,
+  'private_file.jpg',
+  'status.generic.ok',
+  'type.record.image'
+),
+(
+  8,
+  1,
+  NULL,
+  NULL,
+  'Private File',
+  2,
+  2,
+  'private_file.jpg',
+  'status.generic.ok',
+  'type.record.image'
 );

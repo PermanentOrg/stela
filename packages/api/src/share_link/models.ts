@@ -8,6 +8,14 @@ export interface CreateShareLinkRequest {
   expirationTimestamp?: string;
 }
 
+export interface UpdateShareLinkRequest {
+  emailFromAuthToken: string;
+  permissionsLevel?: "contributor" | "editor" | "manager" | "owner" | "viewer";
+  accessRestrictions?: "account" | "approval" | "none";
+  maxUses?: number | null;
+  expirationTimestamp?: string | null;
+}
+
 export interface ShareLink {
   id: string;
   itemId: string;
