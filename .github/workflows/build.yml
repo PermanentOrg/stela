@@ -9,7 +9,7 @@ jobs:
   build_api:
     needs:
       - generate_image_tags
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     env:
       API_IMAGE_TAG: ${{ needs.generate_image_tags.outputs.API_IMAGE_TAG }}
     steps:
@@ -29,7 +29,7 @@ jobs:
   build_am_cleanup:
     needs:
       - generate_image_tags
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     env:
       AM_CLEANUP_IMAGE_TAG: ${{ needs.generate_image_tags.outputs.AM_CLEANUP_IMAGE_TAG }}
     steps:
@@ -47,7 +47,7 @@ jobs:
   build_record_thumbnail_lambda:
     needs:
       - generate_image_tags
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     env:
       RECORD_THUMBNAIL_LAMBDA_IMAGE_TAG: ${{ needs.generate_image_tags.outputs.RECORD_THUMBNAIL_LAMBDA_IMAGE_TAG }}
     steps:
@@ -67,7 +67,7 @@ jobs:
   build_thumbnail_refresh:
     needs:
       - generate_image_tags
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     env:
       THUMBNAIL_REFRESH_IMAGE_TAG: ${{ needs.generate_image_tags.outputs.THUMBNAIL_REFRESH_IMAGE_TAG }}
     steps:
@@ -87,7 +87,7 @@ jobs:
   build_access_copy_lambda:
     needs:
       - generate_image_tags
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     env:
       ACCESS_COPY_LAMBDA_IMAGE_TAG: ${{ needs.generate_image_tags.outputs.ACCESS_COPY_LAMBDA_IMAGE_TAG }}
     steps:
@@ -107,7 +107,7 @@ jobs:
   build_account_space_updater:
     needs:
       - generate_image_tags
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     env:
       ACCOUNT_SPACE_UPDATER_IMAGE_TAG: ${{ needs.generate_image_tags.outputs.ACCOUNT_SPACE_UPDATER_IMAGE_TAG }}
     steps:

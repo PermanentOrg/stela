@@ -16,7 +16,7 @@ on:
         value: ${{ jobs.generate_image_tags.outputs.ACCOUNT_SPACE_UPDATER_IMAGE_TAG }}
 jobs:
   generate_image_tags:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     outputs:
       API_IMAGE_TAG: ${{ steps.generate_api_image_tag.outputs.API_IMAGE_TAG }}
       AM_CLEANUP_IMAGE_TAG: ${{ steps.generate_am_cleanup_image_tag.outputs.AM_CLEANUP_IMAGE_TAG }}

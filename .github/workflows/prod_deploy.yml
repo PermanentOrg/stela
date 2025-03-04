@@ -16,7 +16,7 @@ jobs:
     needs:
       - deploy_staging
       - generate_image_tags
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     environment: prod
     env:
       API_IMAGE_TAG: ${{ needs.generate_image_tags.outputs.API_IMAGE_TAG }}
