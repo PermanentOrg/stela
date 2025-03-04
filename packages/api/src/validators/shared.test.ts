@@ -4,6 +4,7 @@ import {
   fieldsFromUserOrAdminAuthentication,
   validateIsAdminFromAuthentication,
   validateOptionalAuthenticationValues,
+  validatePaginationParameters,
 } from "./shared";
 
 describe("validateBodyFromAuthentication", () => {
@@ -361,6 +362,104 @@ describe("validateOptionalAuthenticationValues", () => {
       validateOptionalAuthenticationValues({
         emailFromAuthToken: "test@permanent.org",
         shareToken: 0,
+      });
+    } catch (err) {
+      error = err;
+    } finally {
+      expect(error).not.toBeNull();
+    }
+  });
+});
+
+describe("validatePaginationParameters", () => {
+  test("should find no errors in valid parameter set", () => {
+    let error = null;
+    try {
+      validatePaginationParameters({
+        cursor: "1",
+        pageSize: 100,
+      });
+    } catch (err) {
+      error = err;
+    } finally {
+      expect(error).toBeNull();
+    }
+  });
+
+  test("should not error if cursor is missing", () => {
+    let error = null;
+    try {
+      validatePaginationParameters({
+        pageSize: 100,
+      });
+    } catch (err) {
+      error = err;
+    } finally {
+      expect(error).toBeNull();
+    }
+  });
+
+  test("should error if cursor is not a string", () => {
+    let error = null;
+    try {
+      validatePaginationParameters({
+        cursor: 1,
+        pageSize: 100,
+      });
+    } catch (err) {
+      error = err;
+    } finally {
+      expect(error).not.toBeNull();
+    }
+  });
+
+  test("should error if pageSize is missing", () => {
+    let error = null;
+    try {
+      validatePaginationParameters({
+        cursor: "1",
+      });
+    } catch (err) {
+      error = err;
+    } finally {
+      expect(error).not.toBeNull();
+    }
+  });
+
+  test("should error if pageSize is not a number", () => {
+    let error = null;
+    try {
+      validatePaginationParameters({
+        cursor: "1",
+        pageSize: "not_a_number",
+      });
+    } catch (err) {
+      error = err;
+    } finally {
+      expect(error).not.toBeNull();
+    }
+  });
+
+  test("should error if pageSize is not an integer", () => {
+    let error = null;
+    try {
+      validatePaginationParameters({
+        cursor: "1",
+        pageSize: 2.5,
+      });
+    } catch (err) {
+      error = err;
+    } finally {
+      expect(error).not.toBeNull();
+    }
+  });
+
+  test("should error if pageSize is less than one", () => {
+    let error = null;
+    try {
+      validatePaginationParameters({
+        cursor: "1",
+        pageSize: 0,
       });
     } catch (err) {
       error = err;

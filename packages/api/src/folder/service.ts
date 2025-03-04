@@ -6,6 +6,7 @@ import type {
   Folder,
   FolderColumnsForUpdate,
   PatchFolderRequest,
+  GetFolderChildrenResponse,
 } from "./models";
 import {
   FolderType,
@@ -17,11 +18,13 @@ import {
   PrettyFolderStatus,
   PrettyFolderView,
 } from "./models";
+import type { ArchiveRecord } from "../record/models";
 import { requestFieldsToDatabaseFields } from "./helper";
 import { getFolderAccessRole, accessRoleLessThan } from "../access/permission";
 import { AccessRole } from "../access/models";
+import { getRecordById } from "../record/service";
 
-const prettifyFolderSortType = (
+export const prettifyFolderSortType = (
   sortType: FolderSortOrder
 ): PrettyFolderSortOrder => {
   switch (sortType) {
@@ -44,7 +47,7 @@ const prettifyFolderSortType = (
   }
 };
 
-const prettifyFolderType = (type: FolderType): PrettyFolderType => {
+export const prettifyFolderType = (type: FolderType): PrettyFolderType => {
   switch (type) {
     case FolderType.App:
       return PrettyFolderType.App;
@@ -67,7 +70,9 @@ const prettifyFolderType = (type: FolderType): PrettyFolderType => {
   }
 };
 
-const prettifyFolderStatus = (status: FolderStatus): PrettyFolderStatus => {
+export const prettifyFolderStatus = (
+  status: FolderStatus
+): PrettyFolderStatus => {
   switch (status) {
     case FolderStatus.Ok:
       return PrettyFolderStatus.Ok;
@@ -84,7 +89,7 @@ const prettifyFolderStatus = (status: FolderStatus): PrettyFolderStatus => {
   }
 };
 
-const prettifyFolderView = (view: FolderView): PrettyFolderView => {
+export const prettifyFolderView = (view: FolderView): PrettyFolderView => {
   switch (view) {
     case FolderView.Grid:
       return PrettyFolderView.Grid;
@@ -125,6 +130,76 @@ export const getFolders = async (
     })
   );
   return folders;
+};
+
+export const getFolderChildren = async (
+  parentFolderId: string,
+  pageSize: number,
+  cursor?: string,
+  email?: string,
+  shareToken?: string
+): Promise<GetFolderChildrenResponse> => {
+  const result = await db
+    .sql<{ id: string; item_type: "folder" | "record"; totalPages: number }>(
+      "folder.queries.get_folder_children",
+      {
+        parentFolderId,
+        pageSize,
+        cursor,
+        email,
+        shareToken,
+      }
+    )
+    .catch((err) => {
+      logger.error(err);
+      throw new createError.InternalServerError(
+        "Failed to retrieve folder children"
+      );
+    });
+
+  const folders = await getFolders(
+    result.rows
+      .filter((item) => item.item_type === "folder")
+      .map((folder) => folder.id),
+    email,
+    shareToken
+  );
+
+  const records = await getRecordById({
+    recordIds: result.rows
+      .filter((item) => item.item_type === "record")
+      .map((record) => record.id),
+    accountEmail: email,
+    shareToken,
+  });
+
+  const children: (ArchiveRecord | Folder)[] = result.rows.map((row) => {
+    const child =
+      row.item_type === "folder"
+        ? folders.find((folder) => folder.folderId === row.id)
+        : records.find((record) => record.recordId === row.id);
+    if (child === undefined) {
+      throw new createError.InternalServerError(
+        "Failed to retrieve folder children"
+      );
+    }
+    return child;
+  });
+
+  const nextCursor = children[children.length - 1]?.folderLinkId;
+  return {
+    items: children,
+    pagination: {
+      nextCursor,
+      nextPage:
+        nextCursor !== undefined
+          ? `https://${
+              process.env["SITE_URL"] ?? ""
+            }/api/v2/folder/${parentFolderId}/children?pageSize=${pageSize}&cursor=${nextCursor}`
+          : undefined,
+      totalPages: result.rows[0] !== undefined ? result.rows[0].totalPages : 0,
+    },
+  };
 };
 
 function buildPatchQuery(patchFolderRequest: FolderColumnsForUpdate): string {

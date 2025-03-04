@@ -1,6 +1,11 @@
 {
   "extends": "@tsconfig/node18-strictest/tsconfig.json",
-  "exclude": ["**/*.test.ts", "node_modules", "packages/*/dist"],
+  "exclude": [
+    "**/*.test.ts",
+    "**/*_test.ts",
+    "node_modules",
+    "packages/*/dist"
+  ],
   "compilerOptions": {
     "strict": true,
     "esModuleInterop": true,

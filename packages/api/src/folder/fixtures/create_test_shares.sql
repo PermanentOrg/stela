@@ -23,4 +23,31 @@ INSERT INTO share (
   'status.generic.deleted',
   CURRENT_TIMESTAMP,
   CURRENT_TIMESTAMP
+),
+(
+  3,
+  11,
+  3,
+  'access.role.viewer',
+  'status.generic.ok',
+  NOW(),
+  NOW()
+),
+(
+  4,
+  11,
+  2,
+  'access.role.contributor',
+  'status.generic.ok',
+  NOW(),
+  NOW()
+),
+(
+  5,
+  11,
+  4,
+  'access.role.viewer',
+  'status.generic.deleted',
+  NOW(),
+  NOW()
 );

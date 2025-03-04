@@ -75,3 +75,18 @@ export function validateOptionalAuthenticationValues(
     throw validation.error;
   }
 }
+
+export function validatePaginationParameters(
+  data: unknown
+): asserts data is { cursor?: string; pageSize: number } {
+  const validation = Joi.object()
+    .keys({
+      cursor: Joi.string(),
+      pageSize: Joi.number().integer().min(1).required(),
+    })
+    .validate(data);
+
+  if (validation.error) {
+    throw validation.error;
+  }
+}

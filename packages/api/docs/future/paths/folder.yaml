@@ -43,6 +43,19 @@ folders-id-children:
       required: true
       schema:
         type: string
+    - name: cursor
+      description: |
+        The folderLinkId of the item right before the first item you want returned.
+        In most cases, this will be that of the last item on the previous page.
+      in: query
+      required: false
+      schema:
+        type: string
+    - name: pageSize
+      in: query
+      required: true
+      schema:
+        type: integer
   get:
     summary: Get the children of the folder with the given ID
     security:
@@ -66,6 +79,15 @@ folders-id-children:
                     oneOf:
                       - $ref: "../models/folder.yaml#/folder"
                       - $ref: "../models/record.yaml#/record"
+                pagination:
+                  type: object
+                  properties:
+                    nextCursor:
+                      type: string
+                    nextPage:
+                      type: string
+                    totalPages:
+                      type: integer
       "400":
         $ref: "../../shared/errors.yaml#/400"
       "401":
