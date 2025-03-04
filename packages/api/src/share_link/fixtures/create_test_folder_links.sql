@@ -58,4 +58,40 @@ VALUES
   'access.role.owner',
   'status.generic.ok',
   'type.folder_link.public'
+),
+(
+  5,
+  6,
+  NULL,
+  5,
+  NULL,
+  1,
+  1,
+  'access.role.owner',
+  'status.generic.ok',
+  'type.folder_link.private'
+),
+(
+  6,
+  7,
+  NULL,
+  5,
+  NULL,
+  1,
+  1,
+  'access.role.owner',
+  'status.generic.ok',
+  'type.folder_link.private'
+),
+(
+  7,
+  8,
+  NULL,
+  5,
+  NULL,
+  1,
+  1,
+  'access.role.owner',
+  'status.generic.ok',
+  'type.folder_link.private'
 );
