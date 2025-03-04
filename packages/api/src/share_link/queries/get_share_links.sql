@@ -31,5 +31,8 @@ INNER JOIN
   folder_link
   ON shareby_url.folder_linkid = folder_link.folder_linkid
 WHERE
-  shareby_url.shareby_urlid = :shareLinkId
+  (
+    shareby_url.shareby_urlid::text = any(:shareLinkIds)
+    OR shareby_url.urltoken = any(:shareTokens)
+  )
   AND account.primaryemail = :email;

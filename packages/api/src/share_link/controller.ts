@@ -4,9 +4,11 @@ import { verifyUserAuthentication } from "../middleware";
 import {
   validateCreateShareLinkRequest,
   validateUpdateShareLinkRequest,
+  validateGetShareLinksParameters,
 } from "./validators";
 import { isValidationError } from "../validators/validator_util";
 import { shareLinkService } from "./service";
+import { validateBodyFromAuthentication } from "../validators";
 
 export const shareLinkController = Router();
 
@@ -39,6 +41,29 @@ shareLinkController.patch(
         req.body
       );
       res.status(200).json({ data: updatedShareLink });
+    } catch (err) {
+      if (isValidationError(err)) {
+        res.status(400).json({ error: err });
+        return;
+      }
+      next(err);
+    }
+  }
+);
+
+shareLinkController.get(
+  "/",
+  verifyUserAuthentication,
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      validateBodyFromAuthentication(req.body);
+      validateGetShareLinksParameters(req.query);
+      const shareLinks = await shareLinkService.getShareLinks(
+        req.body.emailFromAuthToken,
+        req.query.shareTokens,
+        req.query.shareLinkIds
+      );
+      res.status(200).json({ items: shareLinks });
     } catch (err) {
       if (isValidationError(err)) {
         res.status(400).json({ error: err });

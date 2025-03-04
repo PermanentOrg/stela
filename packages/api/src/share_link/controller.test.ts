@@ -566,3 +566,134 @@ describe("PATCH /share-links/{id}", () => {
       .expect(500);
   });
 });
+
+describe("GET /share-links", () => {
+  const agent = request(app);
+
+  beforeEach(async () => {
+    (verifyUserAuthentication as jest.Mock).mockImplementation(
+      (req: Request, _, next: NextFunction) => {
+        (
+          req.body as {
+            emailFromAuthToken: string;
+            userSubjectFromAuthToken: string;
+          }
+        ).emailFromAuthToken = "test@permanent.org";
+        (
+          req.body as {
+            emailFromAuthToken: string;
+            userSubjectFromAuthToken: string;
+          }
+        ).userSubjectFromAuthToken = "315aedc2-67d5-4144-9f0d-ee547d98af9c";
+        next();
+      }
+    );
+
+    await loadFixtures();
+  });
+
+  afterEach(async () => {
+    await clearDatabase();
+  });
+
+  test("should return 200 for a valid request", async () => {
+    await agent.get("/api/v2/share-links?shareLinkIds[]=1").expect(200);
+  });
+
+  test("should return 401 if the caller is not authenticated", async () => {
+    (verifyUserAuthentication as jest.Mock).mockImplementation(
+      (_: Request, __: Response, next: NextFunction) => {
+        next(new createError.Unauthorized("Invalid token"));
+      }
+    );
+    await agent.get("/api/v2/share-links?shareLinkIds[]=1").expect(401);
+  });
+
+  test("should return 400 if the header values are invalid", async () => {
+    (verifyUserAuthentication as jest.Mock).mockImplementation(
+      (_: Request, __: Response, next: NextFunction) => {
+        next();
+      }
+    );
+    await agent.get("/api/v2/share-links?shareLinkIds[]=1").expect(400);
+  });
+
+  test("should return an empty list if caller asks for share links they can't access", async () => {
+    (verifyUserAuthentication as jest.Mock).mockImplementation(
+      (req: Request, _, next: NextFunction) => {
+        (
+          req.body as {
+            emailFromAuthToken: string;
+            userSubjectFromAuthToken: string;
+          }
+        ).emailFromAuthToken = "test+1@permanent.org";
+        (
+          req.body as {
+            emailFromAuthToken: string;
+            userSubjectFromAuthToken: string;
+          }
+        ).userSubjectFromAuthToken = "315aedc2-67d5-4144-9f0d-ee547d98af9c";
+        next();
+      }
+    );
+    const response = await agent
+      .get("/api/v2/share-links?shareLinkIds[]=1000")
+      .expect(200);
+    const shareLinks = (response.body as { items: ShareLink[] }).items;
+    expect(shareLinks.length).toEqual(0);
+  });
+
+  test("should return multiple share links if requested", async () => {
+    const response = await agent
+      .get("/api/v2/share-links?shareLinkIds[]=1000&shareLinkIds[]=1001")
+      .expect(200);
+    const shareLinks = (response.body as { items: ShareLink[] }).items;
+    expect(shareLinks.length).toEqual(2);
+  });
+
+  test("should return share links requested by their tokens", async () => {
+    const response = await agent
+      .get(
+        "/api/v2/share-links?shareTokens[]=e969f9dc-42b5-45c0-a496-1dcff2ca11f5&shareTokens[]=0fcb840f-d22c-4a51-a358-2a61677e8fb2"
+      )
+      .expect(200);
+    const shareLinks = (response.body as { items: ShareLink[] }).items;
+    expect(shareLinks.length).toEqual(2);
+  });
+
+  test("should respond with an empty list if the share link doesn't exist", async () => {
+    const response = await agent
+      .get(
+        "/api/v2/share-links?shareLinkIds[]=e969f9dc-42b5-45c0-a496-1dcff2ca11f5"
+      )
+      .expect(200);
+    const shareLinks = (response.body as { items: ShareLink[] }).items;
+    expect(shareLinks.length).toEqual(0);
+  });
+
+  test("should include all expected fields in response", async () => {
+    const response = await agent
+      .get("/api/v2/share-links?shareLinkIds[]=1000")
+      .expect(200);
+    const shareLinks = (response.body as { items: ShareLink[] }).items;
+    expect(shareLinks.length).toEqual(1);
+    expect(shareLinks[0]?.id).toEqual("1000");
+    expect(shareLinks[0]?.itemId).toEqual("6");
+    expect(shareLinks[0]?.itemType).toEqual("record");
+    expect(shareLinks[0]?.token).toEqual(
+      "e969f9dc-42b5-45c0-a496-1dcff2ca11f5"
+    );
+    expect(shareLinks[0]?.permissionsLevel).toEqual("viewer");
+    expect(shareLinks[0]?.accessRestrictions).toEqual("none");
+    expect(shareLinks[0]?.maxUses).toBeNull();
+    expect(shareLinks[0]?.usesExpended).toBeNull();
+    expect(shareLinks[0]?.expirationTimestamp).toBeNull();
+  });
+
+  test("should return a 500 error if the database call fails", async () => {
+    jest
+      .spyOn(db, "sql")
+      .mockRejectedValue(new Error("out of cheese - redo from start"));
+    await agent.get("/api/v2/share-links?shareLinkIds[]=1000").expect(500);
+  });
+});

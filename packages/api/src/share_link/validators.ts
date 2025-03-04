@@ -91,3 +91,17 @@ export function validateUpdateShareLinkRequest(
     throw validation.error;
   }
 }
+
+export function validateGetShareLinksParameters(
+  data: unknown
+): asserts data is { shareTokens: string[]; shareLinkIds: string[] } {
+  const validation = Joi.object()
+    .keys({
+      shareTokens: Joi.array().items(Joi.string()).optional(),
+      shareLinkIds: Joi.array().items(Joi.string()).optional(),
+    })
+    .validate(data);
+  if (validation.error) {
+    throw validation.error;
+  }
+}

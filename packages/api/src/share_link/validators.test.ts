@@ -1,6 +1,7 @@
 import {
   validateCreateShareLinkRequest,
   validateUpdateShareLinkRequest,
+  validateGetShareLinksParameters,
 } from "./validators";
 
 describe("validateCreateShareLinkRequest", () => {
@@ -848,6 +849,85 @@ describe("validateUpdateShareLinkRequest", () => {
         userSubjectFromAuthToken: "1129f5a8-7b9c-4211-ae59-dd83faad2455",
         accessRestrictions: "none",
         permissionsLevel: "owner",
+      });
+    } catch (err) {
+      error = err;
+    } finally {
+      expect(error).not.toBeNull();
+    }
+  });
+});
+
+describe("validateUpdateShareLinkRequest", () => {
+  test("should find no errors in a valid request", () => {
+    let error = null;
+    try {
+      validateGetShareLinksParameters({
+        shareTokens: ["token1"],
+        shareLinkIds: ["1"],
+      });
+    } catch (err) {
+      error = err;
+    } finally {
+      expect(error).toBeNull();
+    }
+  });
+
+  test("should allow omitted optional fields", () => {
+    let error = null;
+    try {
+      validateGetShareLinksParameters({});
+    } catch (err) {
+      error = err;
+    } finally {
+      expect(error).toBeNull();
+    }
+  });
+
+  test("should error if shareTokens is not an array", () => {
+    let error = null;
+    try {
+      validateGetShareLinksParameters({
+        shareTokens: "share-token",
+      });
+    } catch (err) {
+      error = err;
+    } finally {
+      expect(error).not.toBeNull();
+    }
+  });
+
+  test("should error if shareTokens contains non-strings", () => {
+    let error = null;
+    try {
+      validateGetShareLinksParameters({
+        shareTokens: [1],
+      });
+    } catch (err) {
+      error = err;
+    } finally {
+      expect(error).not.toBeNull();
+    }
+  });
+
+  test("should error if shareLinkIds is not an array", () => {
+    let error = null;
+    try {
+      validateGetShareLinksParameters({
+        shareLinkIds: "1",
+      });
+    } catch (err) {
+      error = err;
+    } finally {
+      expect(error).not.toBeNull();
+    }
+  });
+
+  test("should error if shareLinkIds contains non-strings", () => {
+    let error = null;
+    try {
+      validateGetShareLinksParameters({
+        shareLinkIds: [1],
       });
     } catch (err) {
       error = err;
