@@ -593,6 +593,7 @@ describe("GET /share-links", () => {
   });
 
   afterEach(async () => {
+    jest.restoreAllMocks();
     await clearDatabase();
   });
 
@@ -695,5 +696,96 @@ describe("GET /share-links", () => {
       .spyOn(db, "sql")
       .mockRejectedValue(new Error("out of cheese - redo from start"));
     await agent.get("/api/v2/share-links?shareLinkIds[]=1000").expect(500);
+  });
+});
+
+describe("DELETE /share-links", () => {
+  const agent = request(app);
+
+  beforeEach(async () => {
+    (verifyUserAuthentication as jest.Mock).mockImplementation(
+      (req: Request, _, next: NextFunction) => {
+        (
+          req.body as {
+            emailFromAuthToken: string;
+            userSubjectFromAuthToken: string;
+          }
+        ).emailFromAuthToken = "test@permanent.org";
+        (
+          req.body as {
+            emailFromAuthToken: string;
+            userSubjectFromAuthToken: string;
+          }
+        ).userSubjectFromAuthToken = "ceca5477-3f9c-4d0a-a7b8-04d5e5adac32";
+        next();
+      }
+    );
+
+    await loadFixtures();
+  });
+
+  afterEach(async () => {
+    await clearDatabase();
+  });
+
+  test("should return 204 for a valid request", async () => {
+    await agent.delete("/api/v2/share-links/1000").expect(204);
+  });
+
+  test("should return 401 if the caller is unauthenticated", async () => {
+    (verifyUserAuthentication as jest.Mock).mockImplementation(
+      (__: Request, _, next: NextFunction) => {
+        next(new createError.Unauthorized("Invalid token"));
+      }
+    );
+    await agent.delete("/api/v2/share-links/1000").expect(401);
+  });
+
+  test("should return 400 if header values are missing", async () => {
+    (verifyUserAuthentication as jest.Mock).mockImplementation(
+      (__: Request, _, next: NextFunction) => {
+        next();
+      }
+    );
+    await agent.delete("/api/v2/share-links/1000").expect(400);
+  });
+
+  test("should delete the share link", async () => {
+    await agent.delete("/api/v2/share-links/1000").expect(204);
+    const shareLinks = await agent
+      .get("/api/v2/share-links?shareLinkIds[]=1000")
+      .expect(200);
+    expect((shareLinks.body as { items: ShareLink[] }).items.length).toEqual(0);
+  });
+
+  test("should return 404 if the share link doesn't exist", async () => {
+    await agent.delete("/api/v2/share-links/1000").expect(204);
+    await agent.delete("/api/v2/share-links/1000").expect(404);
+  });
+
+  test("should return 404 if the caller doesn't have access to the share link", async () => {
+    (verifyUserAuthentication as jest.Mock).mockImplementation(
+      (req: Request, _, next: NextFunction) => {
+        (
+          req.body as {
+            emailFromAuthToken: string;
+            userSubjectFromAuthToken: string;
+          }
+        ).emailFromAuthToken = "test+1@permanent.org";
+        (
+          req.body as {
+            emailFromAuthToken: string;
+            userSubjectFromAuthToken: string;
+          }
+        ).userSubjectFromAuthToken = "ceca5477-3f9c-4d0a-a7b8-04d5e5adac32";
+        next();
+      }
+    );
+    await agent.delete("/api/v2/share-links/1000").expect(404);
+  });
+
+  test("should return 500 if the database call fails", async () => {
+    jest.spyOn(db, "sql").mockRejectedValue(new Error("Test error"));
+    await agent.delete("/api/v2/share-links/1000").expect(500);
   });
 });
