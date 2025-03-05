@@ -185,8 +185,26 @@ const getShareLinks = async (
   return shareLinks.rows;
 };
 
+const deleteShareLink = async (
+  email: string,
+  shareLinkId: string
+): Promise<void> => {
+  const response = await db
+    .sql<{ id: string }>("share_link.queries.delete_share_link", {
+      email,
+      shareLinkId,
+    })
+    .catch((err) => {
+      logger.error(err);
+      throw new Error("Failed to delete share link");
+    });
+  if (response.rows.length === 0)
+    throw new createError.NotFound("Share link not found");
+};
+
 export const shareLinkService = {
   createShareLink,
   updateShareLink,
   getShareLinks,
+  deleteShareLink,
 };
