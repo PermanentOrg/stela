@@ -9,13 +9,16 @@ import {
   extractUserEmailFromAuthToken,
   verifyUserAuthentication,
 } from "../middleware";
-import { getRecordById, patchRecord } from "./service";
+import { getRecordById, patchRecord, getRecordShareLinks } from "./service";
 import {
   validateGetRecordQuery,
   validatePatchRecordRequest,
   validateRecordRequest,
 } from "./validators";
-import { validateOptionalAuthenticationValues } from "../validators/shared";
+import {
+  validateBodyFromAuthentication,
+  validateOptionalAuthenticationValues,
+} from "../validators/shared";
 import { isValidationError } from "../validators/validator_util";
 
 export const recordController = Router();
@@ -58,6 +61,28 @@ recordController.patch(
       });
 
       res.status(200).send({ data: record });
+    } catch (err) {
+      if (isValidationError(err)) {
+        res.status(400).json({ error: err.message });
+        return;
+      }
+      next(err);
+    }
+  }
+);
+
+recordController.get(
+  "/:recordId/share-links",
+  verifyUserAuthentication,
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      validateRecordRequest(req.params);
+      validateBodyFromAuthentication(req.body);
+      const shareLinks = await getRecordShareLinks(
+        req.body.emailFromAuthToken,
+        req.params.recordId
+      );
+      res.status(200).send({ items: shareLinks });
     } catch (err) {
       if (isValidationError(err)) {
         res.status(400).json({ error: err.message });
