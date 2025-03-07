@@ -645,7 +645,7 @@ describe("PATCH /record", () => {
   });
 });
 
-describe("GET /record/{id}/share_links", () => {
+describe("GET /record/{id}/share-links", () => {
   const agent = request(app);
 
   beforeEach(async () => {
