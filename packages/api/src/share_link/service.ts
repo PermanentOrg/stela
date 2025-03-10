@@ -102,8 +102,9 @@ const updateShareLink = async (
   data: UpdateShareLinkRequest
 ): Promise<ShareLink> => {
   const shareLinkResult = await db
-    .sql<ShareLink>("share_link.queries.get_share_link", {
-      shareLinkId,
+    .sql<ShareLink>("share_link.queries.get_share_links", {
+      shareLinkIds: [shareLinkId],
+      shareTokens: [],
       email: data.emailFromAuthToken,
     })
     .catch((err) => {
@@ -166,4 +167,26 @@ const updateShareLink = async (
   };
 };
 
-export const shareLinkService = { createShareLink, updateShareLink };
+const getShareLinks = async (
+  email: string,
+  shareTokens: string[] | undefined,
+  shareLinkIds: string[] | undefined
+): Promise<ShareLink[]> => {
+  const shareLinks = await db
+    .sql<ShareLink>("share_link.queries.get_share_links", {
+      email,
+      shareTokens,
+      shareLinkIds,
+    })
+    .catch((err) => {
+      logger.error(err);
+      throw new Error("Failed to get share links");
+    });
+  return shareLinks.rows;
+};
+
+export const shareLinkService = {
+  createShareLink,
+  updateShareLink,
+  getShareLinks,
+};
