@@ -13,7 +13,11 @@ WITH RECURSIVE aggregated_files AS (
       'fileUrl',
       file.fileurl,
       'downloadUrl',
-      file.downloadurl
+      file.downloadurl,
+      'createdAt',
+      file.createddt,
+      'updatedAt',
+      file.updateddt
     )) AS files
   FROM
     record_file
