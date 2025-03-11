@@ -13,7 +13,7 @@ jest.mock("../../database");
 jest.mock("../../middleware");
 jest.mock("@stela/logger");
 
-describe("GET /folder/{id}", () => {
+describe("GET /folder", () => {
   const agent = request(app);
 
   beforeEach(async () => {

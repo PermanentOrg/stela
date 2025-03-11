@@ -9,7 +9,12 @@ import {
   extractUserEmailFromAuthToken,
   verifyUserAuthentication,
 } from "../../middleware";
-import { patchFolder, getFolders, getFolderChildren } from "../service";
+import {
+  patchFolder,
+  getFolders,
+  getFolderChildren,
+  getFolderShareLinks,
+} from "../service";
 import {
   validatePatchFolderRequest,
   validateFolderRequest,
@@ -19,6 +24,7 @@ import { isValidationError } from "../../validators/validator_util";
 import {
   validateOptionalAuthenticationValues,
   validatePaginationParameters,
+  validateBodyFromAuthentication,
 } from "../../validators/shared";
 
 export const folderController = Router();
@@ -90,6 +96,28 @@ folderController.get(
         req.body.shareToken
       );
       res.status(200).send(response);
+    } catch (err) {
+      if (isValidationError(err)) {
+        res.status(400).json({ error: err.message });
+        return;
+      }
+      next(err);
+    }
+  }
+);
+
+folderController.get(
+  "/:folderId/share_links",
+  verifyUserAuthentication,
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      validateFolderRequest(req.params);
+      validateBodyFromAuthentication(req.body);
+      const shareLinks = await getFolderShareLinks(
+        req.body.emailFromAuthToken,
+        req.params.folderId
+      );
+      res.status(200).send({ items: shareLinks });
     } catch (err) {
       if (isValidationError(err)) {
         res.status(400).json({ error: err.message });

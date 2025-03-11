@@ -23,6 +23,8 @@ import { requestFieldsToDatabaseFields } from "./helper";
 import { getFolderAccessRole, accessRoleLessThan } from "../access/permission";
 import { AccessRole } from "../access/models";
 import { getRecordById } from "../record/service";
+import { shareLinkService } from "../share_link/service";
+import type { ShareLink } from "../share_link/models";
 
 export const prettifyFolderSortType = (
   sortType: FolderSortOrder
@@ -252,4 +254,29 @@ export const patchFolder = async (
     throw new createError.NotFound("Folder not found");
   }
   return result.rows[0].folderId;
+};
+
+export const getFolderShareLinks = async (
+  email: string,
+  folderId: string
+): Promise<ShareLink[]> => {
+  const folderShareLinkIds = await db
+    .sql<{ id: string }>("folder.queries.get_folder_share_links", {
+      email,
+      folderId,
+    })
+    .catch((err) => {
+      logger.error(err);
+      throw new createError.InternalServerError(
+        "Failed to get folder share links"
+      );
+    });
+
+  const shareLinkIds = folderShareLinkIds.rows.map((row) => row.id);
+  const shareLinks = await shareLinkService.getShareLinks(
+    email,
+    [],
+    shareLinkIds
+  );
+  return shareLinks;
 };
