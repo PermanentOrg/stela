@@ -10,6 +10,8 @@ import type {
 import { requestFieldsToDatabaseFields } from "./helper";
 import { getRecordAccessRole, accessRoleLessThan } from "../access/permission";
 import { AccessRole } from "../access/models";
+import { shareLinkService } from "../share_link/service";
+import type { ShareLink } from "../share_link/models";
 
 export const getRecordById = async (requestQuery: {
   recordIds: string[];
@@ -84,4 +86,29 @@ export const patchRecord = async (
     throw new createError.NotFound("Record not found");
   }
   return result.rows[0].recordId;
+};
+
+export const getRecordShareLinks = async (
+  email: string,
+  recordId: string
+): Promise<ShareLink[]> => {
+  const recordShareLinkIds = await db
+    .sql<{ id: string }>("record.queries.get_record_share_links", {
+      email,
+      recordId,
+    })
+    .catch((err) => {
+      logger.error(err);
+      throw new createError.InternalServerError(
+        "Failed to get record share links"
+      );
+    });
+
+  const shareLinkIds = recordShareLinkIds.rows.map((row) => row.id);
+  const shareLinks = await shareLinkService.getShareLinks(
+    email,
+    [],
+    shareLinkIds
+  );
+  return shareLinks;
 };

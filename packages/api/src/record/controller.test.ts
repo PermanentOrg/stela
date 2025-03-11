@@ -1,4 +1,5 @@
 import type { Request, NextFunction } from "express";
+import createError from "http-errors";
 import { logger } from "@stela/logger";
 import request from "supertest";
 import { app } from "../app";
@@ -11,6 +12,7 @@ import {
 import type { ArchiveFile, ArchiveRecord } from "./models";
 import type { Share } from "../share/models";
 import type { Tag } from "../tag/models";
+import type { ShareLink } from "../share_link/models";
 
 jest.mock("../database");
 jest.mock("../middleware");
@@ -54,7 +56,7 @@ const clearDatabase = async (): Promise<void> => {
   );
 };
 
-describe("record", () => {
+describe("GET /record", () => {
   beforeEach(async () => {
     (extractUserEmailFromAuthToken as jest.Mock).mockImplementation(
       (req: Request, _: Response, next: NextFunction) => {
@@ -497,7 +499,7 @@ describe("record", () => {
   });
 });
 
-describe("patch record", () => {
+describe("PATCH /record", () => {
   const agent = request(app);
 
   beforeEach(async () => {
@@ -640,5 +642,103 @@ describe("patch record", () => {
     );
 
     await agent.patch("/api/v2/record/1").send({ locationId: 123 }).expect(404);
+  });
+});
+
+describe("GET /record/{id}/share_links", () => {
+  const agent = request(app);
+
+  beforeEach(async () => {
+    (verifyUserAuthentication as jest.Mock).mockImplementation(
+      async (
+        req: Request<
+          unknown,
+          unknown,
+          { userSubjectFromAuthToken?: string; emailFromAuthToken?: string }
+        >,
+        __,
+        next: NextFunction
+      ) => {
+        req.body.emailFromAuthToken = "test@permanent.org";
+        req.body.userSubjectFromAuthToken =
+          "b5461dc2-1eb0-450e-b710-fef7b2cafe1e";
+
+        next();
+      }
+    );
+    await clearDatabase();
+    await setupDatabase();
+  });
+
+  afterEach(async () => {
+    await clearDatabase();
+    jest.restoreAllMocks();
+    jest.clearAllMocks();
+  });
+
+  test("expect to return share links for a record", async () => {
+    const response = await agent
+      .get("/api/v2/record/2/share-links")
+      .expect(200);
+
+    const shareLinks = (response.body as { items: ShareLink[] }).items;
+    expect(shareLinks.length).toEqual(3);
+
+    const shareLink = shareLinks.find((link) => link.id === "1");
+    expect(shareLink?.id).toEqual("1");
+    expect(shareLink?.itemId).toEqual("2");
+    expect(shareLink?.itemType).toEqual("record");
+    expect(shareLink?.token).toEqual("2849c711-e72e-41b5-bb49-b0b86a052668");
+    expect(shareLink?.permissionsLevel).toEqual("viewer");
+    expect(shareLink?.accessRestrictions).toEqual("none");
+    expect(shareLink?.maxUses).toEqual(null);
+    expect(shareLink?.usesExpended).toEqual(null);
+    expect(shareLink?.expirationTimestamp).toEqual(null);
+  });
+
+  test("expect an empty list if record doesn't exist", async () => {
+    const response = await agent
+      .get("/api/v2/record/999/share-links")
+      .expect(200);
+
+    const shareLinks = (response.body as { items: ShareLink[] }).items;
+    expect(shareLinks.length).toEqual(0);
+  });
+
+  test("expect empty list if user doesn't have access to the record's share links", async () => {
+    const response = await agent
+      .get("/api/v2/record/6/share-links")
+      .expect(200);
+
+    const shareLinks = (response.body as { items: ShareLink[] }).items;
+    expect(shareLinks.length).toEqual(0);
+  });
+
+  test("expect to log error and return 500 if database lookup fails", async () => {
+    const testError = new Error("test error");
+    jest.spyOn(db, "sql").mockImplementation(async () => {
+      throw testError;
+    });
+
+    await agent.get("/api/v2/record/1/share-links").expect(500);
+    expect(logger.error).toHaveBeenCalledWith(testError);
+  });
+
+  test("expect 401 if not authenticated", async () => {
+    (verifyUserAuthentication as jest.Mock).mockImplementation(
+      (_, __, next: NextFunction) => {
+        next(createError.Unauthorized("Invalid auth token"));
+      }
+    );
+    await agent.get("/api/v2/record/1/share-links").expect(401);
+  });
+
+  test("expect 400 if the header values are missing", async () => {
+    (verifyUserAuthentication as jest.Mock).mockImplementation(
+      (_, __, next: NextFunction) => {
+        next();
+      }
+    );
+    await agent.get("/api/v2/record/1/share-links").expect(400);
   });
 });
