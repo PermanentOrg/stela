@@ -73,3 +73,24 @@ shareLinkController.get(
     }
   }
 );
+
+shareLinkController.delete(
+  "/:shareLinkId",
+  verifyUserAuthentication,
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      validateBodyFromAuthentication(req.body);
+      await shareLinkService.deleteShareLink(
+        req.body.emailFromAuthToken,
+        req.params["shareLinkId"] ?? ""
+      );
+      res.sendStatus(204);
+    } catch (err) {
+      if (isValidationError(err)) {
+        res.status(400).json({ error: err });
+        return;
+      }
+      next(err);
+    }
+  }
+);
