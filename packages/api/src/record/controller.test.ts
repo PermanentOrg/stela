@@ -399,6 +399,10 @@ describe("GET /record", () => {
     expect(originalFile?.downloadUrl).toEqual(
       "https://localcdn.permanent.org/_Dev/8?t=1732914102&response-content-disposition=attachment%3B+filename%3D%22Robert+birthday+%281%29.jpg%22&Expires=1732914102&Signature=R25~ODA0uZ77J2rjQ__&Key-Pair-Id=APKA"
     );
+    expect(originalFile?.createdAt).toEqual("2023-06-21T00:00:00+00:00");
+    expect(convertedFile?.createdAt).toEqual("2023-06-21T00:00:00+00:00");
+    expect(originalFile?.updatedAt).toEqual("2023-06-21T00:00:00+00:00");
+    expect(convertedFile?.updatedAt).toEqual("2023-06-21T00:00:00+00:00");
 
     expect(record?.folderLinkId).toEqual("8");
     expect(record?.folderLinkType).toEqual("type.folder_link.public");

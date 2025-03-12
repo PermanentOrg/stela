@@ -78,6 +78,8 @@ export interface ArchiveFile {
   type: FileType;
   fileUrl: string;
   downloadUrl: string;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface RecordColumnsForUpdate {
