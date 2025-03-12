@@ -86,3 +86,25 @@ archiveController.get(
     }
   }
 );
+
+archiveController.get(
+  "/:archiveId/folders/shared",
+  verifyUserAuthentication,
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      validateArchiveIdFromParams(req.params);
+      validateBodyFromAuthentication(req.body);
+      const folders = await archiveService.getSharedFolders(
+        req.params.archiveId,
+        req.body.emailFromAuthToken
+      );
+      res.json({ items: folders });
+    } catch (err) {
+      if (isValidationError(err)) {
+        res.status(400).json({ error: err });
+        return;
+      }
+      next(err);
+    }
+  }
+);

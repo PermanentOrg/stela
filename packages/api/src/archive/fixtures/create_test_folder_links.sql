@@ -1,0 +1,50 @@
+INSERT INTO
+folder_link (
+  folder_linkid,
+  folderid,
+  archiveid,
+  parentfolderid,
+  position,
+  status,
+  type,
+  createddt,
+  updateddt,
+  accessrole
+)
+VALUES
+(
+  1,
+  1,
+  3,
+  7,
+  0,
+  'status.generic.ok',
+  'type.folder_link.folder',
+  CURRENT_TIMESTAMP,
+  CURRENT_TIMESTAMP,
+  'access.role.owner'
+),
+(
+  2,
+  2,
+  1,
+  10,
+  1,
+  'status.generic.ok',
+  'type.folder_link.folder',
+  CURRENT_TIMESTAMP,
+  CURRENT_TIMESTAMP,
+  'access.role.owner'
+),
+(
+  3,
+  3,
+  2,
+  10,
+  2,
+  'status.generic.ok',
+  'type.folder_link.folder',
+  CURRENT_TIMESTAMP,
+  CURRENT_TIMESTAMP,
+  'access.role.owner'
+);

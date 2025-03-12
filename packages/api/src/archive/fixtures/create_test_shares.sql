@@ -1,0 +1,50 @@
+INSERT INTO
+share (
+  shareid,
+  folder_linkid,
+  archiveid,
+  accessrole,
+  status,
+  type,
+  requesttoken,
+  previewtoggle,
+  createddt,
+  updateddt
+)
+VALUES
+(
+  1,
+  1,
+  3,
+  'access.role.viewer',
+  'status.generic.ok',
+  'type.share.folder',
+  NULL,
+  0,
+  CURRENT_TIMESTAMP,
+  CURRENT_TIMESTAMP
+),
+(
+  2,
+  2,
+  1,
+  'access.role.viewer',
+  'status.generic.deleted',
+  'type.share.folder',
+  NULL,
+  0,
+  CURRENT_TIMESTAMP,
+  CURRENT_TIMESTAMP
+),
+(
+  3,
+  3,
+  1,
+  'access.role.viewer',
+  'status.generic.ok',
+  'type.share.folder',
+  NULL,
+  0,
+  CURRENT_TIMESTAMP,
+  CURRENT_TIMESTAMP
+);
