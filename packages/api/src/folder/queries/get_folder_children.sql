@@ -69,6 +69,8 @@ WITH all_children AS (
       ON folder_link.folderid = folder.folderid
     WHERE
       folder_link.parentfolderid = :parentFolderId
+      AND folder_link.status != 'status.generic.deleted'
+      AND folder.status != 'status.generic.deleted'
     UNION
     SELECT
       folder_link.recordid AS "id",
@@ -84,6 +86,8 @@ WITH all_children AS (
       ON folder_link.recordid = record.recordid
     WHERE
       folder_link.parentfolderid = :parentFolderId
+      AND folder_link.status != 'status.generic.deleted'
+      AND record.status != 'status.generic.deleted'
   ) AS "children"
 ),
 
