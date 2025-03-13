@@ -214,18 +214,22 @@ const extractUserEmailFromAuthToken = async (
   _: Response,
   next: NextFunction
 ): Promise<void> => {
-  const authenticationToken = getAuthTokenFromRequest(req);
-  if (authenticationToken !== "") {
-    const email = await getOptionalValueFromAuthToken(
-      authenticationToken,
-      emailKey,
-      process.env["FUSIONAUTH_BACKEND_APPLICATION_ID"] ?? ""
-    );
-    if (email !== "") {
-      req.body.emailFromAuthToken = email;
+  try {
+    const authenticationToken = getAuthTokenFromRequest(req);
+    if (authenticationToken !== "") {
+      const email = await getOptionalValueFromAuthToken(
+        authenticationToken,
+        emailKey,
+        process.env["FUSIONAUTH_BACKEND_APPLICATION_ID"] ?? ""
+      );
+      if (email !== "") {
+        req.body.emailFromAuthToken = email;
+      }
     }
+    next();
+  } catch (err) {
+    next(err);
   }
-  next();
 };
 
 const extractUserIsAdminFromAuthToken = async (
@@ -233,17 +237,21 @@ const extractUserIsAdminFromAuthToken = async (
   _: Response,
   next: NextFunction
 ): Promise<void> => {
-  let email = "";
-  const authenticationToken = getAuthTokenFromRequest(req);
-  if (authenticationToken !== "") {
-    email = await getOptionalValueFromAuthToken(
-      authenticationToken,
-      emailKey,
-      process.env["FUSIONAUTH_ADMIN_APPLICATION_ID"] ?? ""
-    );
+  try {
+    let email = "";
+    const authenticationToken = getAuthTokenFromRequest(req);
+    if (authenticationToken !== "") {
+      email = await getOptionalValueFromAuthToken(
+        authenticationToken,
+        emailKey,
+        process.env["FUSIONAUTH_ADMIN_APPLICATION_ID"] ?? ""
+      );
+    }
+    req.body.admin = email !== "";
+    next();
+  } catch (err) {
+    next(err);
   }
-  req.body.admin = email !== "";
-  next();
 };
 
 const extractShareTokenFromHeaders = (
