@@ -52,6 +52,7 @@ For these, simply fill in any fake value to prevent `require-env-variable` from 
 | FUSIONAUTH_TENANT                 | <none. needs to be set>                               | Find it in Fusionauth admin panel -> Tenants -> the one called "Local"                                                      |
 | FUSIONAUTH_BACKEND_APPLICATION_ID | <none. needs to be set>                               | Find it in Fusionauth admin panel -> Applications -> the one called "back-end (local)"                                      |
 | FUSIONAUTH_ADMIN_APPLICATION_ID   | <none. needs to be set>                               | Find it in Fusionauth admin panel -> Applications -> the one called "admin-local"                                           |
+| FUSIONAUTH_SFTP_APPLICATION_ID    | <none. needs to be set>                               | Find it in Fusionauth admin panel -> Applications -> the one called "sftp (local)"                                          |
 | LEGACY_BACKEND_HOST_URL           | http://load_balancer:80/api                           |
 | LEGACY_BACKEND_SHARED_SECRET      | none                                                  | Can be found in `back-end`'s library/base/constants/base.constants.php                                                      |
 | MAILCHIMP_API_KEY                 | none                                                  | Can be found in `back-end`'s library/base/constants/base.constants.php                                                      |

@@ -84,6 +84,11 @@ resource "kubernetes_deployment" "stela_prod" {
           }
 
           env {
+            name  = "FUSIONAUTH_SFTP_APPLICATION_ID"
+            value = var.prod_fusionauth_sftp_application_id
+          }
+
+          env {
             name  = "LEGACY_BACKEND_HOST_URL"
             value = var.legacy_backend_prod_host_url
           }

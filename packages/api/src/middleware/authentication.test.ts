@@ -369,7 +369,7 @@ describe("extractUserEmailFromAuthToken", () => {
     } as Request<unknown, unknown, { emailFromAuthToken?: string }>;
     jest
       .spyOn(fusionAuthClient, "introspectAccessToken")
-      .mockImplementationOnce(async () => successfulIntrospectionResponse);
+      .mockImplementation(async () => successfulIntrospectionResponse);
     await extractUserEmailFromAuthToken(request, {} as Response, () => {});
     expect(request.body.emailFromAuthToken).toBe(testEmail);
   });
@@ -390,7 +390,7 @@ describe("extractUserEmailFromAuthToken", () => {
     } as Request<unknown, unknown, { emailFromAuthToken?: string }>;
     jest
       .spyOn(fusionAuthClient, "introspectAccessToken")
-      .mockImplementationOnce(async () => failedIntrospectionResponse);
+      .mockImplementation(async () => failedIntrospectionResponse);
     await extractUserEmailFromAuthToken(request, {} as Response, () => {});
     expect(request.body.emailFromAuthToken).toBeUndefined();
   });
@@ -402,9 +402,55 @@ describe("extractUserEmailFromAuthToken", () => {
     } as Request<unknown, unknown, { emailFromAuthToken?: string }>;
     jest
       .spyOn(fusionAuthClient, "introspectAccessToken")
-      .mockImplementationOnce(async () => expiredTokenIntrospectionResponse);
+      .mockImplementation(async () => expiredTokenIntrospectionResponse);
     await extractUserEmailFromAuthToken(request, {} as Response, () => {});
     expect(request.body.emailFromAuthToken).toBeUndefined();
+  });
+
+  test("Request body has undefined emailFromAuthToken if all introspect calls throw errors", async () => {
+    const request = {
+      body: {},
+      get: (_: string) => "Bearer test",
+    } as Request<unknown, unknown, { emailFromAuthToken?: string }>;
+    jest
+      .spyOn(fusionAuthClient, "introspectAccessToken")
+      .mockImplementation(async () => {
+        throw new Error("unauthenticated");
+      });
+    await extractUserEmailFromAuthToken(request, {} as Response, () => {});
+    expect(request.body.emailFromAuthToken).toBeUndefined();
+  });
+
+  test("Request body will have email if the first auth token is invalid but the second one is valid", async () => {
+    const request = {
+      body: {},
+      get: (_: string) => "Bearer test",
+    } as Request<unknown, unknown, { emailFromAuthToken?: string }>;
+    jest
+      .spyOn(fusionAuthClient, "introspectAccessToken")
+      .mockImplementationOnce(async () => failedIntrospectionResponse);
+    jest
+      .spyOn(fusionAuthClient, "introspectAccessToken")
+      .mockImplementationOnce(async () => successfulIntrospectionResponse);
+    await extractUserEmailFromAuthToken(request, {} as Response, () => {});
+    expect(request.body.emailFromAuthToken).toBe(testEmail);
+  });
+
+  test("Request body will have email if token is valid but one introspect call throws", async () => {
+    const request = {
+      body: {},
+      get: (_: string) => "Bearer test",
+    } as Request<unknown, unknown, { emailFromAuthToken?: string }>;
+    jest
+      .spyOn(fusionAuthClient, "introspectAccessToken")
+      .mockImplementationOnce(async () => {
+        throw new Error("unauthenticated");
+      });
+    jest
+      .spyOn(fusionAuthClient, "introspectAccessToken")
+      .mockImplementationOnce(async () => successfulIntrospectionResponse);
+    await extractUserEmailFromAuthToken(request, {} as Response, () => {});
+    expect(request.body.emailFromAuthToken).toBe(testEmail);
   });
 });
 

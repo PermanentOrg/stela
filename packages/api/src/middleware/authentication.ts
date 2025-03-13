@@ -35,23 +35,39 @@ const getValueFromAuthToken = async (
 const getOptionalValueFromAuthToken = async (
   authenticationToken: string,
   key: "email" | "sub",
-  applicationId: string
+  applicationIds: string[]
 ): Promise<string> => {
-  const introspectionResponse = await fusionAuthClient.introspectAccessToken(
-    applicationId,
-    authenticationToken
+  const introspectionResponses = await Promise.all(
+    applicationIds.map(async (applicationId) => {
+      try {
+        const response = await fusionAuthClient.introspectAccessToken(
+          applicationId,
+          authenticationToken
+        );
+        return response;
+      } catch (err) {
+        return null;
+      }
+    })
   );
-  if (!introspectionResponse.wasSuccessful()) {
+
+  const successfulIntrospectionResponse = introspectionResponses.find(
+    (introspectionResponse) => introspectionResponse?.wasSuccessful()
+  );
+  if (
+    successfulIntrospectionResponse === undefined ||
+    successfulIntrospectionResponse === null
+  ) {
     return "";
   }
   if (
-    !introspectionResponse.response.active ||
-    typeof introspectionResponse.response[key] !== "string"
+    !successfulIntrospectionResponse.response.active ||
+    typeof successfulIntrospectionResponse.response[key] !== "string"
   ) {
     return "";
   }
 
-  return introspectionResponse.response[key];
+  return successfulIntrospectionResponse.response[key];
 };
 
 const getValuesFromAuthToken = async (
@@ -220,7 +236,10 @@ const extractUserEmailFromAuthToken = async (
       const email = await getOptionalValueFromAuthToken(
         authenticationToken,
         emailKey,
-        process.env["FUSIONAUTH_BACKEND_APPLICATION_ID"] ?? ""
+        [
+          process.env["FUSIONAUTH_BACKEND_APPLICATION_ID"] ?? "",
+          process.env["FUSIONAUTH_SFTP_APPLICATION_ID"] ?? "",
+        ]
       );
       if (email !== "") {
         req.body.emailFromAuthToken = email;
@@ -244,7 +263,7 @@ const extractUserIsAdminFromAuthToken = async (
       email = await getOptionalValueFromAuthToken(
         authenticationToken,
         emailKey,
-        process.env["FUSIONAUTH_ADMIN_APPLICATION_ID"] ?? ""
+        [process.env["FUSIONAUTH_ADMIN_APPLICATION_ID"] ?? ""]
       );
     }
     req.body.admin = email !== "";
