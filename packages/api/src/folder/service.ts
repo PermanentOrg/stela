@@ -175,18 +175,19 @@ export const getFolderChildren = async (
     shareToken,
   });
 
-  const children: (ArchiveRecord | Folder)[] = result.rows.map((row) => {
-    const child =
-      row.item_type === "folder"
-        ? folders.find((folder) => folder.folderId === row.id)
-        : records.find((record) => record.recordId === row.id);
-    if (child === undefined) {
-      throw new createError.InternalServerError(
-        "Failed to retrieve folder children"
-      );
-    }
-    return child;
-  });
+  const children: (ArchiveRecord | Folder)[] = result.rows.reduce(
+    (accumulator: (ArchiveRecord | Folder)[], row) => {
+      const child =
+        row.item_type === "folder"
+          ? folders.find((folder) => folder.folderId === row.id)
+          : records.find((record) => record.recordId === row.id);
+      if (child !== undefined) {
+        accumulator.push(child);
+      }
+      return accumulator;
+    },
+    []
+  );
 
   const nextCursor = children[children.length - 1]?.folderLinkId;
   return {

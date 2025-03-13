@@ -341,6 +341,25 @@ describe("GET /folder/{id}/children", () => {
     expect(children[1]?.displayName).toEqual("Private Folder");
   });
 
+  test("should return an empty list if the caller doesn't have access to the folder", async () => {
+    (extractUserEmailFromAuthToken as jest.Mock).mockImplementation(
+      async (
+        req: Request<unknown, unknown, { emailFromAuthToken?: string }>,
+        __,
+        next: NextFunction
+      ) => {
+        req.body.emailFromAuthToken = "test+5@permanent.org";
+        next();
+      }
+    );
+    const response = await agent
+      .get("/api/v2/folder/2/children?pageSize=100")
+      .expect(200);
+    const children = (response.body as { items: (ArchiveRecord | Folder)[] })
+      .items;
+    expect(children.length).toEqual(0);
+  });
+
   test("should return no more than pageSize items", async () => {
     const response = await agent
       .get("/api/v2/folder/10/children?pageSize=1")
