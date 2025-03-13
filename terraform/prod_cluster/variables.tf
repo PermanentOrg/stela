@@ -92,6 +92,12 @@ variable "prod_fusionauth_admin_application_id" {
   default     = "28003417-1976-447c-bcbe-c5c1f575b596"
 }
 
+variable "prod_fusionauth_sftp_application_id" {
+  description = "ID of the FusionAuth application that manages authentication to the sftp service in the prod environment"
+  type        = string
+  default     = "5879a6f3-6b68-476c-a590-914905b6f6d3"
+}
+
 variable "legacy_backend_prod_host_url" {
   description = "Host URL of the legacy PHP backend"
   type        = string

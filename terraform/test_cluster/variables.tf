@@ -162,6 +162,18 @@ variable "staging_fusionauth_admin_application_id" {
   default     = "5df9c061-0988-4f8d-b05a-0a338d5c44b6"
 }
 
+variable "dev_fusionauth_sftp_application_id" {
+  description = "ID of the FusionAuth application that manages authentication to the sftp service in the dev environment"
+  type        = string
+  default     = "00eecfff-180f-4db5-9a34-10498c971830"
+}
+
+variable "staging_fusionauth_sftp_application_id" {
+  description = "ID of the FusionAuth application that manages authentication to the sftp service in the staging environment"
+  type        = string
+  default     = "ed2d6e4d-fca3-4929-bba6-2df1c2fcb921"
+}
+
 variable "legacy_backend_dev_host_url" {
   description = "Host URL of the legacy PHP backend"
   type        = string

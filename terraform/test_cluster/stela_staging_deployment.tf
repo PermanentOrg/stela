@@ -84,6 +84,11 @@ resource "kubernetes_deployment" "stela_staging" {
           }
 
           env {
+            name  = "FUSIONAUTH_SFTP_APPLICATION_ID"
+            value = var.staging_fusionauth_sftp_application_id
+          }
+
+          env {
             name  = "LEGACY_BACKEND_HOST_URL"
             value = var.legacy_backend_dev_host_url
           }
