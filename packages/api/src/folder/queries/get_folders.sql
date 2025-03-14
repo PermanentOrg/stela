@@ -90,6 +90,7 @@ aggregated_tags AS (
     tag_link.reftable = 'folder'
     AND tag.status != 'status.generic.deleted'
     AND tag_link.status != 'status.generic.deleted'
+    AND tag_link.refid = ANY(:folderIds)
   GROUP BY tag_link.refid
 ),
 
