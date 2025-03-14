@@ -26,6 +26,7 @@ WITH RECURSIVE aggregated_files AS (
     ON record_file.fileid = file.fileid
   WHERE
     file.status != 'status.generic.deleted'
+    AND record_file.recordid = any(:recordIds)
   GROUP BY record_file.recordid)
 ),
 
@@ -50,6 +51,7 @@ aggregated_tags AS (
   WHERE
     tag_link.reftable = 'record'
     AND tag_link.status = 'status.generic.ok'
+    AND tag_link.refid = any(:recordIds)
   GROUP BY tag_link.refid
 ),
 
