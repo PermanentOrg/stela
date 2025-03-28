@@ -1,0 +1,80 @@
+notifications:
+  get:
+    summary: Get an account's notification's. Notifications will be sorted in reverse chronological order
+    parameters:
+      - name: cursor
+        description: |
+          The id of the notification right before the first notification you want returned.
+          In most cases, this will be that of the last item on the previous page.
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: pageSize
+        in: query
+        required: true
+        schema:
+          type: integer
+    security:
+      - bearerHttpAuthentication: []
+    tags:
+      - notifications
+    operationId: getNotifications
+    responses:
+      "200":
+        description: A page of the account's notifications
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                items:
+                  type: array
+                  items:
+                    $ref: "../models/notification.yaml#/notification"
+                pagination:
+                  $ref: "../models/pagination_metadata.yaml#/pagination"
+      "400":
+        $ref: "../../shared/errors.yaml#/400"
+      "401":
+        $ref: "../../shared/errors.yaml#/401"
+      "404":
+        $ref: "../../shared/errors.yaml#/404"
+      "500":
+        $ref: "../../shared/errors.yaml#/500"
+  patch:
+    summary: Update a notification's status. Legal updates are new->seen, new->read, and seen->read
+    security:
+      - bearerHttpAuthentication: []
+    operationId: updateNotification
+    tags:
+      - notifications
+    requestBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                enum:
+                  - seen
+                  - read
+    responses:
+      "200":
+        description: The updated notification
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                data:
+                  $ref: "../models/notification.yaml#/notification"
+      "400":
+        $ref: "../../shared/errors.yaml#/400"
+      "401":
+        $ref: "../../shared/errors.yaml#/401"
+      "404":
+        $ref: "../../shared/errors.yaml#/404"
+      "500":
+        $ref: "../../shared/errors.yaml#/500"
