@@ -80,11 +80,14 @@ aggregated_shares AS (
     ON share.archiveid = archive.archiveid
   INNER JOIN profile_item
     ON archive.archiveid = profile_item.archiveid
+  INNER JOIN folder_link
+    ON share.folder_linkid = folder_link.folder_linkid
   WHERE
     profile_item.fieldnameui = 'profile.basic'
     AND profile_item.status = 'status.generic.ok'
     AND profile_item.string1 IS NOT NULL
     AND share.status != 'status.generic.deleted'
+    AND folder_link.recordid = any(:recordIds)
   GROUP BY share.folder_linkid
 ),
 
