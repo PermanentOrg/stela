@@ -1,0 +1,7 @@
+pagination:
+  type: object
+  properties:
+    nextCursor:
+      type: string
+    totalPages:
+      type: integer

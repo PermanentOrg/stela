@@ -57,3 +57,5 @@ paths:
     $ref: "./paths/application.yaml#/applications-with-id"
   /developer-accounts:
     $ref: "./paths/developer_account.yaml#/developer-accounts"
+  /notifications:
+    $ref: "./paths/notification.yaml#/notifications"

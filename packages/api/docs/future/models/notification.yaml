@@ -1,0 +1,31 @@
+notification:
+  description: A notification for display in a Permanent client
+  type: object
+  required:
+    - id
+    - recipientAccountId
+    - status
+    - data
+    - createdAt
+    - updatedAt
+  properties:
+    id:
+      type: string
+    recipientAccountId:
+      type: string
+    status:
+      type: string
+      enum:
+        - new
+        - seen
+        - read
+    data:
+      description: >
+        Any data required by clients to display the notification, and to implement its calls to action
+      type: object
+    createdAt:
+      type: string
+      format: date-time
+    updatedAt:
+      type: string
+      format: date-time

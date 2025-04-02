@@ -80,14 +80,7 @@ folders-id-children:
                       - $ref: "../models/folder.yaml#/folder"
                       - $ref: "../models/record.yaml#/record"
                 pagination:
-                  type: object
-                  properties:
-                    nextCursor:
-                      type: string
-                    nextPage:
-                      type: string
-                    totalPages:
-                      type: integer
+                  $ref: "../models/pagination_metadata.yaml#/pagination"
       "400":
         $ref: "../../shared/errors.yaml#/400"
       "401":
