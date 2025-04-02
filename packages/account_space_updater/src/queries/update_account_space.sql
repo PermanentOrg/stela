@@ -1,13 +1,16 @@
 WITH upload_data AS (
   SELECT
     record.uploadpayeraccountid,
-    record.size,
-    record_file.fileid
+    file.size,
+    file.fileid
   FROM
     record
   INNER JOIN
     record_file
     ON record.recordid = record_file.recordid
+  INNER JOIN
+    file
+    ON record_file.fileid = file.fileid
   WHERE
     record.recordid = :recordId
 ),
