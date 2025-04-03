@@ -10,7 +10,9 @@ WITH upload_data AS (
     ON record.recordid = record_file.recordid
   INNER JOIN
     file
-    ON record_file.fileid = file.fileid
+    ON
+      record_file.fileid = file.fileid
+      AND file.format = 'file.format.original'
   WHERE
     record.recordid = :recordId
 ),
