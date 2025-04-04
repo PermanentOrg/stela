@@ -4,6 +4,7 @@ import { makeFeatured } from "./make_featured";
 import { unfeature } from "./unfeature";
 import { getFeatured } from "./get_featured";
 import { getSharedFolders } from "./get_shared_folders";
+import { backfillLedger } from "./backfill_ledger";
 
 export const archiveService = {
   getPublicTags,
@@ -12,4 +13,5 @@ export const archiveService = {
   unfeature,
   getFeatured,
   getSharedFolders,
+  backfillLedger,
 };
