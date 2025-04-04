@@ -69,7 +69,7 @@ describe("getPayerAccountStorage", () => {
   });
 
   test("should throw a not found error if archive has no payer account", async () => {
-    await agent.get("/api/v2/archive/2/payer-account-storage").expect(404);
+    await agent.get("/api/v2/archive/3/payer-account-storage").expect(404);
   });
 
   test("should throw a bad request error if the request is invalid", async () => {

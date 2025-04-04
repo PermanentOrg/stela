@@ -4,7 +4,7 @@ archive (
 )
 VALUES
 (1, '0001-0001', 2, false, 'type.archive.person', null, 'status.generic.ok'),
-(2, '0001-0002', null, false, 'type.archive.person', null, 'status.generic.ok'),
+(2, '0001-0002', 3, false, 'type.archive.person', null, 'status.generic.ok'),
 (
   3,
   '0001-0003',
