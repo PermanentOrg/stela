@@ -87,6 +87,20 @@ archiveController.get(
   }
 );
 
+archiveController.post(
+  "/:archiveId/backfill-ledger",
+  verifyAdminAuthentication,
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      validateArchiveIdFromParams(req.params);
+      await archiveService.backfillLedger(req.params.archiveId);
+      res.sendStatus(200);
+    } catch (err) {
+      next(err);
+    }
+  }
+);
+
 archiveController.get(
   "/:archiveId/folders/shared",
   verifyUserAuthentication,
