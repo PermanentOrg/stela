@@ -25,12 +25,12 @@ archive-id-folders-shared:
                   items:
                     $ref: "../models/folder.yaml#/folder"
       "400":
-        $ref: "../../shared/errors.yaml#/400"
+        $ref: "../errors.yaml#/400"
       "401":
-        $ref: "../../shared/errors.yaml#/401"
+        $ref: "../errors.yaml#/401"
       "403":
-        $ref: "../../shared/errors.yaml#/403"
+        $ref: "../errors.yaml#/403"
       "404":
-        $ref: "../../shared/errors.yaml#/404"
+        $ref: "../errors.yaml#/404"
       "500":
-        $ref: "../../shared/errors.yaml#/500"
+        $ref: "../errors.yaml#/500"

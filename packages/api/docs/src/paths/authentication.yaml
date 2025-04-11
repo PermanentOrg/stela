@@ -1,10 +1,11 @@
 login:
   post:
-    summary: Log in to the Permanent API. May require two-factor authentication.
+    summary: Log in to the Permanent API. May require two-factor authentication. (not yet implemented)
     security: []
     operationId: login
     tags:
       - authentication
+      - unimplemented
     requestBody:
       content:
         application/json:
@@ -52,12 +53,12 @@ login:
                       items:
                         $ref: "../models/mfa.yaml#/mfaMethod"
       "400":
-        $ref: "../../shared/errors.yaml#/400"
+        $ref: "../errors.yaml#/400"
       "500":
-        $ref: "../../shared/errors.yaml#/500"
+        $ref: "../errors.yaml#/500"
 start-mfa:
   post:
-    summary: Start two-factor authentication
+    summary: Start two-factor authentication (not yet implemented)
     description: >
       Start two-factor authentication as part of the login process, or in order to add or delete an MFA method.
       Requires authentication when adding or deleting an MFA method, but not during login (since at that point the
@@ -68,6 +69,7 @@ start-mfa:
     tags:
       - authentication
       - mfa-management
+      - unimplemented
     requestBody:
       content:
         application/json:
@@ -99,16 +101,17 @@ start-mfa:
         description: >
           A two-factor code has been sent to the user via the specified method.
       "400":
-        $ref: "../../shared/errors.yaml#/400"
+        $ref: "../errors.yaml#/400"
       "500":
-        $ref: "../../shared/errors.yaml#/500"
+        $ref: "../errors.yaml#/500"
 complete-mfa:
   post:
-    summary: Complete two-factor authentication
+    summary: Complete two-factor authentication (not yet implemented)
     security: []
     operationId: completeMfa
     tags:
       - authentication
+      - unimplemented
     requestBody:
       content:
         application/json:
@@ -140,17 +143,18 @@ complete-mfa:
                     account:
                       $ref: "../models/account.yaml#/account"
       "400":
-        $ref: "../../shared/errors.yaml#/400"
+        $ref: "../errors.yaml#/400"
       "500":
-        $ref: "../../shared/errors.yaml#/500"
+        $ref: "../errors.yaml#/500"
 logout:
   post:
-    summary: Log out of the Permanent API
+    summary: Log out of the Permanent API (not yet implemented)
     security:
       - bearerHttpAuthentication: []
     operationId: logout
     tags:
       - authentication
+      - unimplemented
     requestBody:
       content:
         application/json:
@@ -165,17 +169,18 @@ logout:
         description: >
           The user has been logged out.
       "400":
-        $ref: "../../shared/errors.yaml#/400"
+        $ref: "../errors.yaml#/400"
       "500":
-        $ref: "../../shared/errors.yaml#/500"
+        $ref: "../errors.yaml#/500"
 token:
   post:
     summary: >
-      Exchange a code for an authentication JWT at the conclusion of the OAuth process
+      Exchange a code for an authentication JWT at the conclusion of the OAuth process (not yet implemented)
     operationId: getAuthToken
     security: []
     tags:
       - authentication
+      - unimplemented
     requestBody:
       content:
         application/json:
@@ -210,6 +215,6 @@ token:
                     refreshToken:
                       type: string
       "400":
-        $ref: "../../shared/errors.yaml#/400"
+        $ref: "../errors.yaml#/400"
       "500":
-        $ref: "../../shared/errors.yaml#/500"
+        $ref: "../errors.yaml#/500"

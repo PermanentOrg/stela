@@ -1,6 +1,6 @@
 notifications:
   get:
-    summary: Get an account's notification's. Notifications will be sorted in reverse chronological order
+    summary: Get an account's notification's. Notifications will be sorted in reverse chronological order (not yet implemented)
     parameters:
       - name: cursor
         description: |
@@ -19,6 +19,7 @@ notifications:
       - bearerHttpAuthentication: []
     tags:
       - notifications
+      - unimplemented
     operationId: getNotifications
     responses:
       "200":
@@ -35,20 +36,21 @@ notifications:
                 pagination:
                   $ref: "../models/pagination_metadata.yaml#/pagination"
       "400":
-        $ref: "../../shared/errors.yaml#/400"
+        $ref: "../errors.yaml#/400"
       "401":
-        $ref: "../../shared/errors.yaml#/401"
+        $ref: "../errors.yaml#/401"
       "404":
-        $ref: "../../shared/errors.yaml#/404"
+        $ref: "../errors.yaml#/404"
       "500":
-        $ref: "../../shared/errors.yaml#/500"
+        $ref: "../errors.yaml#/500"
   patch:
-    summary: Update a notification's status. Legal updates are new->seen, new->read, and seen->read
+    summary: Update a notification's status. Legal updates are new->seen, new->read, and seen->read (not yet implemented)
     security:
       - bearerHttpAuthentication: []
     operationId: updateNotification
     tags:
       - notifications
+      - unimplemented
     requestBody:
       content:
         application/json:
@@ -71,10 +73,10 @@ notifications:
                 data:
                   $ref: "../models/notification.yaml#/notification"
       "400":
-        $ref: "../../shared/errors.yaml#/400"
+        $ref: "../errors.yaml#/400"
       "401":
-        $ref: "../../shared/errors.yaml#/401"
+        $ref: "../errors.yaml#/401"
       "404":
-        $ref: "../../shared/errors.yaml#/404"
+        $ref: "../errors.yaml#/404"
       "500":
-        $ref: "../../shared/errors.yaml#/500"
+        $ref: "../errors.yaml#/500"

@@ -41,10 +41,14 @@ paths:
     $ref: "./paths/share_link.yaml#/share-link-with-id"
   /records:
     $ref: "./paths/record.yaml#/records"
+  /record/{id}:
+    $ref: "./paths/record.yaml#/record~1{id}"
   /records/{id}/share-links:
     $ref: "./paths/record.yaml#/records-id-share-links"
   /folders:
     $ref: "./paths/folder.yaml#/folders"
+  /folder/{id}:
+    $ref: "./paths/folder.yaml#/folder-id"
   /folders/{id}/children:
     $ref: "./paths/folder.yaml#/folders-id-children"
   /folders/{id}/share-links:
@@ -59,3 +63,7 @@ paths:
     $ref: "./paths/developer_account.yaml#/developer-accounts"
   /notifications:
     $ref: "./paths/notification.yaml#/notifications"
+  /feature-flags:
+    $ref: "./paths/feature_flags.yaml#/feature-flags"
+  /feature-flags/{id}:
+    $ref: "./paths/feature_flags.yaml#/feature-flags~1{id}"

@@ -2,12 +2,13 @@ applications:
   post:
     summary: >
       Register a new application to use the Permanent API.
-      Authorization token must belong to a registered developer account.
+      Authorization token must belong to a registered developer account. (not yet implemented)
     operationId: createApplication
     security:
       - bearerHttpAuthentication: []
     tags:
       - application
+      - unimplemented
     requestBody:
       content:
         application/json:
@@ -35,13 +36,13 @@ applications:
                 data:
                   $ref: "../models/application.yaml#/application"
       "400":
-        $ref: "../../shared/errors.yaml#/400"
+        $ref: "../errors.yaml#/400"
       "401":
-        $ref: "../../shared/errors.yaml#/401"
+        $ref: "../errors.yaml#/401"
       "403":
-        $ref: "../../shared/errors.yaml#/403"
+        $ref: "../errors.yaml#/403"
       "500":
-        $ref: "../../shared/errors.yaml#/500"
+        $ref: "../errors.yaml#/500"
 
 applications-with-id:
   parameters:
@@ -54,12 +55,13 @@ applications-with-id:
   get:
     summary: >
       Get application data by ID.
-      Authorization token must belong to a registered developer account.
+      Authorization token must belong to a registered developer account. (not yet implemented)
     operationId: getApplication
     security:
       - bearerHttpAuthentication: []
     tags:
       - application
+      - unimplemented
     responses:
       "200":
         description: The application requested
@@ -71,24 +73,25 @@ applications-with-id:
                 data:
                   $ref: "../models/application.yaml#/application"
       "400":
-        $ref: "../../shared/errors.yaml#/400"
+        $ref: "../errors.yaml#/400"
       "401":
-        $ref: "../../shared/errors.yaml#/401"
+        $ref: "../errors.yaml#/401"
       "403":
-        $ref: "../../shared/errors.yaml#/403"
+        $ref: "../errors.yaml#/403"
       "404":
-        $ref: "../../shared/errors.yaml#/404"
+        $ref: "../errors.yaml#/404"
       "500":
-        $ref: "../../shared/errors.yaml#/500"
+        $ref: "../errors.yaml#/500"
   patch:
     summary: >
       Update an application.
-      Authorization token must belong to a registered developer account.
+      Authorization token must belong to a registered developer account. (not yet implemented)
     operationId: updateApplication
     security:
       - bearerHttpAuthentication: []
     tags:
       - application
+      - unimplemented
     requestBody:
       content:
         application/json:
@@ -116,37 +119,40 @@ applications-with-id:
                 data:
                   $ref: "../models/application.yaml#/application"
       "400":
-        $ref: "../../shared/errors.yaml#/400"
+        $ref: "../errors.yaml#/400"
       "401":
-        $ref: "../../shared/errors.yaml#/401"
+        $ref: "../errors.yaml#/401"
       "403":
-        $ref: "../../shared/errors.yaml#/403"
+        $ref: "../errors.yaml#/403"
       "404":
-        $ref: "../../shared/errors.yaml#/404"
+        $ref: "../errors.yaml#/404"
       "500":
-        $ref: "../../shared/errors.yaml#/500"
+        $ref: "../errors.yaml#/500"
   delete:
     summary: >
       Delete an application.
-      Authorization token must belong to a registered developer account.
+      Authorization token must belong to a registered developer account. (not yet implemented)
     operationId: deleteApplication
     security:
       - bearerHttpAuthentication: []
     tags:
       - application
+      - unimplemented
     responses:
       "204":
         description: An empty response, indicating a successful deletion
       "400":
-        $ref: "../../shared/errors.yaml#/400"
+        $ref: "../errors.yaml#/400"
       "401":
-        $ref: "../../shared/errors.yaml#/401"
+        $ref: "../errors.yaml#/401"
       "403":
-        $ref: "../../shared/errors.yaml#/403"
+        $ref: "../errors.yaml#/403"
       "404":
-        $ref: "../../shared/errors.yaml#/404"
+        $ref: "../errors.yaml#/404"
       "500":
-        $ref: "../../shared/errors.yaml#/500"
+        $ref: "../errors.yaml#/500"
 applications-id-register-user:
   post:
-    summary: Register a user to an application
+    summary: Register a user to an application (not yet implemented)
+  tags:
+    - unimplemented

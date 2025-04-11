@@ -39,9 +39,9 @@ feature-flags:
                         type: string
                         format: date-time
       "400":
-        $ref: "../../shared/errors.yaml#/400"
+        $ref: "../errors.yaml#/400"
       "500":
-        $ref: "../../shared/errors.yaml#/500"
+        $ref: "../errors.yaml#/500"
   post:
     summary: Create a feature flag
     security:
@@ -71,9 +71,9 @@ feature-flags:
                 data:
                   $ref: "../models/feature_flags.yaml#/featureFlag"
       "400":
-        $ref: "../../shared/errors.yaml#/400"
+        $ref: "../errors.yaml#/400"
       "500":
-        $ref: "../../shared/errors.yaml#/500"
+        $ref: "../errors.yaml#/500"
 feature-flags/{id}:
   put:
     parameters:
@@ -87,6 +87,8 @@ feature-flags/{id}:
     security:
       - bearerHttpAuthentication: []
     operationId: put-feature-flags
+    tags:
+      - feature-flags
     requestBody:
       content:
         application/json:
@@ -110,9 +112,9 @@ feature-flags/{id}:
                 data:
                   $ref: "../models/feature_flags.yaml#/featureFlag"
       "400":
-        $ref: "../../shared/errors.yaml#/400"
+        $ref: "../errors.yaml#/400"
       "500":
-        $ref: "../../shared/errors.yaml#/500"
+        $ref: "../errors.yaml#/500"
   delete:
     parameters:
       - name: id
@@ -125,10 +127,12 @@ feature-flags/{id}:
     security:
       - bearerHttpAuthentication: []
     operationId: delete-feature-flags
+    tags:
+      - feature-flags
     responses:
       "204":
         description: Empty response if delete was successful
       "400":
-        $ref: "../../shared/errors.yaml#/400"
+        $ref: "../errors.yaml#/400"
       "500":
-        $ref: "../../shared/errors.yaml#/500"
+        $ref: "../errors.yaml#/500"

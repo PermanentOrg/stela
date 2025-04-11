@@ -58,13 +58,13 @@ share-link:
                 data:
                   $ref: "../models/share_link.yaml#/shareLink"
       "400":
-        $ref: "../../shared/errors.yaml#/400"
+        $ref: "../errors.yaml#/400"
       "401":
-        $ref: "../../shared/errors.yaml#/401"
+        $ref: "../errors.yaml#/401"
       "403":
-        $ref: "../../shared/errors.yaml#/403"
+        $ref: "../errors.yaml#/403"
       "500":
-        $ref: "../../shared/errors.yaml#/500"
+        $ref: "../errors.yaml#/500"
   get:
     parameters:
       - name: shareTokens
@@ -103,15 +103,15 @@ share-link:
                   items:
                     $ref: "../models/share_link.yaml#/shareLink"
       "400":
-        $ref: "../../shared/errors.yaml#/400"
+        $ref: "../errors.yaml#/400"
       "401":
-        $ref: "../../shared/errors.yaml#/401"
+        $ref: "../errors.yaml#/401"
       "403":
-        $ref: "../../shared/errors.yaml#/403"
+        $ref: "../errors.yaml#/403"
       "404":
-        $ref: "../../shared/errors.yaml#/404"
+        $ref: "../errors.yaml#/404"
       "500":
-        $ref: "../../shared/errors.yaml#/500"
+        $ref: "../errors.yaml#/500"
 share-link-with-id:
   parameters:
     - name: shareLinkId
@@ -132,15 +132,15 @@ share-link-with-id:
         description: >
           The share link has been deleted, nothing is returned
       "400":
-        $ref: "../../shared/errors.yaml#/400"
+        $ref: "../errors.yaml#/400"
       "401":
-        $ref: "../../shared/errors.yaml#/401"
+        $ref: "../errors.yaml#/401"
       "403":
-        $ref: "../../shared/errors.yaml#/403"
+        $ref: "../errors.yaml#/403"
       "404":
-        $ref: "../../shared/errors.yaml#/404"
+        $ref: "../errors.yaml#/404"
       "500":
-        $ref: "../../shared/errors.yaml#/500"
+        $ref: "../errors.yaml#/500"
   patch:
     summary: Update a share link by ID or token
     security:
@@ -187,12 +187,12 @@ share-link-with-id:
                 data:
                   $ref: "../models/share_link.yaml#/shareLink"
       "400":
-        $ref: "../../shared/errors.yaml#/400"
+        $ref: "../errors.yaml#/400"
       "401":
-        $ref: "../../shared/errors.yaml#/401"
+        $ref: "../errors.yaml#/401"
       "403":
-        $ref: "../../shared/errors.yaml#/403"
+        $ref: "../errors.yaml#/403"
       "404":
-        $ref: "../../shared/errors.yaml#/404"
+        $ref: "../errors.yaml#/404"
       "500":
-        $ref: "../../shared/errors.yaml#/500"
+        $ref: "../errors.yaml#/500"
