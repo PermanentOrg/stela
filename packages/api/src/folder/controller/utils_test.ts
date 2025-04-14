@@ -4,6 +4,7 @@ export const loadFixtures = async (): Promise<void> => {
   await db.sql("folder.fixtures.create_test_accounts");
   await db.sql("folder.fixtures.create_test_archives");
   await db.sql("folder.fixtures.create_test_account_archives");
+  await db.sql("folder.fixtures.create_test_locns");
   await db.sql("folder.fixtures.create_test_folders");
   await db.sql("folder.fixtures.create_test_records");
   await db.sql("folder.fixtures.create_test_files");
@@ -12,7 +13,6 @@ export const loadFixtures = async (): Promise<void> => {
   await db.sql("folder.fixtures.create_test_shareby_urls");
   await db.sql("folder.fixtures.create_test_accesses");
   await db.sql("folder.fixtures.create_test_folder_sizes");
-  await db.sql("folder.fixtures.create_test_locns");
   await db.sql("folder.fixtures.create_test_shares");
   await db.sql("folder.fixtures.create_test_profile_items");
   await db.sql("folder.fixtures.create_test_tags");
