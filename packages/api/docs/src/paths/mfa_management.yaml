@@ -1,11 +1,12 @@
 mfa-method:
   post:
-    summary: Add a new MFA method
+    summary: Add a new MFA method (not yet implemented)
     security:
       - bearerHttpAuthentication: []
     operationId: addMfaMethod
     tags:
       - mfa-management
+      - unimplemented
     requestBody:
       content:
         application/json:
@@ -34,9 +35,9 @@ mfa-method:
             schema:
               $ref: "../models/mfa.yaml#/mfaMethod"
       "400":
-        $ref: "../../shared/errors.yaml#/400"
+        $ref: "../errors.yaml#/400"
       "500":
-        $ref: "../../shared/errors.yaml#/500"
+        $ref: "../errors.yaml#/500"
 mfa-method-with-id:
   parameters:
     - name: methodId
@@ -46,12 +47,13 @@ mfa-method-with-id:
       schema:
         type: string
   delete:
-    summary: Delete an MFA method
+    summary: Delete an MFA method (not yet implemented)
     security:
       - bearerHttpAuthentication: []
     operationId: deleteMfaMethod
     tags:
       - mfa-management
+      - unimplemented
     requestBody:
       content:
         application/json:
@@ -78,6 +80,6 @@ mfa-method-with-id:
                   items:
                     $ref: "../models/mfa.yaml#/mfaMethod"
       "400":
-        $ref: "../../shared/errors.yaml#/400"
+        $ref: "../errors.yaml#/400"
       "500":
-        $ref: "../../shared/errors.yaml#/500"
+        $ref: "../errors.yaml#/500"

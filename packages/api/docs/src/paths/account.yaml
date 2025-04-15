@@ -1,25 +1,28 @@
-developer-accounts:
+account:
   post:
-    summary: Create a new developer account
-    operationId: createDeveloperAccount
+    summary: Create a new account (not yet implemented)
+    operationId: createAccount
     security: []
     tags:
-      - application
+      - accounts
+      - unimplemented
     requestBody:
       content:
         application/json:
           schema:
             type: object
-            required: [email, password]
+            required: [email, password, name]
             properties:
               email:
                 type: string
               password:
                 type: string
+              name:
+                type: string
     responses:
       "201":
         description: >
-          Authentication tokens for the new developer account
+          The account has been created.
         content:
           application/json:
             schema:
@@ -32,7 +35,9 @@ developer-accounts:
                       type: string
                     refreshToken:
                       type: string
+                    account:
+                      $ref: "../models/account.yaml#/account"
       "400":
-        $ref: "../../shared/errors.yaml#/400"
+        $ref: "../errors.yaml#/400"
       "500":
-        $ref: "../../shared/errors.yaml#/500"
+        $ref: "../errors.yaml#/500"

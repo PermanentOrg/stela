@@ -29,13 +29,53 @@ folders:
                   items:
                     $ref: "../models/folder.yaml#/folder"
       "400":
-        $ref: "../../shared/errors.yaml#/400"
+        $ref: "../errors.yaml#/400"
       "401":
-        $ref: "../../shared/errors.yaml#/401"
+        $ref: "../errors.yaml#/401"
       "404":
-        $ref: "../../shared/errors.yaml#/404"
+        $ref: "../errors.yaml#/404"
       "500":
-        $ref: "../../shared/errors.yaml#/500"
+        $ref: "../errors.yaml#/500"
+folder-id:
+  patch:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+    summary: Update a folder
+    security:
+      - bearerHttpAuthentication: []
+    tags:
+      - folders
+    operationId: patch-folder
+    requestBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              displayDate:
+                type: string
+                format: date-time
+              displayEndDate:
+                type: string
+                format: date-time
+    responses:
+      "200":
+        description: The updated folder
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                data:
+                  $ref: "../models/folder.yaml#/folder"
+      "400":
+        $ref: "../errors.yaml#/400"
+      "500":
+        $ref: "../errors.yaml#/500"
 folders-id-children:
   parameters:
     - name: id
@@ -82,13 +122,13 @@ folders-id-children:
                 pagination:
                   $ref: "../models/pagination_metadata.yaml#/pagination"
       "400":
-        $ref: "../../shared/errors.yaml#/400"
+        $ref: "../errors.yaml#/400"
       "401":
-        $ref: "../../shared/errors.yaml#/401"
+        $ref: "../errors.yaml#/401"
       "404":
-        $ref: "../../shared/errors.yaml#/404"
+        $ref: "../errors.yaml#/404"
       "500":
-        $ref: "../../shared/errors.yaml#/500"
+        $ref: "../errors.yaml#/500"
 folders-id-share-links:
   parameters:
     - name: id
@@ -114,10 +154,10 @@ folders-id-share-links:
                 data:
                   $ref: "../models/share_link.yaml#/shareLink"
       "400":
-        $ref: "../../shared/errors.yaml#/400"
+        $ref: "../errors.yaml#/400"
       "401":
-        $ref: "../../shared/errors.yaml#/401"
+        $ref: "../errors.yaml#/401"
       "404":
-        $ref: "../../shared/errors.yaml#/404"
+        $ref: "../errors.yaml#/404"
       "500":
-        $ref: "../../shared/errors.yaml#/500"
+        $ref: "../errors.yaml#/500"
