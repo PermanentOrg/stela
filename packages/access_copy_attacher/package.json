@@ -43,7 +43,7 @@
     "aws-cloudfront-sign": "^3.0.2",
     "dotenv": "^8.2.0",
     "mime-types": "^3.0.1",
-    "require-env-variable": "^3.1.2",
+    "require-env-variable": "^4.0.2",
     "tinypg": "^7.0.0"
   },
   "devDependencies": {
