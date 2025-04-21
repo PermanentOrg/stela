@@ -3,9 +3,11 @@
   "parserOptions": {
     "project": "./tsconfig.json"
   },
-  "plugins": ["@typescript-eslint", "import", "prettier"],
+  "plugins": ["@typescript-eslint", "import"],
   "extends": [
-    "plugin:@typescript-eslint/all",
+		"plugin:@typescript-eslint/recommended",
+		"plugin:@typescript-eslint/recommended-requiring-type-checking",
+		"plugin:@typescript-eslint/strict",
     "airbnb-base",
     "airbnb-typescript/base",
     "prettier"
@@ -25,10 +27,9 @@
     "import/prefer-default-export": "off",
     "import/no-default-export": "error",
     "@typescript-eslint/prefer-readonly-parameter-types": "off",
-    "prettier/prettier": "error",
     "@typescript-eslint/no-unused-vars": [
       "error",
-      { "argsIgnorePattern": "^_", "varsIgnorePattern": "^_"}
+      { "argsIgnorePattern": "^_", "varsIgnorePattern": "^_" }
     ]
   },
   "env": {
