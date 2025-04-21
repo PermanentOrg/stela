@@ -9,21 +9,21 @@ jobs:
   run_tests:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           path: ./stela
       - uses: actions/setup-node@v1
         with:
           node-version: "18"
       - name: Checkout back-end
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           ssh-key: ${{ secrets.BACKEND_ACCESS_PRIVATE_SSH_KEY }}
           repository: PermanentOrg/back-end
           ref: main
           path: ./back-end
       - name: Checkout devenv
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           ssh-key: ${{ secrets.DEVENV_ACCESS_PRIVATE_SSH_KEY }}
           repository: PermanentOrg/devenv

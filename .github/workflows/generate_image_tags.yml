@@ -25,7 +25,7 @@ jobs:
       ACCESS_COPY_LAMBDA_IMAGE_TAG: ${{ steps.generate_access_copy_lambda_image_tag.outputs.ACCESS_COPY_LAMBDA_IMAGE_TAG }}
       ACCOUNT_SPACE_UPDATER_IMAGE_TAG: ${{ steps.generate_account_space_updater_image_tag.outputs.ACCOUNT_SPACE_UPDATER_IMAGE_TAG }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Set ECR domain env var
         id: set_ecr_domain
         run: echo "ECR_DOMAIN=364159549467.dkr.ecr.$AWS_REGION.amazonaws.com" >> "$GITHUB_ENV"
