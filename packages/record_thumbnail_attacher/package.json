@@ -31,7 +31,7 @@
   },
   "dependencies": {
     "@sentry/aws-serverless": "^8.49.0",
-    "@sentry/node": "^7.57.0",
+    "@sentry/node": "^9.13.0",
     "@sentry/profiling-node": "^8.26.0",
     "@stela/logger": "^1.0.0",
     "@stela/s3-utils": "^1.0.0",
