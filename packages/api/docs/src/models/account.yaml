@@ -90,9 +90,9 @@ account:
         notificationsEnabled:
           type: object
           properties:
-            sms: 
+            sms:
               $ref: "#/notificationTypesEnabled"
-            email: 
+            email:
               $ref: "#/notificationTypesEnabled"
             inApp:
               $ref: "#/notificationTypesEnabled"

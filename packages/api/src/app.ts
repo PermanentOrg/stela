@@ -12,22 +12,22 @@ const env = process.env["ENV"] ?? "";
 const app = express();
 
 Sentry.init({
-  dsn: process.env["SENTRY_DSN"] ?? "",
-  integrations: [
-    new Sentry.Integrations.Http({ tracing: true }),
-    new Sentry.Integrations.Express({ app }),
-    ...Sentry.autoDiscoverNodePerformanceMonitoringIntegrations(),
-  ],
-  tracesSampleRate: 1.0,
-  environment: env === "local" ? `local-${process.env["DEV_NAME"] ?? ""}` : env,
+	dsn: process.env["SENTRY_DSN"] ?? "",
+	integrations: [
+		new Sentry.Integrations.Http({ tracing: true }),
+		new Sentry.Integrations.Express({ app }),
+		...Sentry.autoDiscoverNodePerformanceMonitoringIntegrations(),
+	],
+	tracesSampleRate: 1.0,
+	environment: env === "local" ? `local-${process.env["DEV_NAME"] ?? ""}` : env,
 });
 
 app.use(Sentry.Handlers.requestHandler());
 app.use(Sentry.Handlers.tracingHandler());
 app.use(
-  cors({
-    origin: `https://${env === "production" ? "www" : `${env}`}.permanent.org`,
-  })
+	cors({
+		origin: `https://${env === "production" ? "www" : `${env}`}.permanent.org`,
+	}),
 );
 app.use(expressWinston.logger({ level: "http", winstonInstance: logger }));
 app.use(bodyParser.json());

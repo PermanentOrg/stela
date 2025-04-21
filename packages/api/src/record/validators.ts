@@ -3,42 +3,42 @@ import type { PatchRecordRequest } from "./models";
 import { fieldsFromUserAuthentication } from "../validators";
 
 export function validateGetRecordQuery(
-  data: unknown
+	data: unknown,
 ): asserts data is { recordIds: string[] } {
-  const validation = Joi.object()
-    .keys({
-      recordIds: Joi.array().items(Joi.string().required()).required(),
-    })
-    .validate(data);
-  if (validation.error) {
-    throw validation.error;
-  }
+	const validation = Joi.object()
+		.keys({
+			recordIds: Joi.array().items(Joi.string().required()).required(),
+		})
+		.validate(data);
+	if (validation.error) {
+		throw validation.error;
+	}
 }
 export function validateRecordRequest(
-  data: unknown
+	data: unknown,
 ): asserts data is { recordId: string } {
-  const validation = Joi.object()
-    .keys({
-      recordId: Joi.string().required(),
-    })
-    .validate(data);
-  if (validation.error) {
-    throw validation.error;
-  }
+	const validation = Joi.object()
+		.keys({
+			recordId: Joi.string().required(),
+		})
+		.validate(data);
+	if (validation.error) {
+		throw validation.error;
+	}
 }
 
 export function validatePatchRecordRequest(
-  data: unknown
+	data: unknown,
 ): asserts data is PatchRecordRequest {
-  const validation = Joi.object()
-    .keys({
-      ...fieldsFromUserAuthentication,
-      locationId: Joi.number().integer().optional().allow(null),
-      description: Joi.string().optional().allow(null),
-    })
-    .validate(data);
+	const validation = Joi.object()
+		.keys({
+			...fieldsFromUserAuthentication,
+			locationId: Joi.number().integer().optional().allow(null),
+			description: Joi.string().optional().allow(null),
+		})
+		.validate(data);
 
-  if (validation.error) {
-    throw validation.error;
-  }
+	if (validation.error) {
+		throw validation.error;
+	}
 }

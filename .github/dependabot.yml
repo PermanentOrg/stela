@@ -7,16 +7,16 @@ updates:
     ignore:
       - dependency-name: "@types/node"
         update-types: ["version-update:semver-major"]
-      - dependency-name: 'eslint'
-        update-types: ['version-update:semver-major']
-      - dependency-name: '@typescript-eslint/eslint-plugin'
-        update-types: ['version-update:semver-major']
-      - dependency-name: '@typescript-eslint/parser'
-        update-types: ['version-update:semver-major']
+      - dependency-name: "eslint"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@typescript-eslint/eslint-plugin"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@typescript-eslint/parser"
+        update-types: ["version-update:semver-major"]
     groups:
       eslint:
         patterns:
-          - '*eslint*'
+          - "*eslint*"
 
   - package-ecosystem: "npm"
     directory: "/packages/access_copy_attacher"
