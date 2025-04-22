@@ -7,11 +7,11 @@ import { getSharedFolders } from "./get_shared_folders";
 import { backfillLedger } from "./backfill_ledger";
 
 export const archiveService = {
-  getPublicTags,
-  getPayerAccountStorage,
-  makeFeatured,
-  unfeature,
-  getFeatured,
-  getSharedFolders,
-  backfillLedger,
+	getPublicTags,
+	getPayerAccountStorage,
+	makeFeatured,
+	unfeature,
+	getFeatured,
+	getSharedFolders,
+	backfillLedger,
 };

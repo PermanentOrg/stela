@@ -1,5 +1,5 @@
 mfaDestination:
-  description: > 
+  description: >
     The "address" to which the two-factor code will be sent. This could be an email address
     or a phone number.
   type: string

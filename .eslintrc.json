@@ -1,40 +1,40 @@
 {
-  "parser": "@typescript-eslint/parser",
-  "parserOptions": {
-    "project": "./tsconfig.json"
-  },
-  "plugins": ["@typescript-eslint", "import"],
-  "extends": [
+	"parser": "@typescript-eslint/parser",
+	"parserOptions": {
+		"project": "./tsconfig.json"
+	},
+	"plugins": ["@typescript-eslint", "import"],
+	"extends": [
 		"plugin:@typescript-eslint/recommended",
 		"plugin:@typescript-eslint/recommended-requiring-type-checking",
 		"plugin:@typescript-eslint/strict",
-    "airbnb-base",
-    "airbnb-typescript/base",
-    "prettier"
-  ],
-  "overrides": [
-    {
-      "files": ["**/*.test.ts"],
-      "plugins": ["jest"],
-      "rules": {
-        "@typescript-eslint/unbound-method": "off",
-        "jest/unbound-method": "error",
-        "jest/no-focused-tests": "error"
-      }
-    }
-  ],
-  "rules": {
-    "import/prefer-default-export": "off",
-    "import/no-default-export": "error",
-    "@typescript-eslint/prefer-readonly-parameter-types": "off",
-    "@typescript-eslint/no-unused-vars": [
-      "error",
-      { "argsIgnorePattern": "^_", "varsIgnorePattern": "^_" }
-    ]
-  },
-  "env": {
-    "es6": true,
-    "node": true,
-    "jest": true
-  }
+		"airbnb-base",
+		"airbnb-typescript/base",
+		"prettier"
+	],
+	"overrides": [
+		{
+			"files": ["**/*.test.ts"],
+			"plugins": ["jest"],
+			"rules": {
+				"@typescript-eslint/unbound-method": "off",
+				"jest/unbound-method": "error",
+				"jest/no-focused-tests": "error"
+			}
+		}
+	],
+	"rules": {
+		"import/prefer-default-export": "off",
+		"import/no-default-export": "error",
+		"@typescript-eslint/prefer-readonly-parameter-types": "off",
+		"@typescript-eslint/no-unused-vars": [
+			"error",
+			{ "argsIgnorePattern": "^_", "varsIgnorePattern": "^_" }
+		]
+	},
+	"env": {
+		"es6": true,
+		"node": true,
+		"jest": true
+	}
 }

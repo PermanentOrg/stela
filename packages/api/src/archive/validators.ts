@@ -4,12 +4,12 @@ import { validateBodyFromAuthentication } from "../validators";
 export { validateBodyFromAuthentication };
 
 export function validateArchiveIdFromParams(
-  data: unknown
+	data: unknown,
 ): asserts data is { archiveId: string } {
-  const validation = Joi.object()
-    .keys({ archiveId: Joi.string().required() })
-    .validate(data);
-  if (validation.error) {
-    throw validation.error;
-  }
+	const validation = Joi.object()
+		.keys({ archiveId: Joi.string().required() })
+		.validate(data);
+	if (validation.error) {
+		throw validation.error;
+	}
 }

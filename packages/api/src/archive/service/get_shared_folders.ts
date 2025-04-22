@@ -5,22 +5,22 @@ import { getFolders } from "../../folder/service";
 import type { Folder } from "../../folder/models";
 
 export const getSharedFolders = async (
-  archiveId: string,
-  email: string
+	archiveId: string,
+	email: string,
 ): Promise<Folder[]> => {
-  const result = await db
-    .sql<{ folderId: string }>("archive.queries.get_shared_folders", {
-      archiveId,
-      email,
-    })
-    .catch((err) => {
-      logger.error(err);
-      throw new createError.InternalServerError(
-        "Failed to retrieve shared folder IDs"
-      );
-    });
+	const result = await db
+		.sql<{ folderId: string }>("archive.queries.get_shared_folders", {
+			archiveId,
+			email,
+		})
+		.catch((err) => {
+			logger.error(err);
+			throw new createError.InternalServerError(
+				"Failed to retrieve shared folder IDs",
+			);
+		});
 
-  const folderIds = result.rows.map((row) => row.folderId);
+	const folderIds = result.rows.map((row) => row.folderId);
 
-  return getFolders(folderIds, email);
+	return getFolders(folderIds, email);
 };

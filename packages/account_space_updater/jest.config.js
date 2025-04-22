@@ -1,7 +1,7 @@
 sharedConfig = require("../../jest.config");
 module.exports = {
-  ...sharedConfig,
-  moduleNameMapper: {
-    "^@stela/(.*)$": "<rootDir>/../$1/src",
-  },
+	...sharedConfig,
+	moduleNameMapper: {
+		"^@stela/(.*)$": "<rootDir>/../$1/src",
+	},
 };
