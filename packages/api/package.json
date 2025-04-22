@@ -66,6 +66,6 @@
 		"@types/newrelic": "^9.14.4",
 		"@types/ua-parser-js": "^0.7.39",
 		"jest-when": "^3.7.0",
-		"supertest": "^5.0.0"
+		"supertest": "^7.1.0"
 	}
 }
