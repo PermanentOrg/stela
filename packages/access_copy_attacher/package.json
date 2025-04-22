@@ -38,7 +38,7 @@
 		"@stela/s3-utils": "^1.0.0",
 		"@stela/archivematica-utils": "^1.0.0",
 		"@stela/file-utils": "^1.0.0",
-		"@types/node": "^12.20.55",
+		"@types/node": "^22.14.1",
 		"ajv": "^8.17.1",
 		"aws-cloudfront-sign": "^3.0.2",
 		"dotenv": "^16.5.0",
