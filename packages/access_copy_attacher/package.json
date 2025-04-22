@@ -41,7 +41,7 @@
 		"@types/node": "^12.20.55",
 		"ajv": "^8.17.1",
 		"aws-cloudfront-sign": "^3.0.2",
-		"dotenv": "^8.2.0",
+		"dotenv": "^16.5.0",
 		"mime-types": "^3.0.1",
 		"require-env-variable": "^4.0.2",
 		"tinypg": "^7.0.0"
