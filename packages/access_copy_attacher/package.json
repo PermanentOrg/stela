@@ -47,7 +47,7 @@
 		"tinypg": "^7.0.0"
 	},
 	"devDependencies": {
-		"@types/aws-lambda": "^8.10.119",
+		"@types/aws-lambda": "^8.10.149",
 		"@types/mime-types": "^2.1.4"
 	}
 }
