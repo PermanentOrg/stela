@@ -63,6 +63,14 @@ export const handler: SQSHandler = async (event: SQSEvent, _, __) => {
 			const { recordId, operation } =
 				extractFileAttributesFromS3Message(message);
 			try {
+				const archiveTypeResult = await db.sql<{ type: string }>(
+					"queries.get_record_archive_type",
+					{ recordId },
+				);
+				if (archiveTypeResult.rows[0]?.type === "type.archive.nonprofit") {
+					// Skip charging storage for nonprofit archives
+					return;
+				}
 				await db.sql("queries.update_account_space", { recordId, operation });
 			} catch (err: unknown) {
 				// If the error occurred because the ledger entry already exists, we can safely ignore the error.

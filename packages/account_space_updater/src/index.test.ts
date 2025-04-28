@@ -39,7 +39,7 @@ describe("handler", () => {
 		AccountSpaceStartingState | undefined
 	> => {
 		const initialAccountSpaceResult = await db.query<AccountSpaceStartingState>(
-			`SELECT 
+			`SELECT
         spaceLeft AS "spaceLeft",
         spaceTotal AS "spaceTotal",
         fileLeft AS "fileLeft",
@@ -61,7 +61,7 @@ describe("handler", () => {
 		AccountSpaceAfterUpdate | undefined
 	> => {
 		const updatedAccountSpaceResult = await db.query<AccountSpaceAfterUpdate>(
-			`SELECT 
+			`SELECT
         spaceLeft AS "spaceLeft",
         fileLeft AS "fileLeft"
       FROM
@@ -186,7 +186,7 @@ describe("handler", () => {
 		}
 	});
 
-	test("should correctly update account_space and ledger_nonfinancial when a record is created", async () => {
+	test("should correctly update account_space and ledger_nonfinancial when a record is copied", async () => {
 		const initialAccountSpace = await getInitialAccountSpace();
 		await handler(
 			{
@@ -246,6 +246,41 @@ describe("handler", () => {
 				toFileTotal: "0",
 			});
 		}
+	});
+
+	test("should not update account_space and ledger_nonfinancial when a record is created in a nonprofit archive", async () => {
+		await handler(
+			{
+				Records: [
+					{
+						messageId: "1",
+						receiptHandle: "1",
+						body: JSON.stringify({
+							Message: JSON.stringify({
+								entity: "record",
+								action: "create",
+								body: { record: { recordId: "2" } },
+							}),
+						}),
+						attributes: {
+							ApproximateReceiveCount: "1",
+							SentTimestamp: "1",
+							SenderId: "1",
+							ApproximateFirstReceiveTimestamp: "1",
+						},
+						messageAttributes: {},
+						md5OfBody: "1",
+						eventSource: "1",
+						eventSourceARN: "1",
+						awsRegion: "1",
+					},
+				],
+			},
+			{} as Context,
+			() => {},
+		);
+		const ledgerEntry = await getLedgerEntry();
+		expect(ledgerEntry).toBeFalsy();
 	});
 
 	test("should throw an error if the message body is invalid", async () => {
