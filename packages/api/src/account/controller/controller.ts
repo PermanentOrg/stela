@@ -66,13 +66,12 @@ accountController.delete(
 
 			await accountService.leaveArchive(data);
 
-			res.send(204);
+			res.status(204).send();
 		} catch (err) {
 			if (isValidationError(err)) {
 				res.status(400).json({ error: err });
 				return;
 			}
-
 			next(err);
 		}
 	},

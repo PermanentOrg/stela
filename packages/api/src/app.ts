@@ -22,6 +22,7 @@ Sentry.init({
 	environment: env === "local" ? `local-${process.env["DEV_NAME"] ?? ""}` : env,
 });
 
+app.set("query parser", "extended");
 app.use(Sentry.Handlers.requestHandler());
 app.use(Sentry.Handlers.tracingHandler());
 app.use(
