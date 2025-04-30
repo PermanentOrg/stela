@@ -1,9 +1,0 @@
-import request from "supertest";
-import { app } from "../../app";
-
-describe("GET /folder/{id}/children", () => {
-  const agent = request(app);
-  test("should return 200 on a valid request", async () => {
-    await agent.get("/api/v2/folder/1/children").expect(200);
-  });
-});
