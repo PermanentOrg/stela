@@ -1,5 +1,6 @@
 import type { Share } from "../share/models";
 import type { Tag } from "../tag/models";
+import type { Location } from "../common/models";
 
 export interface ArchiveRecord {
 	recordId: string;
@@ -34,6 +35,7 @@ export interface ArchiveRecord {
 	tags: Tag[];
 	archiveArchiveNumber: string;
 	shares: Share[];
+	location: Location;
 }
 
 export interface ArchiveRecordRow {
@@ -69,6 +71,7 @@ export interface ArchiveRecordRow {
 	tags: Tag[];
 	archiveArchiveNumber: string;
 	shares: Share[];
+	location: Location;
 }
 
 export interface ArchiveFile {

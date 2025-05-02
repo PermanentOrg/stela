@@ -1,6 +1,7 @@
 import type { Share } from "../share/models";
 import type { Tag } from "../tag/models";
 import type { ArchiveRecord } from "../record/models";
+import type { Location } from "../common/models";
 
 export interface GetFolderChildrenResponse {
 	items: (ArchiveRecord | Folder)[];
@@ -49,20 +50,6 @@ export interface ThumbnailUrls {
 	"500": string;
 	"1000": string;
 	"2000": string;
-}
-
-export interface Location {
-	id: string;
-	streetNumber?: string;
-	streetName?: string;
-	locality?: string;
-	county?: string;
-	state?: string;
-	latitude?: number;
-	longitude?: number;
-	country?: string;
-	countryCode?: string;
-	displayName?: string;
 }
 
 export interface Folder {

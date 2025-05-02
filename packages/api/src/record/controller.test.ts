@@ -22,6 +22,7 @@ const setupDatabase = async (): Promise<void> => {
 	await db.sql("record.fixtures.create_test_accounts");
 	await db.sql("record.fixtures.create_test_archives");
 	await db.sql("record.fixtures.create_test_account_archives");
+	await db.sql("record.fixtures.create_test_locations");
 	await db.sql("record.fixtures.create_test_records");
 	await db.sql("record.fixtures.create_complete_test_record");
 	await db.sql("record.fixtures.create_test_folders");
@@ -40,13 +41,14 @@ const setupDatabase = async (): Promise<void> => {
 
 const clearDatabase = async (): Promise<void> => {
 	await db.query(
-		`TRUNCATE 
+		`TRUNCATE
       account,
       archive,
       account_archive,
       record,
       folder,
       folder_link,
+			locn,
       access,
       tag,
       tag_link,
@@ -378,6 +380,19 @@ describe("GET /record", () => {
 		expect(record?.createdAt).toEqual("2023-06-21T00:00:00.000Z");
 		expect(record?.updatedAt).toEqual("2023-06-21T00:00:00.000Z");
 		expect(record?.altText).toEqual("An image");
+
+		expect(record?.location?.id).toEqual("1");
+		expect(record?.location?.streetNumber).toEqual("55");
+		expect(record?.location?.streetName).toEqual("Rue Plumet");
+		expect(record?.location?.locality).toEqual("Paris");
+		expect(record?.location?.county).toEqual("Ile-de-France");
+		expect(record?.location?.state).toBeNull();
+		expect(record?.location?.latitude).toEqual(48.838608548520966);
+		expect(record?.location?.longitude).toEqual(2.3069214988665303);
+		expect(record?.location?.country).toEqual("France");
+		expect(record?.location?.countryCode).toEqual("FR");
+		expect(record?.location?.displayName).toEqual("Jean Valjean's House");
+
 		expect(record?.files.length).toEqual(2);
 		const originalFile = record?.files.find(
 			(file: ArchiveFile) => file.fileId === "8",
