@@ -173,7 +173,31 @@ SELECT DISTINCT ON (record.recordid)
   parent_folder.archivenbr AS "parentFolderArchiveNumber",
   aggregated_tags.tags,
   archive.archivenbr AS "archiveArchiveNumber",
-  aggregated_shares.shares_as_json AS "shares"
+  aggregated_shares.shares_as_json AS "shares",
+  json_build_object(
+    'id',
+    locn.locnid::TEXT,
+    'streetNumber',
+    locn.streetnumber,
+    'streetName',
+    locn.streetname,
+    'locality',
+    locn.locality,
+    'county',
+    locn.admintwoname,
+    'state',
+    locn.adminonename,
+    'latitude',
+    locn.latitude,
+    'longitude',
+    locn.longitude,
+    'country',
+    locn.country,
+    'countryCode',
+    locn.countrycode,
+    'displayName',
+    locn.displayname
+  ) AS "location"
 FROM
   record
 INNER JOIN
@@ -196,6 +220,9 @@ INNER JOIN
 LEFT JOIN
   aggregated_tags
   ON record.recordid = aggregated_tags.refid
+LEFT JOIN
+  locn
+  ON record.locnid = locn.locnid
 INNER JOIN
   folder_link
   ON
