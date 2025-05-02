@@ -2,7 +2,6 @@ import * as Sentry from "@sentry/node";
 import express from "express";
 import cors from "cors";
 import expressWinston from "express-winston";
-import bodyParser from "body-parser";
 import { logger } from "@stela/logger";
 import { apiRoutes } from "./routes";
 import { handleError } from "./middleware/handleError";
@@ -31,7 +30,6 @@ app.use(
 	}),
 );
 app.use(expressWinston.logger({ level: "http", winstonInstance: logger }));
-app.use(bodyParser.json());
 app.use("/api/v2", apiRoutes);
 app.use(Sentry.Handlers.errorHandler());
 app.use(handleError);
