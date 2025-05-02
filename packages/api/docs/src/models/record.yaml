@@ -99,6 +99,8 @@ record:
       format: date-time
     altText:
       type: string
+    location:
+      $ref: "../models/location.yaml#/location"
     files:
       type: array
       items:
