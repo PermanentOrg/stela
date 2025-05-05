@@ -42,19 +42,19 @@ const setupDatabase = async (): Promise<void> => {
 const clearDatabase = async (): Promise<void> => {
 	await db.query(
 		`TRUNCATE
-      account,
-      archive,
-      account_archive,
-      record,
-      folder,
-      folder_link,
+			account,
+			archive,
+			account_archive,
+			record,
+			folder,
+			folder_link,
 			locn,
-      access,
-      tag,
-      tag_link,
-      share,
-      shareby_url,
-      profile_item CASCADE`,
+			access,
+			tag,
+			tag_link,
+			share,
+			shareby_url,
+			profile_item CASCADE`,
 	);
 };
 
@@ -205,6 +205,12 @@ describe("GET /record", () => {
 			.expect(200);
 		expect((response.body as ArchiveRecord[]).length).toEqual(1);
 		expect((response.body as ArchiveRecord[])[0]?.recordId).toEqual("2");
+		expect(
+			(response.body as ArchiveRecord[])[0]?.shareLink?.creatorAccount.id,
+		).toEqual("2");
+		expect(
+			(response.body as ArchiveRecord[])[0]?.shareLink?.creatorAccount.name,
+		).toEqual("Jack Rando");
 	});
 	test("expect not to return a private record when not logged in and share token provided is not unlisted", async () => {
 		(extractUserEmailFromAuthToken as jest.Mock).mockImplementation(
@@ -352,6 +358,8 @@ describe("GET /record", () => {
 		expect(record?.recordId).toEqual("8");
 		expect(record?.displayName).toEqual("Public File");
 		expect(record?.archiveId).toEqual("1");
+		expect(record?.archive.id).toEqual("1");
+		expect(record?.archive.name).toEqual("Jack Rando");
 		expect(record?.archiveNumber).toEqual("0000-0008");
 		expect(record?.publicAt).toEqual("2023-06-21T00:00:00.000Z");
 		expect(record?.description).toEqual("A description of the image");
