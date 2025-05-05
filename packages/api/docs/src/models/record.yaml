@@ -48,6 +48,7 @@ record:
     - uploadAccountId
     - createdAt
     - updatedAt
+    - archive
   properties:
     recordId:
       type: string
@@ -125,3 +126,30 @@ record:
       type: array
       items:
         $ref: "./record.yaml#/share"
+    archive:
+      type: object
+      required:
+        - id
+        - archiveNumber
+      properties:
+        id:
+          type: string
+        archiveNumber:
+          type: string
+        name:
+          type: string
+    shareLink:
+      type: object
+      required:
+        - creatorAccount
+      properties:
+        creatorAccount:
+          type: object
+          required:
+            - id
+            - name
+          properties:
+            id:
+              type: string
+            name:
+              type: string
