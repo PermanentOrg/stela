@@ -182,6 +182,20 @@ account_by_share AS (
     account.primaryemail = :email
     AND access.status != 'status.generic.deleted'
     AND account_archive.status = 'status.generic.ok'
+),
+
+share_link_creator_account AS (
+  SELECT
+    account.accountid,
+    account.fullname
+  FROM
+    account
+  INNER JOIN
+    shareby_url
+    ON
+      account.accountid = shareby_url.byaccountid
+  WHERE
+    shareby_url.urltoken = :shareToken
 )
 
 SELECT
@@ -233,7 +247,9 @@ SELECT
   ) AS "parentFolder",
   JSON_BUILD_OBJECT(
     'id',
-    folder.archiveid::text
+    folder.archiveid::text,
+    'name',
+    profile_item.string1
   ) AS "archive",
   JSONB_BUILD_OBJECT(
     'names',
@@ -250,9 +266,40 @@ SELECT
     folder.thumburl2000,
     '256',
     folder.thumbnail256
-  ) AS "thumbnailUrls"
+  ) AS "thumbnailUrls",
+  CASE
+    WHEN
+      :shareToken::text = ANY(
+        aggregated_ancestor_unrestricted_share_tokens.tokens
+      )
+      THEN
+        JSON_BUILD_OBJECT(
+          'creatorAccount',
+          JSON_BUILD_OBJECT(
+            'id',
+            (SELECT accountid::text FROM share_link_creator_account),
+            'name',
+            (SELECT fullname FROM share_link_creator_account)
+          )
+        )
+    ELSE
+      NULL
+  END AS "shareLink"
 FROM
   folder
+INNER JOIN
+  archive
+  ON
+    folder.archiveid = archive.archiveid
+    AND archive.status != 'status.generic.deleted'
+    AND archive.status IS NOT NULL
+LEFT JOIN
+  profile_item
+  ON
+    archive.archiveid = profile_item.archiveid
+    AND profile_item.fieldnameui = 'profile.basic'
+    AND profile_item.status = 'status.generic.ok'
+    AND profile_item.string1 IS NOT NULL
 INNER JOIN
   folder_link
   ON
