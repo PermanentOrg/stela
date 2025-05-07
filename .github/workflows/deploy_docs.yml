@@ -1,0 +1,29 @@
+name: Deploy API Docs
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+
+      - name: Install Redoc CLI
+        run: npm install -g @redocly/cli
+
+      - name: Generate HTML from OpenAPI spec
+        run: npx @redocly/cli build-docs ./packages/api/docs/src/api.yaml -o docs/index.html
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs
