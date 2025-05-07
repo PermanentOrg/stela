@@ -36,6 +36,17 @@ export interface ArchiveRecord {
 	archiveArchiveNumber: string;
 	shares: Share[];
 	location: Location;
+	archive: {
+		id: string;
+		name?: string;
+		archiveNumber: string;
+	};
+	shareLink?: {
+		creatorAccount: {
+			id: string;
+			name: string;
+		};
+	};
 }
 
 export interface ArchiveRecordRow {
@@ -72,6 +83,17 @@ export interface ArchiveRecordRow {
 	archiveArchiveNumber: string;
 	shares: Share[];
 	location: Location;
+	archive: {
+		id: string;
+		name?: string;
+		archiveNumber: string;
+	};
+	shareLink?: {
+		creatorAccount: {
+			id: string;
+			name: string;
+		};
+	};
 }
 
 export interface ArchiveFile {

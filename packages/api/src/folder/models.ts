@@ -23,6 +23,7 @@ export interface FolderRow {
 	tags?: Tag[];
 	archive: {
 		id: string;
+		name: string;
 	};
 	createdAt: string;
 	updatedAt: string;
@@ -42,6 +43,12 @@ export interface FolderRow {
 	status: FolderStatus;
 	view: FolderView;
 	folderLinkId: string;
+	shareLink?: {
+		creatorAccount: {
+			id: string;
+			name: string;
+		};
+	};
 }
 
 export interface ThumbnailUrls {
@@ -63,6 +70,7 @@ export interface Folder {
 	tags?: Tag[];
 	archive: {
 		id: string;
+		name: string;
 	};
 	createdAt: string;
 	updatedAt: string;
@@ -82,6 +90,12 @@ export interface Folder {
 	status: PrettyFolderStatus;
 	view: PrettyFolderView;
 	folderLinkId: string;
+	shareLink?: {
+		creatorAccount: {
+			id: string;
+			name: string;
+		};
+	};
 }
 
 export interface FolderLink {

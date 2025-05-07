@@ -172,6 +172,8 @@ describe("GET /folder", () => {
 		const folders = (response.body as { items: Folder[] }).items;
 		expect(folders.length).toEqual(1);
 		expect(folders[0]?.folderId).toEqual("2");
+		expect(folders[0]?.shareLink?.creatorAccount.id).toEqual("2");
+		expect(folders[0]?.shareLink?.creatorAccount.name).toEqual("Jack Rando");
 	});
 
 	test("should return a private folder if the user has a share token for the parent folder", async () => {
@@ -364,6 +366,7 @@ describe("GET /folder", () => {
 			expect(folders[0]?.tags[0]?.type).toEqual("type.generic.placeholder");
 		}
 		expect(folders[0]?.archive.id).toEqual("1");
+		expect(folders[0]?.archive.name).toEqual("First Archive");
 		expect(folders[0]?.createdAt).toEqual("2025-01-01T00:00:00.000Z");
 		expect(folders[0]?.updatedAt).toEqual("2025-01-01T00:00:00.000Z");
 		expect(folders[0]?.description).toEqual("A test folder");

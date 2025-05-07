@@ -47,6 +47,8 @@ folder:
       properties:
         id:
           type: string
+        name:
+          type: string
     createdAt:
       type: string
       format: date-time
@@ -125,3 +127,18 @@ folder:
         - timeline
         - grid
         - deprecated
+    shareLink:
+      type: object
+      required:
+        - creatorAccount
+      properties:
+        creatorAccount:
+          type: object
+          required:
+            - id
+            - name
+          properties:
+            id:
+              type: string
+            name:
+              type: string
