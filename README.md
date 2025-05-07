@@ -11,7 +11,7 @@ We are now adopting the OpenAPI specification format for API documentation; new 
 To generate an HTML copy of the OpenAPI documentation, run
 
 ```bash
-redocly build-docs packages/api/docs/present/api.yaml
+redocly build-docs packages/api/docs/src/api.yaml
 ```
 
 Then open redoc-static.html to view the docs in browser.
