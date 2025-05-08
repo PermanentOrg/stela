@@ -33,7 +33,7 @@
 		"@aws-sdk/client-s3": "^3.677.0",
 		"@sentry/aws-serverless": "^9.13.0",
 		"@sentry/node": "^9.13.0",
-		"@sentry/profiling-node": "^9.13.0",
+		"@sentry/profiling-node": "^9.16.1",
 		"@stela/logger": "^1.0.0",
 		"@stela/s3-utils": "^1.0.0",
 		"@stela/archivematica-utils": "^1.0.0",
