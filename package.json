@@ -7,6 +7,7 @@
 		"./packages/s3-utils",
 		"./packages/archivematica-utils",
 		"./packages/file-utils",
+		"./packages/permanent_models/",
 		"./packages/api",
 		"./packages/archivematica_cleanup",
 		"./packages/account_space_updater",
