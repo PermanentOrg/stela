@@ -1,3 +1,4 @@
+import type { FileType } from "@stela/permanent_models";
 import type { Share } from "../share/models";
 import type { Tag } from "../tag/models";
 import type { Location } from "../common/models";
@@ -150,60 +151,6 @@ export enum RecordType {
 export enum FileFormat {
 	Original = "file.format.original",
 	Converted = "file.format.converted",
-}
-
-export enum FileType {
-	VideoAvi = "type.file.video.avi",
-	VideoMpg = "type.file.video.mpg",
-	ImageBmp = "type.file.image.bmp",
-	ArchiveZip = "type.file.archive.zip",
-	SpreadsheetXls = "type.file.spreadsheet.xls",
-	VideoMpeg = "type.file.video.mpeg",
-	VideoWmv = "type.file.video.wmv",
-	ImageHeic = "type.file.image.heic",
-	AudioWma = "type.file.audio.wma",
-	Unknown = "type.file.unknown.null",
-	VideoMkv = "type.file.video.mkv",
-	Gedcom = "type.file.gedcom",
-	ImagePng = "type.file.image.png",
-	AudioWav = "type.file.audio.wav",
-	VideoM4v = "type.file.video.m4v",
-	VideoMp4 = "type.file.video.mp4",
-	SpreadsheetCsv = "type.file.spreadsheet.csv",
-	DocumentHtm = "type.file.document.htm",
-	DocumentDocx = "type.file.document.docx",
-	PresentationOdp = "type.file.presentation.odp",
-	AudioM4a = "type.file.audio.m4a",
-	Gedzip = "type.file.gedzip",
-	ImageJpg = "type.file.image.jpg",
-	ImageTiff = "type.file.image.tiff",
-	ImageHeif = "type.file.image.heif",
-	AudioMp3 = "type.file.audio.mp3",
-	DocumentDoc = "type.file.document.doc",
-	SpreadsheetXlsx = "type.file.spreadsheet.xlsx",
-	AudioAac = "type.file.audio.aac",
-	DocumentEml = "type.file.document.eml",
-	VideoWebm = "type.file.video.webm",
-	DocumentOdt = "type.file.document.odt",
-	ImageGif = "type.file.image.gif",
-	ImageJpeg = "type.file.image.jpeg",
-	AudioOgg = "type.file.audio.ogg",
-	VideoOgv = "type.file.video.ogv",
-	ImageTif = "type.file.image.tif",
-	AudioFlac = "type.file.audio.flac",
-	DocumentTxt = "type.file.document.txt",
-	DocumentHtml = "type.file.document.html",
-	PresentationKey = "type.file.presentation.key",
-	Archive7zip = "type.file.archive.7zip",
-	Video3gp = "type.file.video.3gp",
-	PresentationPpt = "type.file.presentation.ppt",
-	PdfPdfa = "type.file.pdf.pdfa",
-	PresentationPptx = "type.file.presentation.pptx",
-	SpreadsheetOds = "type.file.spreadsheet.ods",
-	AudioAiff = "type.file.audio.aiff",
-	VideoMov = "type.file.video.mov",
-	DocumentRtf = "type.file.document.rtf",
-	PdfPdf = "type.file.pdf.pdf",
 }
 
 enum FolderLinkType {
