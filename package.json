@@ -13,6 +13,7 @@
 		"./packages/account_space_updater",
 		"./packages/record_thumbnail_attacher",
 		"./packages/thumbnail_refresh",
+		"./packages/file_url_refresh",
 		"./packages/access_copy_attacher"
 	],
 	"repository": {

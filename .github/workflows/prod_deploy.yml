@@ -23,6 +23,7 @@ jobs:
       AM_CLEANUP_IMAGE_TAG: ${{ needs.generate_image_tags.outputs.AM_CLEANUP_IMAGE_TAG }}
       RECORD_THUMBNAIL_LAMBDA_IMAGE_TAG: ${{ needs.generate_image_tags.outputs.RECORD_THUMBNAIL_LAMBDA_IMAGE_TAG }}
       THUMBNAIL_REFRESH_IMAGE_TAG: ${{ needs.generate_image_tags.outputs.THUMBNAIL_REFRESH_IMAGE_TAG }}
+      FILE_URL_REFRESH_IMAGE_TAG: ${{ needs.generate_image_tags.outputs.FILE_URL_REFRESH_IMAGE_TAG }}
       ACCESS_COPY_LAMBDA_IMAGE_TAG: ${{ needs.generate_image_tags.outputs.ACCESS_COPY_LAMBDA_IMAGE_TAG }}
       ACCOUNT_SPACE_UPDATER_IMAGE_TAG: ${{ needs.generate_image_tags.outputs.ACCOUNT_SPACE_UPDATER_IMAGE_TAG }}
     defaults:
@@ -48,6 +49,7 @@ jobs:
           -var="archivematica_cleanup_image=$AM_CLEANUP_IMAGE_TAG" \
           -var="record_thumbnail_lambda_image=$RECORD_THUMBNAIL_LAMBDA_IMAGE_TAG" \
           -var="thumbnail_refresh_image=$THUMBNAIL_REFRESH_IMAGE_TAG" \
+          -var="file_url_refresh_image=$FILE_URL_REFRESH_IMAGE_TAG" \
           -var="access_copy_lambda_image=$ACCESS_COPY_LAMBDA_IMAGE_TAG" \
           -var="account_space_updater_lambda_image=$ACCOUNT_SPACE_UPDATER_IMAGE_TAG"
       - name: Terraform Apply
@@ -57,5 +59,6 @@ jobs:
           -var="archivematica_cleanup_image=$AM_CLEANUP_IMAGE_TAG" \
           -var="record_thumbnail_lambda_image=$RECORD_THUMBNAIL_LAMBDA_IMAGE_TAG" \
           -var="thumbnail_refresh_image=$THUMBNAIL_REFRESH_IMAGE_TAG" \
+          -var="file_url_refresh_image=$FILE_URL_REFRESH_IMAGE_TAG" \
           -var="access_copy_lambda_image=$ACCESS_COPY_LAMBDA_IMAGE_TAG" \
           -var="account_space_updater_lambda_image=$ACCOUNT_SPACE_UPDATER_IMAGE_TAG"

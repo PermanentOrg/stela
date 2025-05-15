@@ -47,6 +47,11 @@ variable "thumbnail_refresh_image" {
   type        = string
 }
 
+variable "file_url_refresh_image" {
+  description = "Tag of file URL refresh image to deploy"
+  type        = string
+}
+
 variable "access_copy_lambda_image" {
   description = "Tag of access copy lambda image to deploy"
   type        = string
