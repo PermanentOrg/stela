@@ -37,12 +37,12 @@ jobs:
       - run: (cd stela/packages/api; npm run start-containers)
       - run: (cd stela/packages/api; docker compose run stela npm run test-ci)
       - run: (cd stela; npm run test -w @stela/account_space_updater)
-      - uses: codecov/codecov-action@v2
+      - uses: codecov/codecov-action@v5
       - run: (cd stela; npm run test -w @stela/record_thumbnail_attacher)
-      - uses: codecov/codecov-action@v2
+      - uses: codecov/codecov-action@v5
       - run: (cd stela; npm run test -w @stela/archivematica_cleanup)
-      - uses: codecov/codecov-action@v2
+      - uses: codecov/codecov-action@v5
       - run: (cd stela; npm run test -w @stela/thumbnail_refresh)
-      - uses: codecov/codecov-action@v2
+      - uses: codecov/codecov-action@v5
       - run: (cd stela; npm run test -w @stela/access_copy_attacher)
-      - uses: codecov/codecov-action@v2
+      - uses: codecov/codecov-action@v5
