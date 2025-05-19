@@ -1,0 +1,78 @@
+INSERT INTO
+file (
+	fileid,
+	format,
+	archiveid,
+	fileurl,
+	downloadurl,
+	urldt,
+	status,
+	type,
+	cloudpath,
+	createddt,
+	updateddt
+) VALUES (
+	1,
+	'file.format.original',
+	1,
+	'https://testcdn.permanent.org/originals/1/1?Expires=2757200649&Policy=new-test-policy&Signature=new-test-signature&Key-Pair-Id=test-key-pair',
+	'https://testcdn.permanent.org/originals/1/1?Expires=2757200649&Policy=new-test-policy&Signature=new-test-signature&Key-Pair-Id=test-key-pair&response-content-disposition=attachment; filename=public_file.png',
+	'2023-01-01',
+	'status.generic.ok',
+	'type.file.image.png',
+	'originals/1/1',
+	'2022-01-01',
+	'2022-01-01'
+),
+(
+	2,
+	'file.format.original',
+	1,
+	'https://testcdn.permanent.org/originals/1/1?Expires=2757200649&Policy=new-test-policy&Signature=new-test-signature&Key-Pair-Id=test-key-pair',
+	'https://testcdn.permanent.org/originals/1/1?Expires=2757200649&Policy=new-test-policy&Signature=new-test-signature&Key-Pair-Id=test-key-pair&response-content-disposition=attachment; filename=public_file.jpg',
+	CURRENT_TIMESTAMP + '2 months'::interval,
+	'status.generic.ok',
+	'type.file.image.jpg',
+	'originals/1/1',
+	'2022-01-01',
+	'2022-01-01'
+),
+(
+	3,
+	'file.format.original',
+	1,
+	'https://testcdn.permanent.org/originals/1/1?Expires=2757200649&Policy=new-test-policy&Signature=new-test-signature&Key-Pair-Id=test-key-pair',
+	'https://testcdn.permanent.org/originals/1/1?Expires=2757200649&Policy=new-test-policy&Signature=new-test-signature&Key-Pair-Id=test-key-pair&response-content-disposition=attachment; filename=public_file.jpg',
+	null,
+	'status.generic.ok',
+	'type.file.image.jpg',
+	'originals/1/1',
+	'2022-01-01',
+	'2022-01-01'
+),
+(
+	4,
+	'file.format.converted',
+	1,
+	'https://testcdn.permanent.org/originals/1/1?Expires=2757200649&Policy=new-test-policy&Signature=new-test-signature&Key-Pair-Id=test-key-pair',
+	'https://testcdn.permanent.org/originals/1/1?Expires=2757200649&Policy=new-test-policy&Signature=new-test-signature&Key-Pair-Id=test-key-pair&response-content-disposition=attachment; filename=public_file.jpg',
+	'2023-01-01',
+	'status.generic.ok',
+	'type.file.image.jpg',
+	'originals/1/1',
+	'2022-01-01',
+	'2022-01-01'
+),
+(
+	5,
+	'file.format.converted',
+	1,
+	'https://testcdn.permanent.org/originals/1/1?Expires=2757200649&Policy=new-test-policy&Signature=new-test-signature&Key-Pair-Id=test-key-pair',
+	'https://testcdn.permanent.org/originals/1/1?Expires=2757200649&Policy=new-test-policy&Signature=new-test-signature&Key-Pair-Id=test-key-pair&response-content-disposition=attachment; filename=public_file.jpg',
+	'2023-01-01',
+	'status.generic.deleted',
+	'type.file.image.jpg',
+	'originals/1/1',
+	'2022-01-01',
+	'2022-01-01'
+);

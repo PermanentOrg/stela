@@ -28,6 +28,7 @@ jobs:
       AM_CLEANUP_IMAGE_TAG: ${{ needs.generate_image_tags.outputs.AM_CLEANUP_IMAGE_TAG }}
       RECORD_THUMBNAIL_LAMBDA_IMAGE_TAG: ${{ needs.generate_image_tags.outputs.RECORD_THUMBNAIL_LAMBDA_IMAGE_TAG }}
       THUMBNAIL_REFRESH_IMAGE_TAG: ${{ needs.generate_image_tags.outputs.THUMBNAIL_REFRESH_IMAGE_TAG }}
+      FILE_URL_REFRESH_IMAGE_TAG: ${{ needs.generate_image_tags.outputs.FILE_URL_REFRESH_IMAGE_TAG }}
       ACCESS_COPY_LAMBDA_IMAGE_TAG: ${{ needs.generate_image_tags.outputs.ACCESS_COPY_LAMBDA_IMAGE_TAG }}
       ACCOUNT_SPACE_UPDATER_IMAGE_TAG: ${{ needs.generate_image_tags.outputs.ACCOUNT_SPACE_UPDATER_IMAGE_TAG }}
     defaults:
@@ -59,6 +60,8 @@ jobs:
           -var="record_thumbnail_staging_lambda_image=$RECORD_THUMBNAIL_LAMBDA_IMAGE_TAG" \
           -var="thumbnail_refresh_dev_image=$THUMBNAIL_REFRESH_IMAGE_TAG" \
           -var="thumbnail_refresh_staging_image=$THUMBNAIL_REFRESH_IMAGE_TAG" \
+          -var="file_url_refresh_dev_image=$FILE_URL_REFRESH_IMAGE_TAG" \
+          -var="file_url_refresh_staging_image=$FILE_URL_REFRESH_IMAGE_TAG" \
           -var="access_copy_dev_lambda_image=$ACCESS_COPY_LAMBDA_IMAGE_TAG" \
           -var="access_copy_staging_lambda_image=$ACCESS_COPY_LAMBDA_IMAGE_TAG" \
           -var="account_space_updater_dev_lambda_image=$ACCOUNT_SPACE_UPDATER_IMAGE_TAG" \
@@ -67,6 +70,7 @@ jobs:
           -target=kubernetes_cron_job_v1.archivematica_cleanup_dev \
           -target=aws_lambda_function.record_thumbnail_lambda \
           -target=kubernetes_cron_job_v1.thumbnail_refresh_dev \
+          -target=kubernetes_cron_job_v1.file_url_refresh_dev \
           -target=aws_lambda_function.access_copy_dev_lambda \
           -target=aws_lambda_function.account_space_update_dev_lambda
       - name: Terraform Apply
@@ -80,6 +84,8 @@ jobs:
           -var="record_thumbnail_staging_lambda_image=$RECORD_THUMBNAIL_LAMBDA_IMAGE_TAG" \
           -var="thumbnail_refresh_dev_image=$THUMBNAIL_REFRESH_IMAGE_TAG" \
           -var="thumbnail_refresh_staging_image=$THUMBNAIL_REFRESH_IMAGE_TAG" \
+          -var="file_url_refresh_dev_image=$FILE_URL_REFRESH_IMAGE_TAG" \
+          -var="file_url_refresh_staging_image=$FILE_URL_REFRESH_IMAGE_TAG" \
           -var="access_copy_dev_lambda_image=$ACCESS_COPY_LAMBDA_IMAGE_TAG" \
           -var="access_copy_staging_lambda_image=$ACCESS_COPY_LAMBDA_IMAGE_TAG" \
           -var="account_space_updater_dev_lambda_image=$ACCOUNT_SPACE_UPDATER_IMAGE_TAG" \
@@ -88,5 +94,6 @@ jobs:
           -target=kubernetes_cron_job_v1.archivematica_cleanup_dev \
           -target=aws_lambda_function.record_thumbnail_lambda \
           -target=kubernetes_cron_job_v1.thumbnail_refresh_dev \
+          -target=kubernetes_cron_job_v1.file_url_refresh_dev \
           -target=aws_lambda_function.access_copy_dev_lambda \
           -target=aws_lambda_function.account_space_update_dev_lambda

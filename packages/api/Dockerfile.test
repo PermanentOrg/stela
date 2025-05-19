@@ -2,7 +2,7 @@ FROM node:18-alpine
 WORKDIR /usr/local/apps/stela
 
 RUN apk add curl \
-    postgresql-client 
+    postgresql-client
 
 COPY package.json ./
 COPY tsconfig.build.json ./
@@ -10,6 +10,7 @@ COPY tsconfig.json ./
 COPY jest.config.js ./
 COPY packages/api/package.json ./packages/api/package.json
 COPY packages/logger ./packages/logger
+COPY packages/permanent_models ./packages/permanent_models
 
 RUN npm install -g npm@8.19.3
 RUN npm cache clean --force

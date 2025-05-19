@@ -78,6 +78,16 @@ variable "thumbnail_refresh_staging_image" {
   type        = string
 }
 
+variable "file_url_refresh_dev_image" {
+  description = "Tag of file URL refresh image to deploy to dev"
+  type        = string
+}
+
+variable "file_url_refresh_staging_image" {
+  description = "Tag of file URL refresh image to deploy to staging"
+  type        = string
+}
+
 variable "access_copy_dev_lambda_image" {
   description = "Tag of the access copy lambda image to deploy to dev"
   type        = string
