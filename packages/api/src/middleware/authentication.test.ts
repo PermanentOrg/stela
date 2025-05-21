@@ -452,6 +452,26 @@ describe("extractUserEmailFromAuthToken", () => {
 		await extractUserEmailFromAuthToken(request, {} as Response, () => {});
 		expect(request.body.emailFromAuthToken).toBe(testEmail);
 	});
+
+	test("will throw a 429 if it recieves one from an introspect call", async () => {
+		const request = {
+			body: {},
+			get: (_: string) => "Bearer test",
+		} as Request<unknown, unknown, { emailFromAuthToken?: string }>;
+		jest
+			.spyOn(fusionAuthClient, "introspectAccessToken")
+			.mockImplementationOnce(async () => {
+				throw Object.assign(new Error("Too Many Requests"), {
+					statusCode: 429,
+				});
+			});
+		jest
+			.spyOn(fusionAuthClient, "introspectAccessToken")
+			.mockImplementationOnce(async () => successfulIntrospectionResponse);
+		const next = jest.fn();
+		await extractUserEmailFromAuthToken(request, {} as Response, next);
+		expect(next).toHaveBeenCalledWith({ statusCode: 429 });
+	});
 });
 
 describe("extractUserIsAdminFromAuthToken", () => {
