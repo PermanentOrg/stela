@@ -12,7 +12,9 @@ interface ErrorWithStatusCode {
 const isErrorWithStatus = (err: unknown): err is ErrorWithStatus =>
 	typeof (err as ErrorWithStatus).status === "number";
 
-const isErrorWithStatusCode = (err: unknown): err is ErrorWithStatusCode =>
+export const isErrorWithStatusCode = (
+	err: unknown,
+): err is ErrorWithStatusCode =>
 	typeof (err as ErrorWithStatusCode).statusCode === "number";
 
 export const handleError = async (
