@@ -1,9 +1,26 @@
 import type { Request, Response, NextFunction } from "express";
+import type { Jwt } from "jsonwebtoken";
 import createError from "http-errors";
 import { fusionAuthClient } from "../fusionauth";
 
 const emailKey = "email";
 const subjectKey = "sub";
+
+const getPublicKeyForJwtValidation = async (
+	_: Request,
+	token: Jwt | undefined,
+): Promise<string> => {
+	if (
+		typeof token?.payload === "string" ||
+		typeof token?.payload.aud !== "string"
+	) {
+		return "";
+	}
+	const applicationId = token.payload.aud;
+	const publicKeyResponse =
+		await fusionAuthClient.retrieveJWTPublicKeyByApplicationId(applicationId);
+	return publicKeyResponse.response.publicKey ?? "";
+};
 
 const getValueFromAuthToken = async (
 	authenticationToken: string,
@@ -293,4 +310,5 @@ export {
 	extractUserEmailFromAuthToken,
 	extractUserIsAdminFromAuthToken,
 	extractShareTokenFromHeaders,
+	getPublicKeyForJwtValidation,
 };

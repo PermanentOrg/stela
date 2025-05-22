@@ -1,9 +1,5 @@
-import {
-	Router,
-	type Request,
-	type Response,
-	type NextFunction,
-} from "express";
+import { Router, type Response, type NextFunction } from "express";
+import { expressjwt, type Request } from "express-jwt";
 import {
 	extractShareTokenFromHeaders,
 	extractUserEmailFromAuthToken,
@@ -26,6 +22,7 @@ import {
 	validatePaginationParameters,
 	validateBodyFromAuthentication,
 } from "../../validators/shared";
+import { getPublicKeyForJwtValidation } from "../../middleware/authentication";
 
 export const folderController = Router();
 
@@ -57,15 +54,20 @@ folderController.patch(
 
 folderController.get(
 	"/",
-	extractUserEmailFromAuthToken,
+	expressjwt({ secret: getPublicKeyForJwtValidation, algorithms: ["RS512"] }),
 	extractShareTokenFromHeaders,
 	async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			validateOptionalAuthenticationValues(req.body);
 			validateGetFoldersQuery(req.query);
+			// Move this to middleware
+			if (req.auth === undefined) {
+				res.sendStatus(401);
+				return;
+			}
 			const folders = await getFolders(
 				req.query.folderIds,
-				req.body.emailFromAuthToken,
+				req.auth["email"],
 				req.body.shareToken,
 			);
 			res.status(200).send({ items: folders });

@@ -4,14 +4,20 @@ declare module "@fusionauth/typescript-client" {
 		data?: Record<string, string>;
 		message?: string;
 	}
+	export declare class ClientResponse<T> {
+		public statusCode: number;
+		public response: T;
+		public exception: Error;
+
+		wasSuccessful: () => boolean;
+	}
 	export declare class FusionAuthClient {
 		public constructor(apiKey: string, host: string, tenantId: string);
 		public introspectAccessToken(
 			applicationId: string,
 			token: string,
-		): Promise<{
-			statusCode: number;
-			response:
+		): Promise<
+			ClientResponse<
 				| {
 						active: true;
 						applicationId: string;
@@ -28,10 +34,15 @@ declare module "@fusionauth/typescript-client" {
 						sub: string;
 						tid: string;
 				  }
-				| { active: false };
-			exception: Error;
-			wasSuccessful: () => boolean;
-		}>;
+				| { active: false }
+			>
+		>;
+		public retrieveJWTPublicKeyByApplicationId(applicationId: string): Promise<
+			ClientResponse<{
+				publicKey?: string;
+				publicKeys?: Record<string, string>;
+			}>
+		>;
 		public retrieveUserByEmail(email: string): Promise<{
 			response: {
 				user: {
