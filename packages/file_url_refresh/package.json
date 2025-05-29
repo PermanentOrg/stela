@@ -30,7 +30,7 @@
 	},
 	"dependencies": {
 		"@sentry/node": "^7.57.0",
-		"@sentry/profiling-node": "^7.57.0",
+		"@sentry/profiling-node": "^9.23.0",
 		"@stela/logger": "^1.0.0",
 		"@stela/s3-utils": "^1.0.0",
 		"@stela/permanent_models": "^1.0.0",
