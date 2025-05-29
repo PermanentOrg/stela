@@ -32,7 +32,7 @@
 	"dependencies": {
 		"@sentry/aws-serverless": "^9.13.0",
 		"@sentry/node": "^9.13.0",
-		"@sentry/profiling-node": "^9.13.0",
+		"@sentry/profiling-node": "^9.23.0",
 		"@stela/logger": "^1.0.0",
 		"@stela/s3-utils": "^1.0.0",
 		"@stela/archivematica-utils": "^1.0.0",
