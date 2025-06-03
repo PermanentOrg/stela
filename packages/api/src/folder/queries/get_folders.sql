@@ -182,20 +182,6 @@ account_by_share AS (
     account.primaryemail = :email
     AND access.status != 'status.generic.deleted'
     AND account_archive.status = 'status.generic.ok'
-),
-
-share_link_creator_account AS (
-  SELECT
-    account.accountid,
-    account.fullname
-  FROM
-    account
-  INNER JOIN
-    shareby_url
-    ON
-      account.accountid = shareby_url.byaccountid
-  WHERE
-    shareby_url.urltoken = :shareToken
 )
 
 SELECT
@@ -266,25 +252,7 @@ SELECT
     folder.thumburl2000,
     '256',
     folder.thumbnail256
-  ) AS "thumbnailUrls",
-  CASE
-    WHEN
-      :shareToken::text = ANY(
-        aggregated_ancestor_unrestricted_share_tokens.tokens
-      )
-      THEN
-        JSON_BUILD_OBJECT(
-          'creatorAccount',
-          JSON_BUILD_OBJECT(
-            'id',
-            (SELECT accountid::text FROM share_link_creator_account),
-            'name',
-            (SELECT fullname FROM share_link_creator_account)
-          )
-        )
-    ELSE
-      NULL
-  END AS "shareLink"
+  ) AS "thumbnailUrls"
 FROM
   folder
 INNER JOIN

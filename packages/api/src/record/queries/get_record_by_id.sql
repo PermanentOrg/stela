@@ -139,20 +139,6 @@ aggregated_ancestor_unrestricted_share_tokens AS (
   FROM
     ancestor_unrestricted_share_tokens
   GROUP BY recordid
-),
-
-share_link_creator_account AS (
-  SELECT
-    account.accountid,
-    account.fullname
-  FROM
-    account
-  INNER JOIN
-    shareby_url
-    ON
-      account.accountid = shareby_url.byaccountid
-  WHERE
-    shareby_url.urltoken = :shareToken
 )
 
 SELECT DISTINCT ON (record.recordid)
@@ -187,6 +173,7 @@ SELECT DISTINCT ON (record.recordid)
   parent_folder.archivenbr AS "parentFolderArchiveNumber",
   aggregated_tags.tags,
   archive.archivenbr AS "archiveArchiveNumber",
+  aggregated_shares.shares_as_json AS "shares",
   json_build_object(
     'id',
     locn.locnid::TEXT,
@@ -211,7 +198,6 @@ SELECT DISTINCT ON (record.recordid)
     'displayName',
     locn.displayname
   ) AS "location",
-  aggregated_shares.shares_as_json AS "shares",
   json_build_object(
     'id',
     archive.archiveid::TEXT,
@@ -219,25 +205,7 @@ SELECT DISTINCT ON (record.recordid)
     archive.archivenbr,
     'name',
     profile_item.string1
-  ) AS "archive",
-  CASE
-    WHEN
-      :shareToken::TEXT = any(
-        aggregated_ancestor_unrestricted_share_tokens.tokens
-      )
-      THEN
-        json_build_object(
-          'creatorAccount',
-          json_build_object(
-            'id',
-            (SELECT accountid::TEXT FROM share_link_creator_account),
-            'name',
-            (SELECT fullname FROM share_link_creator_account)
-          )
-        )
-    ELSE
-      NULL
-  END AS "shareLink"
+  ) AS "archive"
 FROM
   record
 INNER JOIN
