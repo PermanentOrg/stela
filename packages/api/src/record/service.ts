@@ -106,9 +106,9 @@ export const getRecordShareLinks = async (
 
 	const shareLinkIds = recordShareLinkIds.rows.map((row) => row.id);
 	const shareLinks = await shareLinkService.getShareLinks(
-		email,
 		[],
 		shareLinkIds,
+		email,
 	);
 	return shareLinks;
 };

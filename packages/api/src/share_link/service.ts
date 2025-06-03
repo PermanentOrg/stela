@@ -168,9 +168,9 @@ const updateShareLink = async (
 };
 
 const getShareLinks = async (
-	email: string,
 	shareTokens: string[] | undefined,
 	shareLinkIds: string[] | undefined,
+	email?: string,
 ): Promise<ShareLink[]> => {
 	const shareLinks = await db
 		.sql<ShareLink>("share_link.queries.get_share_links", {

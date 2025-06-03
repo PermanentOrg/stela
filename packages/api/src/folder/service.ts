@@ -275,9 +275,9 @@ export const getFolderShareLinks = async (
 
 	const shareLinkIds = folderShareLinkIds.rows.map((row) => row.id);
 	const shareLinks = await shareLinkService.getShareLinks(
-		email,
 		[],
 		shareLinkIds,
+		email,
 	);
 	return shareLinks;
 };
