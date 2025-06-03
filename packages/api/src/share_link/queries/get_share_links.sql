@@ -35,4 +35,7 @@ WHERE
     shareby_url.shareby_urlid::text = any(:shareLinkIds)
     OR shareby_url.urltoken = any(:shareTokens)
   )
-  AND account.primaryemail = :email;
+  AND (
+    account.primaryemail = :email
+    OR :email IS NULL
+  );
