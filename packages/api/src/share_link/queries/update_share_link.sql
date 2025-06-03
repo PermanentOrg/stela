@@ -41,5 +41,11 @@ CASE
 END AS "maxUses",
 shareby_url.uses AS "usesExpended",
 shareby_url.expiresdt AS "expirationTimestamp",
+JSON_BUILD_OBJECT(
+  'id',
+  byaccountid::text,
+  'name',
+  (SELECT fullname FROM account WHERE accountid = byaccountid)
+) AS "creatorAccount",
 shareby_url.createddt AS "createdAt",
 shareby_url.updateddt AS "updatedAt";
