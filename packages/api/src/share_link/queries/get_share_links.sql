@@ -21,7 +21,13 @@ SELECT
     WHEN shareby_url.unrestricted THEN 'none'
     WHEN shareby_url.autoapprovetoggle = 1 THEN 'account'
     ELSE 'approval'
-  END AS "accessRestrictions"
+  END AS "accessRestrictions",
+  json_build_object(
+    'id',
+    shareby_url.byaccountid::text,
+    'name',
+    account.fullname
+  ) AS "creatorAccount"
 FROM
   shareby_url
 INNER JOIN

@@ -50,5 +50,11 @@ CASE
 END AS "maxUses",
 uses AS "usesExpended",
 expiresdt AS "expirationTimestamp",
+JSON_BUILD_OBJECT(
+  'id',
+  byaccountid::text,
+  'name',
+  (SELECT fullname FROM account WHERE accountid = byaccountid)
+) AS "creatorAccount",
 createddt AS "createdAt",
 updateddt AS "updatedAt";
