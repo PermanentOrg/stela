@@ -168,7 +168,7 @@ const updateShareLink = async (
 };
 
 const getShareLinks = async (
-	email: string,
+	email: string | undefined,
 	shareTokens: string[] | undefined,
 	shareLinkIds: string[] | undefined,
 ): Promise<ShareLink[]> => {
