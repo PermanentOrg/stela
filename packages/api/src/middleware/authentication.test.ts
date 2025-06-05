@@ -458,9 +458,9 @@ describe("extractUserEmailFromAuthToken", () => {
 			body: {},
 			get: (_: string) => "Bearer test",
 		} as Request<unknown, unknown, { emailFromAuthToken?: string }>;
-		const testError = Object.assign(new Error("Too Many Requests"), {
+		const testError = {
 			statusCode: 429,
-		});
+		};
 		jest
 			.spyOn(fusionAuthClient, "introspectAccessToken")
 			.mockImplementationOnce(async () => {

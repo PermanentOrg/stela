@@ -1,21 +1,25 @@
 import type { Request, Response, NextFunction } from "express";
 import * as Sentry from "@sentry/node";
 
-interface ErrorWithStatus {
+interface ObjectWithStatus {
 	status: number;
 }
 
-interface ErrorWithStatusCode {
+interface ObjectWithStatusCode {
 	statusCode: number;
 }
 
-const isErrorWithStatus = (err: unknown): err is ErrorWithStatus =>
-	typeof (err as ErrorWithStatus).status === "number";
+const isObjectWithStatus = (value: unknown): value is ObjectWithStatus =>
+	value instanceof Object &&
+	"status" in value &&
+	typeof (value as { status: unknown }).status === "number";
 
-export const isErrorWithStatusCode = (
-	err: unknown,
-): err is ErrorWithStatusCode =>
-	typeof (err as ErrorWithStatusCode).statusCode === "number";
+export const isObjectWithStatusCode = (
+	value: unknown,
+): value is ObjectWithStatusCode =>
+	value instanceof Object &&
+	"statusCode" in value &&
+	typeof (value as { statusCode: unknown }).statusCode === "number";
 
 export const handleError = async (
 	err: unknown,
@@ -24,9 +28,9 @@ export const handleError = async (
 	next: NextFunction,
 ): Promise<void> => {
 	Sentry.captureException(err);
-	if (isErrorWithStatus(err)) {
+	if (isObjectWithStatus(err)) {
 		res.status(err.status).json({ error: err });
-	} else if (isErrorWithStatusCode(err)) {
+	} else if (isObjectWithStatusCode(err)) {
 		res.status(err.statusCode).json({ error: err });
 	} else {
 		next(err);
