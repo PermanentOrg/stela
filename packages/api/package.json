@@ -54,7 +54,7 @@
 		"joi": "^17.13.3",
 		"mixpanel": "^0.18.0",
 		"newrelic": "^11.22.0",
-		"node-fetch": "^2.6.9",
+		"node-fetch": "^3.3.2",
 		"pg": "^8.5.1",
 		"require-env-variable": "^4.0.2",
 		"tinypg": "^7.0.1",
