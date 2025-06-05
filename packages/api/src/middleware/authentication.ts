@@ -1,7 +1,7 @@
 import type { Request, Response, NextFunction } from "express";
 import createError from "http-errors";
 import { fusionAuthClient } from "../fusionauth";
-import { isErrorWithStatusCode } from "./handleError";
+import { isObjectWithStatusCode } from "./handleError";
 
 const emailKey = "email";
 const subjectKey = "sub";
@@ -47,11 +47,7 @@ const getOptionalValueFromAuthToken = async (
 				);
 				return response;
 			} catch (err) {
-				if (
-					err instanceof Error &&
-					isErrorWithStatusCode(err) &&
-					err.statusCode === 429
-				) {
+				if (isObjectWithStatusCode(err) && err.statusCode === 429) {
 					throw err;
 				}
 				return null;
