@@ -4,4 +4,5 @@ module.exports = {
 	moduleNameMapper: {
 		"^@stela/(.*)$": "<rootDir>/../$1/src",
 	},
+	setupFiles: ["<rootDir>/jest.env.setup.js"],
 };
