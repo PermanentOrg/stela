@@ -138,18 +138,3 @@ record:
           type: string
         name:
           type: string
-    shareLink:
-      type: object
-      required:
-        - creatorAccount
-      properties:
-        creatorAccount:
-          type: object
-          required:
-            - id
-            - name
-          properties:
-            id:
-              type: string
-            name:
-              type: string

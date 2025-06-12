@@ -172,8 +172,6 @@ describe("GET /folder", () => {
 		const folders = (response.body as { items: Folder[] }).items;
 		expect(folders.length).toEqual(1);
 		expect(folders[0]?.folderId).toEqual("2");
-		expect(folders[0]?.shareLink?.creatorAccount.id).toEqual("2");
-		expect(folders[0]?.shareLink?.creatorAccount.name).toEqual("Jack Rando");
 	});
 
 	test("should return a private folder if the user has a share token for the parent folder", async () => {

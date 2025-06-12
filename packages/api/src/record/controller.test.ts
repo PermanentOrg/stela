@@ -205,12 +205,6 @@ describe("GET /record", () => {
 			.expect(200);
 		expect((response.body as ArchiveRecord[]).length).toEqual(1);
 		expect((response.body as ArchiveRecord[])[0]?.recordId).toEqual("2");
-		expect(
-			(response.body as ArchiveRecord[])[0]?.shareLink?.creatorAccount.id,
-		).toEqual("2");
-		expect(
-			(response.body as ArchiveRecord[])[0]?.shareLink?.creatorAccount.name,
-		).toEqual("Jack Rando");
 	});
 	test("expect not to return a private record when not logged in and share token provided is not unlisted", async () => {
 		(extractUserEmailFromAuthToken as jest.Mock).mockImplementation(
