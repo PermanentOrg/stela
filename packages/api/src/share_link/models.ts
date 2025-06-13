@@ -26,6 +26,10 @@ export interface ShareLink {
 	maxUses: number | null;
 	usesExpended: number | null;
 	expirationTimestamp?: Date;
+	creatorAccount: {
+		id: string;
+		name: string;
+	};
 	createdAt: Date;
 	updatedAt: Date;
 }

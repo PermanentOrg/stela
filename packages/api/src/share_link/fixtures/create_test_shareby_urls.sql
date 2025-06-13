@@ -9,7 +9,9 @@ INSERT INTO shareby_url (
   maxuses,
   expiresdt,
   defaultaccessrole,
-  autoapprovetoggle
+  autoapprovetoggle,
+  createddt,
+  updateddt
 ) VALUES (
   1000,
   5,
@@ -21,7 +23,9 @@ INSERT INTO shareby_url (
   null,
   null,
   'access.role.viewer',
-  0
+  0,
+  CURRENT_TIMESTAMP,
+  CURRENT_TIMESTAMP
 ),
 (
   1001,
@@ -34,7 +38,9 @@ INSERT INTO shareby_url (
   100,
   CURRENT_TIMESTAMP + INTERVAL '1 day',
   'access.role.viewer',
-  0
+  0,
+  CURRENT_TIMESTAMP,
+  CURRENT_TIMESTAMP
 ),
 (
   1002,
@@ -47,5 +53,7 @@ INSERT INTO shareby_url (
   100,
   CURRENT_TIMESTAMP + INTERVAL '1 day',
   'access.role.editor',
-  0
+  0,
+  CURRENT_TIMESTAMP,
+  CURRENT_TIMESTAMP
 );

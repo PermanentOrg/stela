@@ -46,7 +46,7 @@ const retrieveShareLink = async (
 	folderLinkId: string,
 ): Promise<ShareLinkRow | undefined> => {
 	const shareLinkResult = await db.query<ShareLinkRow>(
-		`SELECT 
+		`SELECT
         status,
         urltoken,
         shareurl,
@@ -226,6 +226,8 @@ describe("POST /share-links", () => {
 		expect(shareLink.maxUses).toBeNull();
 		expect(shareLink.usesExpended).toBeNull();
 		expect(shareLink.expirationTimestamp).toBeNull();
+		expect(shareLink.creatorAccount.id).toBe("2");
+		expect(shareLink.creatorAccount.name).toBe("Jack Rando");
 		expect(shareLink.createdAt).toBeDefined();
 		expect(shareLink.updatedAt).toBeDefined();
 	});
@@ -469,6 +471,34 @@ describe("PATCH /share-links/{id}", () => {
 		expect(shareLink?.expiresdt).toEqual(new Date("2052-01-01T00:00:00.000Z"));
 	});
 
+	test("should return the updated share link", async () => {
+		const response = await agent
+			.patch("/api/v2/share-links/1000")
+			.send({
+				accessRestrictions: "account",
+				permissionsLevel: "editor",
+				maxUses: 500,
+				expirationTimestamp: "2052-01-01T00:00:00.000Z",
+			})
+			.expect(200);
+
+		const shareLink = (response.body as { data: ShareLink }).data;
+		expect(shareLink).toEqual({
+			id: expect.anything() as string,
+			itemId: "6",
+			itemType: "record",
+			token: expect.anything() as string,
+			permissionsLevel: "editor",
+			accessRestrictions: "account",
+			maxUses: 500,
+			usesExpended: null,
+			expirationTimestamp: expect.anything() as Date,
+			creatorAccount: { id: "2", name: "Jack Rando" },
+			createdAt: expect.anything() as Date,
+			updatedAt: expect.anything() as Date,
+		});
+	});
+
 	test("should update nullable fields to null if request sets them to explicit null", async () => {
 		await agent
 			.patch("/api/v2/share-links/1001")
@@ -678,17 +708,20 @@ describe("GET /share-links", () => {
 			.expect(200);
 		const shareLinks = (response.body as { items: ShareLink[] }).items;
 		expect(shareLinks.length).toEqual(1);
-		expect(shareLinks[0]?.id).toEqual("1000");
-		expect(shareLinks[0]?.itemId).toEqual("6");
-		expect(shareLinks[0]?.itemType).toEqual("record");
-		expect(shareLinks[0]?.token).toEqual(
-			"e969f9dc-42b5-45c0-a496-1dcff2ca11f5",
-		);
-		expect(shareLinks[0]?.permissionsLevel).toEqual("viewer");
-		expect(shareLinks[0]?.accessRestrictions).toEqual("none");
-		expect(shareLinks[0]?.maxUses).toBeNull();
-		expect(shareLinks[0]?.usesExpended).toBeNull();
-		expect(shareLinks[0]?.expirationTimestamp).toBeNull();
+		expect(shareLinks[0]).toEqual({
+			id: "1000",
+			itemId: "6",
+			itemType: "record",
+			token: "e969f9dc-42b5-45c0-a496-1dcff2ca11f5",
+			permissionsLevel: "viewer",
+			accessRestrictions: "none",
+			maxUses: null,
+			usesExpended: null,
+			expirationTimestamp: null,
+			creatorAccount: { id: "2", name: "Jack Rando" },
+			createdAt: expect.anything() as Date,
+			updatedAt: expect.anything() as Date,
+		});
 	});
 
 	test("should return a 500 error if the database call fails", async () => {
