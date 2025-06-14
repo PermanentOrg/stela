@@ -1,6 +1,10 @@
 import { Router } from "express";
 import type { Request, Response, NextFunction } from "express";
-import { verifyUserAuthentication } from "../middleware";
+import createError from "http-errors";
+import {
+	verifyUserAuthentication,
+	extractUserEmailFromAuthToken,
+} from "../middleware";
 import {
 	validateCreateShareLinkRequest,
 	validateUpdateShareLinkRequest,
@@ -9,6 +13,7 @@ import {
 import { isValidationError } from "../validators/validator_util";
 import { shareLinkService } from "./service";
 import { validateBodyFromAuthentication } from "../validators";
+import { validateOptionalAuthenticationValues } from "../validators/shared";
 
 export const shareLinkController = Router();
 
@@ -53,11 +58,19 @@ shareLinkController.patch(
 
 shareLinkController.get(
 	"/",
-	verifyUserAuthentication,
+	extractUserEmailFromAuthToken,
 	async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			validateBodyFromAuthentication(req.body);
+			validateOptionalAuthenticationValues(req.body);
 			validateGetShareLinksParameters(req.query);
+			if (
+				req.query.shareLinkIds !== undefined &&
+				req.body.emailFromAuthToken === undefined
+			) {
+				throw createError.Unauthorized(
+					"Accessing share links by ID requires authentication",
+				);
+			}
 			const shareLinks = await shareLinkService.getShareLinks(
 				req.body.emailFromAuthToken,
 				req.query.shareTokens,
