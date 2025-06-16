@@ -27,7 +27,7 @@
 	},
 	"dependencies": {
 		"@sentry/node": "^7.57.0",
-		"@sentry/profiling-node": "^7.57.0",
+		"@sentry/profiling-node": "^9.29.0",
 		"@stela/logger": "^1.0.0",
 		"dotenv": "^16.5.0",
 		"node-fetch": "^2.6.9",
