@@ -1,4 +1,11 @@
+import fetch from "node-fetch";
+import type { Response } from "node-fetch";
 import { logger } from "@stela/logger";
+
+const archivematicaHostUrl = process.env["ARCHIVEMATICA_HOST_URL"] ?? "";
+const archivematicaApiKey = process.env["ARCHIVEMATICA_API_KEY"] ?? "";
+const archivematicaOriginalLocationId =
+	process.env["ARCHIVEMATICA_ORIGINAL_LOCATION_ID"] ?? "";
 
 export const getOriginalFileIdFromInformationPackagePath = (
 	path: string,
@@ -13,4 +20,32 @@ export const getOriginalFileIdFromInformationPackagePath = (
 		throw new Error("Invalid file key");
 	}
 	return match[1];
+};
+
+export const triggerArchivematicaProcessing = async (
+	fileId: string,
+	fileCloudPath: string,
+): Promise<Response> => {
+	const response = await fetch(`${archivematicaHostUrl}/api/v2beta/package`, {
+		method: "POST",
+		headers: {
+			"Content-Type": "application/json",
+			Authorization: `ApiKey ${archivematicaApiKey}`,
+		},
+		body: JSON.stringify({
+			name: `${fileId}_upload`,
+			type: "standard",
+			processing_config: "default",
+			accession: "",
+			access_system_id: "",
+			auto_approve: true,
+			metadata_set_id: "",
+			path: Buffer.from(
+				`${archivematicaOriginalLocationId}${fileCloudPath.substring(0, fileCloudPath.lastIndexOf("/")) ? fileCloudPath.substring(0, fileCloudPath.lastIndexOf("/")) : fileCloudPath}`,
+				"utf-8",
+			).toString("base64"),
+		}),
+	});
+
+	return response;
 };

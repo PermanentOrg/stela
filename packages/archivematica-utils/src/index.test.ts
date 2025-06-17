@@ -1,4 +1,10 @@
-import { getOriginalFileIdFromInformationPackagePath } from "./index";
+import fetch from "node-fetch";
+import {
+	getOriginalFileIdFromInformationPackagePath,
+	triggerArchivematicaProcessing,
+} from "./index";
+
+jest.mock("node-fetch");
 
 describe("getFileIdFromInformationPackagePath", () => {
 	test("should return the file ID if the file ID is a number", () => {
@@ -24,5 +30,68 @@ describe("getFileIdFromInformationPackagePath", () => {
 		} finally {
 			expect(error).not.toBeNull();
 		}
+	});
+});
+
+describe("triggerArchivematicaProcessing", () => {
+	test("should call Archivematica correctly", async () => {
+		const testFileId = "1";
+		const testFilePath = "originals/1/1";
+
+		await triggerArchivematicaProcessing(testFileId, testFilePath);
+
+		expect(fetch).toHaveBeenCalledWith(
+			`${process.env["ARCHIVEMATICA_HOST_URL"] ?? ""}/api/v2beta/package`,
+			{
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+					Authorization: `ApiKey ${process.env["ARCHIVEMATICA_API_KEY"] ?? ""}`,
+				},
+				body: JSON.stringify({
+					name: "1_upload",
+					type: "standard",
+					processing_config: "default",
+					accession: "",
+					access_system_id: "",
+					auto_approve: true,
+					metadata_set_id: "",
+					path: Buffer.from(
+						`${process.env["ARCHIVEMATICA_ORIGINAL_LOCATION_ID"] ?? ""}originals/1`,
+						"utf-8",
+					).toString("base64"),
+				}),
+			},
+		);
+	});
+	test("should parse the file path correctly", async () => {
+		const testFileId = "1";
+		const testFilePath = "1";
+
+		await triggerArchivematicaProcessing(testFileId, testFilePath);
+
+		expect(fetch).toHaveBeenCalledWith(
+			`${process.env["ARCHIVEMATICA_HOST_URL"] ?? ""}/api/v2beta/package`,
+			{
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+					Authorization: `ApiKey ${process.env["ARCHIVEMATICA_API_KEY"] ?? ""}`,
+				},
+				body: JSON.stringify({
+					name: "1_upload",
+					type: "standard",
+					processing_config: "default",
+					accession: "",
+					access_system_id: "",
+					auto_approve: true,
+					metadata_set_id: "",
+					path: Buffer.from(
+						`${process.env["ARCHIVEMATICA_ORIGINAL_LOCATION_ID"] ?? ""}1`,
+						"utf-8",
+					).toString("base64"),
+				}),
+			},
+		);
 	});
 });
