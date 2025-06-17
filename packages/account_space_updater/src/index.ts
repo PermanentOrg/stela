@@ -2,8 +2,8 @@ import type { SQSHandler, SQSEvent, SQSRecord } from "aws-lambda";
 import { TinyPgError } from "tinypg";
 import { validateSqsMessage } from "@stela/s3-utils";
 import { logger } from "@stela/logger";
+import { validateRecordSubmitEvent } from "@stela/event_utils";
 import { db } from "./database";
-import { validateRecordSubmitEvent } from "./validators";
 
 enum Operation {
 	Upload = "type.billing.file_upload",
