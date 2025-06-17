@@ -1,0 +1,29 @@
+{
+	"name": "@stela/event_utils",
+	"version": "1.0.0",
+	"description": "Helper functions for working with events, used by Permanent's backend services",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/PermanentOrg/stela.git"
+	},
+	"author": "Permanent.org",
+	"license": "AGPL-3.0",
+	"bugs": {
+		"url": "https://github.com/PermanentOrg/stela/issues"
+	},
+	"homepage": "https://permanent.org",
+	"engines": {
+		"node": ">=18.0"
+	},
+	"main": "dist/index.js",
+	"scripts": {
+		"check-types": "tsc --noEmit",
+		"check-format": "prettier --check ./src",
+		"eslint": "eslint --max-warnings 0 ./src --ext .ts",
+		"lint": "npm run check-format && npm run check-types && npm run eslint",
+		"build": "rm -rf dist/* && tsc -p tsconfig.build.json"
+	},
+	"dependencies": {
+		"ajv": "^8.17.1"
+	}
+}
