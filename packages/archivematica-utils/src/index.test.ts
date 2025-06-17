@@ -1,4 +1,10 @@
-import { getOriginalFileIdFromInformationPackagePath } from "./index";
+import fetch from "node-fetch";
+import {
+	getOriginalFileIdFromInformationPackagePath,
+	triggerArchivematicaProcessing,
+} from "./index";
+
+jest.mock("node-fetch");
 
 describe("getFileIdFromInformationPackagePath", () => {
 	test("should return the file ID if the file ID is a number", () => {
@@ -24,5 +30,62 @@ describe("getFileIdFromInformationPackagePath", () => {
 		} finally {
 			expect(error).not.toBeNull();
 		}
+	});
+});
+
+describe("triggerArchivematicaProcessing", () => {
+	test("should call Archivematica correctly", async () => {
+		const testFileId = "1";
+		const testFilePath = "originals/1/1";
+
+		await triggerArchivematicaProcessing(
+			testFileId,
+			testFilePath,
+			"https://example.com",
+			"test-api-key",
+			"3f896582-06b5-4cfa-bb0b-f2c32879d615",
+		);
+
+		expect(fetch).toHaveBeenCalledWith(
+			"https://example.com/api/v2beta/package",
+			{
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+					Authorization: "ApiKey test-api-key",
+				},
+				body: JSON.stringify({
+					name: "1_upload",
+					type: "standard",
+					processing_config: "default",
+					accession: "",
+					access_system_id: "",
+					auto_approve: true,
+					metadata_set_id: "",
+					path: Buffer.from(
+						"3f896582-06b5-4cfa-bb0b-f2c32879d615:originals/1",
+						"utf-8",
+					).toString("base64"),
+				}),
+			},
+		);
+	});
+	test("should error if the file is located in the root directory of its cloud storage", async () => {
+		const testFileId = "1";
+		const testFilePath = "1";
+
+		await expect(
+			triggerArchivematicaProcessing(
+				testFileId,
+				testFilePath,
+				"https://example.com",
+				"test-api-key",
+				"3f896582-06b5-4cfa-bb0b-f2c32879d615",
+			),
+		).rejects.toThrow(
+			new Error(
+				"Invalid cloud path: file must be located in a non-root directory",
+			),
+		);
 	});
 });

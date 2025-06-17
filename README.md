@@ -73,6 +73,9 @@ For these, simply fill in any fake value to prevent `require-env-variable` from 
 | CLOUDFRONT_KEY_PAIR_ID            | none                                                  | Can be found as `CLOUDFRONT_KEYPAIR` in `back-end`'s library/base/constants/base.constants.php. Not required for API server |
 | CLOUDFRONT_PRIVATE_KEY            | none                                                  | Can be found in `back-end`'s library/static/certs/pk-APKAJP2D34UGZ6IG443Q.pem. Not required for API server                  |
 | SITE_URL                          | local.permanent.org                                   |
+| ARCHIVEMATICA_HOST_URL            | none                                                  | Only needed for the archivematica_triggerer lambda
+| ARCHIVEMATICA_API_KEY             | none                                                  | Only needed for the archivematica_triggerer lambda
+| ARCHIVEMATICA_ORIGINAL_LOCATION_ID| none                                                  | Only needed for the archivematica_triggerer lambda
 
 ## Linting
 
