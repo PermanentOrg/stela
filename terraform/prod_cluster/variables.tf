@@ -62,6 +62,11 @@ variable "account_space_updater_lambda_image" {
   type        = string
 }
 
+variable "trigger_archivematica_lambda_image" {
+  description = "Tag of archivematica triggerer image to deploy"
+  type        = string
+}
+
 variable "prod_security_group_id" {
   description = "ID of the Production security group"
   type        = string
@@ -227,4 +232,10 @@ variable "site_url" {
   description = "The URL of the site"
   type        = string
   default     = "www.permanent.org"
+}
+
+variable "archivematica_original_location_id" {
+  description = "Location ID where original copies are stored for the prod instance of Archivematica"
+  type        = string
+  default     = "b1f64b1a-4f19-4885-8093-f6812e3f5810"
 }

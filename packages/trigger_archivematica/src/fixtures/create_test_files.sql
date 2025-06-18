@@ -1,0 +1,32 @@
+INSERT INTO
+file (
+  fileid,
+  archiveid,
+  status,
+  size,
+  format,
+  cloudpath,
+  createddt,
+  updateddt
+)
+VALUES
+(
+  1,
+  1,
+  'status.generic.ok',
+  1024,
+  'file.format.original',
+  'originals/1/1',
+  CURRENT_TIMESTAMP,
+  CURRENT_TIMESTAMP
+),
+(
+  2,
+  1,
+  'status.generic.deleted',
+  1024,
+  'file.format.original',
+  'originals/2/2',
+  CURRENT_TIMESTAMP,
+  CURRENT_TIMESTAMP
+);
