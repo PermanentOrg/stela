@@ -108,6 +108,16 @@ variable "account_space_updater_staging_lambda_image" {
   type        = string
 }
 
+variable "archivematica_triggerer_dev_lambda_image" {
+  description = "Tag of archivematica triggerer image to deploy to dev"
+  type        = string
+}
+
+variable "archivematica_triggerer_staging_lambda_image" {
+  description = "Tag of archivematica triggerer image to deploy to staging"
+  type        = string
+}
+
 variable "dev_security_group_id" {
   description = "ID of the Development security group"
   type        = string
@@ -392,4 +402,16 @@ variable "staging_site_url" {
   description = "URL of the staging site"
   type        = string
   default     = "staging.permanent.org"
+}
+
+variable "dev_archivematica_original_location_id" {
+  description = "Location ID where original copies are stored for the dev instance of Archivematica"
+  type        = string
+  default     = "59ca35b5-6cb2-47d2-ab1c-5912d3bb4ce2"
+}
+
+variable "staging_archivematica_original_location_id" {
+  description = "Location ID where original copies are stored for the staging instance of Archivematica"
+  type        = string
+  default     = "b3a5a89f-34c0-4ebd-a037-e70140d49ff9"
 }

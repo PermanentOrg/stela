@@ -25,8 +25,10 @@ jobs:
       AM_CLEANUP_IMAGE_TAG: ${{ needs.generate_image_tags.outputs.AM_CLEANUP_IMAGE_TAG }}
       RECORD_THUMBNAIL_LAMBDA_IMAGE_TAG: ${{ needs.generate_image_tags.outputs.RECORD_THUMBNAIL_LAMBDA_IMAGE_TAG }}
       THUMBNAIL_REFRESH_IMAGE_TAG: ${{ needs.generate_image_tags.outputs.THUMBNAIL_REFRESH_IMAGE_TAG }}
+      FILE_URL_REFRESH_IMAGE_TAG: ${{ needs.generate_image_tags.outputs.FILE_URL_REFRESH_IMAGE_TAG }}
       ACCESS_COPY_LAMBDA_IMAGE_TAG: ${{ needs.generate_image_tags.outputs.ACCESS_COPY_LAMBDA_IMAGE_TAG }}
       ACCOUNT_SPACE_UPDATER_IMAGE_TAG: ${{ needs.generate_image_tags.outputs.ACCOUNT_SPACE_UPDATER_IMAGE_TAG }}
+      ARCHIVEMATICA_TRIGGERER_IMAGE_TAG: ${{ needs.generate_image_tags.outputs.ARCHIVEMATICA_TRIGGERER_IMAGE_TAG }}
     defaults:
       run:
         working-directory: ./terraform/test_cluster
@@ -52,12 +54,16 @@ jobs:
           -var="archivematica_cleanup_staging_image=$AM_CLEANUP_IMAGE_TAG" \
           -var="record_thumbnail_dev_lambda_image=$RECORD_THUMBNAIL_LAMBDA_IMAGE_TAG" \
           -var="record_thumbnail_staging_lambda_image=$RECORD_THUMBNAIL_LAMBDA_IMAGE_TAG" \
+          -var="file_url_refresh_dev_image=$FILE_URL_REFRESH_IMAGE_TAG" \
+          -var="file_url_refresh_staging_image=$FILE_URL_REFRESH_IMAGE_TAG" \
           -var="thumbnail_refresh_dev_image=$THUMBNAIL_REFRESH_IMAGE_TAG" \
           -var="thumbnail_refresh_staging_image=$THUMBNAIL_REFRESH_IMAGE_TAG" \
           -var="access_copy_dev_lambda_image=$ACCESS_COPY_LAMBDA_IMAGE_TAG" \
           -var="access_copy_staging_lambda_image=$ACCESS_COPY_LAMBDA_IMAGE_TAG" \
           -var="account_space_updater_dev_lambda_image=$ACCOUNT_SPACE_UPDATER_IMAGE_TAG" \
-          -var="account_space_updater_staging_lambda_image=$ACCOUNT_SPACE_UPDATER_IMAGE_TAG"
+          -var="account_space_updater_staging_lambda_image=$ACCOUNT_SPACE_UPDATER_IMAGE_TAG" \
+          -var="archivematica_triggerer_dev_lambda_image=$ARCHIVEMATICA_TRIGGERER_IMAGE_TAG" \
+          -var="archivematica_triggerer_staging_lambda_image=$ARCHIVEMATICA_TRIGGERER_IMAGE_TAG"
       - name: Terraform Apply
         run: |
           terraform apply -auto-approve -input=false \
@@ -67,9 +73,13 @@ jobs:
           -var="archivematica_cleanup_staging_image=$AM_CLEANUP_IMAGE_TAG" \
           -var="record_thumbnail_dev_lambda_image=$RECORD_THUMBNAIL_LAMBDA_IMAGE_TAG" \
           -var="record_thumbnail_staging_lambda_image=$RECORD_THUMBNAIL_LAMBDA_IMAGE_TAG" \
+          -var="file_url_refresh_dev_image=$FILE_URL_REFRESH_IMAGE_TAG" \
+          -var="file_url_refresh_staging_image=$FILE_URL_REFRESH_IMAGE_TAG" \
           -var="thumbnail_refresh_dev_image=$THUMBNAIL_REFRESH_IMAGE_TAG" \
           -var="thumbnail_refresh_staging_image=$THUMBNAIL_REFRESH_IMAGE_TAG" \
           -var="access_copy_dev_lambda_image=$ACCESS_COPY_LAMBDA_IMAGE_TAG" \
           -var="access_copy_staging_lambda_image=$ACCESS_COPY_LAMBDA_IMAGE_TAG" \
           -var="account_space_updater_dev_lambda_image=$ACCOUNT_SPACE_UPDATER_IMAGE_TAG" \
-          -var="account_space_updater_staging_lambda_image=$ACCOUNT_SPACE_UPDATER_IMAGE_TAG"
+          -var="account_space_updater_staging_lambda_image=$ACCOUNT_SPACE_UPDATER_IMAGE_TAG" \
+          -var="archivematica_triggerer_dev_lambda_image=$ARCHIVEMATICA_TRIGGERER_IMAGE_TAG" \
+          -var="archivematica_triggerer_staging_lambda_image=$ARCHIVEMATICA_TRIGGERER_IMAGE_TAG"

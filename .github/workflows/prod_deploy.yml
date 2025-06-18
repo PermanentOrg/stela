@@ -26,6 +26,7 @@ jobs:
       FILE_URL_REFRESH_IMAGE_TAG: ${{ needs.generate_image_tags.outputs.FILE_URL_REFRESH_IMAGE_TAG }}
       ACCESS_COPY_LAMBDA_IMAGE_TAG: ${{ needs.generate_image_tags.outputs.ACCESS_COPY_LAMBDA_IMAGE_TAG }}
       ACCOUNT_SPACE_UPDATER_IMAGE_TAG: ${{ needs.generate_image_tags.outputs.ACCOUNT_SPACE_UPDATER_IMAGE_TAG }}
+      ARCHIVEMATICA_TRIGGERER_IMAGE_TAG: ${{ needs.generate_image_tags.outputs.ARCHIVEMATICA_TRIGGERER_IMAGE_TAG }}
     defaults:
       run:
         working-directory: ./terraform/prod_cluster
@@ -51,7 +52,8 @@ jobs:
           -var="thumbnail_refresh_image=$THUMBNAIL_REFRESH_IMAGE_TAG" \
           -var="file_url_refresh_image=$FILE_URL_REFRESH_IMAGE_TAG" \
           -var="access_copy_lambda_image=$ACCESS_COPY_LAMBDA_IMAGE_TAG" \
-          -var="account_space_updater_lambda_image=$ACCOUNT_SPACE_UPDATER_IMAGE_TAG"
+          -var="account_space_updater_lambda_image=$ACCOUNT_SPACE_UPDATER_IMAGE_TAG" \
+          -var="archivematica_triggerer_lambda_image=$ARCHIVEMATICA_TRIGGERER_IMAGE_TAG"
       - name: Terraform Apply
         run: |
           terraform apply -auto-approve -input=false \
@@ -61,4 +63,5 @@ jobs:
           -var="thumbnail_refresh_image=$THUMBNAIL_REFRESH_IMAGE_TAG" \
           -var="file_url_refresh_image=$FILE_URL_REFRESH_IMAGE_TAG" \
           -var="access_copy_lambda_image=$ACCESS_COPY_LAMBDA_IMAGE_TAG" \
-          -var="account_space_updater_lambda_image=$ACCOUNT_SPACE_UPDATER_IMAGE_TAG"
+          -var="account_space_updater_lambda_image=$ACCOUNT_SPACE_UPDATER_IMAGE_TAG" \
+          -var="archivematica_triggerer_lambda_image=$ARCHIVEMATICA_TRIGGERER_IMAGE_TAG"
