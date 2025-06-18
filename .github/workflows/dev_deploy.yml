@@ -31,6 +31,7 @@ jobs:
       FILE_URL_REFRESH_IMAGE_TAG: ${{ needs.generate_image_tags.outputs.FILE_URL_REFRESH_IMAGE_TAG }}
       ACCESS_COPY_LAMBDA_IMAGE_TAG: ${{ needs.generate_image_tags.outputs.ACCESS_COPY_LAMBDA_IMAGE_TAG }}
       ACCOUNT_SPACE_UPDATER_IMAGE_TAG: ${{ needs.generate_image_tags.outputs.ACCOUNT_SPACE_UPDATER_IMAGE_TAG }}
+      TRIGGER_ARCHIVEMATICA_IMAGE_TAG: ${{ needs.generate_image_tags.outputs.TRIGGER_ARCHIVEMATICA_IMAGE_TAG }}
     defaults:
       run:
         working-directory: ./terraform/test_cluster
@@ -66,13 +67,16 @@ jobs:
           -var="access_copy_staging_lambda_image=$ACCESS_COPY_LAMBDA_IMAGE_TAG" \
           -var="account_space_updater_dev_lambda_image=$ACCOUNT_SPACE_UPDATER_IMAGE_TAG" \
           -var="account_space_updater_staging_lambda_image=$ACCOUNT_SPACE_UPDATER_IMAGE_TAG" \
+          -var="trigger_archivematica_dev_lambda_image=$TRIGGER_ARCHIVEMATICA_IMAGE_TAG" \
+          -var="trigger_archivematica_staging_lambda_image=$TRIGGER_ARCHIVEMATICA_IMAGE_TAG" \
           -target=kubernetes_deployment.stela_dev \
           -target=kubernetes_cron_job_v1.archivematica_cleanup_dev \
           -target=aws_lambda_function.record_thumbnail_lambda \
           -target=kubernetes_cron_job_v1.thumbnail_refresh_dev \
           -target=kubernetes_cron_job_v1.file_url_refresh_dev \
           -target=aws_lambda_function.access_copy_dev_lambda \
-          -target=aws_lambda_function.account_space_update_dev_lambda
+          -target=aws_lambda_function.account_space_update_dev_lambda \
+          -target=aws_lambda_function.trigger_archivematica_update_dev_lambda
       - name: Terraform Apply
         run: |
           terraform apply -auto-approve -input=false \
@@ -90,10 +94,13 @@ jobs:
           -var="access_copy_staging_lambda_image=$ACCESS_COPY_LAMBDA_IMAGE_TAG" \
           -var="account_space_updater_dev_lambda_image=$ACCOUNT_SPACE_UPDATER_IMAGE_TAG" \
           -var="account_space_updater_staging_lambda_image=$ACCOUNT_SPACE_UPDATER_IMAGE_TAG" \
+          -var="trigger_archivematica_dev_lambda_image=$TRIGGER_ARCHIVEMATICA_IMAGE_TAG" \
+          -var="trigger_archivematica_staging_lambda_image=$TRIGGER_ARCHIVEMATICA_IMAGE_TAG" \
           -target=kubernetes_deployment.stela_dev \
           -target=kubernetes_cron_job_v1.archivematica_cleanup_dev \
           -target=aws_lambda_function.record_thumbnail_lambda \
           -target=kubernetes_cron_job_v1.thumbnail_refresh_dev \
           -target=kubernetes_cron_job_v1.file_url_refresh_dev \
           -target=aws_lambda_function.access_copy_dev_lambda \
-          -target=aws_lambda_function.account_space_update_dev_lambda
+          -target=aws_lambda_function.account_space_update_dev_lambda \
+          -target=aws_lambda_function.trigger_archivematica_dev_lambda
