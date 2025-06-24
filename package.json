@@ -7,6 +7,7 @@
 		"./packages/s3-utils",
 		"./packages/archivematica-utils",
 		"./packages/file-utils",
+		"./packages/event_utils",
 		"./packages/permanent_models/",
 		"./packages/api",
 		"./packages/archivematica_cleanup",
@@ -14,7 +15,8 @@
 		"./packages/record_thumbnail_attacher",
 		"./packages/thumbnail_refresh",
 		"./packages/file_url_refresh",
-		"./packages/access_copy_attacher"
+		"./packages/access_copy_attacher",
+		"./packages/trigger_archivematica"
 	],
 	"repository": {
 		"type": "git",
