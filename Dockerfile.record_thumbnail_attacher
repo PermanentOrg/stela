@@ -33,7 +33,6 @@ COPY --from=builder /usr/local/apps/stela/packages/archivematica-utils/package.j
 COPY --from=builder /usr/local/apps/stela/package.json ./package.json
 COPY --from=builder /usr/local/apps/stela/package-lock.json ./package-lock.json
 
-RUN npm install -g npm@8.19.3
 RUN npm install --workspace @stela/record_thumbnail_attacher
 
 CMD ["packages/record_thumbnail_attacher/dist/index.handler"]

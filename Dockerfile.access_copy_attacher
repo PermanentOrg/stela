@@ -36,7 +36,6 @@ COPY --from=builder /usr/local/apps/stela/package.json ./package.json
 COPY --from=builder /usr/local/apps/stela/package-lock.json ./package-lock.json
 
 RUN npm cache clean --force
-RUN npm install -g npm@8.19.3
 RUN npm install --workspace @stela/access_copy_attacher
 
 CMD ["packages/access_copy_attacher/dist/index.handler"]
