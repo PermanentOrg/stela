@@ -1,5 +1,8 @@
 {
-	"extends": "@tsconfig/node18-strictest/tsconfig.json",
+	"extends": [
+		"@tsconfig/node18/tsconfig.json",
+		"@tsconfig/strictest/tsconfig.json"
+	],
 	"exclude": [
 		"**/*.test.ts",
 		"**/*_test.ts",
@@ -12,9 +15,14 @@
 		"skipLibCheck": true,
 		"forceConsistentCasingInFileNames": true,
 		"declaration": true,
-		"lib": ["es2022", "DOM"],
+		"lib": [
+			"es2022",
+			"DOM"
+		],
 		"paths": {
-			"@stela/*": ["./packages/*/"]
+			"@stela/*": [
+				"./packages/*/"
+			]
 		}
 	}
 }
