@@ -26,7 +26,7 @@ cp .env.template .env
 
 Update values as needed (see [Environment Variables](#environment-variables).
 
-2. Install Node.js version 18 (doing this using [nvm](https://github.com/nvm-sh/nvm) is recommended).
+2. Install Node.js version 22 (doing this using [nvm](https://github.com/nvm-sh/nvm) is recommended).
 
 3. Install dependencies
 
