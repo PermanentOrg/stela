@@ -26,7 +26,7 @@ cp .env.template .env
 
 Update values as needed (see [Environment Variables](#environment-variables).
 
-2. Install Node.js version 18 (doing this using [nvm](https://github.com/nvm-sh/nvm) is recommended).
+2. Install the Node.js version specified in [.node-version](https://github.com/PermanentOrg/stela/blob/main/.node-version) (doing this using [nvm](https://github.com/nvm-sh/nvm) is recommended).
 
 3. Install dependencies
 
