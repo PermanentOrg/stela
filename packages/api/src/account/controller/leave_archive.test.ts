@@ -50,9 +50,10 @@ describe("leaveArchive", () => {
 				__,
 				next: NextFunction,
 			) => {
-				req.body.emailFromAuthToken = "test+1@permanent.org";
-				req.body.userSubjectFromAuthToken =
-					"b5461dc2-1eb0-450e-b710-fef7b2cafe1e";
+				req.body = {
+					emailFromAuthToken: "test+1@permanent.org",
+					userSubjectFromAuthToken: "b5461dc2-1eb0-450e-b710-fef7b2cafe1e",
+				};
 
 				next();
 			},
@@ -122,7 +123,7 @@ describe("leaveArchive", () => {
 				__,
 				next: NextFunction,
 			) => {
-				req.body.emailFromAuthToken = "test+1@permanent.org";
+				req.body = { emailFromAuthToken: "test+1@permanent.org" };
 
 				next();
 			},

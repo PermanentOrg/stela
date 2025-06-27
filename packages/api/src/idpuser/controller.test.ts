@@ -28,10 +28,10 @@ describe("/idpuser", () => {
 	beforeEach(async () => {
 		(verifyUserAuthentication as jest.Mock).mockImplementation(
 			(req: Request, __, next: NextFunction) => {
-				(req.body as TwoFactorRequest).emailFromAuthToken =
-					"test@permanent.org";
-				(req.body as TwoFactorRequest).userSubjectFromAuthToken =
-					"f8bc5749-a50e-4f8e-939b-fc8ae3c34f42";
+				req.body = {
+					emailFromAuthToken: "test@permanent.org",
+					userSubjectFromAuthToken: "f8bc5749-a50e-4f8e-939b-fc8ae3c34f42",
+				};
 				next();
 			},
 		);
@@ -59,9 +59,10 @@ describe("/idpuser", () => {
 	test("should return invalid request status if the value from the auth token is not a valid email", async () => {
 		(verifyUserAuthentication as jest.Mock).mockImplementation(
 			(req: Request, __, next: NextFunction) => {
-				(req.body as TwoFactorRequest).emailFromAuthToken = "not_an_email";
-				(req.body as TwoFactorRequest).userSubjectFromAuthToken =
-					"f8bc5749-a50e-4f8e-939b-fc8ae3c34f42";
+				req.body = {
+					emailFromAuthToken: "not_an_email",
+					userSubjectFromAuthToken: "f8bc5749-a50e-4f8e-939b-fc8ae3c34f42",
+				};
 				next();
 			},
 		);
@@ -71,8 +72,9 @@ describe("/idpuser", () => {
 	test("should return invalid request status if there is no email in the auth token", async () => {
 		(verifyUserAuthentication as jest.Mock).mockImplementation(
 			(req: Request, __, next: NextFunction) => {
-				(req.body as TwoFactorRequest).userSubjectFromAuthToken =
-					"f8bc5749-a50e-4f8e-939b-fc8ae3c34f42";
+				req.body = {
+					userSubjectFromAuthToken: "f8bc5749-a50e-4f8e-939b-fc8ae3c34f42",
+				};
 				next();
 			},
 		);
@@ -82,8 +84,7 @@ describe("/idpuser", () => {
 	test("should return invalid request status if the user subject from the auth token is missing", async () => {
 		(verifyUserAuthentication as jest.Mock).mockImplementation(
 			(req: Request, __, next: NextFunction) => {
-				(req.body as TwoFactorRequest).emailFromAuthToken =
-					"test@permanent.org";
+				req.body = { emailFromAuthToken: "test@permanent.org" };
 				next();
 			},
 		);
@@ -93,9 +94,10 @@ describe("/idpuser", () => {
 	test("should return invalid request status if the user subject from the auth token is not a uuid", async () => {
 		(verifyUserAuthentication as jest.Mock).mockImplementation(
 			(req: Request, __, next: NextFunction) => {
-				(req.body as TwoFactorRequest).emailFromAuthToken =
-					"test@permanent.org";
-				(req.body as TwoFactorRequest).userSubjectFromAuthToken = "not_a_uuid";
+				req.body = {
+					emailFromAuthToken: "test@permanent.org",
+					userSubjectFromAuthToken: "not_a_uuid",
+				};
 				next();
 			},
 		);
@@ -240,7 +242,10 @@ describe("idpuser/send-enable-code", () => {
 				next(createError(401, "Unauthorized"));
 			},
 		);
-		await agent.post("/api/v2/idpuser/send-enable-code").expect(401);
+		await agent
+			.post("/api/v2/idpuser/send-enable-code")
+			.send({ method: "email", value: "test@permanent.org" })
+			.expect(401);
 	});
 
 	test("should return a 400 status if emailFromAuthToken is missing", async () => {
@@ -249,7 +254,10 @@ describe("idpuser/send-enable-code", () => {
 				next();
 			},
 		);
-		await agent.post("/api/v2/idpuser/send-enable-code").expect(400);
+		await agent
+			.post("/api/v2/idpuser/send-enable-code")
+			.send({ method: "email", value: "test@permanent.org" })
+			.expect(400);
 	});
 
 	test("should return a 400 status if emailFromAuthToken is not an email", async () => {
@@ -259,7 +267,10 @@ describe("idpuser/send-enable-code", () => {
 				next();
 			},
 		);
-		await agent.post("/api/v2/idpuser/send-enable-code").expect(400);
+		await agent
+			.post("/api/v2/idpuser/send-enable-code")
+			.send({ method: "email", value: "test@permanent.org" })
+			.expect(400);
 	});
 
 	test("should return invalid request status if the user subject from the auth token is missing", async () => {
@@ -270,7 +281,10 @@ describe("idpuser/send-enable-code", () => {
 				next();
 			},
 		);
-		await agent.get("/api/v2/idpuser").expect(400);
+		await agent
+			.post("/api/v2/idpuser/send-enable-code")
+			.send({ method: "email", value: "test@permanent.org" })
+			.expect(400);
 	});
 
 	test("should return invalid request status if the user subject from the auth token is not a uuid", async () => {
@@ -283,11 +297,17 @@ describe("idpuser/send-enable-code", () => {
 				next();
 			},
 		);
-		await agent.get("/api/v2/idpuser").expect(400);
+		await agent
+			.post("/api/v2/idpuser/send-enable-code")
+			.send({ method: "email", value: "test@permanent.org" })
+			.expect(400);
 	});
 
 	test("should return a 400 status if method is missing", async () => {
-		await agent.post("/api/v2/idpuser/send-enable-code").expect(400);
+		await agent
+			.post("/api/v2/idpuser/send-enable-code")
+			.send({ value: "test@permanent.org" })
+			.expect(400);
 	});
 
 	test("should return a 400 status if method is invalid", async () => {
@@ -431,7 +451,14 @@ describe("POST /idpuser/enable-two-factor", () => {
 				next();
 			},
 		);
-		await agent.get("/api/v2/idpuser").expect(400);
+		await agent
+			.post("/api/v2/idpuser/enable-two-factor")
+			.send({
+				code: "test_code",
+				method: "email",
+				value: "test@permanent.org",
+			})
+			.expect(400);
 	});
 
 	test("should return invalid request status if the user subject from the auth token is not a uuid", async () => {
@@ -444,7 +471,14 @@ describe("POST /idpuser/enable-two-factor", () => {
 				next();
 			},
 		);
-		await agent.get("/api/v2/idpuser").expect(400);
+		await agent
+			.post("/api/v2/idpuser/enable-two-factor")
+			.send({
+				code: "test_code",
+				method: "email",
+				value: "test@permanent.org",
+			})
+			.expect(400);
 	});
 
 	test("should return a 400 status if the code is missing", async () => {
@@ -622,7 +656,10 @@ describe("idpuser/send-disable-code", () => {
 				next();
 			},
 		);
-		await agent.get("/api/v2/idpuser").expect(400);
+		await agent
+			.post("/api/v2/idpuser/send-disable-code")
+			.send({ methodId: "test_method_id" })
+			.expect(400);
 	});
 
 	test("should return invalid request status if the user subject from the auth token is not a uuid", async () => {
@@ -635,11 +672,14 @@ describe("idpuser/send-disable-code", () => {
 				next();
 			},
 		);
-		await agent.get("/api/v2/idpuser").expect(400);
+		await agent
+			.post("/api/v2/idpuser/send-disable-code")
+			.send({ methodId: "test_method_id" })
+			.expect(400);
 	});
 
 	test("should return a 400 status if methodId is missing", async () => {
-		await agent.post("/api/v2/idpuser/send-disable-code").expect(400);
+		await agent.post("/api/v2/idpuser/send-disable-code").send({}).expect(400);
 	});
 
 	test("should call the fusionauth client to send the code", async () => {
@@ -771,7 +811,10 @@ describe("/idpuser/disable-two-factor", () => {
 				next();
 			},
 		);
-		await agent.get("/api/v2/idpuser").expect(400);
+		await agent
+			.post("/api/v2/idpuser/disable-two-factor")
+			.send({ methodId: "test_method_id", code: "test_code" })
+			.expect(400);
 	});
 
 	test("should return invalid request status if the user subject from the auth token is not a uuid", async () => {
@@ -784,7 +827,10 @@ describe("/idpuser/disable-two-factor", () => {
 				next();
 			},
 		);
-		await agent.get("/api/v2/idpuser").expect(400);
+		await agent
+			.post("/api/v2/idpuser/disable-two-factor")
+			.send({ methodId: "test_method_id", code: "test_code" })
+			.expect(400);
 	});
 
 	test("should return 400 status if methodId is missing", async () => {

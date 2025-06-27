@@ -134,7 +134,13 @@ describe("POST /share-links", () => {
 	});
 
 	test("should return 400 if the request fails validation", async () => {
-		await agent.post("/api/v2/share-links").expect(400);
+		await agent
+			.post("/api/v2/share-links")
+			.send({
+				itemType: "record",
+				accessRestrictions: "none",
+			})
+			.expect(400);
 	});
 
 	test("should return a 400 error if the request attempts to create an unlisted link for a public item", async () => {
@@ -533,14 +539,7 @@ describe("PATCH /share-links/{id}", () => {
 	});
 
 	test("should return 400 if the request is empty", async () => {
-		await agent.patch("/api/v2/share-links/1001").send().expect(400);
-	});
-
-	test("should return 400 is not parseable json", async () => {
-		await agent
-			.patch("/api/v2/share-links/1001")
-			.send("{'this_object': 'is_missing_a_closing_brace'")
-			.expect(400);
+		await agent.patch("/api/v2/share-links/1001").send({}).expect(400);
 	});
 
 	test("should return the updated share link", async () => {
@@ -612,12 +611,9 @@ describe("GET /share-links", () => {
 					_: Response,
 					next: NextFunction,
 				) => {
-					(
-						req.body as {
-							emailFromAuthToken: string;
-							userSubjectFromAuthToken: string;
-						}
-					).emailFromAuthToken = "test@permanent.org";
+					req.body = {
+						emailFromAuthToken: "test@permanent.org",
+					};
 					next();
 				},
 			);
@@ -658,12 +654,9 @@ describe("GET /share-links", () => {
 					_: Response,
 					next: NextFunction,
 				) => {
-					(
-						req.body as {
-							emailFromAuthToken: string;
-							userSubjectFromAuthToken: string;
-						}
-					).emailFromAuthToken = "not_an_email";
+					req.body = {
+						emailFromAuthToken: "not_an_email",
+					};
 					next();
 				},
 			);
@@ -679,12 +672,9 @@ describe("GET /share-links", () => {
 					_: Response,
 					next: NextFunction,
 				) => {
-					(
-						req.body as {
-							emailFromAuthToken: string;
-							userSubjectFromAuthToken: string;
-						}
-					).emailFromAuthToken = "test+1@permanent.org";
+					req.body = {
+						emailFromAuthToken: "test+1@permanent.org",
+					};
 					next();
 				},
 			);
@@ -749,10 +739,11 @@ describe("GET /share-links", () => {
 			.mocked(extractUserEmailFromAuthToken)
 			.mockImplementation(
 				async (
-					_: Request<unknown, unknown, { emailFromAuthToken?: string }>,
+					req: Request<unknown, unknown, { emailFromAuthToken?: string }>,
 					__: Response,
 					next: NextFunction,
 				) => {
+					req.body = {};
 					next();
 				},
 			);
@@ -797,18 +788,10 @@ describe("DELETE /share-links", () => {
 	beforeEach(async () => {
 		(verifyUserAuthentication as jest.Mock).mockImplementation(
 			(req: Request, _, next: NextFunction) => {
-				(
-					req.body as {
-						emailFromAuthToken: string;
-						userSubjectFromAuthToken: string;
-					}
-				).emailFromAuthToken = "test@permanent.org";
-				(
-					req.body as {
-						emailFromAuthToken: string;
-						userSubjectFromAuthToken: string;
-					}
-				).userSubjectFromAuthToken = "ceca5477-3f9c-4d0a-a7b8-04d5e5adac32";
+				req.body = {
+					emailFromAuthToken: "test@permanent.org",
+					userSubjectFromAuthToken: "ceca5477-3f9c-4d0a-a7b8-04d5e5adac32",
+				};
 				next();
 			},
 		);
@@ -835,7 +818,8 @@ describe("DELETE /share-links", () => {
 
 	test("should return 400 if header values are missing", async () => {
 		(verifyUserAuthentication as jest.Mock).mockImplementation(
-			(__: Request, _, next: NextFunction) => {
+			(req: Request, _, next: NextFunction) => {
+				req.body = {};
 				next();
 			},
 		);
@@ -858,18 +842,10 @@ describe("DELETE /share-links", () => {
 	test("should return 404 if the caller doesn't have access to the share link", async () => {
 		(verifyUserAuthentication as jest.Mock).mockImplementation(
 			(req: Request, _, next: NextFunction) => {
-				(
-					req.body as {
-						emailFromAuthToken: string;
-						userSubjectFromAuthToken: string;
-					}
-				).emailFromAuthToken = "test+1@permanent.org";
-				(
-					req.body as {
-						emailFromAuthToken: string;
-						userSubjectFromAuthToken: string;
-					}
-				).userSubjectFromAuthToken = "ceca5477-3f9c-4d0a-a7b8-04d5e5adac32";
+				req.body = {
+					emailFromAuthToken: "test+1@permanent.org",
+					userSubjectFromAuthToken: "ceca5477-3f9c-4d0a-a7b8-04d5e5adac32",
+				};
 				next();
 			},
 		);

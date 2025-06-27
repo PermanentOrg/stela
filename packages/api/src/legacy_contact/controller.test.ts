@@ -27,18 +27,10 @@ describe("GET /legacy-contact", () => {
 	beforeEach(async () => {
 		(verifyUserAuthentication as jest.Mock).mockImplementation(
 			(req: Request, __, next: NextFunction) => {
-				(
-					req.body as {
-						emailFromAuthToken: string;
-						userSubjectFromAuthToken: string;
-					}
-				).emailFromAuthToken = "test@permanent.org";
-				(
-					req.body as {
-						emailFromAuthToken: string;
-						userSubjectFromAuthToken: string;
-					}
-				).userSubjectFromAuthToken = "88420040-ec8d-4bc8-88f8-defaa74a05a5";
+				req.body = {
+					emailFromAuthToken: "test@permanent.org",
+					userSubjectFromAuthToken: "88420040-ec8d-4bc8-88f8-defaa74a05a5",
+				};
 				next();
 			},
 		);
@@ -73,7 +65,8 @@ describe("GET /legacy-contact", () => {
 
 	test("should throw a 400 error if the request validation fails", async () => {
 		(verifyUserAuthentication as jest.Mock).mockImplementation(
-			(_: Request, __, next: NextFunction) => {
+			(req: Request, __, next: NextFunction) => {
+				req.body = {};
 				next();
 			},
 		);

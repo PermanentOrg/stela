@@ -23,7 +23,7 @@ describe("GET /folder", () => {
 				__,
 				next: NextFunction,
 			) => {
-				req.body.emailFromAuthToken = "test@permanent.org";
+				req.body = { emailFromAuthToken: "test@permanent.org" };
 				next();
 			},
 		);
@@ -71,7 +71,7 @@ describe("GET /folder", () => {
 				__,
 				next: NextFunction,
 			) => {
-				req.body.emailFromAuthToken = "not_an_email";
+				req.body = { emailFromAuthToken: "not_an_email" };
 				next();
 			},
 		);
@@ -81,10 +81,11 @@ describe("GET /folder", () => {
 	test("should return a public folder if the user is not authenticated", async () => {
 		(extractUserEmailFromAuthToken as jest.Mock).mockImplementation(
 			async (
-				_: Request<unknown, unknown, { emailFromAuthToken?: string }>,
+				req: Request<unknown, unknown, { emailFromAuthToken?: string }>,
 				__,
 				next: NextFunction,
 			) => {
+				req.body = {};
 				next();
 			},
 		);
@@ -99,10 +100,11 @@ describe("GET /folder", () => {
 	test("should not return a private folder if the user is not authenticated", async () => {
 		(extractUserEmailFromAuthToken as jest.Mock).mockImplementation(
 			async (
-				_: Request<unknown, unknown, { emailFromAuthToken?: string }>,
+				req: Request<unknown, unknown, { emailFromAuthToken?: string }>,
 				__,
 				next: NextFunction,
 			) => {
+				req.body = {};
 				next();
 			},
 		);
@@ -129,7 +131,7 @@ describe("GET /folder", () => {
 				__,
 				next: NextFunction,
 			) => {
-				req.body.emailFromAuthToken = "test+3@permanent.org";
+				req.body = { emailFromAuthToken: "test+3@permanent.org" };
 				next();
 			},
 		);
@@ -144,10 +146,11 @@ describe("GET /folder", () => {
 	test("should return a private folder if the user has a share token", async () => {
 		(extractUserEmailFromAuthToken as jest.Mock).mockImplementation(
 			async (
-				_: Request<unknown, unknown, { emailFromAuthToken?: string }>,
+				req: Request<unknown, unknown, { emailFromAuthToken?: string }>,
 				__,
 				next: NextFunction,
 			) => {
+				req.body = {};
 				next();
 			},
 		);
@@ -161,7 +164,7 @@ describe("GET /folder", () => {
 				__,
 				next: NextFunction,
 			) => {
-				req.body.shareToken = "c0f523e4-48d8-4c39-8cda-5e95161532e4";
+				req.body = { shareToken: "c0f523e4-48d8-4c39-8cda-5e95161532e4" };
 				next();
 			},
 		);
@@ -194,7 +197,7 @@ describe("GET /folder", () => {
 				__,
 				next: NextFunction,
 			) => {
-				req.body.shareToken = "56f7c246-e4ec-41f3-b117-6df4c9377075";
+				req.body = { shareToken: "56f7c246-e4ec-41f3-b117-6df4c9377075" };
 				next();
 			},
 		);
@@ -227,7 +230,7 @@ describe("GET /folder", () => {
 				__,
 				next: NextFunction,
 			) => {
-				req.body.shareToken = "7d6412af-5abe-4acb-808a-64e9ce3b7535";
+				req.body = { shareToken: "7d6412af-5abe-4acb-808a-64e9ce3b7535" };
 				next();
 			},
 		);
@@ -259,7 +262,7 @@ describe("GET /folder", () => {
 				__,
 				next: NextFunction,
 			) => {
-				req.body.shareToken = "9cc057f0-d3e8-41df-94d6-9b315b4921af";
+				req.body = { shareToken: "9cc057f0-d3e8-41df-94d6-9b315b4921af" };
 				next();
 			},
 		);
@@ -278,7 +281,7 @@ describe("GET /folder", () => {
 				__,
 				next: NextFunction,
 			) => {
-				req.body.emailFromAuthToken = "test+2@permanent.org";
+				req.body = { emailFromAuthToken: "test+2@permanent.org" };
 				next();
 			},
 		);
@@ -297,7 +300,7 @@ describe("GET /folder", () => {
 				__,
 				next: NextFunction,
 			) => {
-				req.body.emailFromAuthToken = "test+3@permanent.org";
+				req.body = { emailFromAuthToken: "test+3@permanent.org" };
 				next();
 			},
 		);
@@ -315,7 +318,7 @@ describe("GET /folder", () => {
 				__,
 				next: NextFunction,
 			) => {
-				req.body.emailFromAuthToken = "test+4@permanent.org";
+				req.body = { emailFromAuthToken: "test+4@permanent.org" };
 				next();
 			},
 		);
