@@ -399,14 +399,10 @@ describe("/record/:recordId/recalculate_thumbnail", () => {
 	beforeEach(async () => {
 		(verifyAdminAuthentication as jest.Mock).mockImplementation(
 			(req: Request, __, next: NextFunction) => {
-				const body = req.body as {
-					beginTimestamp: Date;
-					endTimestamp: Date;
-					emailFromAuthToken: string;
-					adminSubjectFromAuthToken: string;
+				req.body = {
+					emailFromAuthToken: "test@permanent.org",
+					adminSubjectFromAuthToken: "5c3473b6-cf2e-4c55-a80e-8db51d1bc5fd",
 				};
-				body.emailFromAuthToken = "test@permanent.org";
-				body.adminSubjectFromAuthToken = "5c3473b6-cf2e-4c55-a80e-8db51d1bc5fd";
 				next();
 			},
 		);
@@ -499,14 +495,10 @@ describe("/folder/delete-orphaned-folders", () => {
 	beforeEach(async () => {
 		(verifyAdminAuthentication as jest.Mock).mockImplementation(
 			(req: Request, __, next: NextFunction) => {
-				const body = req.body as {
-					beginTimestamp: Date;
-					endTimestamp: Date;
-					emailFromAuthToken: string;
-					adminSubjectFromAuthToken: string;
+				req.body = {
+					emailFromAuthToken: "test@permanent.org",
+					adminSubjectFromAuthToken: "5c3473b6-cf2e-4c55-a80e-8db51d1bc5fd",
 				};
-				body.emailFromAuthToken = "test@permanent.org";
-				body.adminSubjectFromAuthToken = "5c3473b6-cf2e-4c55-a80e-8db51d1bc5fd";
 				next();
 			},
 		);

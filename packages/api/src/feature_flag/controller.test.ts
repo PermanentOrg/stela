@@ -12,7 +12,6 @@ import type {
 	CreateFeatureFlagRequest,
 	UpdateFeatureFlagRequest,
 	DeleteFeatureFlagRequest,
-	FeatureFlagRequest,
 } from "./models";
 
 jest.mock("../database");
@@ -37,7 +36,7 @@ describe("GET /feature-flags", () => {
 		await loadFixtures();
 		(extractUserIsAdminFromAuthToken as jest.Mock).mockImplementation(
 			(req: Request, __, next: NextFunction) => {
-				(req.body as FeatureFlagRequest).admin = false;
+				req.body = { admin: false };
 				next();
 			},
 		);
@@ -59,7 +58,7 @@ describe("GET /feature-flags", () => {
 	test("should log the error if the database call fails when calling user is admin", async () => {
 		(extractUserIsAdminFromAuthToken as jest.Mock).mockImplementation(
 			(req: Request, __, next: NextFunction) => {
-				(req.body as FeatureFlagRequest).admin = true;
+				req.body = { admin: true };
 				next();
 			},
 		);
@@ -72,7 +71,8 @@ describe("GET /feature-flags", () => {
 
 	test("should log the error if the request is invalid", async () => {
 		(extractUserIsAdminFromAuthToken as jest.Mock).mockImplementation(
-			(_req: Request, __, next: NextFunction) => {
+			(req: Request, __, next: NextFunction) => {
+				req.body = {};
 				next();
 			},
 		);
@@ -91,7 +91,7 @@ describe("GET /feature-flags", () => {
 	test("should return list of all feature flags if user is admin", async () => {
 		(extractUserIsAdminFromAuthToken as jest.Mock).mockImplementation(
 			(req: Request, __, next: NextFunction) => {
-				(req.body as FeatureFlagRequest).admin = true;
+				req.body = { admin: true };
 				next();
 			},
 		);
