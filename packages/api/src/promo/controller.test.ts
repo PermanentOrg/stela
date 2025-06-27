@@ -414,8 +414,7 @@ describe("GET /promo", () => {
 	beforeEach(async () => {
 		(verifyAdminAuthentication as jest.Mock).mockImplementation(
 			(req: Request, __, next: NextFunction) => {
-				(req.body as CreatePromoRequest).emailFromAuthToken =
-					"test@permanent.org";
+				req.body = { emailFromAuthToken: "test@permanent.org" };
 				next();
 			},
 		);

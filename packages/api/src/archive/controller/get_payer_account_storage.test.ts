@@ -29,11 +29,10 @@ describe("getPayerAccountStorage", () => {
 	beforeEach(async () => {
 		(verifyUserAuthentication as jest.Mock).mockImplementation(
 			(req: Request, _: Response, next: NextFunction) => {
-				(req.body as { emailFromAuthToken: string }).emailFromAuthToken =
-					"test+1@permanent.org";
-				(
-					req.body as { userSubjectFromAuthToken: string }
-				).userSubjectFromAuthToken = "82bd483e-914b-4bfe-abf9-92ffe86d7803";
+				req.body = {
+					emailFromAuthToken: "test+1@permanent.org",
+					userSubjectFromAuthToken: "82bd483e-914b-4bfe-abf9-92ffe86d7803",
+				};
 				next();
 			},
 		);
@@ -57,11 +56,10 @@ describe("getPayerAccountStorage", () => {
 	test("should throw a not found error if account can't access the archive", async () => {
 		(verifyUserAuthentication as jest.Mock).mockImplementation(
 			(req: Request, _: Response, next: NextFunction) => {
-				(req.body as { emailFromAuthToken: string }).emailFromAuthToken =
-					"test+2@permanent.org";
-				(
-					req.body as { userSubjectFromAuthToken: string }
-				).userSubjectFromAuthToken = "82bd483e-914b-4bfe-abf9-92ffe86d7803";
+				req.body = {
+					emailFromAuthToken: "test+2@permanent.org",
+					userSubjectFromAuthToken: "82bd483e-914b-4bfe-abf9-92ffe86d7803",
+				};
 				next();
 			},
 		);
@@ -75,8 +73,7 @@ describe("getPayerAccountStorage", () => {
 	test("should throw a bad request error if the request is invalid", async () => {
 		(verifyUserAuthentication as jest.Mock).mockImplementation(
 			(req: Request, _: Response, next: NextFunction) => {
-				(req.body as { emailFromAuthToken: string }).emailFromAuthToken =
-					"test+1@permanent.org";
+				req.body = { emailFromAuthToken: "test+1@permanent.org" };
 				next();
 			},
 		);

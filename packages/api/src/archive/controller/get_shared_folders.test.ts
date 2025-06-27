@@ -39,9 +39,10 @@ describe("getSharedFolders", () => {
 				__,
 				next: NextFunction,
 			) => {
-				req.body.emailFromAuthToken = "test+1@permanent.org";
-				req.body.userSubjectFromAuthToken =
-					"553f3cb8-b753-43ce-83af-4443a404741b";
+				req.body = {
+					emailFromAuthToken: "test+1@permanent.org",
+					userSubjectFromAuthToken: "553f3cb8-b753-43ce-83af-4443a404741b",
+				};
 				next();
 			},
 		);
@@ -76,7 +77,8 @@ describe("getSharedFolders", () => {
 
 	test("should return 400 if the header data is missing", async () => {
 		(verifyUserAuthentication as jest.Mock).mockImplementation(
-			(_: Request, __: Response, next: NextFunction) => {
+			(req: Request, __: Response, next: NextFunction) => {
+				req.body = {};
 				next();
 			},
 		);
@@ -101,9 +103,10 @@ describe("getSharedFolders", () => {
 				__,
 				next: NextFunction,
 			) => {
-				req.body.emailFromAuthToken = "test@permanent.org";
-				req.body.userSubjectFromAuthToken =
-					"553f3cb8-b753-43ce-83af-4443a404741b";
+				req.body = {
+					emailFromAuthToken: "test@permanent.org",
+					userSubjectFromAuthToken: "553f3cb8-b753-43ce-83af-4443a404741b",
+				};
 				next();
 			},
 		);

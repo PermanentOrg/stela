@@ -30,18 +30,25 @@ const mockVerifyUserAuthentication = (
 ): void => {
 	(verifyUserAuthentication as jest.Mock).mockImplementation(
 		(req: Request, __, next: NextFunction) => {
-			(
-				req.body as {
-					emailFromAuthToken: string;
-					userSubjectFromAuthToken: string;
-				}
-			).emailFromAuthToken = testEmail;
-			(
-				req.body as {
-					emailFromAuthToken: string;
-					userSubjectFromAuthToken: string;
-				}
-			).userSubjectFromAuthToken = testSubject;
+			if (req.body !== undefined) {
+				(
+					req.body as {
+						emailFromAuthToken: string;
+						userSubjectFromAuthToken: string;
+					}
+				).emailFromAuthToken = testEmail;
+				(
+					req.body as {
+						emailFromAuthToken: string;
+						userSubjectFromAuthToken: string;
+					}
+				).userSubjectFromAuthToken = testSubject;
+			} else {
+				req.body = {
+					emailFromAuthToken: testEmail,
+					userSubjectFromAuthToken: testSubject,
+				};
+			}
 			next();
 		},
 	);
@@ -53,18 +60,25 @@ const mockVerifyAdminAuthentication = (
 ): void => {
 	(verifyAdminAuthentication as jest.Mock).mockImplementation(
 		(req: Request, __, next: NextFunction) => {
-			(
-				req.body as {
-					emailFromAuthToken: string;
-					adminSubjectFromAuthToken: string;
-				}
-			).emailFromAuthToken = testEmail;
-			(
-				req.body as {
-					emailFromAuthToken: string;
-					adminSubjectFromAuthToken: string;
-				}
-			).adminSubjectFromAuthToken = testSubject;
+			if (req.body !== undefined) {
+				(
+					req.body as {
+						emailFromAuthToken: string;
+						adminSubjectFromAuthToken: string;
+					}
+				).emailFromAuthToken = testEmail;
+				(
+					req.body as {
+						emailFromAuthToken: string;
+						adminSubjectFromAuthToken: string;
+					}
+				).adminSubjectFromAuthToken = testSubject;
+			} else {
+				req.body = {
+					emailFromAuthToken: testEmail,
+					adminSubjectFromAuthToken: testSubject,
+				};
+			}
 			next();
 		},
 	);
@@ -195,7 +209,7 @@ describe("POST /directive", () => {
 			.expect(200);
 
 		const directiveResult = await db.query<Directive>(
-			`SELECT 
+			`SELECT
         directive_id "directiveId",
         archive_id "archiveId",
         type,
@@ -431,7 +445,7 @@ describe("PUT /directive/:directiveId", () => {
 			.expect(200);
 
 		const directiveResult = await db.query<Directive>(
-			`SELECT 
+			`SELECT
         directive_id "directiveId",
         archive_id "archiveId",
         type,
@@ -494,7 +508,7 @@ describe("PUT /directive/:directiveId", () => {
 			.expect(200);
 
 		const directiveResult = await db.query<Directive>(
-			`SELECT 
+			`SELECT
         directive_id "directiveId",
         archive_id "archiveId",
         type,

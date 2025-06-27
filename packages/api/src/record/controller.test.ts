@@ -62,8 +62,7 @@ describe("GET /record", () => {
 	beforeEach(async () => {
 		(extractUserEmailFromAuthToken as jest.Mock).mockImplementation(
 			(req: Request, _: Response, next: NextFunction) => {
-				(req.body as { emailFromAuthToken: string }).emailFromAuthToken =
-					"test@permanent.org";
+				req.body = { emailFromAuthToken: "test@permanent.org" };
 				next();
 			},
 		);
@@ -92,8 +91,7 @@ describe("GET /record", () => {
 	test("expect request to have an email from auth token if an auth token exists", async () => {
 		(extractUserEmailFromAuthToken as jest.Mock).mockImplementation(
 			(req: Request, __, next: NextFunction) => {
-				(req.body as { emailFromAuthToken: string }).emailFromAuthToken =
-					"not an email";
+				req.body = { emailFromAuthToken: "not an email" };
 				next();
 			},
 		);
@@ -102,12 +100,9 @@ describe("GET /record", () => {
 	test("expect request to have a share token from the headers if such a token exists", async () => {
 		(extractShareTokenFromHeaders as jest.Mock).mockImplementation(
 			(req: Request, _: Response, next: NextFunction) => {
-				(
-					req.body as {
-						emailFromAuthToken: string;
-						shareToken: string | undefined;
-					}
-				).shareToken = "2849c711-e72e-41b5-bb49-b0b86a052668";
+				req.body = {
+					shareToken: "2849c711-e72e-41b5-bb49-b0b86a052668",
+				};
 				next();
 			},
 		);
@@ -128,7 +123,8 @@ describe("GET /record", () => {
 	});
 	test("expect return a public record when not logged in", async () => {
 		(extractUserEmailFromAuthToken as jest.Mock).mockImplementation(
-			(_, __, next: NextFunction) => {
+			(req: Request, __, next: NextFunction) => {
+				req.body = {};
 				next();
 			},
 		);
@@ -172,7 +168,8 @@ describe("GET /record", () => {
 	});
 	test("expect return a public record when not logged in", async () => {
 		(extractUserEmailFromAuthToken as jest.Mock).mockImplementation(
-			(_, __, next: NextFunction) => {
+			(req: Request, __, next: NextFunction) => {
+				req.body = {};
 				next();
 			},
 		);
@@ -184,7 +181,8 @@ describe("GET /record", () => {
 	});
 	test("expect return a private record when not logged in but providing a valid unlisted share token", async () => {
 		(extractUserEmailFromAuthToken as jest.Mock).mockImplementation(
-			(_, __, next: NextFunction) => {
+			(req: Request, __, next: NextFunction) => {
+				req.body = {};
 				next();
 			},
 		);
@@ -208,7 +206,8 @@ describe("GET /record", () => {
 	});
 	test("expect not to return a private record when not logged in and share token provided is not unlisted", async () => {
 		(extractUserEmailFromAuthToken as jest.Mock).mockImplementation(
-			(_, __, next: NextFunction) => {
+			(req: Request, __, next: NextFunction) => {
+				req.body = {};
 				next();
 			},
 		);
@@ -231,7 +230,8 @@ describe("GET /record", () => {
 	});
 	test("expect not to return a private record when not logged in and share token provided is expired", async () => {
 		(extractUserEmailFromAuthToken as jest.Mock).mockImplementation(
-			(_, __, next: NextFunction) => {
+			(req: Request, __, next: NextFunction) => {
+				req.body = {};
 				next();
 			},
 		);
@@ -254,7 +254,8 @@ describe("GET /record", () => {
 	});
 	test("expect return a private record when not logged in but providing a valid share token for an ancestor folder", async () => {
 		(extractUserEmailFromAuthToken as jest.Mock).mockImplementation(
-			(_, __, next: NextFunction) => {
+			(req: Request, __, next: NextFunction) => {
+				req.body = {};
 				next();
 			},
 		);
@@ -278,7 +279,8 @@ describe("GET /record", () => {
 	});
 	test("expect not to return a private record when share token for ancestor folder is not an unlisted share", async () => {
 		(extractUserEmailFromAuthToken as jest.Mock).mockImplementation(
-			(_, __, next: NextFunction) => {
+			(req: Request, __, next: NextFunction) => {
+				req.body = {};
 				next();
 			},
 		);
@@ -301,7 +303,8 @@ describe("GET /record", () => {
 	});
 	test("expect not to return a private record when share token for ancestor folder is expired", async () => {
 		(extractUserEmailFromAuthToken as jest.Mock).mockImplementation(
-			(_, __, next: NextFunction) => {
+			(req: Request, __, next: NextFunction) => {
+				req.body = {};
 				next();
 			},
 		);
@@ -324,7 +327,8 @@ describe("GET /record", () => {
 	});
 	test("expect not to return a private record when not logged in", async () => {
 		(extractUserEmailFromAuthToken as jest.Mock).mockImplementation(
-			(_, __, next: NextFunction) => {
+			(req: Request, __, next: NextFunction) => {
+				req.body = {};
 				next();
 			},
 		);
@@ -493,8 +497,7 @@ describe("GET /record", () => {
 	test("expect to not return a record shared with a deleted membership", async () => {
 		(extractUserEmailFromAuthToken as jest.Mock).mockImplementation(
 			(req: Request, _: Response, next: NextFunction) => {
-				(req.body as { emailFromAuthToken: string }).emailFromAuthToken =
-					"test+2@permanent.org";
+				req.body = { emailFromAuthToken: "test+2@permanent.org" };
 				next();
 			},
 		);
@@ -563,7 +566,7 @@ describe("PATCH /record", () => {
 	});
 
 	test("expect request to have an email from auth token if an auth token exists", async () => {
-		(extractUserEmailFromAuthToken as jest.Mock).mockImplementation(
+		(verifyUserAuthentication as jest.Mock).mockImplementation(
 			(req: Request, __, next: NextFunction) => {
 				(req.body as { emailFromAuthToken: string }).emailFromAuthToken =
 					"not an email";
@@ -571,7 +574,7 @@ describe("PATCH /record", () => {
 			},
 		);
 
-		await agent.patch("/api/v2/record/1").expect(400);
+		await agent.patch("/api/v2/record/1").send({ locationId: 123 }).expect(400);
 	});
 
 	test("expect location id is updated", async () => {
@@ -680,9 +683,10 @@ describe("GET /record/{id}/share-links", () => {
 				__,
 				next: NextFunction,
 			) => {
-				req.body.emailFromAuthToken = "test@permanent.org";
-				req.body.userSubjectFromAuthToken =
-					"b5461dc2-1eb0-450e-b710-fef7b2cafe1e";
+				req.body = {
+					emailFromAuthToken: "test@permanent.org",
+					userSubjectFromAuthToken: "b5461dc2-1eb0-450e-b710-fef7b2cafe1e",
+				};
 
 				next();
 			},
@@ -747,7 +751,8 @@ describe("GET /record/{id}/share-links", () => {
 
 	test("expect 401 if not authenticated", async () => {
 		(verifyUserAuthentication as jest.Mock).mockImplementation(
-			(_, __, next: NextFunction) => {
+			(req: Request, __, next: NextFunction) => {
+				req.body = {};
 				next(createError.Unauthorized("Invalid auth token"));
 			},
 		);
@@ -756,7 +761,8 @@ describe("GET /record/{id}/share-links", () => {
 
 	test("expect 400 if the header values are missing", async () => {
 		(verifyUserAuthentication as jest.Mock).mockImplementation(
-			(_, __, next: NextFunction) => {
+			(req: Request, __, next: NextFunction) => {
+				req.body = {};
 				next();
 			},
 		);
