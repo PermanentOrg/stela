@@ -68,8 +68,8 @@
 		"@types/memoizee": "^0.4.12",
 		"@types/newrelic": "^9.14.4",
 		"@types/ua-parser-js": "^0.7.39",
-		"nock": "^14.0.5",
 		"jest-when": "^3.7.0",
+		"nock": "^14.0.5",
 		"supertest": "^7.1.0"
 	}
 }
