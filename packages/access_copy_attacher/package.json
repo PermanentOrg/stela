@@ -47,6 +47,6 @@
 	},
 	"devDependencies": {
 		"@types/aws-lambda": "^8.10.149",
-		"@types/mime-types": "^2.1.4"
+		"@types/mime-types": "^3.0.1"
 	}
 }
