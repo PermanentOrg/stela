@@ -24,6 +24,6 @@
 		"build": "rm -rf dist/* && tsc -p tsconfig.json"
 	},
 	"dependencies": {
-		"winston": "^3.3.3"
+		"winston": "^3.17.0"
 	}
 }
