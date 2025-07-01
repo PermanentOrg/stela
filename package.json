@@ -7,6 +7,7 @@
 		"./packages/s3-utils",
 		"./packages/archivematica-utils",
 		"./packages/file-utils",
+		"./packages/event_utils",
 		"./packages/permanent_models/",
 		"./packages/api",
 		"./packages/archivematica_cleanup",
@@ -14,7 +15,8 @@
 		"./packages/record_thumbnail_attacher",
 		"./packages/thumbnail_refresh",
 		"./packages/file_url_refresh",
-		"./packages/access_copy_attacher"
+		"./packages/access_copy_attacher",
+		"./packages/trigger_archivematica"
 	],
 	"repository": {
 		"type": "git",
@@ -34,7 +36,7 @@
 		"@tsconfig/node18": "^18.2.4",
 		"@tsconfig/strictest": "^2.0.5",
 		"@types/cors": "^2.8.17",
-		"@types/express": "^4.17.8",
+		"@types/express": "^5.0.3",
 		"@types/http-errors": "^2.0.1",
 		"@types/jest": "29.5.14",
 		"@types/jest-when": "^3.5.5",

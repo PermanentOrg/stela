@@ -16,6 +16,8 @@ on:
         value: ${{ jobs.generate_image_tags.outputs.ACCESS_COPY_LAMBDA_IMAGE_TAG }}
       ACCOUNT_SPACE_UPDATER_IMAGE_TAG:
         value: ${{ jobs.generate_image_tags.outputs.ACCOUNT_SPACE_UPDATER_IMAGE_TAG }}
+      TRIGGER_ARCHIVEMATICA_IMAGE_TAG:
+        value: ${{ jobs.generate_image_tags.outputs.TRIGGER_ARCHIVEMATICA_IMAGE_TAG }}
 jobs:
   generate_image_tags:
     runs-on: ubuntu-24.04
@@ -27,6 +29,7 @@ jobs:
       FILE_URL_REFRESH_IMAGE_TAG: ${{ steps.generate_file_url_refresh_image_tag.outputs.FILE_URL_REFRESH_IMAGE_TAG }}
       ACCESS_COPY_LAMBDA_IMAGE_TAG: ${{ steps.generate_access_copy_lambda_image_tag.outputs.ACCESS_COPY_LAMBDA_IMAGE_TAG }}
       ACCOUNT_SPACE_UPDATER_IMAGE_TAG: ${{ steps.generate_account_space_updater_image_tag.outputs.ACCOUNT_SPACE_UPDATER_IMAGE_TAG }}
+      TRIGGER_ARCHIVEMATICA_IMAGE_TAG: ${{ steps.generate_trigger_archivematica_image_tag.outputs.TRIGGER_ARCHIVEMATICA_IMAGE_TAG }}
     steps:
       - uses: actions/checkout@v4
       - name: Set ECR domain env var
@@ -61,3 +64,6 @@ jobs:
       - name: Generate Account Space Updater Image Tag
         id: generate_account_space_updater_image_tag
         run: echo "ACCOUNT_SPACE_UPDATER_IMAGE_TAG=$ECR_DOMAIN/stela:account_space_updater-$BRANCH_TYPE-$ABBREVIATED_COMMIT_HASH" >> "$GITHUB_OUTPUT"
+      - name: Generate Archivematica Triggerer Image Tag
+        id: generate_trigger_archivematica_image_tag
+        run: echo "TRIGGER_ARCHIVEMATICA_IMAGE_TAG=$ECR_DOMAIN/stela:trigger_archivematica-$BRANCH_TYPE-$ABBREVIATED_COMMIT_HASH" >> "$GITHUB_OUTPUT"
