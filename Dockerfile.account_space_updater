@@ -7,7 +7,6 @@ COPY tsconfig.json ./
 COPY jest.config.js ./
 COPY packages ./packages
 
-RUN npm install -g npm@8.19.3
 RUN npm install
 RUN npm install -ws
 RUN npm run build -ws
