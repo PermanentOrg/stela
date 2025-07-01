@@ -1,4 +1,4 @@
-FROM node:18-alpine AS builder
+FROM node:22-alpine AS builder
 WORKDIR /usr/local/apps/stela/
 
 COPY package.json ./
@@ -12,7 +12,7 @@ RUN npm install
 RUN npm install -ws
 RUN npm run build -ws
 
-FROM node:18-alpine AS final
+FROM node:22-alpine AS final
 WORKDIR /usr/local/apps/stela/
 
 COPY --from=builder /usr/local/apps/stela/packages/archivematica_cleanup/dist ./packages/archivematica_cleanup/dist
