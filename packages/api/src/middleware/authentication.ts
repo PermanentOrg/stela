@@ -205,7 +205,7 @@ const verifyUserOrAdminAuthentication = async (
 			req.body.userSubjectFromAuthToken = subject;
 			req.body.userEmailFromAuthToken = email;
 			next();
-		} catch (err) {
+		} catch (_) {
 			try {
 				const subject = await getValueFromAuthToken(
 					authenticationToken,
