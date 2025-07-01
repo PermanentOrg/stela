@@ -460,7 +460,7 @@ describe("extractUserEmailFromAuthToken", () => {
 		} as Request<unknown, unknown, { emailFromAuthToken?: string }>;
 		const testError = {
 			statusCode: 429,
-		};
+		} as unknown as Error;
 		jest
 			.spyOn(fusionAuthClient, "introspectAccessToken")
 			.mockImplementationOnce(async () => {

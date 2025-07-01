@@ -430,7 +430,7 @@ describe("handler", () => {
 		};
 		try {
 			await handler(event, {} as Context, () => {});
-		} catch (err) {
+		} catch (_) {
 			// Do nothing
 		}
 
