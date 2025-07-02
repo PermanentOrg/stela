@@ -29,8 +29,8 @@
 		"test": "npm run clear-database && npm run create-database && npm run set-up-database && node --experimental-vm-modules ../../node_modules/jest/bin/jest.js -i --silent=false"
 	},
 	"dependencies": {
-		"@sentry/node": "^7.57.0",
-		"@sentry/profiling-node": "^7.57.0",
+		"@sentry/node": "^9.34.0",
+		"@sentry/profiling-node": "^9.34.0",
 		"@stela/logger": "^1.0.0",
 		"aws-cloudfront-sign": "^3.0.2",
 		"dotenv": "^16.5.0",
