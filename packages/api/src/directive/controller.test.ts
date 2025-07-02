@@ -1,6 +1,5 @@
 import request from "supertest";
 import type { Request, NextFunction } from "express";
-import type { Response } from "node-fetch";
 import { logger } from "@stela/logger";
 import { app } from "../app";
 import { db } from "../database";
@@ -195,7 +194,7 @@ describe("POST /directive", () => {
 			.expect(200);
 
 		const directiveResult = await db.query<Directive>(
-			`SELECT 
+			`SELECT
         directive_id "directiveId",
         archive_id "archiveId",
         type,
@@ -431,7 +430,7 @@ describe("PUT /directive/:directiveId", () => {
 			.expect(200);
 
 		const directiveResult = await db.query<Directive>(
-			`SELECT 
+			`SELECT
         directive_id "directiveId",
         archive_id "archiveId",
         type,
@@ -494,7 +493,7 @@ describe("PUT /directive/:directiveId", () => {
 			.expect(200);
 
 		const directiveResult = await db.query<Directive>(
-			`SELECT 
+			`SELECT
         directive_id "directiveId",
         archive_id "archiveId",
         type,

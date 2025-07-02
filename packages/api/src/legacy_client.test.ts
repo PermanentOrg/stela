@@ -1,7 +1,6 @@
-import fetch from "node-fetch";
 import { legacyClient } from "./legacy_client";
 
-jest.mock("node-fetch");
+global.fetch = jest.fn();
 
 describe("transferArchiveOwnership", () => {
 	test("should submit the correct request", async () => {

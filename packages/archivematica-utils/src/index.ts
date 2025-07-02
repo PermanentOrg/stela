@@ -1,5 +1,3 @@
-import fetch from "node-fetch";
-import type { Response } from "node-fetch";
 import { logger } from "@stela/logger";
 
 export const getOriginalFileIdFromInformationPackagePath = (

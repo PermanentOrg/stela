@@ -19,9 +19,9 @@ interface TwoFactorRequest {
 }
 
 jest.mock("../database");
-jest.mock("node-fetch", () => jest.fn());
 jest.mock("../middleware");
 jest.mock("../fusionauth");
+global.fetch = jest.fn();
 
 describe("/idpuser", () => {
 	const agent = request(app);

@@ -1,10 +1,9 @@
-import fetch from "node-fetch";
 import {
 	getOriginalFileIdFromInformationPackagePath,
 	triggerArchivematicaProcessing,
 } from "./index";
 
-jest.mock("node-fetch");
+global.fetch = jest.fn();
 
 describe("getFileIdFromInformationPackagePath", () => {
 	test("should return the file ID if the file ID is a number", () => {
