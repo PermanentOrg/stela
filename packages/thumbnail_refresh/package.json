@@ -34,7 +34,7 @@
 		"@stela/logger": "^1.0.0",
 		"aws-cloudfront-sign": "^3.0.2",
 		"dotenv": "^16.5.0",
-		"require-env-variable": "^3.1.2",
+		"require-env-variable": "^4.0.2",
 		"tinypg": "^7.0.1"
 	}
 }
