@@ -1,6 +1,3 @@
-import fetch from "node-fetch";
-import type { Response } from "node-fetch";
-
 const hostUrl = process.env["LEGACY_BACKEND_HOST_URL"] ?? "";
 const authenticationSecret = process.env["LEGACY_BACKEND_SHARED_SECRET"] ?? "";
 
