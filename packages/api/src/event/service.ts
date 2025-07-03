@@ -11,7 +11,7 @@ import {
 } from "../database_util";
 
 export const createEvent = async (data: CreateEventRequest): Promise<void> => {
-	if (data.body.analytics) {
+	if (data.body.analytics !== undefined) {
 		const { browser, os, device } = UAParser(data.userAgent);
 		try {
 			const analyticsData: { [key: string]: unknown; distinct_id?: string } = {
@@ -33,7 +33,8 @@ export const createEvent = async (data: CreateEventRequest): Promise<void> => {
 		}
 	}
 
-	const actorType = (data.userSubjectFromAuthToken ?? "") ? "user" : "admin";
+	const actorType =
+		data.userSubjectFromAuthToken !== undefined ? "user" : "admin";
 	const event = {
 		entity: data.entity,
 		action: data.action,
@@ -101,7 +102,7 @@ export const getChecklistEvents = async (
 				"Failed to retrieve checklist data",
 			);
 		});
-	if (!eventResult.rows[0]) {
+	if (eventResult.rows[0] === undefined) {
 		throw new createError.InternalServerError(
 			"Failed to retrieve checklist data",
 		);

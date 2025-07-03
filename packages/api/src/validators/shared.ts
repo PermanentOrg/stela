@@ -29,7 +29,7 @@ export function validateBodyFromAuthentication(data: unknown): asserts data is {
 	const validation = Joi.object()
 		.keys(fieldsFromUserAuthentication)
 		.validate(data);
-	if (validation.error) {
+	if (validation.error !== undefined) {
 		throw validation.error;
 	}
 }
@@ -43,7 +43,7 @@ export function validateBodyFromAdminAuthentication(
 	const validation = Joi.object()
 		.keys(fieldsFromAdminAuthentication)
 		.validate(data);
-	if (validation.error) {
+	if (validation.error !== undefined) {
 		throw validation.error;
 	}
 }
@@ -56,7 +56,7 @@ export function validateIsAdminFromAuthentication(
 	const validation = Joi.object()
 		.keys({ admin: Joi.boolean().required() })
 		.validate(data);
-	if (validation.error) {
+	if (validation.error !== undefined) {
 		throw validation.error;
 	}
 }
@@ -71,7 +71,7 @@ export function validateOptionalAuthenticationValues(
 		})
 		.validate(data);
 
-	if (validation.error) {
+	if (validation.error !== undefined) {
 		throw validation.error;
 	}
 }
@@ -86,7 +86,7 @@ export function validatePaginationParameters(
 		})
 		.validate(data);
 
-	if (validation.error) {
+	if (validation.error !== undefined) {
 		throw validation.error;
 	}
 }

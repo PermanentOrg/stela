@@ -10,7 +10,7 @@ export function validateFolderRequest(
 			folderId: Joi.string().required(),
 		})
 		.validate(data);
-	if (validation.error) {
+	if (validation.error !== undefined) {
 		throw validation.error;
 	}
 }
@@ -26,7 +26,7 @@ export function validatePatchFolderRequest(
 		})
 		.validate(data);
 
-	if (validation.error) {
+	if (validation.error !== undefined) {
 		throw validation.error;
 	}
 }
@@ -39,7 +39,7 @@ export function validateGetFoldersQuery(
 			folderIds: Joi.array().items(Joi.string().required()).required(),
 		})
 		.validate(data);
-	if (validation.error) {
+	if (validation.error !== undefined) {
 		throw validation.error;
 	}
 }

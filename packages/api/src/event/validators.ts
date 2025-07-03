@@ -25,7 +25,7 @@ export function validateCreateEventRequest(
 				.required(),
 		})
 		.validate(data);
-	if (validation.error) {
+	if (validation.error !== undefined) {
 		throw validation.error;
 	}
 }

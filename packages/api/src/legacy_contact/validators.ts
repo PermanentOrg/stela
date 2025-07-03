@@ -20,7 +20,7 @@ export function validateCreateLegacyContactRequest(
 			name: Joi.string().required(),
 		})
 		.validate(data);
-	if (validation.error) {
+	if (validation.error !== undefined) {
 		throw validation.error;
 	}
 }
@@ -35,7 +35,7 @@ export function validateUpdateLegacyContactRequest(
 			name: Joi.string(),
 		})
 		.validate(data);
-	if (validation.error) {
+	if (validation.error !== undefined) {
 		throw validation.error;
 	}
 }
@@ -48,7 +48,7 @@ export function validateUpdateLegacyContactParams(
 			legacyContactId: Joi.string().uuid().required(),
 		})
 		.validate(data);
-	if (validation.error) {
+	if (validation.error !== undefined) {
 		throw validation.error;
 	}
 }

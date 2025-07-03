@@ -16,7 +16,7 @@ export function validateCreateFeatureFlagRequest(
 		})
 		.validate(data);
 
-	if (validation.error) {
+	if (validation.error !== undefined) {
 		throw validation.error;
 	}
 }
@@ -32,7 +32,7 @@ export function validateUpdateFeatureFlagRequest(
 		})
 		.validate(data);
 
-	if (validation.error) {
+	if (validation.error !== undefined) {
 		throw validation.error;
 	}
 }
@@ -45,7 +45,7 @@ export function validateFeatureFlagParams(
 			featureId: Joi.string().uuid().required(),
 		})
 		.validate(data);
-	if (validation.error) {
+	if (validation.error !== undefined) {
 		throw validation.error;
 	}
 }

@@ -38,7 +38,7 @@ const getUrlsFromFile = async (fileId: string): Promise<FileData> => {
 		},
 	);
 
-	if (!fileResult.rows[0]) {
+	if (fileResult.rows[0] === undefined) {
 		expect(false).toBe(true);
 		return {
 			accessUrl: "",

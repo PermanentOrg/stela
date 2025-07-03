@@ -45,7 +45,7 @@ export const getS3ObjectFromS3Message = (message: SQSRecord): S3Object => {
 	const parsedMessage: unknown = JSON.parse(parsedBody.Message);
 	if (
 		!validateNewDisseminationPackageJpgEvent(parsedMessage) ||
-		!parsedMessage.Records[0]
+		parsedMessage.Records[0] === undefined
 	) {
 		logger.error(
 			`Invalid message body: ${JSON.stringify(

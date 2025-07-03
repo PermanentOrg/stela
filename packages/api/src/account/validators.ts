@@ -18,7 +18,7 @@ export function validateUpdateTagsRequest(
 		})
 		.or("addTags", "removeTags")
 		.validate(data);
-	if (validation.error) {
+	if (validation.error !== undefined) {
 		throw validation.error;
 	}
 }
@@ -38,7 +38,7 @@ export function validateLeaveArchiveParams(
 				.required(),
 		})
 		.validate(data);
-	if (validation.error) {
+	if (validation.error !== undefined) {
 		throw validation.error;
 	}
 }
@@ -54,7 +54,7 @@ export function validateLeaveArchiveRequest(data: unknown): asserts data is {
 			ip: Joi.string().ip().required(),
 		})
 		.validate(data);
-	if (validation.error) {
+	if (validation.error !== undefined) {
 		throw validation.error;
 	}
 }
