@@ -87,8 +87,9 @@ describe("GET /folder/{id}/children", () => {
 		const response = await agent
 			.get("/api/v2/folder/10/children?pageSize=100")
 			.expect(200);
-		const children = (response.body as { items: (ArchiveRecord | Folder)[] })
-			.items;
+		const {
+			body: { items: children },
+		} = response as { body: { items: (ArchiveRecord | Folder)[] } };
 		expect(children.length).toEqual(2);
 		const folder = children[0] as Folder;
 		expect(folder.folderId).toEqual("2");
@@ -163,8 +164,9 @@ describe("GET /folder/{id}/children", () => {
 		const response = await agent
 			.get("/api/v2/folder/10/children?pageSize=100")
 			.expect(200);
-		const children = (response.body as { items: (ArchiveRecord | Folder)[] })
-			.items;
+		const {
+			body: { items: children },
+		} = response as { body: { items: (ArchiveRecord | Folder)[] } };
 		expect(children.length).toEqual(2);
 		const record = children[1] as ArchiveRecord;
 		expect(record.recordId).toEqual("8");
@@ -264,8 +266,9 @@ describe("GET /folder/{id}/children", () => {
 		const response = await agent
 			.get("/api/v2/folder/10/children?pageSize=100")
 			.expect(200);
-		const children = (response.body as { items: (ArchiveRecord | Folder)[] })
-			.items;
+		const {
+			body: { items: children },
+		} = response as { body: { items: (ArchiveRecord | Folder)[] } };
 		expect(children.length).toEqual(2);
 		expect(children[0]?.displayName).toEqual("Private Folder");
 		expect(children[1]?.displayName).toEqual("Public File");
@@ -278,8 +281,9 @@ describe("GET /folder/{id}/children", () => {
 		const response = await agent
 			.get("/api/v2/folder/10/children?pageSize=100")
 			.expect(200);
-		const children = (response.body as { items: (ArchiveRecord | Folder)[] })
-			.items;
+		const {
+			body: { items: children },
+		} = response as { body: { items: (ArchiveRecord | Folder)[] } };
 		expect(children.length).toEqual(2);
 		expect(children[0]?.displayName).toEqual("Public File");
 		expect(children[1]?.displayName).toEqual("Private Folder");
@@ -292,8 +296,9 @@ describe("GET /folder/{id}/children", () => {
 		const response = await agent
 			.get("/api/v2/folder/10/children?pageSize=100")
 			.expect(200);
-		const children = (response.body as { items: (ArchiveRecord | Folder)[] })
-			.items;
+		const {
+			body: { items: children },
+		} = response as { body: { items: (ArchiveRecord | Folder)[] } };
 		expect(children.length).toEqual(2);
 		expect(children[0]?.displayName).toEqual("Public File");
 		expect(children[1]?.displayName).toEqual("Private Folder");
@@ -306,8 +311,9 @@ describe("GET /folder/{id}/children", () => {
 		const response = await agent
 			.get("/api/v2/folder/10/children?pageSize=100")
 			.expect(200);
-		const children = (response.body as { items: (ArchiveRecord | Folder)[] })
-			.items;
+		const {
+			body: { items: children },
+		} = response as { body: { items: (ArchiveRecord | Folder)[] } };
 		expect(children.length).toEqual(2);
 		expect(children[0]?.displayName).toEqual("Private Folder");
 		expect(children[1]?.displayName).toEqual("Public File");
@@ -320,8 +326,9 @@ describe("GET /folder/{id}/children", () => {
 		const response = await agent
 			.get("/api/v2/folder/10/children?pageSize=100")
 			.expect(200);
-		const children = (response.body as { items: (ArchiveRecord | Folder)[] })
-			.items;
+		const {
+			body: { items: children },
+		} = response as { body: { items: (ArchiveRecord | Folder)[] } };
 		expect(children.length).toEqual(2);
 		expect(children[0]?.displayName).toEqual("Private Folder");
 		expect(children[1]?.displayName).toEqual("Public File");
@@ -334,8 +341,9 @@ describe("GET /folder/{id}/children", () => {
 		const response = await agent
 			.get("/api/v2/folder/10/children?pageSize=100")
 			.expect(200);
-		const children = (response.body as { items: (ArchiveRecord | Folder)[] })
-			.items;
+		const {
+			body: { items: children },
+		} = response as { body: { items: (ArchiveRecord | Folder)[] } };
 		expect(children.length).toEqual(2);
 		expect(children[0]?.displayName).toEqual("Public File");
 		expect(children[1]?.displayName).toEqual("Private Folder");
@@ -355,8 +363,9 @@ describe("GET /folder/{id}/children", () => {
 		const response = await agent
 			.get("/api/v2/folder/2/children?pageSize=100")
 			.expect(200);
-		const children = (response.body as { items: (ArchiveRecord | Folder)[] })
-			.items;
+		const {
+			body: { items: children },
+		} = response as { body: { items: (ArchiveRecord | Folder)[] } };
 		expect(children.length).toEqual(0);
 	});
 
@@ -364,8 +373,9 @@ describe("GET /folder/{id}/children", () => {
 		const response = await agent
 			.get("/api/v2/folder/10/children?pageSize=1")
 			.expect(200);
-		const children = (response.body as { items: (ArchiveRecord | Folder)[] })
-			.items;
+		const {
+			body: { items: children },
+		} = response as { body: { items: (ArchiveRecord | Folder)[] } };
 		expect(children.length).toEqual(1);
 	});
 
@@ -373,8 +383,9 @@ describe("GET /folder/{id}/children", () => {
 		const response = await agent
 			.get("/api/v2/folder/10/children?pageSize=1&cursor=1")
 			.expect(200);
-		const children = (response.body as { items: (ArchiveRecord | Folder)[] })
-			.items;
+		const {
+			body: { items: children },
+		} = response as { body: { items: (ArchiveRecord | Folder)[] } };
 		expect(children.length).toEqual(1);
 		expect(children[0]?.displayName).toEqual("Public File");
 	});
@@ -383,15 +394,13 @@ describe("GET /folder/{id}/children", () => {
 		const response = await agent
 			.get("/api/v2/folder/10/children?pageSize=1")
 			.expect(200);
-		const paginationData = (
-			response.body as {
-				pagination: {
-					nextCursor: string;
-					nextPage: string;
-					totalPages: number;
-				};
-			}
-		).pagination;
+		const { pagination: paginationData } = response.body as {
+			pagination: {
+				nextCursor: string;
+				nextPage: string;
+				totalPages: number;
+			};
+		};
 		expect(paginationData.nextCursor).toEqual("1");
 		expect(paginationData.nextPage).toEqual(
 			`https://${

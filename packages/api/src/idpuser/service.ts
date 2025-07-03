@@ -60,9 +60,9 @@ export const sendEnableCode = async (
 	};
 
 	if (requestBody.method === TwoFactorMethod.Email) {
-		fusionAuthRequestBody.email = requestBody.value;
+		({ value: fusionAuthRequestBody.email } = requestBody);
 	} else {
-		fusionAuthRequestBody.mobilePhone = requestBody.value;
+		({ value: fusionAuthRequestBody.mobilePhone } = requestBody);
 	}
 
 	const fusionAuthResponse =
@@ -100,9 +100,9 @@ export const addTwoFactorMethod = async (
 		method: requestBody.method,
 	};
 	if (requestBody.method === TwoFactorMethod.Email) {
-		fusionAuthRequestBody.email = requestBody.value;
+		({ value: fusionAuthRequestBody.email } = requestBody);
 	} else {
-		fusionAuthRequestBody.mobilePhone = requestBody.value;
+		({ value: fusionAuthRequestBody.mobilePhone } = requestBody);
 	}
 	const fusionAuthResponse = await fusionAuthClient.enableTwoFactor(
 		fusionAuthUserIdResponse.rows[0].subject,

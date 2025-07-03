@@ -34,7 +34,9 @@ describe("getFeatured", () => {
 	test("should retrieve featured archives", async () => {
 		const result = await agent.get("/api/v2/archive/featured").expect(200);
 		expect(result.body).toHaveLength(1);
-		const archive = (result.body as FeaturedArchive[])[0];
+		const {
+			body: [archive],
+		} = result as { body: FeaturedArchive[] };
 		expect(archive?.archiveId).toBe("3");
 		expect(archive?.name).toBe("Jay Rando");
 		expect(archive?.type).toBe("type.archive.person");

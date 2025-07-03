@@ -37,9 +37,10 @@ folderController.patch(
 			validateFolderRequest(req.params);
 			validatePatchFolderRequest(req.body);
 			const folderId = await patchFolder(req.params.folderId, req.body);
-			const folder = (
-				await getFolders([folderId], req.body.emailFromAuthToken)
-			)[0];
+			const [folder] = await getFolders(
+				[folderId],
+				req.body.emailFromAuthToken,
+			);
 			if (folder === undefined) {
 				res.status(404).json({ error: "Folder not found" });
 			}

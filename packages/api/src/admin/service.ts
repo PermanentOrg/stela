@@ -17,7 +17,7 @@ const recalculateFolderThumbnails = async (
 			logger.error(err);
 			throw new createError.InternalServerError("Failed to retrieve folders");
 		});
-	const folders = folderResult.rows;
+	const { rows: folders } = folderResult;
 
 	const publishResults = await publisherClient
 		.batchPublishMessages(
@@ -135,7 +135,7 @@ const triggerOrphanedFolderDeletion = async (): Promise<{
 			throw new createError.InternalServerError("Failed to retrieve folders");
 		});
 
-	const folders = folderResult.rows;
+	const { rows: folders } = folderResult;
 
 	const publishResults = await publisherClient
 		.batchPublishMessages(
