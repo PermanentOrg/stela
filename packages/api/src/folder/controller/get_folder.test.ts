@@ -91,7 +91,9 @@ describe("GET /folder", () => {
 		const response = await agent
 			.get("/api/v2/folder?folderIds[]=1")
 			.expect(200);
-		const folders = (response.body as { items: Folder[] }).items;
+		const {
+			body: { items: folders },
+		} = response as { body: { items: Folder[] } };
 		expect(folders.length).toEqual(1);
 		expect(folders[0]?.folderId).toEqual("1");
 	});
@@ -109,7 +111,9 @@ describe("GET /folder", () => {
 		const response = await agent
 			.get("/api/v2/folder?folderIds[]=2")
 			.expect(200);
-		const folders = (response.body as { items: Folder[] }).items;
+		const {
+			body: { items: folders },
+		} = response as { body: { items: Folder[] } };
 		expect(folders.length).toEqual(0);
 	});
 
@@ -117,7 +121,9 @@ describe("GET /folder", () => {
 		const response = await agent
 			.get("/api/v2/folder?folderIds[]=2")
 			.expect(200);
-		const folders = (response.body as { items: Folder[] }).items;
+		const {
+			body: { items: folders },
+		} = response as { body: { items: Folder[] } };
 		expect(folders.length).toEqual(1);
 		expect(folders[0]?.folderId).toEqual("2");
 	});
@@ -137,7 +143,9 @@ describe("GET /folder", () => {
 		const response = await agent
 			.get("/api/v2/folder?folderIds[]=2")
 			.expect(200);
-		const folders = (response.body as { items: Folder[] }).items;
+		const {
+			body: { items: folders },
+		} = response as { body: { items: Folder[] } };
 		expect(folders.length).toEqual(0);
 	});
 
@@ -169,7 +177,9 @@ describe("GET /folder", () => {
 			.get("/api/v2/folder?folderIds[]=2")
 			.set("X-Permanent-Share-Token", "c0f523e4-48d8-4c39-8cda-5e95161532e4")
 			.expect(200);
-		const folders = (response.body as { items: Folder[] }).items;
+		const {
+			body: { items: folders },
+		} = response as { body: { items: Folder[] } };
 		expect(folders.length).toEqual(1);
 		expect(folders[0]?.folderId).toEqual("2");
 	});
@@ -202,7 +212,9 @@ describe("GET /folder", () => {
 			.get("/api/v2/folder?folderIds[]=2")
 			.set("X-Permanent-Share-Token", "56f7c246-e4ec-41f3-b117-6df4c9377075")
 			.expect(200);
-		const folders = (response.body as { items: Folder[] }).items;
+		const {
+			body: { items: folders },
+		} = response as { body: { items: Folder[] } };
 		expect(folders.length).toEqual(1);
 		expect(folders[0]?.folderId).toEqual("2");
 	});
@@ -235,7 +247,9 @@ describe("GET /folder", () => {
 			.get("/api/v2/folder?folderIds[]=2")
 			.set("X-Permanent-Share-Token", "7d6412af-5abe-4acb-808a-64e9ce3b7535")
 			.expect(200);
-		const folders = (response.body as { items: Folder[] }).items;
+		const {
+			body: { items: folders },
+		} = response as { body: { items: Folder[] } };
 		expect(folders.length).toEqual(0);
 	});
 
@@ -267,7 +281,9 @@ describe("GET /folder", () => {
 			.get("/api/v2/folder?folderIds[]=2")
 			.set("X-Permanent-Share-Token", "9cc057f0-d3e8-41df-94d6-9b315b4921af")
 			.expect(200);
-		const folders = (response.body as { items: Folder[] }).items;
+		const {
+			body: { items: folders },
+		} = response as { body: { items: Folder[] } };
 		expect(folders.length).toEqual(0);
 	});
 
@@ -285,7 +301,9 @@ describe("GET /folder", () => {
 		const response = await agent
 			.get("/api/v2/folder?folderIds[]=2")
 			.expect(200);
-		const folders = (response.body as { items: Folder[] }).items;
+		const {
+			body: { items: folders },
+		} = response as { body: { items: Folder[] } };
 		expect(folders.length).toEqual(1);
 		expect(folders[0]?.folderId).toEqual("2");
 	});
@@ -304,7 +322,9 @@ describe("GET /folder", () => {
 		const response = await agent
 			.get("/api/v2/folder?folderIds[]=2")
 			.expect(200);
-		const folders = (response.body as { items: Folder[] }).items;
+		const {
+			body: { items: folders },
+		} = response as { body: { items: Folder[] } };
 		expect(folders.length).toEqual(0);
 	});
 
@@ -322,7 +342,9 @@ describe("GET /folder", () => {
 		const response = await agent
 			.get("/api/v2/folder?folderIds[]=2")
 			.expect(200);
-		const folders = (response.body as { items: Folder[] }).items;
+		const {
+			body: { items: folders },
+		} = response as { body: { items: Folder[] } };
 		expect(folders.length).toEqual(0);
 	});
 
@@ -330,7 +352,9 @@ describe("GET /folder", () => {
 		const response = await agent
 			.get("/api/v2/folder?folderIds[]=2")
 			.expect(200);
-		const folders = (response.body as { items: Folder[] }).items;
+		const {
+			body: { items: folders },
+		} = response as { body: { items: Folder[] } };
 		expect(folders.length).toEqual(1);
 		expect(folders[0]?.folderId).toEqual("2");
 		expect(folders[0]?.size).toEqual(0);
@@ -405,7 +429,9 @@ describe("GET /folder", () => {
 		const response = await agent
 			.get("/api/v2/folder?folderIds[]=2&folderIds[]=1")
 			.expect(200);
-		const folders = (response.body as { items: Folder[] }).items;
+		const {
+			body: { items: folders },
+		} = response as { body: { items: Folder[] } };
 		expect(folders.length).toEqual(2);
 	});
 
@@ -413,7 +439,9 @@ describe("GET /folder", () => {
 		const response = await agent
 			.get("/api/v2/folder?folderIds[]=4")
 			.expect(200);
-		const folders = (response.body as { items: Folder[] }).items;
+		const {
+			body: { items: folders },
+		} = response as { body: { items: Folder[] } };
 		expect(folders.length).toEqual(0);
 	});
 
@@ -421,7 +449,9 @@ describe("GET /folder", () => {
 		const response = await agent
 			.get("/api/v2/folder?folderIds[]=3")
 			.expect(200);
-		const folders = (response.body as { items: Folder[] }).items;
+		const {
+			body: { items: folders },
+		} = response as { body: { items: Folder[] } };
 		expect(folders.length).toEqual(0);
 	});
 
@@ -429,7 +459,9 @@ describe("GET /folder", () => {
 		const response = await agent
 			.get("/api/v2/folder?folderIds[]=7")
 			.expect(200);
-		const folders = (response.body as { items: Folder[] }).items;
+		const {
+			body: { items: folders },
+		} = response as { body: { items: Folder[] } };
 		expect(folders.length).toEqual(1);
 		expect(folders[0]?.size).toBeNull();
 	});

@@ -347,7 +347,9 @@ describe("GET /record", () => {
 		const response = await agent
 			.get("/api/v2/record?recordIds[]=8")
 			.expect(200);
-		const record = (response.body as ArchiveRecord[])[0];
+		const {
+			body: [record],
+		} = response as { body: ArchiveRecord[] };
 		expect((response.body as ArchiveRecord[]).length).toEqual(1);
 		expect(record?.recordId).toEqual("8");
 		expect(record?.displayName).toEqual("Public File");
@@ -463,7 +465,9 @@ describe("GET /record", () => {
 		const response = await agent
 			.get("/api/v2/record?recordIds[]=9")
 			.expect(200);
-		const record = (response.body as ArchiveRecord[])[0];
+		const {
+			body: [record],
+		} = response as { body: ArchiveRecord[] };
 		expect(record?.files.length).toEqual(1);
 	});
 	test("expect to not return a record in a deleted archive", async () => {
@@ -702,7 +706,9 @@ describe("GET /record/{id}/share-links", () => {
 			.get("/api/v2/record/2/share-links")
 			.expect(200);
 
-		const shareLinks = (response.body as { items: ShareLink[] }).items;
+		const {
+			body: { items: shareLinks },
+		} = response as { body: { items: ShareLink[] } };
 		expect(shareLinks.length).toEqual(3);
 
 		const shareLink = shareLinks.find((link) => link.id === "1");
@@ -722,7 +728,9 @@ describe("GET /record/{id}/share-links", () => {
 			.get("/api/v2/record/999/share-links")
 			.expect(200);
 
-		const shareLinks = (response.body as { items: ShareLink[] }).items;
+		const {
+			body: { items: shareLinks },
+		} = response as { body: { items: ShareLink[] } };
 		expect(shareLinks.length).toEqual(0);
 	});
 
@@ -731,7 +739,9 @@ describe("GET /record/{id}/share-links", () => {
 			.get("/api/v2/record/6/share-links")
 			.expect(200);
 
-		const shareLinks = (response.body as { items: ShareLink[] }).items;
+		const {
+			body: { items: shareLinks },
+		} = response as { body: { items: ShareLink[] } };
 		expect(shareLinks.length).toEqual(0);
 	});
 

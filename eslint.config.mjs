@@ -29,7 +29,6 @@ export default defineConfig([
 		},
 
 		rules: {
-			"dot-notation": "off",
 			"lines-between-class-members": "off",
 			"no-shadow": "off",
 			"no-undef": "off",
@@ -60,7 +59,6 @@ export default defineConfig([
 			"@typescript-eslint/no-magic-numbers": "off",
 			"no-implicit-globals": "off",
 			"max-lines": "off",
-			"@typescript-eslint/prefer-destructuring": "off",
 			"@typescript-eslint/explicit-function-return-type": "off",
 			"@typescript-eslint/consistent-type-imports": "off",
 			"@typescript-eslint/no-unsafe-type-assertion": "off",

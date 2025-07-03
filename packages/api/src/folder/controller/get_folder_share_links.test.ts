@@ -48,7 +48,9 @@ describe("GET /folder/{id}/share_links", () => {
 			.get("/api/v2/folder/2/share_links")
 			.expect(200);
 
-		const shareLinks = (response.body as { items: ShareLink[] }).items;
+		const {
+			body: { items: shareLinks },
+		} = response as { body: { items: ShareLink[] } };
 		expect(shareLinks.length).toEqual(3);
 
 		const shareLink = shareLinks.find((link) => link.id === "1");
@@ -68,7 +70,9 @@ describe("GET /folder/{id}/share_links", () => {
 			.get("/api/v2/folder/999/share_links")
 			.expect(200);
 
-		const shareLinks = (response.body as { items: ShareLink[] }).items;
+		const {
+			body: { items: shareLinks },
+		} = response as { body: { items: ShareLink[] } };
 		expect(shareLinks.length).toEqual(0);
 	});
 
@@ -94,7 +98,9 @@ describe("GET /folder/{id}/share_links", () => {
 			.get("/api/v2/folder/2/share_links")
 			.expect(200);
 
-		const shareLinks = (response.body as { items: ShareLink[] }).items;
+		const {
+			body: { items: shareLinks },
+		} = response as { body: { items: ShareLink[] } };
 		expect(shareLinks.length).toEqual(0);
 	});
 
