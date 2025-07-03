@@ -22,9 +22,6 @@ export default defineConfig([
 				...globals.jest,
 			},
 
-			ecmaVersion: 5,
-			sourceType: "commonjs",
-
 			parserOptions: {
 				project: "./tsconfig.json",
 			},
@@ -69,6 +66,10 @@ export default defineConfig([
 			"@typescript-eslint/unbound-method": "off",
 			"jest/unbound-method": "error",
 			"jest/no-focused-tests": "error",
+			// Test files are allowed to be long because they need to be able to comprehensively test
+			// the relevant code, however many tests that takes. Their natural structure also makes
+			// them more navigable than other lengthy files might be.
+			"max-lines": "off",
 		},
 	},
 ]);
