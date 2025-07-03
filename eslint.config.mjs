@@ -1,7 +1,7 @@
 import { defineConfig } from "eslint/config";
 import typescriptEslint from "typescript-eslint";
 import prettier from "eslint-config-prettier";
-import importPlugin from "eslint-plugin-import";
+import love from "eslint-config-love";
 import globals from "globals";
 import jest from "eslint-plugin-jest";
 import js from "@eslint/js";
@@ -11,11 +11,9 @@ export default defineConfig([
 	typescriptEslint.configs.eslintRecommended,
 	typescriptEslint.configs.recommendedTypeChecked,
 	typescriptEslint.configs.strict,
+	love,
 	prettier,
 	{
-		plugins: {
-			import: importPlugin,
-		},
 		languageOptions: {
 			globals: {
 				...globals.node,
@@ -53,6 +51,32 @@ export default defineConfig([
 			],
 
 			"@typescript-eslint/no-throw-literal": "off",
+
+			// These are `love` rules that we were violating.  We should review these one at a time.
+			"@typescript-eslint/strict-boolean-expressions": "off",
+			"@typescript-eslint/no-magic-numbers": "off",
+			"no-implicit-globals": "off",
+			"max-lines": "off",
+			"@typescript-eslint/prefer-destructuring": "off",
+			"@typescript-eslint/explicit-function-return-type": "off",
+			"@typescript-eslint/consistent-type-imports": "off",
+			"@typescript-eslint/no-unsafe-type-assertion": "off",
+			"@typescript-eslint/use-unknown-in-catch-callback-variable": "off",
+			"@typescript-eslint/return-await": "off",
+			"@typescript-eslint/no-empty-function": "off",
+			"@typescript-eslint/consistent-type-assertions": "off",
+			"@typescript-eslint/consistent-type-assertions": "off",
+			"@typescript-eslint/no-unnecessary-type-conversion": "off",
+			complexity: "off",
+			"@typescript-eslint/no-unnecessary-condition": "off",
+			"import/enforce-node-protocol-usage": "off",
+			"@typescript-eslint/array-type": "off",
+			"@typescript-eslint/max-params": "off",
+			"@typescript-eslint/naming-convention": "off",
+			"@typescript-eslint/prefer-nullish-coalescing": "off",
+			"@typescript-eslint/switch-exhaustiveness-check": "off",
+			"@typescript-eslint/prefer-optional-chain": "off",
+			"@typescript-eslint/no-unnecessary-template-expression": "off",
 		},
 	},
 	{
