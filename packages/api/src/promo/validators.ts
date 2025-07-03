@@ -2,9 +2,11 @@ import Joi from "joi";
 import type { CreatePromoRequest } from "./models";
 import { fieldsFromAdminAuthentication } from "../validators";
 
-export function validateCreatePromoRequest(
+export const validateCreatePromoRequest: (
 	data: unknown,
-): asserts data is CreatePromoRequest {
+) => asserts data is CreatePromoRequest = (
+	data: unknown,
+): asserts data is CreatePromoRequest => {
 	const validation = Joi.object()
 		.keys({
 			...fieldsFromAdminAuthentication,
@@ -18,4 +20,4 @@ export function validateCreatePromoRequest(
 	if (validation.error !== undefined) {
 		throw validation.error;
 	}
-}
+};
