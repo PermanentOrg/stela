@@ -79,7 +79,9 @@ const leaveArchive = async ({
 				},
 			);
 
-		const accountArchive = accountArchiveResult.rows[0];
+		const {
+			rows: [accountArchive],
+		} = accountArchiveResult;
 
 		if (!accountArchive) {
 			throw new createError.NotFound(

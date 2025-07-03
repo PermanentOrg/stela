@@ -56,8 +56,9 @@ export const sendLegacyContactNotification = async (
 	if (legacyContactDetailsResult.rows[0] === undefined) {
 		throw new Error(`Legacy contact ${legacyContactId} not found`);
 	}
-	const { accountName, legacyContactName, legacyContactEmail } =
-		legacyContactDetailsResult.rows[0];
+	const {
+		rows: [{ accountName, legacyContactName, legacyContactEmail }],
+	} = legacyContactDetailsResult;
 
 	await sendEmail(
 		"legacy-contact-added",
@@ -83,8 +84,9 @@ export const sendArchiveStewardNotification = async (
 	if (archiveStewardshipDetailsResult.rows[0] === undefined) {
 		throw new Error(`Directive ${directiveId} not found`);
 	}
-	const { stewardName, stewardEmail, ownerName, archiveName } =
-		archiveStewardshipDetailsResult.rows[0];
+	const {
+		rows: [{ stewardName, stewardEmail, ownerName, archiveName }],
+	} = archiveStewardshipDetailsResult;
 	await sendEmail(
 		"archive-steward-added",
 		ownerName,
@@ -112,7 +114,9 @@ export const sendInvitationNotification = async (
 	if (fullNameResult.rows[0] === undefined) {
 		throw new Error(`Account with primary email ${fromEmail} not found`);
 	}
-	const { fullName } = fullNameResult.rows[0];
+	const {
+		rows: [{ fullName }],
+	} = fullNameResult;
 	await sendEmail(
 		"invitation-from-relationship",
 		fullName,
@@ -152,13 +156,13 @@ export const sendGiftNotification = async (
 	if (fromResult === undefined) {
 		throw new Error(`Account with primary email ${fromEmail} not found`);
 	}
-	const fromFullName = fromResult.fullName;
+	const { fullName: fromFullName } = fromResult;
 
 	const toResult = fullNameResult.rows.find((row) => row.email === toEmail);
 	if (toResult === undefined) {
 		throw new Error(`Account with primary email ${toEmail} not found`);
 	}
-	const toFullName = toResult.fullName;
+	const { fullName: toFullName } = toResult;
 
 	await sendEmail(
 		"gift-notification",

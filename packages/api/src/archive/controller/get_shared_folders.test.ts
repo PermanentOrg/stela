@@ -59,7 +59,9 @@ describe("getSharedFolders", () => {
 			.get(`/api/v2/archive/2/folders/shared`)
 			.expect(200);
 
-		const folders = (response.body as { items: Folder[] }).items;
+		const {
+			body: { items: folders },
+		} = response as { body: { items: Folder[] } };
 		expect(folders.length).toBe(1);
 		expect(folders[0]?.folderId).toBe("3");
 	});
@@ -111,7 +113,9 @@ describe("getSharedFolders", () => {
 			.get(`/api/v2/archive/2/folders/shared`)
 			.expect(200);
 
-		const folders = (response.body as { items: Folder[] }).items;
+		const {
+			body: { items: folders },
+		} = response as { body: { items: Folder[] } };
 		expect(folders.length).toBe(0);
 	});
 
@@ -120,7 +124,9 @@ describe("getSharedFolders", () => {
 			.get(`/api/v2/archive/1/folders/shared`)
 			.expect(200);
 
-		const folders = (response.body as { items: Folder[] }).items;
+		const {
+			body: { items: folders },
+		} = response as { body: { items: Folder[] } };
 		expect(folders.length).toBe(0);
 	});
 
@@ -129,7 +135,9 @@ describe("getSharedFolders", () => {
 			.get(`/api/v2/archive/3/folders/shared`)
 			.expect(200);
 
-		const folders = (response.body as { items: Folder[] }).items;
+		const {
+			body: { items: folders },
+		} = response as { body: { items: Folder[] } };
 		expect(folders.length).toBe(0);
 	});
 });

@@ -219,7 +219,9 @@ describe("POST /share-links", () => {
 			})
 			.expect(201);
 
-		const shareLink = (response.body as { data: ShareLink }).data;
+		const {
+			body: { data: shareLink },
+		} = response as { body: { data: ShareLink } };
 		expect(shareLink.id).toBeDefined();
 		expect(shareLink.itemId).toEqual("2");
 		expect(shareLink.itemType).toEqual("record");
@@ -246,7 +248,9 @@ describe("POST /share-links", () => {
 			})
 			.expect(201);
 
-		const shareLink = (response.body as { data: ShareLink }).data;
+		const {
+			body: { data: shareLink },
+		} = response as { body: { data: ShareLink } };
 		expect(shareLink.maxUses).toEqual(5);
 	});
 
@@ -259,7 +263,9 @@ describe("POST /share-links", () => {
 			})
 			.expect(201);
 
-		const shareLink = (response.body as { data: ShareLink }).data;
+		const {
+			body: { data: shareLink },
+		} = response as { body: { data: ShareLink } };
 		expect(shareLink.accessRestrictions).toEqual("account");
 	});
 
@@ -485,7 +491,9 @@ describe("PATCH /share-links/{id}", () => {
 			})
 			.expect(200);
 
-		const shareLink = (response.body as { data: ShareLink }).data;
+		const {
+			body: { data: shareLink },
+		} = response as { body: { data: ShareLink } };
 		expect(shareLink).toEqual({
 			id: expect.anything() as string,
 			itemId: "6",
@@ -554,7 +562,9 @@ describe("PATCH /share-links/{id}", () => {
 			})
 			.expect(200);
 
-		const shareLink = (response.body as { data: ShareLink }).data;
+		const {
+			body: { data: shareLink },
+		} = response as { body: { data: ShareLink } };
 		expect(shareLink.accessRestrictions).toEqual("account");
 		expect(shareLink.permissionsLevel).toEqual("editor");
 		expect(shareLink.maxUses).toEqual(500);
@@ -691,7 +701,9 @@ describe("GET /share-links", () => {
 		const response = await agent
 			.get("/api/v2/share-links?shareLinkIds[]=1000")
 			.expect(200);
-		const shareLinks = (response.body as { items: ShareLink[] }).items;
+		const {
+			body: { items: shareLinks },
+		} = response as { body: { items: ShareLink[] } };
 		expect(shareLinks.length).toEqual(0);
 	});
 
@@ -699,7 +711,9 @@ describe("GET /share-links", () => {
 		const response = await agent
 			.get("/api/v2/share-links?shareLinkIds[]=1000&shareLinkIds[]=1001")
 			.expect(200);
-		const shareLinks = (response.body as { items: ShareLink[] }).items;
+		const {
+			body: { items: shareLinks },
+		} = response as { body: { items: ShareLink[] } };
 		expect(shareLinks.length).toEqual(2);
 	});
 
@@ -709,7 +723,9 @@ describe("GET /share-links", () => {
 				"/api/v2/share-links?shareTokens[]=e969f9dc-42b5-45c0-a496-1dcff2ca11f5&shareTokens[]=0fcb840f-d22c-4a51-a358-2a61677e8fb2",
 			)
 			.expect(200);
-		const shareLinks = (response.body as { items: ShareLink[] }).items;
+		const {
+			body: { items: shareLinks },
+		} = response as { body: { items: ShareLink[] } };
 		expect(shareLinks.length).toEqual(2);
 	});
 
@@ -719,7 +735,9 @@ describe("GET /share-links", () => {
 				"/api/v2/share-links?shareLinkIds[]=e969f9dc-42b5-45c0-a496-1dcff2ca11f5",
 			)
 			.expect(200);
-		const shareLinks = (response.body as { items: ShareLink[] }).items;
+		const {
+			body: { items: shareLinks },
+		} = response as { body: { items: ShareLink[] } };
 		expect(shareLinks.length).toEqual(0);
 	});
 
@@ -740,7 +758,9 @@ describe("GET /share-links", () => {
 				"/api/v2/share-links?shareTokens[]=e969f9dc-42b5-45c0-a496-1dcff2ca11f5&shareTokens[]=0fcb840f-d22c-4a51-a358-2a61677e8fb2",
 			)
 			.expect(200);
-		const shareLinks = (response.body as { items: ShareLink[] }).items;
+		const {
+			body: { items: shareLinks },
+		} = response as { body: { items: ShareLink[] } };
 		expect(shareLinks.length).toEqual(2);
 	});
 
@@ -765,7 +785,9 @@ describe("GET /share-links", () => {
 		const response = await agent
 			.get("/api/v2/share-links?shareLinkIds[]=1000")
 			.expect(200);
-		const shareLinks = (response.body as { items: ShareLink[] }).items;
+		const {
+			body: { items: shareLinks },
+		} = response as { body: { items: ShareLink[] } };
 		expect(shareLinks.length).toEqual(1);
 		expect(shareLinks[0]).toEqual({
 			id: "1000",

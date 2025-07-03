@@ -169,7 +169,9 @@ describe("handler", () => {
 
 		expect(fileResult.rows.length).toEqual(1);
 
-		const file = fileResult.rows[0];
+		const {
+			rows: [file],
+		} = fileResult;
 		expect(+(file?.size ?? 0)).toEqual(testSize);
 		expect(file?.format).toEqual("file.format.archivematica.access");
 		expect(file?.contentType).toEqual("image/jpeg");
