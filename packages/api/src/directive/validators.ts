@@ -7,9 +7,11 @@ import {
 
 export { validateBodyFromAuthentication };
 
-export function validateCreateDirectiveRequest(
+export const validateCreateDirectiveRequest: (
 	data: unknown,
-): asserts data is CreateDirectiveRequest {
+) => asserts data is CreateDirectiveRequest = (
+	data: unknown,
+): asserts data is CreateDirectiveRequest => {
 	const validation = Joi.object()
 		.keys({
 			...fieldsFromUserAuthentication,
@@ -34,11 +36,13 @@ export function validateCreateDirectiveRequest(
 	if (validation.error !== undefined) {
 		throw validation.error;
 	}
-}
+};
 
-export function validateUpdateDirectiveParams(
+export const validateUpdateDirectiveParams: (
 	data: unknown,
-): asserts data is { directiveId: string } {
+) => asserts data is { directiveId: string } = (
+	data: unknown,
+): asserts data is { directiveId: string } => {
 	const validation = Joi.object()
 		.keys({
 			directiveId: Joi.string().uuid().required(),
@@ -47,11 +51,13 @@ export function validateUpdateDirectiveParams(
 	if (validation.error !== undefined) {
 		throw validation.error;
 	}
-}
+};
 
-export function validateUpdateDirectiveRequest(
+export const validateUpdateDirectiveRequest: (
 	data: unknown,
-): asserts data is UpdateDirectiveRequest {
+) => asserts data is UpdateDirectiveRequest = (
+	data: unknown,
+): asserts data is UpdateDirectiveRequest => {
 	const validation = Joi.object()
 		.keys({
 			...fieldsFromUserAuthentication,
@@ -70,11 +76,13 @@ export function validateUpdateDirectiveRequest(
 	if (validation.error !== undefined) {
 		throw validation.error;
 	}
-}
+};
 
-export function validateTriggerAdminDirectivesParams(
+export const validateTriggerAdminDirectivesParams: (
 	data: unknown,
-): asserts data is { accountId: string } {
+) => asserts data is { accountId: string } = (
+	data: unknown,
+): asserts data is { accountId: string } => {
 	const validation = Joi.object()
 		.keys({
 			accountId: Joi.string().required(),
@@ -83,11 +91,13 @@ export function validateTriggerAdminDirectivesParams(
 	if (validation.error !== undefined) {
 		throw validation.error;
 	}
-}
+};
 
-export function validateGetDirectivesByArchiveIdParams(
+export const validateGetDirectivesByArchiveIdParams: (
 	data: unknown,
-): asserts data is { archiveId: string } {
+) => asserts data is { archiveId: string } = (
+	data: unknown,
+): asserts data is { archiveId: string } => {
 	const validation = Joi.object()
 		.keys({
 			archiveId: Joi.string().required(),
@@ -96,4 +106,4 @@ export function validateGetDirectivesByArchiveIdParams(
 	if (validation.error !== undefined) {
 		throw validation.error;
 	}
-}
+};
