@@ -34,7 +34,7 @@ export const sendEmail = async (
 		throw new Error(
 			`Error calling Mailchimp. Status: ${response.response?.status ?? ""}`,
 		);
-	} else if (!response[0]) {
+	} else if (response[0] === undefined) {
 		throw new Error("no email sent");
 	} else if (response[0].status !== "sent") {
 		throw new Error(

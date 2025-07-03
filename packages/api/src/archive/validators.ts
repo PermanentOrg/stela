@@ -9,7 +9,7 @@ export function validateArchiveIdFromParams(
 	const validation = Joi.object()
 		.keys({ archiveId: Joi.string().required() })
 		.validate(data);
-	if (validation.error) {
+	if (validation.error !== undefined) {
 		throw validation.error;
 	}
 }

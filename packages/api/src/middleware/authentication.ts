@@ -56,7 +56,10 @@ const getOptionalValueFromAuthToken = async (
 	);
 
 	const successfulIntrospectionResponse = introspectionResponses.find(
-		(introspectionResponse) => introspectionResponse?.wasSuccessful(),
+		(introspectionResponse) =>
+			introspectionResponse !== undefined && introspectionResponse !== null
+				? introspectionResponse.wasSuccessful()
+				: false,
 	);
 	if (
 		successfulIntrospectionResponse === undefined ||
@@ -111,7 +114,7 @@ const getAuthTokenFromRequest = (
 ): string => {
 	const authorizationHeaderParts = req.get("Authorization")?.split(" ");
 	if (
-		!authorizationHeaderParts ||
+		authorizationHeaderParts === undefined ||
 		authorizationHeaderParts.length !== 2 ||
 		authorizationHeaderParts[0] !== "Bearer"
 	) {

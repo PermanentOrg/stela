@@ -446,7 +446,7 @@ describe("/record/:recordId/recalculate_thumbnail", () => {
 				Message[],
 			]
 		)[1] as unknown as Message[];
-		if (publishMessages[0]) {
+		if (publishMessages[0] !== undefined) {
 			const publishBody = JSON.parse(publishMessages[0].body) as {
 				parameters: string[];
 			};

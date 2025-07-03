@@ -1,7 +1,7 @@
 import nock from "nock";
 import { fusionAuthClient } from "./fusionauth";
 
-const mockFusionAuthHost = process.env["FUSIONAUTH_HOST"] || "";
+const mockFusionAuthHost = process.env["FUSIONAUTH_HOST"] ?? "";
 
 describe("fusionAuthClient", () => {
 	describe("introspectAccessToken", () => {

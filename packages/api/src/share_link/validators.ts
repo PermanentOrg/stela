@@ -45,7 +45,7 @@ export function validateCreateShareLinkRequest(
 			expirationTimestamp: Joi.string().isoDate().optional(),
 		})
 		.validate(data);
-	if (validation.error) {
+	if (validation.error !== undefined) {
 		throw validation.error;
 	}
 }
@@ -87,7 +87,7 @@ export function validateUpdateShareLinkRequest(
 			"maxUses",
 		)
 		.validate(data);
-	if (validation.error) {
+	if (validation.error !== undefined) {
 		throw validation.error;
 	}
 }
@@ -101,7 +101,7 @@ export function validateGetShareLinksParameters(
 			shareLinkIds: Joi.array().items(Joi.string()).optional(),
 		})
 		.validate(data);
-	if (validation.error) {
+	if (validation.error !== undefined) {
 		throw validation.error;
 	}
 }

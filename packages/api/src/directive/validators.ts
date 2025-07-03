@@ -31,7 +31,7 @@ export function validateCreateDirectiveRequest(
 				.required(),
 		})
 		.validate(data);
-	if (validation.error) {
+	if (validation.error !== undefined) {
 		throw validation.error;
 	}
 }
@@ -44,7 +44,7 @@ export function validateUpdateDirectiveParams(
 			directiveId: Joi.string().uuid().required(),
 		})
 		.validate(data);
-	if (validation.error) {
+	if (validation.error !== undefined) {
 		throw validation.error;
 	}
 }
@@ -67,7 +67,7 @@ export function validateUpdateDirectiveRequest(
 			}),
 		})
 		.validate(data);
-	if (validation.error) {
+	if (validation.error !== undefined) {
 		throw validation.error;
 	}
 }
@@ -80,7 +80,7 @@ export function validateTriggerAdminDirectivesParams(
 			accountId: Joi.string().required(),
 		})
 		.validate(data);
-	if (validation.error) {
+	if (validation.error !== undefined) {
 		throw validation.error;
 	}
 }
@@ -93,7 +93,7 @@ export function validateGetDirectivesByArchiveIdParams(
 			archiveId: Joi.string().required(),
 		})
 		.validate(data);
-	if (validation.error) {
+	if (validation.error !== undefined) {
 		throw validation.error;
 	}
 }
