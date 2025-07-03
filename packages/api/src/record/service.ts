@@ -48,7 +48,7 @@ const validateCanPatchRecord = async (
 	}
 };
 
-function buildPatchQuery(columnsForUpdate: RecordColumnsForUpdate): string {
+const buildPatchQuery = (columnsForUpdate: RecordColumnsForUpdate): string => {
 	const updates = Object.entries(columnsForUpdate)
 		.filter(([key, value]) => value !== undefined && key !== "recordId")
 		.map(([key, _]) => `${key} = :${key}`);
@@ -65,7 +65,7 @@ function buildPatchQuery(columnsForUpdate: RecordColumnsForUpdate): string {
   `;
 
 	return query.trim();
-}
+};
 
 export const patchRecord = async (
 	recordId: string,

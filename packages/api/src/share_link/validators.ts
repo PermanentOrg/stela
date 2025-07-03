@@ -2,9 +2,11 @@ import Joi from "joi";
 import type { CreateShareLinkRequest, UpdateShareLinkRequest } from "./models";
 import { fieldsFromUserAuthentication } from "../validators";
 
-export function validateCreateShareLinkRequest(
+export const validateCreateShareLinkRequest: (
 	data: unknown,
-): asserts data is CreateShareLinkRequest {
+) => asserts data is CreateShareLinkRequest = (
+	data: unknown,
+): asserts data is CreateShareLinkRequest => {
 	const validation = Joi.object()
 		.keys({
 			...fieldsFromUserAuthentication,
@@ -48,11 +50,13 @@ export function validateCreateShareLinkRequest(
 	if (validation.error !== undefined) {
 		throw validation.error;
 	}
-}
+};
 
-export function validateUpdateShareLinkRequest(
+export const validateUpdateShareLinkRequest: (
 	data: unknown,
-): asserts data is UpdateShareLinkRequest {
+) => asserts data is UpdateShareLinkRequest = (
+	data: unknown,
+): asserts data is UpdateShareLinkRequest => {
 	const validation = Joi.object()
 		.keys({
 			...fieldsFromUserAuthentication,
@@ -90,11 +94,13 @@ export function validateUpdateShareLinkRequest(
 	if (validation.error !== undefined) {
 		throw validation.error;
 	}
-}
+};
 
-export function validateGetShareLinksParameters(
+export const validateGetShareLinksParameters: (
 	data: unknown,
-): asserts data is { shareTokens: string[]; shareLinkIds: string[] } {
+) => asserts data is { shareTokens: string[]; shareLinkIds: string[] } = (
+	data: unknown,
+): asserts data is { shareTokens: string[]; shareLinkIds: string[] } => {
 	const validation = Joi.object()
 		.keys({
 			shareTokens: Joi.array().items(Joi.string()).optional(),
@@ -104,4 +110,4 @@ export function validateGetShareLinksParameters(
 	if (validation.error !== undefined) {
 		throw validation.error;
 	}
-}
+};
