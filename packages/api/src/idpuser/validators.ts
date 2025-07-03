@@ -20,7 +20,7 @@ export function validateSendEnableCodeRequest(
 			}),
 		})
 		.validate(data);
-	if (validation.error) {
+	if (validation.error !== undefined) {
 		throw validation.error;
 	}
 }
@@ -39,7 +39,7 @@ export function validateCreateTwoFactorMethodRequest(
 			}),
 		})
 		.validate(data);
-	if (validation.error) {
+	if (validation.error !== undefined) {
 		throw validation.error;
 	}
 }
@@ -53,7 +53,7 @@ export function validateSendDisableCodeRequest(
 			methodId: Joi.string().required(),
 		})
 		.validate(data);
-	if (validation.error) {
+	if (validation.error !== undefined) {
 		throw validation.error;
 	}
 }
@@ -68,7 +68,7 @@ export function validateDisableTwoFactorRequest(
 			code: Joi.string().required(),
 		})
 		.validate(data);
-	if (validation.error) {
+	if (validation.error !== undefined) {
 		throw validation.error;
 	}
 }

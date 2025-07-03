@@ -10,7 +10,7 @@ export function validateGetRecordQuery(
 			recordIds: Joi.array().items(Joi.string().required()).required(),
 		})
 		.validate(data);
-	if (validation.error) {
+	if (validation.error !== undefined) {
 		throw validation.error;
 	}
 }
@@ -22,7 +22,7 @@ export function validateRecordRequest(
 			recordId: Joi.string().required(),
 		})
 		.validate(data);
-	if (validation.error) {
+	if (validation.error !== undefined) {
 		throw validation.error;
 	}
 }
@@ -38,7 +38,7 @@ export function validatePatchRecordRequest(
 		})
 		.validate(data);
 
-	if (validation.error) {
+	if (validation.error !== undefined) {
 		throw validation.error;
 	}
 }

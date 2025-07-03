@@ -49,7 +49,7 @@ const getThumbnailsFromRecord = async (
 		},
 	);
 
-	if (!thumbnailResult.rows[0]) {
+	if (thumbnailResult.rows[0] === undefined) {
 		expect(false).toBe(true);
 		return {
 			thumbnail256: "",
@@ -95,7 +95,7 @@ const getThumbnailsFromFolder = async (
 		},
 	);
 
-	if (!thumbnailResult.rows[0]) {
+	if (thumbnailResult.rows[0] === undefined) {
 		expect(false).toBe(true);
 		return {
 			thumbnail256: "",

@@ -159,7 +159,11 @@ describe("handler", () => {
 		const updatedAccountSpace = await getUpdatedAccountSpace();
 		const ledgerEntry = await getLedgerEntry();
 
-		if (!initialAccountSpace || !updatedAccountSpace || !ledgerEntry) {
+		if (
+			initialAccountSpace === undefined ||
+			updatedAccountSpace === undefined ||
+			ledgerEntry === undefined
+		) {
 			expect(false).toBe(true);
 		} else {
 			expect(updatedAccountSpace).toEqual({
@@ -221,7 +225,11 @@ describe("handler", () => {
 		const updatedAccountSpace = await getUpdatedAccountSpace();
 		const ledgerEntry = await getLedgerEntry();
 
-		if (!initialAccountSpace || !updatedAccountSpace || !ledgerEntry) {
+		if (
+			initialAccountSpace === undefined ||
+			updatedAccountSpace === undefined ||
+			ledgerEntry === undefined
+		) {
 			expect(false).toBe(true);
 		} else {
 			expect(updatedAccountSpace).toEqual({

@@ -11,7 +11,7 @@ export function validateRecalculateFolderThumbnailsRequest(
 			endTimestamp: Joi.date().iso().required(),
 		})
 		.validate(data);
-	if (validation.error) {
+	if (validation.error !== undefined) {
 		throw validation.error;
 	}
 }
@@ -32,7 +32,7 @@ export function validateAccountSetNullSubjectsRequest(
 				.required(),
 		})
 		.validate(data);
-	if (validation.error) {
+	if (validation.error !== undefined) {
 		throw validation.error;
 	}
 }
@@ -45,7 +45,7 @@ export function validateRecalculateRecordThumbnailRequest(
 			recordId: Joi.string().required(),
 		})
 		.validate(data);
-	if (validation.error) {
+	if (validation.error !== undefined) {
 		throw validation.error;
 	}
 }

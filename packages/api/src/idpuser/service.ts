@@ -22,12 +22,12 @@ export const getTwoFactorMethods = async (
 			clientResponse.exception.message ?? "Unknown error",
 		);
 	}
-	if (clientResponse.response.user.twoFactor.methods.length) {
+	if (clientResponse.response.user.twoFactor.methods.length > 0) {
 		return clientResponse.response.user.twoFactor.methods.map(
 			({ id, method, email, mobilePhone }) => ({
 				methodId: id,
 				method,
-				value: email || mobilePhone,
+				value: email ?? mobilePhone,
 			}),
 		);
 	}
@@ -45,7 +45,7 @@ export const sendEnableCode = async (
 		},
 	);
 
-	if (!fusionAuthUserIdResponse.rows[0]) {
+	if (fusionAuthUserIdResponse.rows[0] === undefined) {
 		throw createError.NotFound("User not found");
 	}
 
@@ -87,7 +87,7 @@ export const addTwoFactorMethod = async (
 			email: requestBody.emailFromAuthToken,
 		},
 	);
-	if (!fusionAuthUserIdResponse.rows[0]) {
+	if (fusionAuthUserIdResponse.rows[0] === undefined) {
 		throw createError.NotFound("User not found");
 	}
 	const fusionAuthRequestBody: {
@@ -126,7 +126,7 @@ export const sendDisableCode = async (
 		},
 	);
 
-	if (!fusionAuthUserIdResponse.rows[0]) {
+	if (fusionAuthUserIdResponse.rows[0] === undefined) {
 		throw createError.NotFound("User not found");
 	}
 
@@ -153,7 +153,7 @@ export const removeTwoFactorMethod = async (
 			email: requestBody.emailFromAuthToken,
 		},
 	);
-	if (!fusionAuthUserIdResponse.rows[0]) {
+	if (fusionAuthUserIdResponse.rows[0] === undefined) {
 		throw createError.NotFound("User not found");
 	}
 

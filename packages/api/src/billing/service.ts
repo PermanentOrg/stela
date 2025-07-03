@@ -71,7 +71,7 @@ export const issueGift = async (
 				);
 			});
 
-		if (!senderStorage.rows[0]) {
+		if (senderStorage.rows[0] === undefined) {
 			logger.error("Empty response from account_space query");
 			throw new createError.InternalServerError(
 				"Failed to look up sender account space",

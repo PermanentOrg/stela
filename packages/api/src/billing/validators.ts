@@ -16,7 +16,7 @@ export function validateGiftStorageRequest(
 			note: Joi.string().allow("").optional(),
 		})
 		.validate(data);
-	if (validation.error) {
+	if (validation.error !== undefined) {
 		throw validation.error;
 	}
 }
