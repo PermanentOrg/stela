@@ -39,7 +39,7 @@ describe("cleanupDashboard", () => {
 		const errorText = "500 Internal Server Error";
 		global.fetch = jest.fn().mockResolvedValue({
 			ok: false,
-			text: async () => Promise.resolve(errorText),
+			text: async () => await Promise.resolve(errorText),
 		});
 
 		await cleanupDashboard();
@@ -55,7 +55,7 @@ describe("cleanupDashboard", () => {
 			})
 			.mockResolvedValueOnce({
 				ok: false,
-				text: async () => Promise.resolve(errorText),
+				text: async () => await Promise.resolve(errorText),
 			});
 
 		await cleanupDashboard();

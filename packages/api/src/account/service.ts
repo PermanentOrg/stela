@@ -69,7 +69,7 @@ const leaveArchive = async ({
 }: LeaveArchiveRequest): Promise<{
 	accountArchiveId: string;
 }> =>
-	db.transaction(async (transactionDb) => {
+	await db.transaction(async (transactionDb) => {
 		const accountArchiveResult =
 			await transactionDb.sql<GetAccountArchiveResult>(
 				"account.queries.get_account_archive",

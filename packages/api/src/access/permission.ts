@@ -79,12 +79,14 @@ export const getItemAccessRole = async (
 export const getRecordAccessRole = async (
 	recordId: string,
 	callerEmail: string,
-): Promise<AccessRole> => getItemAccessRole(recordId, "record", callerEmail);
+): Promise<AccessRole> =>
+	await getItemAccessRole(recordId, "record", callerEmail);
 
 export const getFolderAccessRole = async (
 	folderId: string,
 	callerEmail: string,
-): Promise<AccessRole> => getItemAccessRole(folderId, "folder", callerEmail);
+): Promise<AccessRole> =>
+	await getItemAccessRole(folderId, "folder", callerEmail);
 
 export const isItemPublic = async (
 	itemId: string,
