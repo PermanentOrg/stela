@@ -53,8 +53,6 @@ export default defineConfig([
 
 			// These are `love` rules that we were violating.  We should review these one at a time.
 			"@typescript-eslint/no-magic-numbers": "off",
-			"@typescript-eslint/consistent-type-assertions": "off",
-			"@typescript-eslint/consistent-type-assertions": "off",
 			"@typescript-eslint/no-unnecessary-type-conversion": "off",
 			complexity: "off",
 			"@typescript-eslint/no-unnecessary-condition": "off",
