@@ -1,4 +1,5 @@
-import type { Request, Response, NextFunction } from "express";
+import type { NextFunction } from "express";
+import { createRequest, createResponse } from "node-mocks-http";
 import * as Sentry from "@sentry/node";
 import { handleError } from "./handleError";
 
@@ -6,11 +7,10 @@ jest.mock("@sentry/node", () => ({
 	captureException: jest.fn(),
 }));
 describe("handleError", () => {
-	const request = {} as Request;
-	const response = {
-		status: jest.fn().mockReturnThis(),
-		json: jest.fn(),
-	} as unknown as Response;
+	const request = createRequest();
+	const response = createResponse();
+	response.status = jest.fn().mockReturnThis();
+	response.json = jest.fn();
 	const nextFunction = jest.fn() as NextFunction;
 
 	beforeEach(() => {

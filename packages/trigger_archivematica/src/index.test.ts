@@ -1,4 +1,5 @@
 import type { Context } from "aws-lambda";
+import { mock } from "jest-mock-extended";
 import { logger } from "@stela/logger";
 import { triggerArchivematicaProcessing } from "@stela/archivematica-utils";
 import { db } from "./database";
@@ -183,7 +184,7 @@ describe("handler", () => {
 					},
 				],
 			},
-			{} as Context,
+			mock<Context>(),
 			() => {},
 		);
 
@@ -224,7 +225,7 @@ describe("handler", () => {
 					},
 				],
 			},
-			{} as Context,
+			mock<Context>(),
 			() => {},
 		);
 
@@ -281,7 +282,7 @@ describe("handler", () => {
 					},
 				],
 			},
-			{} as Context,
+			mock<Context>(),
 			() => {},
 		);
 
@@ -326,7 +327,7 @@ describe("handler", () => {
 						},
 					],
 				},
-				{} as Context,
+				mock<Context>(),
 				() => {},
 			),
 		).rejects.toThrow("Database connection failed");
@@ -369,7 +370,7 @@ describe("handler", () => {
 						},
 					],
 				},
-				{} as Context,
+				mock<Context>(),
 				() => {},
 			),
 		).rejects.toThrow("Failed to trigger Archivematica");
@@ -387,7 +388,9 @@ describe("handler", () => {
 	test("should throw error when Archivematica processing fails without an exception", async () => {
 		jest
 			.mocked(triggerArchivematicaProcessing)
-			.mockResolvedValueOnce({ ok: false, status: 404 } as Response);
+			.mockImplementation(
+				jest.fn().mockResolvedValueOnce({ ok: false, status: 404 }),
+			);
 
 		await expect(
 			handler(
@@ -417,7 +420,7 @@ describe("handler", () => {
 						},
 					],
 				},
-				{} as Context,
+				mock<Context>(),
 				() => {},
 			),
 		).rejects.toThrow("Call to Archivematica failed with status 404");

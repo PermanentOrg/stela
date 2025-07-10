@@ -1,12 +1,12 @@
 import request from "supertest";
-import type { Request, NextFunction } from "express";
+import type { NextFunction } from "express";
 import createError from "http-errors";
 import { logger } from "@stela/logger";
 import { app } from "../app";
 import { db } from "../database";
 import { lowPriorityTopicArn, publisherClient } from "../publisher_client";
 import { verifyAdminAuthentication } from "../middleware";
-import type { Message } from "../publisher_client";
+import { mockVerifyAdminAuthentication } from "../../test/middleware_mocks";
 
 jest.mock("../database");
 jest.mock("@stela/logger");
@@ -24,18 +24,9 @@ describe("recalculateFolderThumbnails", () => {
 
 	const agent = request(app);
 	beforeEach(async () => {
-		(verifyAdminAuthentication as jest.Mock).mockImplementation(
-			(req: Request, __, next: NextFunction) => {
-				const body = req.body as {
-					beginTimestamp: Date;
-					endTimestamp: Date;
-					emailFromAuthToken: string;
-					adminSubjectFromAuthToken: string;
-				};
-				body.emailFromAuthToken = "test@permanent.org";
-				body.adminSubjectFromAuthToken = "5c3473b6-cf2e-4c55-a80e-8db51d1bc5fd";
-				next();
-			},
+		mockVerifyAdminAuthentication(
+			"test@permanent.org",
+			"5c3473b6-cf2e-4c55-a80e-8db51d1bc5fd",
 		);
 		jest.clearAllMocks();
 		await clearDatabase();
@@ -57,16 +48,15 @@ describe("recalculateFolderThumbnails", () => {
 				endTimestamp: new Date(),
 			})
 			.expect(200);
-		expect(
-			(
-				(
-					(publisherClient.batchPublishMessages as jest.Mock).mock.calls[0] as [
-						string,
-						Message[],
-					]
-				)[1] as unknown as Message[]
-			).length,
-		).toBe(6);
+		const {
+			mock: {
+				calls: [callsToBatchPublish],
+			},
+		} = jest.mocked(publisherClient.batchPublishMessages);
+		expect(callsToBatchPublish).toBeDefined();
+		if (callsToBatchPublish !== undefined) {
+			expect(callsToBatchPublish[1].length).toBe(6);
+		}
 		expect(result.body).toEqual({ failedFolders: [], messagesSent: 6 });
 	});
 
@@ -132,16 +122,9 @@ describe("set_null_subjects", () => {
 	};
 
 	beforeEach(async () => {
-		(verifyAdminAuthentication as jest.Mock).mockImplementation(
-			(req: Request, __, next: NextFunction) => {
-				const body = req.body as {
-					emailFromAuthToken: string;
-					adminSubjectFromAuthToken: string;
-				};
-				body.emailFromAuthToken = "test@permanent.org";
-				body.adminSubjectFromAuthToken = "5c3473b6-cf2e-4c55-a80e-8db51d1bc5fd";
-				next();
-			},
+		mockVerifyAdminAuthentication(
+			"test@permanent.org",
+			"5c3473b6-cf2e-4c55-a80e-8db51d1bc5fd",
 		);
 		jest.clearAllMocks();
 		await clearDatabase();
@@ -160,11 +143,11 @@ describe("set_null_subjects", () => {
 	});
 
 	test("should respond with 401 if not authenticated", async () => {
-		(verifyAdminAuthentication as jest.Mock).mockImplementation(
-			(_, __, next: NextFunction) => {
+		jest
+			.mocked(verifyAdminAuthentication)
+			.mockImplementation(async (_, __, next: NextFunction) => {
 				next(new createError.Unauthorized("Invalid token"));
-			},
-		);
+			});
 		await agent
 			.post("/api/v2/admin/account/set_null_subjects")
 			.send({})
@@ -397,18 +380,9 @@ describe("/record/:recordId/recalculate_thumbnail", () => {
 	};
 
 	beforeEach(async () => {
-		(verifyAdminAuthentication as jest.Mock).mockImplementation(
-			(req: Request, __, next: NextFunction) => {
-				const body = req.body as {
-					beginTimestamp: Date;
-					endTimestamp: Date;
-					emailFromAuthToken: string;
-					adminSubjectFromAuthToken: string;
-				};
-				body.emailFromAuthToken = "test@permanent.org";
-				body.adminSubjectFromAuthToken = "5c3473b6-cf2e-4c55-a80e-8db51d1bc5fd";
-				next();
-			},
+		mockVerifyAdminAuthentication(
+			"test@permanent.org",
+			"5c3473b6-cf2e-4c55-a80e-8db51d1bc5fd",
 		);
 		jest.clearAllMocks();
 		await clearDatabase();
@@ -420,18 +394,18 @@ describe("/record/:recordId/recalculate_thumbnail", () => {
 	});
 
 	test("should response with 401 if not authenticated as an admin", async () => {
-		(verifyAdminAuthentication as jest.Mock).mockImplementation(
-			(_, __, next: NextFunction) => {
+		jest
+			.mocked(verifyAdminAuthentication)
+			.mockImplementation(async (_, __, next: NextFunction) => {
 				next(new createError.Unauthorized("Invalid token"));
-			},
-		);
+			});
 		await agent
 			.post("/api/v2/admin/record/1/recalculate_thumbnail")
 			.expect(401);
 	});
 
 	test("should publish a message with correct parameters", async () => {
-		(publisherClient.batchPublishMessages as jest.Mock).mockResolvedValueOnce({
+		jest.mocked(publisherClient.batchPublishMessages).mockResolvedValueOnce({
 			failedMessages: [],
 			messagesSent: 1,
 		});
@@ -440,22 +414,31 @@ describe("/record/:recordId/recalculate_thumbnail", () => {
 			.expect(200);
 
 		expect(publisherClient.batchPublishMessages).toHaveBeenCalled();
-		const publishMessages = (
-			(publisherClient.batchPublishMessages as jest.Mock).mock.calls[0] as [
-				string,
-				Message[],
-			]
-		)[1] as unknown as Message[];
-		if (publishMessages[0] !== undefined) {
-			const publishBody = JSON.parse(publishMessages[0].body) as {
-				parameters: string[];
-			};
-			expect(publishBody.parameters.length).toBe(6);
-			expect(publishBody.parameters[1]).toBe("1");
-			expect(publishBody.parameters[2]).toBe("1");
-			expect(publishBody.parameters[3]).toBe("1");
-		} else {
-			expect(true).toBe(false);
+		const {
+			mock: {
+				calls: [firstCallToBatchPublish],
+			},
+		} = jest.mocked(publisherClient.batchPublishMessages);
+		expect(firstCallToBatchPublish).toBeDefined();
+		if (firstCallToBatchPublish !== undefined) {
+			const [, [firstMessage]] = firstCallToBatchPublish;
+			expect(firstMessage).toBeDefined();
+			if (firstMessage !== undefined) {
+				const publishBody = JSON.parse(firstMessage.body) as unknown;
+				if (
+					typeof publishBody === "object" &&
+					publishBody !== null &&
+					"parameters" in publishBody &&
+					Array.isArray(publishBody.parameters)
+				) {
+					expect(publishBody.parameters.length).toBe(6);
+					expect(publishBody.parameters[1]).toBe("1");
+					expect(publishBody.parameters[2]).toBe("1");
+					expect(publishBody.parameters[3]).toBe("1");
+				} else {
+					expect(false).toBe(true);
+				}
+			}
 		}
 	});
 
@@ -497,20 +480,11 @@ describe("/folder/delete-orphaned-folders", () => {
 	};
 
 	beforeEach(async () => {
-		(verifyAdminAuthentication as jest.Mock).mockImplementation(
-			(req: Request, __, next: NextFunction) => {
-				const body = req.body as {
-					beginTimestamp: Date;
-					endTimestamp: Date;
-					emailFromAuthToken: string;
-					adminSubjectFromAuthToken: string;
-				};
-				body.emailFromAuthToken = "test@permanent.org";
-				body.adminSubjectFromAuthToken = "5c3473b6-cf2e-4c55-a80e-8db51d1bc5fd";
-				next();
-			},
+		mockVerifyAdminAuthentication(
+			"test@permanent.org",
+			"5c3473b6-cf2e-4c55-a80e-8db51d1bc5fd",
 		);
-		(publisherClient.batchPublishMessages as jest.Mock).mockResolvedValue({
+		jest.mocked(publisherClient.batchPublishMessages).mockResolvedValue({
 			failedMessages: [],
 			messagesSent: 2,
 		});
@@ -526,11 +500,11 @@ describe("/folder/delete-orphaned-folders", () => {
 	});
 
 	test("should respond with 401 if not authenticated as an admin", async () => {
-		(verifyAdminAuthentication as jest.Mock).mockImplementation(
-			(_, __, next: NextFunction) => {
+		jest
+			.mocked(verifyAdminAuthentication)
+			.mockImplementation(async (_, __, next: NextFunction) => {
 				next(new createError.Unauthorized("Invalid token"));
-			},
-		);
+			});
 		await agent
 			.post("/api/v2/admin/folder/delete-orphaned-folders")
 			.expect(401);
@@ -566,9 +540,9 @@ describe("/folder/delete-orphaned-folders", () => {
 
 	test("should respond with a 500 error if publishing fails", async () => {
 		const testError = new Error("Out of cheese - redo from start");
-		(publisherClient.batchPublishMessages as jest.Mock).mockRejectedValue(
-			testError,
-		);
+		jest
+			.mocked(publisherClient.batchPublishMessages)
+			.mockRejectedValue(testError);
 
 		await agent
 			.post("/api/v2/admin/folder/delete-orphaned-folders")

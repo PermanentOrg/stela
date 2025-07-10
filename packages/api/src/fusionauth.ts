@@ -12,14 +12,10 @@ const memoizedIntrospectAccessToken = memoize(
 	{ maxAge: 10000 },
 );
 
-baseFusionAuthClient.introspectAccessToken = memoizedIntrospectAccessToken;
-
-// Simply replacing `introspectAccessToken` does not update the type of `baseFusionAuthClient`
-// And so we need to do this type cast so that `introspectAccessToken`'s type signature reflects
-// the additional `memoize` methods such as `.clear()`
-const fusionAuthClient = baseFusionAuthClient as Omit<
-	FusionAuthClient,
-	"introspectAccesstoken"
-> & { introspectAccessToken: typeof memoizedIntrospectAccessToken };
+const fusionAuthClient: Omit<FusionAuthClient, "introspectAccessToken"> & {
+	introspectAccessToken: typeof memoizedIntrospectAccessToken;
+} = Object.assign({}, baseFusionAuthClient, {
+	introspectAccessToken: memoizedIntrospectAccessToken,
+});
 
 export { fusionAuthClient };

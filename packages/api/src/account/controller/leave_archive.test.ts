@@ -1,12 +1,14 @@
 import request from "supertest";
-import type { Request, NextFunction } from "express";
 import { when } from "jest-when";
 
 import { db } from "../../database";
 import { EVENT_ACTION, EVENT_ACTOR, EVENT_ENTITY } from "../../constants";
-import { verifyUserAuthentication, extractIp } from "../../middleware";
 import { app } from "../../app";
 import { createEvent } from "../../event/service";
+import {
+	mockVerifyUserAuthentication,
+	mockExtractIp,
+} from "../../../test/middleware_mocks";
 
 jest.mock("../../database");
 jest.mock("../../middleware");
@@ -40,36 +42,11 @@ describe("leaveArchive", () => {
         accountid = 3 AND archiveid = 1`;
 
 	beforeEach(async () => {
-		(verifyUserAuthentication as jest.Mock).mockImplementation(
-			async (
-				req: Request<
-					unknown,
-					unknown,
-					{ userSubjectFromAuthToken?: string; emailFromAuthToken?: string }
-				>,
-				__,
-				next: NextFunction,
-			) => {
-				req.body.emailFromAuthToken = "test+1@permanent.org";
-				req.body.userSubjectFromAuthToken =
-					"b5461dc2-1eb0-450e-b710-fef7b2cafe1e";
-
-				next();
-			},
+		mockVerifyUserAuthentication(
+			"test+1@permanent.org",
+			"b5461dc2-1eb0-450e-b710-fef7b2cafe1e",
 		);
-
-		(extractIp as jest.Mock).mockImplementation(
-			async (
-				req: Request<unknown, unknown, { ip?: string }>,
-				__,
-				next: NextFunction,
-			) => {
-				req.body.ip = ip;
-
-				next();
-			},
-		);
-
+		mockExtractIp(ip);
 		await loadFixtures();
 		jest.clearAllMocks();
 	});
@@ -112,22 +89,7 @@ describe("leaveArchive", () => {
 	});
 
 	test("should return a bad request error if the request is invalid", async () => {
-		(verifyUserAuthentication as jest.Mock).mockImplementation(
-			async (
-				req: Request<
-					unknown,
-					unknown,
-					{ userSubjectFromAuthToken?: string; emailFromAuthToken?: string }
-				>,
-				__,
-				next: NextFunction,
-			) => {
-				req.body.emailFromAuthToken = "test+1@permanent.org";
-
-				next();
-			},
-		);
-
+		mockVerifyUserAuthentication("test+1@permanent.org");
 		await agent.delete("/api/v2/account/archive/1").expect(400);
 	});
 
@@ -138,9 +100,11 @@ describe("leaveArchive", () => {
 				archiveId: "1",
 				email: "test+1@permanent.org",
 			})
-			.mockImplementation((async () => ({
-				rows: [],
-			})) as unknown as typeof db.sql);
+			.mockImplementation(
+				jest.fn().mockResolvedValue({
+					rows: [],
+				}),
+			);
 		await agent.delete("/api/v2/account/archive/1").expect(500);
 	});
 });

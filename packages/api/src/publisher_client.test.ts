@@ -10,9 +10,11 @@ describe("batchPublishMessages", () => {
 		jest.clearAllMocks();
 	});
 	test("should publish messages in batches", async () => {
-		(SNSClient as jest.Mock).mockImplementation(() => ({
-			send: mockSend.mockResolvedValue({ Failed: [] }),
-		}));
+		jest.mocked(SNSClient).mockImplementation(
+			jest.fn().mockReturnValue({
+				send: mockSend.mockResolvedValue({ Failed: [] }),
+			}),
+		);
 		const messages = [
 			{ id: "1", body: "message 1" },
 			{ id: "2", body: "message 2" },
@@ -38,9 +40,11 @@ describe("batchPublishMessages", () => {
 	});
 
 	test("should report failures", async () => {
-		(SNSClient as jest.Mock).mockImplementation(() => ({
-			send: mockSend.mockResolvedValue({ Failed: [{ Id: "1" }] }),
-		}));
+		jest.mocked(SNSClient).mockImplementation(
+			jest.fn().mockReturnValue({
+				send: mockSend.mockResolvedValue({ Failed: [{ Id: "1" }] }),
+			}),
+		);
 
 		const messages = [
 			{ id: "1", body: "message 1" },
@@ -72,18 +76,22 @@ describe("publishMessage", () => {
 	});
 
 	test("should publish a message", async () => {
-		(SNSClient as jest.Mock).mockImplementation(() => ({
-			send: mockSend.mockResolvedValue({ Failed: [] }),
-		}));
+		jest.mocked(SNSClient).mockImplementation(
+			jest.fn().mockReturnValue({
+				send: mockSend.mockResolvedValue({ Failed: [] }),
+			}),
+		);
 
 		await publisherClient.publishMessage("topic", { id: "1", body: "message" });
 		expect(mockSend).toHaveBeenCalledTimes(1);
 	});
 
 	test("should include message attributes if provided", async () => {
-		(SNSClient as jest.Mock).mockImplementation(() => ({
-			send: mockSend.mockResolvedValue({ Failed: [] }),
-		}));
+		jest.mocked(SNSClient).mockImplementation(
+			jest.fn().mockReturnValue({
+				send: mockSend.mockResolvedValue({ Failed: [] }),
+			}),
+		);
 
 		await publisherClient.publishMessage("topic", {
 			id: "1",
@@ -93,39 +101,43 @@ describe("publishMessage", () => {
 				Action: "login",
 			},
 		});
-		expect(
-			(
-				(
-					(mockSend.mock.calls as unknown[])[0] as unknown[]
-				)[0] as PublishBatchCommand
-			).input,
-		).toEqual(
-			new PublishBatchCommand({
-				TopicArn: "topic",
-				PublishBatchRequestEntries: [
-					{
-						Id: "1",
-						Message: "message",
-						MessageAttributes: {
-							Entity: {
-								DataType: "String",
-								StringValue: "account",
-							},
-							Action: {
-								DataType: "String",
-								StringValue: "login",
+		const {
+			mock: {
+				calls: [publishCommand],
+			},
+		} = mockSend as { mock: { calls: PublishBatchCommand[] } };
+		expect(publishCommand).toBeDefined();
+		if (publishCommand !== undefined) {
+			expect(publishCommand.input).toEqual(
+				new PublishBatchCommand({
+					TopicArn: "topic",
+					PublishBatchRequestEntries: [
+						{
+							Id: "1",
+							Message: "message",
+							MessageAttributes: {
+								Entity: {
+									DataType: "String",
+									StringValue: "account",
+								},
+								Action: {
+									DataType: "String",
+									StringValue: "login",
+								},
 							},
 						},
-					},
-				],
-			}).input,
-		);
+					],
+				}).input,
+			);
+		}
 	});
 
 	test("should throw an error if the message fails to publish", async () => {
-		(SNSClient as jest.Mock).mockImplementation(() => ({
-			send: mockSend.mockResolvedValue({ Failed: [{ Id: "1" }] }),
-		}));
+		jest.mocked(SNSClient).mockImplementation(
+			jest.fn().mockReturnValue({
+				send: mockSend.mockResolvedValue({ Failed: [{ Id: "1" }] }),
+			}),
+		);
 
 		let error = null;
 		try {

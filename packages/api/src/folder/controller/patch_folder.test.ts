@@ -1,11 +1,10 @@
-import type { NextFunction, Request } from "express";
 import { logger } from "@stela/logger";
 import request from "supertest";
 import { when } from "jest-when";
 import { app } from "../../app";
 import { db } from "../../database";
-import { verifyUserAuthentication } from "../../middleware";
 import { loadFixtures, clearDatabase } from "./utils_test";
+import { mockVerifyUserAuthentication } from "../../../test/middleware_mocks";
 
 jest.mock("../../database");
 jest.mock("../../middleware");
@@ -15,21 +14,9 @@ describe("patch folder", () => {
 	const agent = request(app);
 
 	beforeEach(async () => {
-		(verifyUserAuthentication as jest.Mock).mockImplementation(
-			async (
-				req: Request<
-					unknown,
-					unknown,
-					{ userSubjectFromAuthToken?: string; emailFromAuthToken?: string }
-				>,
-				__,
-				next: NextFunction,
-			) => {
-				req.body.emailFromAuthToken = "test@permanent.org";
-				req.body.userSubjectFromAuthToken =
-					"b5461dc2-1eb0-450e-b710-fef7b2cafe1e";
-				next();
-			},
+		mockVerifyUserAuthentication(
+			"test@permanent.org",
+			"b5461dc2-1eb0-450e-b710-fef7b2cafe1e",
 		);
 		await clearDatabase();
 		await loadFixtures();
@@ -53,13 +40,7 @@ describe("patch folder", () => {
 	});
 
 	test("expect request to have an email from auth token if an auth token exists", async () => {
-		(verifyUserAuthentication as jest.Mock).mockImplementation(
-			(req: Request, __, next: NextFunction) => {
-				(req.body as { emailFromAuthToken: string }).emailFromAuthToken =
-					"not an email";
-				next();
-			},
-		);
+		mockVerifyUserAuthentication("not_an_email");
 
 		await agent.patch("/api/v2/folder/1").expect(400);
 	});
@@ -150,10 +131,9 @@ describe("patch folder", () => {
 				shareToken: undefined,
 			})
 			.mockImplementationOnce(
-				(async () =>
-					({
-						rows: [],
-					}) as object) as unknown as typeof db.sql,
+				jest.fn().mockResolvedValue({
+					rows: [],
+				}),
 			);
 
 		await agent
@@ -163,21 +143,9 @@ describe("patch folder", () => {
 	});
 
 	test("expect 403 forbidden response if user doesn't have edit access rights", async () => {
-		(verifyUserAuthentication as jest.Mock).mockImplementation(
-			async (
-				req: Request<
-					unknown,
-					unknown,
-					{ userSubjectFromAuthToken?: string; emailFromAuthToken?: string }
-				>,
-				__,
-				next: NextFunction,
-			) => {
-				req.body.emailFromAuthToken = "test+1@permanent.org";
-				req.body.userSubjectFromAuthToken =
-					"b5461dc2-1eb0-450e-b710-fef7b2cafe1e";
-				next();
-			},
+		mockVerifyUserAuthentication(
+			"test+1@permanent.org",
+			"b5461dc2-1eb0-450e-b710-fef7b2cafe1e",
 		);
 
 		await agent
@@ -187,21 +155,9 @@ describe("patch folder", () => {
 	});
 
 	test("expect 404 not found response if user doesn't have access rights", async () => {
-		(verifyUserAuthentication as jest.Mock).mockImplementation(
-			async (
-				req: Request<
-					unknown,
-					unknown,
-					{ userSubjectFromAuthToken?: string; emailFromAuthToken?: string }
-				>,
-				__,
-				next: NextFunction,
-			) => {
-				req.body.emailFromAuthToken = "unknown@permanent.org";
-				req.body.userSubjectFromAuthToken =
-					"b5461dc2-1eb0-450e-b710-fef7b2cafe1e";
-				next();
-			},
+		mockVerifyUserAuthentication(
+			"unknown@permanent.org",
+			"b5461dc2-1eb0-450e-b710-fef7b2cafe1e",
 		);
 
 		await agent

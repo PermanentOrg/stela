@@ -1,12 +1,12 @@
 import request from "supertest";
-import type { Request, NextFunction } from "express";
+import { when } from "jest-when";
 import { logger } from "@stela/logger";
 import { app } from "../app";
 import { verifyUserAuthentication } from "../middleware";
 import { db } from "../database";
 import { GB } from "../constants";
 import { sendInvitationNotification, sendGiftNotification } from "../email";
-import type { GiftStorageRequest, GiftStorageResponse } from "./models";
+import { mockVerifyUserAuthentication } from "../../test/middleware_mocks";
 
 jest.mock("../database");
 jest.mock("../middleware");
@@ -119,14 +119,9 @@ describe("/billing/gift", () => {
 	const agent = request(app);
 
 	beforeEach(async () => {
-		(verifyUserAuthentication as jest.Mock).mockImplementation(
-			(req: Request, __, next: NextFunction) => {
-				(req.body as GiftStorageRequest).emailFromAuthToken =
-					"test@permanent.org";
-				(req.body as GiftStorageRequest).userSubjectFromAuthToken =
-					"13bb917e-7c75-4971-a8ee-b22e82432888";
-				next();
-			},
+		mockVerifyUserAuthentication(
+			"test@permanent.org",
+			"13bb917e-7c75-4971-a8ee-b22e82432888",
 		);
 		await clearDatabase();
 	});
@@ -142,75 +137,28 @@ describe("/billing/gift", () => {
 	});
 
 	test("should return invalid request status if email from auth token is missing", async () => {
-		(verifyUserAuthentication as jest.Mock).mockImplementation(
-			(req: Request, __, next: NextFunction) => {
-				(req.body as GiftStorageRequest).userSubjectFromAuthToken =
-					"13bb917e-7c75-4971-a8ee-b22e82432888";
-				next();
-			},
-		);
-		await agent.post("/api/v2/billing/gift").expect(400);
-	});
-
-	test("should return invalid request status if email from auth token is wrong type", async () => {
-		(verifyUserAuthentication as jest.Mock).mockImplementation(
-			(req: Request, __, next: NextFunction) => {
-				(req.body as GiftStorageRequest).emailFromAuthToken =
-					1 as unknown as string;
-				(req.body as GiftStorageRequest).userSubjectFromAuthToken =
-					"13bb917e-7c75-4971-a8ee-b22e82432888";
-				next();
-			},
+		mockVerifyUserAuthentication(
+			undefined,
+			"13bb917e-7c75-4971-a8ee-b22e82432888",
 		);
 		await agent.post("/api/v2/billing/gift").expect(400);
 	});
 
 	test("should return invalid request status if email from auth token is not an email", async () => {
-		(verifyUserAuthentication as jest.Mock).mockImplementation(
-			(req: Request, __, next: NextFunction) => {
-				(req.body as GiftStorageRequest).emailFromAuthToken = "test";
-				(req.body as GiftStorageRequest).userSubjectFromAuthToken =
-					"13bb917e-7c75-4971-a8ee-b22e82432888";
-				next();
-			},
+		mockVerifyUserAuthentication(
+			"test",
+			"13bb917e-7c75-4971-a8ee-b22e82432888",
 		);
 		await agent.post("/api/v2/billing/gift").expect(400);
 	});
 
 	test("should return invalid request status if subject from auth token is missing", async () => {
-		(verifyUserAuthentication as jest.Mock).mockImplementation(
-			(req: Request, __, next: NextFunction) => {
-				(req.body as GiftStorageRequest).emailFromAuthToken =
-					"test@permanent.org";
-				next();
-			},
-		);
-		await agent.post("/api/v2/billing/gift").expect(400);
-	});
-
-	test("should return invalid request status if subject from auth token is wrong type", async () => {
-		(verifyUserAuthentication as jest.Mock).mockImplementation(
-			(req: Request, __, next: NextFunction) => {
-				(req.body as GiftStorageRequest).emailFromAuthToken =
-					"test@permanent.org";
-				(req.body as GiftStorageRequest).userSubjectFromAuthToken =
-					1 as unknown as string;
-				next();
-			},
-		);
+		mockVerifyUserAuthentication("test@permanent.org");
 		await agent.post("/api/v2/billing/gift").expect(400);
 	});
 
 	test("should return invalid request status if subject from auth token is not a uuid", async () => {
-		(verifyUserAuthentication as jest.Mock).mockImplementation(
-			(req: Request, __, next: NextFunction) => {
-				(req.body as GiftStorageRequest).emailFromAuthToken =
-					"test@permanent.org";
-				(req.body as GiftStorageRequest).userSubjectFromAuthToken =
-					"not_a_uuid";
-				next();
-			},
-		);
+		mockVerifyUserAuthentication("test@permanent.org", "not_a_uuid");
 		await agent.post("/api/v2/billing/gift").expect(400);
 	});
 
@@ -297,14 +245,9 @@ describe("/billing/gift", () => {
 		await db.sql("billing.fixtures.create_test_accounts");
 		await db.sql("billing.fixtures.create_test_account_space");
 		await db.sql("billing.fixtures.create_test_emails");
-		(verifyUserAuthentication as jest.Mock).mockImplementation(
-			(req: Request, __, next: NextFunction) => {
-				(req.body as GiftStorageRequest).emailFromAuthToken =
-					"not_a_user@permanent.org";
-				(req.body as GiftStorageRequest).userSubjectFromAuthToken =
-					"13bb917e-7c75-4971-a8ee-b22e82432888";
-				next();
-			},
+		mockVerifyUserAuthentication(
+			"not_a_user@permanent.org",
+			"13bb917e-7c75-4971-a8ee-b22e82432888",
 		);
 
 		await agent
@@ -586,21 +529,17 @@ describe("/billing/gift", () => {
 			})
 			.expect(200);
 
-		expect((results.body as GiftStorageResponse).giftDelivered).toEqual([
-			"test+1@permanent.org",
-		]);
-		expect((results.body as GiftStorageResponse).invitationSent).toEqual([
-			"test+not_a_user_yet@permanent.org",
-		]);
-		expect((results.body as GiftStorageResponse).alreadyInvited).toEqual([
-			"test+already_invited@permanent.org",
-		]);
-		expect((results.body as GiftStorageResponse).storageGifted).toEqual(2);
+		expect(results.body).toEqual({
+			giftDelivered: ["test+1@permanent.org"],
+			invitationSent: ["test+not_a_user_yet@permanent.org"],
+			alreadyInvited: ["test+already_invited@permanent.org"],
+			storageGifted: 2,
+		});
 	});
 
 	test("should log error and return 500 if check for existing emails fails", async () => {
 		const testError = new Error("test error");
-		jest.spyOn(db, "sql").mockImplementation(async () => {
+		jest.spyOn(db, "sql").mockImplementationOnce(async () => {
 			throw testError;
 		});
 
@@ -614,14 +553,12 @@ describe("/billing/gift", () => {
 
 	test("should log error and return 500 if check for invited emails fails", async () => {
 		const testError = new Error("test error");
-		jest
-			.spyOn(db, "sql")
-			.mockImplementationOnce((async () => ({
-				rows: [],
-			})) as unknown as typeof db.sql)
-			.mockImplementationOnce(async () => {
-				throw testError;
-			});
+		const spy = jest.spyOn(db, "sql");
+		when(spy)
+			.calledWith("billing.queries.get_invited_emails", {
+				emails: ["test+1@permanent.org"],
+			})
+			.mockRejectedValueOnce(testError);
 
 		await agent
 			.post("/api/v2/billing/gift")
@@ -633,17 +570,12 @@ describe("/billing/gift", () => {
 
 	test("should log error and return 500 if check for available space fails", async () => {
 		const testError = new Error("test error");
-		jest
-			.spyOn(db, "sql")
-			.mockImplementationOnce((async () => ({
-				rows: [],
-			})) as unknown as typeof db.sql)
-			.mockImplementationOnce((async () => ({
-				rows: [],
-			})) as unknown as typeof db.sql)
-			.mockImplementationOnce(async () => {
-				throw testError;
-			});
+		const spy = jest.spyOn(db, "sql");
+		when(spy)
+			.calledWith("billing.queries.get_account_space_for_update", {
+				email: "test@permanent.org",
+			})
+			.mockRejectedValueOnce(testError);
 
 		await agent
 			.post("/api/v2/billing/gift")
@@ -654,17 +586,12 @@ describe("/billing/gift", () => {
 	});
 
 	test("should log error and return 500 if check for available space finds nothing", async () => {
-		jest
-			.spyOn(db, "sql")
-			.mockImplementationOnce((async () => ({
-				rows: [],
-			})) as unknown as typeof db.sql)
-			.mockImplementationOnce((async () => ({
-				rows: [],
-			})) as unknown as typeof db.sql)
-			.mockImplementationOnce((async () => ({
-				rows: [],
-			})) as unknown as typeof db.sql);
+		const spy = jest.spyOn(db, "sql");
+		when(spy)
+			.calledWith("billing.queries.get_account_space_for_update", {
+				email: "test@permanent.org",
+			})
+			.mockImplementationOnce(jest.fn().mockResolvedValueOnce({ rows: [] }));
 
 		await agent
 			.post("/api/v2/billing/gift")
@@ -678,20 +605,31 @@ describe("/billing/gift", () => {
 
 	test("should log error and return 500 if recording gifts for existing accounts fails", async () => {
 		const testError = new Error("test error");
-		jest
-			.spyOn(db, "sql")
-			.mockImplementationOnce((async () => ({
-				rows: [],
-			})) as unknown as typeof db.sql)
-			.mockImplementationOnce((async () => ({
-				rows: [],
-			})) as unknown as typeof db.sql)
-			.mockImplementationOnce((async () => ({
-				rows: [{ spaceLeft: 2 * GB }],
-			})) as unknown as typeof db.sql)
-			.mockImplementationOnce(async () => {
-				throw testError;
-			});
+		const spy = jest.spyOn(db, "sql");
+		when(spy)
+			.calledWith("billing.queries.get_existing_account_emails", {
+				emails: ["test+1@permanent.org"],
+			})
+			.mockImplementationOnce(
+				jest
+					.fn()
+					.mockResolvedValueOnce({ rows: [{ email: "test+1@permanent.org" }] }),
+			);
+		when(spy)
+			.calledWith("billing.queries.get_account_space_for_update", {
+				email: "test@permanent.org",
+			})
+			.mockImplementationOnce(
+				jest.fn().mockResolvedValueOnce({ rows: [{ spaceLeft: 2 * GB }] }),
+			);
+		when(spy)
+			.calledWith("billing.queries.record_gift", {
+				fromEmail: "test@permanent.org",
+				toEmails: ["test+1@permanent.org"],
+				storageAmountInBytes: 1 * GB,
+				recipientCount: 1,
+			})
+			.mockRejectedValueOnce(testError);
 
 		await agent
 			.post("/api/v2/billing/gift")
@@ -703,21 +641,23 @@ describe("/billing/gift", () => {
 
 	test("should log error and return 500 if creating invites fails", async () => {
 		const testError = new Error("test error");
-		jest
-			.spyOn(db, "sql")
-			.mockImplementationOnce((async () => ({
-				rows: [],
-			})) as unknown as typeof db.sql)
-			.mockImplementationOnce((async () => ({
-				rows: [],
-			})) as unknown as typeof db.sql)
-			.mockImplementationOnce((async () => ({
-				rows: [{ spaceLeft: 2 * GB }],
-			})) as unknown as typeof db.sql)
-			.mockImplementationOnce((async () => null) as unknown as typeof db.sql)
-			.mockImplementationOnce(async () => {
-				throw testError;
-			});
+		const spy = jest.spyOn(db, "sql");
+		when(spy)
+			.calledWith("billing.queries.get_account_space_for_update", {
+				email: "test@permanent.org",
+			})
+			.mockImplementationOnce(
+				jest.fn().mockResolvedValueOnce({ rows: [{ spaceLeft: 2 * GB }] }),
+			);
+		when(spy)
+			.calledWith("billing.queries.create_invites", {
+				emails: ["test+1@permanent.org"],
+				storageAmountInBytes: 1 * GB,
+				tokens: [expect.any(String)],
+				byAccountEmail: "test@permanent.org",
+				recipientCount: 1,
+			})
+			.mockRejectedValueOnce(testError);
 
 		await agent
 			.post("/api/v2/billing/gift")

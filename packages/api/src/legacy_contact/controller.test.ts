@@ -1,11 +1,10 @@
 import request from "supertest";
-import type { Request, NextFunction } from "express";
 import { logger } from "@stela/logger";
 import { app } from "../app";
 import { db } from "../database";
-import { verifyUserAuthentication } from "../middleware";
 import { sendLegacyContactNotification } from "../email";
 import type { LegacyContact } from "./model";
+import { mockVerifyUserAuthentication } from "../../test/middleware_mocks";
 
 jest.mock("@stela/logger");
 jest.mock("../database");
@@ -25,22 +24,9 @@ describe("GET /legacy-contact", () => {
 	};
 
 	beforeEach(async () => {
-		(verifyUserAuthentication as jest.Mock).mockImplementation(
-			(req: Request, __, next: NextFunction) => {
-				(
-					req.body as {
-						emailFromAuthToken: string;
-						userSubjectFromAuthToken: string;
-					}
-				).emailFromAuthToken = "test@permanent.org";
-				(
-					req.body as {
-						emailFromAuthToken: string;
-						userSubjectFromAuthToken: string;
-					}
-				).userSubjectFromAuthToken = "88420040-ec8d-4bc8-88f8-defaa74a05a5";
-				next();
-			},
+		mockVerifyUserAuthentication(
+			"test@permanent.org",
+			"88420040-ec8d-4bc8-88f8-defaa74a05a5",
 		);
 
 		await clearDatabase();
@@ -55,7 +41,7 @@ describe("GET /legacy-contact", () => {
 	test("should return an array of legacy contacts for a valid accountId", async () => {
 		const result = await agent.get("/api/v2/legacy-contact/").expect(200);
 
-		const resultBody = result.body as LegacyContact[];
+		const { body: resultBody } = result as { body: LegacyContact[] };
 		expect(resultBody.length).toEqual(1);
 		expect(resultBody[0]?.name).toEqual("John Rando");
 		expect(resultBody[0]?.email).toEqual("contact@permanent.org");
@@ -72,11 +58,7 @@ describe("GET /legacy-contact", () => {
 	});
 
 	test("should throw a 400 error if the request validation fails", async () => {
-		(verifyUserAuthentication as jest.Mock).mockImplementation(
-			(_: Request, __, next: NextFunction) => {
-				next();
-			},
-		);
+		mockVerifyUserAuthentication();
 
 		await agent.get("/api/v2/legacy-contact/").expect(400);
 	});
@@ -94,22 +76,9 @@ describe("POST /legacy-contact", () => {
 	};
 
 	beforeEach(async () => {
-		(verifyUserAuthentication as jest.Mock).mockImplementation(
-			(req: Request, __, next: NextFunction) => {
-				(
-					req.body as {
-						emailFromAuthToken: string;
-						userSubjectFromAuthToken: string;
-					}
-				).emailFromAuthToken = "test@permanent.org";
-				(
-					req.body as {
-						emailFromAuthToken: string;
-						userSubjectFromAuthToken: string;
-					}
-				).userSubjectFromAuthToken = "88420040-ec8d-4bc8-88f8-defaa74a05a5";
-				next();
-			},
+		mockVerifyUserAuthentication(
+			"test@permanent.org",
+			"88420040-ec8d-4bc8-88f8-defaa74a05a5",
 		);
 
 		await clearDatabase();
@@ -121,12 +90,7 @@ describe("POST /legacy-contact", () => {
 	});
 
 	test("should successfully create a legacy contact", async () => {
-		(
-			sendLegacyContactNotification as jest.MockedFunction<
-				typeof sendLegacyContactNotification
-			>
-		).mockResolvedValueOnce(undefined);
-
+		jest.mocked(sendLegacyContactNotification).mockResolvedValueOnce(undefined);
 		await agent
 			.post("/api/v2/legacy-contact/")
 			.send({
@@ -157,11 +121,7 @@ describe("POST /legacy-contact", () => {
 
 	test("should log errors sending email", async () => {
 		const testError = new Error("out of cheese error - redo from start");
-		(
-			sendLegacyContactNotification as jest.MockedFunction<
-				typeof sendLegacyContactNotification
-			>
-		).mockRejectedValueOnce(testError);
+		jest.mocked(sendLegacyContactNotification).mockRejectedValueOnce(testError);
 		await agent
 			.post("/api/v2/legacy-contact")
 			.send({
@@ -174,24 +134,10 @@ describe("POST /legacy-contact", () => {
 	});
 
 	test("should error if emailFromAuthToken doesn't correspond to an account", async () => {
-		(verifyUserAuthentication as jest.Mock).mockImplementation(
-			(req: Request, __, next: NextFunction) => {
-				(
-					req.body as {
-						emailFromAuthToken: string;
-						userSubjectFromAuthToken: string;
-					}
-				).emailFromAuthToken = "not_an_account@permanent.org";
-				(
-					req.body as {
-						emailFromAuthToken: string;
-						userSubjectFromAuthToken: string;
-					}
-				).userSubjectFromAuthToken = "88420040-ec8d-4bc8-88f8-defaa74a05a5";
-				next();
-			},
+		mockVerifyUserAuthentication(
+			"not_an_account@permanent.org",
+			"88420040-ec8d-4bc8-88f8-defaa74a05a5",
 		);
-
 		await agent
 			.post("/api/v2/legacy-contact/")
 			.send({
@@ -204,9 +150,7 @@ describe("POST /legacy-contact", () => {
 	test("should error if legacy contact can't be created", async () => {
 		jest
 			.spyOn(db, "sql")
-			.mockImplementationOnce(
-				(async () => ({ rows: [] }) as object) as unknown as typeof db.sql,
-			);
+			.mockImplementationOnce(jest.fn().mockResolvedValue({ rows: [] }));
 		await agent
 			.post("/api/v2/legacy-contact")
 			.send({
@@ -236,24 +180,10 @@ describe("PUT /legacy-contact/:legacyContactId", () => {
 	const testLegacyContactId = "0cb0738c-5607-42d0-8014-8666a8d6ba13";
 
 	beforeEach(async () => {
-		(verifyUserAuthentication as jest.Mock).mockImplementation(
-			(req: Request, __, next: NextFunction) => {
-				(
-					req.body as {
-						emailFromAuthToken: string;
-						userSubjectFromAuthToken: string;
-					}
-				).emailFromAuthToken = "test@permanent.org";
-				(
-					req.body as {
-						emailFromAuthToken: string;
-						userSubjectFromAuthToken: string;
-					}
-				).userSubjectFromAuthToken = "88420040-ec8d-4bc8-88f8-defaa74a05a5";
-				next();
-			},
+		mockVerifyUserAuthentication(
+			"test@permanent.org",
+			"88420040-ec8d-4bc8-88f8-defaa74a05a5",
 		);
-
 		await clearDatabase();
 		await loadFixtures();
 	});
@@ -263,11 +193,7 @@ describe("PUT /legacy-contact/:legacyContactId", () => {
 	});
 
 	test("should update a legacy contact's name and email", async () => {
-		(
-			sendLegacyContactNotification as jest.MockedFunction<
-				typeof sendLegacyContactNotification
-			>
-		).mockResolvedValueOnce(undefined);
+		jest.mocked(sendLegacyContactNotification).mockResolvedValueOnce(undefined);
 		const result = await agent
 			.put(`/api/v2/legacy-contact/${testLegacyContactId}`)
 			.send({
@@ -275,7 +201,7 @@ describe("PUT /legacy-contact/:legacyContactId", () => {
 				email: "contact+1@permanent.org",
 			})
 			.expect(200);
-		const resultBody = result.body as LegacyContact;
+		const { body: resultBody } = result as { body: LegacyContact };
 		expect(resultBody.name).toEqual("Jane Rando");
 		expect(resultBody.email).toEqual("contact+1@permanent.org");
 
@@ -307,7 +233,7 @@ describe("PUT /legacy-contact/:legacyContactId", () => {
 			.send({
 				name: "Jane Rando",
 			});
-		const resultBody = result.body as LegacyContact;
+		const { body: resultBody } = result as { body: LegacyContact };
 		expect(resultBody.name).toEqual("Jane Rando");
 		expect(resultBody.email).toEqual("contact@permanent.org");
 
@@ -332,22 +258,9 @@ describe("PUT /legacy-contact/:legacyContactId", () => {
 	});
 
 	test("should raise not found error when legacy contact does not exist for account", async () => {
-		(verifyUserAuthentication as jest.Mock).mockImplementation(
-			(req: Request, __, next: NextFunction) => {
-				(
-					req.body as {
-						emailFromAuthToken: string;
-						userSubjectFromAuthToken: string;
-					}
-				).emailFromAuthToken = "test+1@permanent.org";
-				(
-					req.body as {
-						emailFromAuthToken: string;
-						userSubjectFromAuthToken: string;
-					}
-				).userSubjectFromAuthToken = "88420040-ec8d-4bc8-88f8-defaa74a05a5";
-				next();
-			},
+		mockVerifyUserAuthentication(
+			"test+1@permanent.org",
+			"88420040-ec8d-4bc8-88f8-defaa74a05a5",
 		);
 		await agent
 			.put(`/api/v2/legacy-contact/${testLegacyContactId}`)
@@ -371,11 +284,7 @@ describe("PUT /legacy-contact/:legacyContactId", () => {
 
 	test("should log errors sending email", async () => {
 		const testError = new Error("out of cheese error - redo from start");
-		(
-			sendLegacyContactNotification as jest.MockedFunction<
-				typeof sendLegacyContactNotification
-			>
-		).mockRejectedValueOnce(testError);
+		jest.mocked(sendLegacyContactNotification).mockRejectedValueOnce(testError);
 		await agent
 			.put(`/api/v2/legacy-contact/${testLegacyContactId}`)
 			.send({

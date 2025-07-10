@@ -27,7 +27,7 @@ export const getTwoFactorMethods = async (
 			({ id, method, email, mobilePhone }) => ({
 				methodId: id,
 				method,
-				value: email ?? mobilePhone,
+				value: email !== undefined && email !== "" ? email : mobilePhone,
 			}),
 		);
 	}

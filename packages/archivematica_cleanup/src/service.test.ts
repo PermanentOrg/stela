@@ -9,12 +9,9 @@ describe("cleanupDashboard", () => {
 		jest.resetAllMocks();
 	});
 	test("should call fetch with the correct arguments", async () => {
-		global.fetch = jest.fn(async () =>
-			Promise.resolve({
-				ok: true,
-			} as Response),
-		) as jest.Mock;
-
+		global.fetch = jest.fn().mockResolvedValue({
+			ok: true,
+		});
 		await cleanupDashboard();
 		expect(global.fetch).toHaveBeenNthCalledWith(
 			1,
@@ -40,12 +37,10 @@ describe("cleanupDashboard", () => {
 
 	test("should log an error to sentry if the transfer deletion fails", async () => {
 		const errorText = "500 Internal Server Error";
-		global.fetch = jest.fn(async () =>
-			Promise.resolve({
-				ok: false,
-				text: async () => Promise.resolve(errorText),
-			} as Response),
-		) as jest.Mock;
+		global.fetch = jest.fn().mockResolvedValue({
+			ok: false,
+			text: async () => Promise.resolve(errorText),
+		});
 
 		await cleanupDashboard();
 		expect(Sentry.captureMessage).toHaveBeenCalledWith(errorText);
@@ -55,17 +50,13 @@ describe("cleanupDashboard", () => {
 		const errorText = "500 Internal Server Error";
 		global.fetch = jest
 			.fn()
-			.mockImplementationOnce(async () =>
-				Promise.resolve({
-					ok: true,
-				} as Response),
-			)
-			.mockImplementationOnce(async () =>
-				Promise.resolve({
-					ok: false,
-					text: async () => Promise.resolve(errorText),
-				} as Response),
-			);
+			.mockResolvedValueOnce({
+				ok: true,
+			})
+			.mockResolvedValueOnce({
+				ok: false,
+				text: async () => Promise.resolve(errorText),
+			});
 
 		await cleanupDashboard();
 		expect(Sentry.captureMessage).toHaveBeenCalledWith(errorText);
