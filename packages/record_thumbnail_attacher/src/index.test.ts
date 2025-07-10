@@ -76,7 +76,7 @@ describe("handler", () => {
 				},
 			],
 		};
-		await handler(event, mock<Context>(), () => {});
+		await handler(event, mock<Context>(), jest.fn());
 
 		const recordThumbnail256Result = await db.query<{
 			thumbnail256: string;
@@ -117,7 +117,7 @@ describe("handler", () => {
 		};
 		let error = null;
 		try {
-			await handler(event, mock<Context>(), () => {});
+			await handler(event, mock<Context>(), jest.fn());
 		} catch (err) {
 			error = err;
 		}
@@ -175,7 +175,7 @@ describe("handler", () => {
 		};
 		let error = null;
 		try {
-			await handler(event, mock<Context>(), () => {});
+			await handler(event, mock<Context>(), jest.fn());
 		} catch (err) {
 			error = err;
 		}
@@ -217,7 +217,7 @@ describe("handler", () => {
 		};
 		let error = null;
 		try {
-			await handler(event, mock<Context>(), () => {});
+			await handler(event, mock<Context>(), jest.fn());
 		} catch (err) {
 			error = err;
 		}
@@ -264,7 +264,7 @@ describe("handler", () => {
 				},
 			],
 		};
-		await handler(event, mock<Context>(), () => {});
+		await handler(event, mock<Context>(), jest.fn());
 
 		const recordThumbnail256Result = await db.query<{
 			thumbnail256: string;
@@ -361,7 +361,7 @@ describe("handler", () => {
 				},
 			],
 		};
-		await handler(event, mock<Context>(), () => {});
+		await handler(event, mock<Context>(), jest.fn());
 
 		const recordThumbnail256Result = await db.query<{
 			thumbDt: string;
@@ -430,7 +430,7 @@ describe("handler", () => {
 			],
 		};
 		try {
-			await handler(event, mock<Context>(), () => {});
+			await handler(event, mock<Context>(), jest.fn());
 		} catch (_) {
 			// Do nothing
 		}

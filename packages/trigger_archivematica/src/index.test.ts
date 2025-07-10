@@ -185,7 +185,7 @@ describe("handler", () => {
 				],
 			},
 			mock<Context>(),
-			() => {},
+			jest.fn(),
 		);
 
 		expect(triggerArchivematicaProcessing).toHaveBeenCalledWith(
@@ -226,7 +226,7 @@ describe("handler", () => {
 				],
 			},
 			mock<Context>(),
-			() => {},
+			jest.fn(),
 		);
 
 		expect(triggerArchivematicaProcessing).not.toHaveBeenCalled();
@@ -283,7 +283,7 @@ describe("handler", () => {
 				],
 			},
 			mock<Context>(),
-			() => {},
+			jest.fn(),
 		);
 
 		expect(triggerArchivematicaProcessing).toHaveBeenCalledTimes(1);
@@ -328,7 +328,7 @@ describe("handler", () => {
 					],
 				},
 				mock<Context>(),
-				() => {},
+				jest.fn(),
 			),
 		).rejects.toThrow("Database connection failed");
 
@@ -371,7 +371,7 @@ describe("handler", () => {
 					],
 				},
 				mock<Context>(),
-				() => {},
+				jest.fn(),
 			),
 		).rejects.toThrow("Failed to trigger Archivematica");
 
@@ -421,7 +421,7 @@ describe("handler", () => {
 					],
 				},
 				mock<Context>(),
-				() => {},
+				jest.fn(),
 			),
 		).rejects.toThrow("Call to Archivematica failed with status 404");
 
