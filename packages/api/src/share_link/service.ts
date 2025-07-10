@@ -5,6 +5,7 @@ import type {
 	CreateShareLinkRequest,
 	UpdateShareLinkRequest,
 	ShareLink,
+	ShareLinkRow,
 } from "./models";
 import { db } from "../database";
 import {
@@ -37,7 +38,7 @@ const createShareLink = async (
 
 	const shareToken = uuidv4();
 	const result = await db
-		.sql<ShareLink>("share_link.queries.create_share_link", {
+		.sql<ShareLinkRow>("share_link.queries.create_share_link", {
 			itemId: data.itemId,
 			itemType: data.itemType,
 			permissionsLevel: `access.role.${data.permissionsLevel ?? "viewer"}`,
@@ -132,7 +133,7 @@ const updateShareLink = async (
 	}
 
 	const updateResult = await db
-		.sql<ShareLink>("share_link.queries.update_share_link", {
+		.sql<ShareLinkRow>("share_link.queries.update_share_link", {
 			permissionsLevel:
 				data.permissionsLevel !== undefined
 					? `access.role.${data.permissionsLevel}`
@@ -163,6 +164,10 @@ const updateShareLink = async (
 		maxUses:
 			updateResult.rows[0].maxUses !== null
 				? +updateResult.rows[0].maxUses
+				: null,
+		usesExpended:
+			updateResult.rows[0].usesExpended !== null
+				? +updateResult.rows[0].usesExpended
 				: null,
 	};
 };
