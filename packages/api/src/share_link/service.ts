@@ -52,7 +52,7 @@ const createShareLink = async (
 			shareUrl: `https://${process.env["SITE_URL"] ?? ""}/share/${shareToken}`,
 			email: data.emailFromAuthToken,
 		})
-		.catch((err) => {
+		.catch((err: unknown) => {
 			logger.error(err);
 			throw new Error("Failed to create share link");
 		});
@@ -107,7 +107,7 @@ const updateShareLink = async (
 			shareTokens: [],
 			email: data.emailFromAuthToken,
 		})
-		.catch((err) => {
+		.catch((err: unknown) => {
 			logger.error(err);
 			throw new Error("Failed to get share link");
 		});
@@ -149,7 +149,7 @@ const updateShareLink = async (
 			shareLinkId,
 			email: data.emailFromAuthToken,
 		})
-		.catch((err) => {
+		.catch((err: unknown) => {
 			logger.error(err);
 			throw new Error("Failed to update share link");
 		});
@@ -178,7 +178,7 @@ const getShareLinks = async (
 			shareTokens,
 			shareLinkIds,
 		})
-		.catch((err) => {
+		.catch((err: unknown) => {
 			logger.error(err);
 			throw new Error("Failed to get share links");
 		});
@@ -194,7 +194,7 @@ const deleteShareLink = async (
 			email,
 			shareLinkId,
 		})
-		.catch((err) => {
+		.catch((err: unknown) => {
 			logger.error(err);
 			throw new Error("Failed to delete share link");
 		});

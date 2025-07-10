@@ -21,7 +21,7 @@ export const issueGift = async (
 		.sql<{ email: string }>("billing.queries.get_existing_account_emails", {
 			emails: requestBody.recipientEmails,
 		})
-		.catch((err) => {
+		.catch((err: unknown) => {
 			logger.error(err);
 			throw new createError.InternalServerError(
 				"Failed to check for existing recipient accounts",
@@ -38,7 +38,7 @@ export const issueGift = async (
 		.sql<{ email: string }>("billing.queries.get_invited_emails", {
 			emails: newEmails,
 		})
-		.catch((err) => {
+		.catch((err: unknown) => {
 			logger.error(err);
 			throw new createError.InternalServerError(
 				"Failed to check for existing invites",
@@ -64,7 +64,7 @@ export const issueGift = async (
 					email: requestBody.emailFromAuthToken,
 				},
 			)
-			.catch((err) => {
+			.catch((err: unknown) => {
 				logger.error(err);
 				throw new createError.InternalServerError(
 					"Failed to look up sender account space",
@@ -92,7 +92,7 @@ export const issueGift = async (
 				storageAmountInBytes: requestBody.storageAmount * GB,
 				recipientCount: existingAccountEmails.length,
 			})
-			.catch((err) => {
+			.catch((err: unknown) => {
 				logger.error(err);
 				throw new createError.InternalServerError("Failed to issue gift");
 			});
@@ -105,7 +105,7 @@ export const issueGift = async (
 				byAccountEmail: requestBody.emailFromAuthToken,
 				recipientCount: emailsToInvite.length,
 			})
-			.catch((err) => {
+			.catch((err: unknown) => {
 				logger.error(err);
 				throw new createError.InternalServerError("Failed to create invites");
 			});

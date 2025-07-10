@@ -13,7 +13,7 @@ export const updateFeatureFlag = async (
 			description: featureFlagData.description,
 			globally_enabled: featureFlagData.globallyEnabled,
 		})
-		.catch((err) => {
+		.catch((err: unknown) => {
 			logger.error(err);
 			throw new createError.InternalServerError(
 				"Failed to update feature flag",

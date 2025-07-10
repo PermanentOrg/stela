@@ -11,7 +11,7 @@ export const backfillLedger = async (archiveId: string): Promise<void> => {
 				archiveId,
 			},
 		)
-		.catch((err) => {
+		.catch((err: unknown) => {
 			logger.error(err);
 			throw new createError.InternalServerError(
 				"failed to update payer accounts",

@@ -24,7 +24,7 @@ export const getRecordById = async (requestQuery: {
 			accountEmail: requestQuery.accountEmail,
 			shareToken: requestQuery.shareToken,
 		})
-		.catch((err) => {
+		.catch((err: unknown) => {
 			logger.error(err);
 			throw new createError.InternalServerError("failed to retrieve records");
 		});
@@ -77,7 +77,7 @@ export const patchRecord = async (
 
 	const result = await db
 		.query<ArchiveRecordRow>(query, columnsForUpdate)
-		.catch((err) => {
+		.catch((err: unknown) => {
 			logger.error(err);
 			throw new createError.InternalServerError("Failed to update record");
 		});
@@ -97,7 +97,7 @@ export const getRecordShareLinks = async (
 			email,
 			recordId,
 		})
-		.catch((err) => {
+		.catch((err: unknown) => {
 			logger.error(err);
 			throw new createError.InternalServerError(
 				"Failed to get record share links",

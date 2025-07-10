@@ -13,7 +13,7 @@ export const createPromo = async (
 			expirationTimestamp: promoData.expirationTimestamp,
 			totalUses: promoData.totalUses,
 		})
-		.catch((err) => {
+		.catch((err: unknown) => {
 			logger.error(err);
 			throw new createError.InternalServerError("Failed to create promo");
 		});
@@ -22,7 +22,7 @@ export const createPromo = async (
 export const getPromos = async (): Promise<Promo[]> => {
 	const result = await db
 		.sql<PromoRow>("promo.queries.get_promos")
-		.catch((err) => {
+		.catch((err: unknown) => {
 			logger.error(err);
 			throw new createError.InternalServerError("Failed to retrieve promos");
 		});

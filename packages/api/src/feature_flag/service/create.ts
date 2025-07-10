@@ -16,7 +16,7 @@ export const createFeatureFlag = async (
 			description: featureFlagData.description,
 			globally_enabled: false,
 		})
-		.catch((err) => {
+		.catch((err: unknown) => {
 			logger.error(err);
 			if (
 				err instanceof TinyPgError &&

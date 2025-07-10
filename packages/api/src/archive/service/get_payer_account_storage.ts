@@ -12,7 +12,7 @@ export const getPayerAccountStorage = async (
 			archiveId,
 			accountEmail,
 		})
-		.catch((err) => {
+		.catch((err: unknown) => {
 			logger.error(err);
 			throw new createError.InternalServerError(
 				"failed to retrieve account storage",

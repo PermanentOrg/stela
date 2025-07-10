@@ -40,7 +40,7 @@ export const handler: SQSHandler = Sentry.wrapHandler(
 							fileId: parentFileId,
 						},
 					)
-					.catch((err) => {
+					.catch((err: unknown) => {
 						logger.error(err);
 						throw err;
 					});
@@ -86,7 +86,7 @@ export const handler: SQSHandler = Sentry.wrapHandler(
 						cloudPath: key,
 						recordId: parentFile.rows[0].recordId,
 					})
-					.catch((err) => {
+					.catch((err: unknown) => {
 						if (
 							!(
 								err instanceof TinyPgError &&
