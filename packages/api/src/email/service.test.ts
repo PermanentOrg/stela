@@ -1,7 +1,4 @@
-import type {
-	MessagesSendSuccessResponse,
-	MessagesSendRejectResponse,
-} from "@mailchimp/mailchimp_transactional";
+import type { MessagesSendSuccessResponse } from "@mailchimp/mailchimp_transactional";
 import {
 	sendLegacyContactNotification,
 	sendArchiveStewardNotification,
@@ -51,13 +48,13 @@ describe("sendLegacyContactNotification", () => {
 	});
 
 	test("should send legacy contact notification successfully", async () => {
-		const mockResponse = [
+		const mockResponse: MessagesSendSuccessResponse[] = [
 			{
 				status: "sent",
 				_id: "test",
 				email: "contact@permanent.org",
 				reject_reason: null,
-			} as MessagesSendSuccessResponse,
+			},
 		];
 		jest
 			.mocked(MailchimpTransactional.messages.sendTemplate)
@@ -112,13 +109,13 @@ describe("sendArchiveNotification", () => {
 	});
 
 	test("should send archive steward notification successfully", async () => {
-		const mockResponse = [
+		const mockResponse: MessagesSendSuccessResponse[] = [
 			{
 				status: "sent",
 				_id: "test",
 				email: "test+1@permanent.org",
 				reject_reason: null,
-			} as MessagesSendSuccessResponse,
+			},
 		];
 		jest
 			.mocked(MailchimpTransactional.messages.sendTemplate)
@@ -168,13 +165,13 @@ describe("sendEmail", () => {
 	});
 
 	test("should successfully call Mailchimp", async () => {
-		const mockResponse = [
+		const mockResponse: MessagesSendSuccessResponse[] = [
 			{
 				status: "sent",
 				_id: "test",
 				email: "contact@permanent.org",
 				reject_reason: null,
-			} as MessagesSendSuccessResponse,
+			},
 		];
 		jest
 			.mocked(MailchimpTransactional.messages.sendTemplate)
@@ -233,13 +230,13 @@ describe("sendEmail", () => {
 	});
 
 	test("should throw an error if the Mailchimp API response indicates email not sent", async () => {
-		const mockResponse = [
+		const mockResponse: MessagesSendSuccessResponse[] = [
 			{
-				status: "rejected",
+				status: "invalid",
 				reject_reason: "invalid",
 				email: "contact@permanent.org",
 				_id: "test",
-			} as MessagesSendRejectResponse,
+			},
 		];
 		jest
 			.mocked(MailchimpTransactional.messages.sendTemplate)
@@ -256,7 +253,7 @@ describe("sendEmail", () => {
 					{ name: "to_fullname", content: "John Rando" },
 				],
 			),
-		).rejects.toThrow("Email not sent. Status: rejected; Reason: invalid");
+		).rejects.toThrow("Email not sent. Status: invalid; Reason: invalid");
 	});
 
 	test("should throw an error if the Mailchimp API response is an axios error", async () => {
@@ -304,13 +301,13 @@ describe("sendInvitationNotification", () => {
 	});
 
 	test("send invite email should call mailchimp successfully", async () => {
-		const mockResponse = [
+		const mockResponse: MessagesSendSuccessResponse[] = [
 			{
 				status: "sent",
 				_id: "test",
 				email: "contact@permanent.org",
 				reject_reason: null,
-			} as MessagesSendSuccessResponse,
+			},
 		];
 		jest
 			.mocked(MailchimpTransactional.messages.sendTemplate)
@@ -387,13 +384,13 @@ describe("sendGiftNotification", () => {
 	});
 
 	test("send gift email should call mailchimp successfully", async () => {
-		const mockResponse = [
+		const mockResponse: MessagesSendSuccessResponse[] = [
 			{
 				status: "sent",
 				_id: "test",
 				email: "contact@permanent.org",
 				reject_reason: null,
-			} as MessagesSendSuccessResponse,
+			},
 		];
 		jest
 			.mocked(MailchimpTransactional.messages.sendTemplate)
