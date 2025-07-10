@@ -263,7 +263,7 @@ describe("sendEmail", () => {
 		const mockResponse = {
 			config: {},
 			isAxiosError: true,
-			toJSON: () => {},
+			toJSON: jest.fn(),
 			response: {
 				status: 500,
 			},

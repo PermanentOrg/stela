@@ -76,7 +76,7 @@ describe("handler", () => {
 				},
 			],
 		};
-		await handler(event, mock<Context>(), () => {});
+		await handler(event, mock<Context>(), jest.fn());
 
 		const recordThumbnail256Result = await db.query<{
 			fileId: string;
@@ -136,7 +136,7 @@ describe("handler", () => {
 				},
 			],
 		};
-		await handler(event, mock<Context>(), () => {});
+		await handler(event, mock<Context>(), jest.fn());
 
 		const fileResult = await db.query<{
 			size: number;
@@ -233,7 +233,7 @@ describe("handler", () => {
 
 		let error = null;
 		try {
-			await handler(event, mock<Context>(), () => {});
+			await handler(event, mock<Context>(), jest.fn());
 		} catch (err) {
 			error = err;
 		} finally {
@@ -289,7 +289,7 @@ describe("handler", () => {
 
 		let error = null;
 		try {
-			await handler(event, mock<Context>(), () => {});
+			await handler(event, mock<Context>(), jest.fn());
 		} catch (err) {
 			error = err;
 		} finally {
@@ -352,7 +352,7 @@ describe("handler", () => {
 
 		let error = null;
 		try {
-			await handler(event, mock<Context>(), () => {});
+			await handler(event, mock<Context>(), jest.fn());
 		} catch (err) {
 			error = err;
 		} finally {
@@ -405,7 +405,7 @@ describe("handler", () => {
 				},
 			],
 		};
-		await handler(event, mock<Context>(), () => {});
+		await handler(event, mock<Context>(), jest.fn());
 
 		const fileResult = await db.query<{
 			size: number;
@@ -439,7 +439,7 @@ describe("handler", () => {
 
 		expect(fileResult.rows.length).toEqual(1);
 
-		await handler(event, mock<Context>(), () => {});
+		await handler(event, mock<Context>(), jest.fn());
 
 		const fileResultAfterSecondRun = await db.query<{
 			size: number;

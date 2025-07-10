@@ -155,7 +155,7 @@ describe("handler", () => {
 				],
 			},
 			mock<Context>(),
-			() => {},
+			jest.fn(),
 		);
 		const updatedAccountSpace = await getUpdatedAccountSpace();
 		const ledgerEntry = await getLedgerEntry();
@@ -221,7 +221,7 @@ describe("handler", () => {
 				],
 			},
 			mock<Context>(),
-			() => {},
+			jest.fn(),
 		);
 		const updatedAccountSpace = await getUpdatedAccountSpace();
 		const ledgerEntry = await getLedgerEntry();
@@ -286,7 +286,7 @@ describe("handler", () => {
 				],
 			},
 			mock<Context>(),
-			() => {},
+			jest.fn(),
 		);
 		const ledgerEntry = await getLedgerEntry();
 		expect(ledgerEntry).toBeFalsy();
@@ -317,7 +317,7 @@ describe("handler", () => {
 					],
 				},
 				mock<Context>(),
-				() => {},
+				jest.fn(),
 			);
 		} catch (err) {
 			error = err;
@@ -352,7 +352,7 @@ describe("handler", () => {
 					],
 				},
 				mock<Context>(),
-				() => {},
+				jest.fn(),
 			);
 		} catch (err) {
 			error = err;
@@ -391,7 +391,7 @@ describe("handler", () => {
 					],
 				},
 				mock<Context>(),
-				() => {},
+				jest.fn(),
 			);
 		} catch (err) {
 			error = err;
@@ -434,7 +434,7 @@ describe("handler", () => {
 					],
 				},
 				mock<Context>(),
-				() => {},
+				jest.fn(),
 			);
 		} catch (err) {
 			error = err;
@@ -526,7 +526,7 @@ describe("handler", () => {
 					],
 				},
 				mock<Context>(),
-				() => {},
+				jest.fn(),
 			);
 		} catch (err) {
 			error = err;

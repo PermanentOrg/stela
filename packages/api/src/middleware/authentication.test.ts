@@ -91,7 +91,7 @@ describe("verifyUserAuthentication", () => {
 		jest
 			.spyOn(fusionAuthClient, "introspectAccessToken")
 			.mockImplementation(async () => successfulIntrospectionResponse);
-		await verifyUserAuthentication(request, createResponse(), () => {});
+		await verifyUserAuthentication(request, createResponse(), jest.fn());
 
 		const {
 			body: { emailFromAuthToken },
@@ -106,7 +106,7 @@ describe("verifyUserAuthentication", () => {
 		jest
 			.spyOn(fusionAuthClient, "introspectAccessToken")
 			.mockImplementation(async () => successfulIntrospectionResponse);
-		await verifyUserAuthentication(request, createResponse(), () => {});
+		await verifyUserAuthentication(request, createResponse(), jest.fn());
 
 		const {
 			body: { userSubjectFromAuthToken },
@@ -121,7 +121,7 @@ describe("verifyUserAuthentication", () => {
 		jest
 			.spyOn(fusionAuthClient, "introspectAccessToken")
 			.mockImplementation(async () => successfulIntrospectionResponse);
-		await verifyUserAuthentication(request, createResponse(), () => {});
+		await verifyUserAuthentication(request, createResponse(), jest.fn());
 
 		expect(() => {
 			validateBodyFromAuthentication(request.body);
@@ -269,7 +269,7 @@ describe("verifyAdminAuthentication", () => {
 		jest
 			.spyOn(fusionAuthClient, "introspectAccessToken")
 			.mockImplementation(async () => successfulIntrospectionResponse);
-		await verifyAdminAuthentication(request, createResponse(), () => {});
+		await verifyAdminAuthentication(request, createResponse(), jest.fn());
 
 		const {
 			body: { emailFromAuthToken },
@@ -284,7 +284,7 @@ describe("verifyAdminAuthentication", () => {
 		jest
 			.spyOn(fusionAuthClient, "introspectAccessToken")
 			.mockImplementation(async () => successfulIntrospectionResponse);
-		await verifyAdminAuthentication(request, createResponse(), () => {});
+		await verifyAdminAuthentication(request, createResponse(), jest.fn());
 
 		const {
 			body: { adminSubjectFromAuthToken },
@@ -323,7 +323,7 @@ describe("verifyUserOrAdminAuthentication", () => {
 			.spyOn(fusionAuthClient, "introspectAccessToken")
 			.mockImplementation(async () => successfulIntrospectionResponse);
 
-		await verifyUserOrAdminAuthentication(request, createResponse(), () => {});
+		await verifyUserOrAdminAuthentication(request, createResponse(), jest.fn());
 		const {
 			body: { userSubjectFromAuthToken, userEmailFromAuthToken },
 		} = request as {
@@ -348,7 +348,7 @@ describe("verifyUserOrAdminAuthentication", () => {
 			.mockImplementationOnce(async () => expiredTokenIntrospectionResponse)
 			.mockImplementationOnce(async () => successfulIntrospectionResponse);
 
-		await verifyUserOrAdminAuthentication(request, createResponse(), () => {});
+		await verifyUserOrAdminAuthentication(request, createResponse(), jest.fn());
 		const {
 			body: { adminSubjectFromAuthToken, adminEmailFromAuthToken },
 		} = request as {
@@ -443,7 +443,7 @@ describe("extractUserEmailFromAuthToken", () => {
 		jest
 			.spyOn(fusionAuthClient, "introspectAccessToken")
 			.mockImplementation(async () => successfulIntrospectionResponse);
-		await extractUserEmailFromAuthToken(request, createResponse(), () => {});
+		await extractUserEmailFromAuthToken(request, createResponse(), jest.fn());
 		const {
 			body: { emailFromAuthToken },
 		} = request as { body: { emailFromAuthToken: string } };
@@ -452,7 +452,7 @@ describe("extractUserEmailFromAuthToken", () => {
 
 	test("Request body has undefined emailFromAuthToken if there was no auth token", async () => {
 		const request = createRequest({ headers: { Authorization: "" } });
-		await extractUserEmailFromAuthToken(request, createResponse(), () => {});
+		await extractUserEmailFromAuthToken(request, createResponse(), jest.fn());
 		const {
 			body: { emailFromAuthToken },
 		} = request as { body: { emailFromAuthToken: string } };
@@ -466,7 +466,7 @@ describe("extractUserEmailFromAuthToken", () => {
 		jest
 			.spyOn(fusionAuthClient, "introspectAccessToken")
 			.mockImplementation(async () => failedIntrospectionResponse);
-		await extractUserEmailFromAuthToken(request, createResponse(), () => {});
+		await extractUserEmailFromAuthToken(request, createResponse(), jest.fn());
 		const {
 			body: { emailFromAuthToken },
 		} = request as { body: { emailFromAuthToken: string } };
@@ -480,7 +480,7 @@ describe("extractUserEmailFromAuthToken", () => {
 		jest
 			.spyOn(fusionAuthClient, "introspectAccessToken")
 			.mockImplementation(async () => expiredTokenIntrospectionResponse);
-		await extractUserEmailFromAuthToken(request, createResponse(), () => {});
+		await extractUserEmailFromAuthToken(request, createResponse(), jest.fn());
 		const {
 			body: { emailFromAuthToken },
 		} = request as { body: { emailFromAuthToken: string } };
@@ -496,7 +496,7 @@ describe("extractUserEmailFromAuthToken", () => {
 			.mockImplementation(async () => {
 				throw new Error("unauthenticated");
 			});
-		await extractUserEmailFromAuthToken(request, createResponse(), () => {});
+		await extractUserEmailFromAuthToken(request, createResponse(), jest.fn());
 		const {
 			body: { emailFromAuthToken },
 		} = request as { body: { emailFromAuthToken: string } };
@@ -513,7 +513,7 @@ describe("extractUserEmailFromAuthToken", () => {
 		jest
 			.spyOn(fusionAuthClient, "introspectAccessToken")
 			.mockImplementationOnce(async () => successfulIntrospectionResponse);
-		await extractUserEmailFromAuthToken(request, createResponse(), () => {});
+		await extractUserEmailFromAuthToken(request, createResponse(), jest.fn());
 		const {
 			body: { emailFromAuthToken },
 		} = request as { body: { emailFromAuthToken: string } };
@@ -532,7 +532,7 @@ describe("extractUserEmailFromAuthToken", () => {
 		jest
 			.spyOn(fusionAuthClient, "introspectAccessToken")
 			.mockImplementationOnce(async () => successfulIntrospectionResponse);
-		await extractUserEmailFromAuthToken(request, createResponse(), () => {});
+		await extractUserEmailFromAuthToken(request, createResponse(), jest.fn());
 		const {
 			body: { emailFromAuthToken },
 		} = request as { body: { emailFromAuthToken: string } };
@@ -568,7 +568,7 @@ describe("extractUserIsAdminFromAuthToken", () => {
 		jest
 			.spyOn(fusionAuthClient, "introspectAccessToken")
 			.mockImplementationOnce(async () => successfulIntrospectionResponse);
-		await extractUserIsAdminFromAuthToken(request, createResponse(), () => {});
+		await extractUserIsAdminFromAuthToken(request, createResponse(), jest.fn());
 		const {
 			body: { admin },
 		} = request as { body: { admin: boolean } };
@@ -577,7 +577,7 @@ describe("extractUserIsAdminFromAuthToken", () => {
 
 	test("is admin will be false if there is no auth token", async () => {
 		const request = createRequest({ headers: { Authorization: "" } });
-		await extractUserIsAdminFromAuthToken(request, createResponse(), () => {});
+		await extractUserIsAdminFromAuthToken(request, createResponse(), jest.fn());
 		const {
 			body: { admin },
 		} = request as { body: { admin: boolean } };
@@ -591,7 +591,7 @@ describe("extractUserIsAdminFromAuthToken", () => {
 		jest
 			.spyOn(fusionAuthClient, "introspectAccessToken")
 			.mockImplementationOnce(async () => failedIntrospectionResponse);
-		await extractUserIsAdminFromAuthToken(request, createResponse(), () => {});
+		await extractUserIsAdminFromAuthToken(request, createResponse(), jest.fn());
 		const {
 			body: { admin },
 		} = request as { body: { admin: boolean } };
@@ -607,7 +607,7 @@ describe("extractUserIsAdminFromAuthToken", () => {
 		jest
 			.spyOn(fusionAuthClient, "introspectAccessToken")
 			.mockImplementationOnce(async () => successfulIntrospectionResponse);
-		await extractUserIsAdminFromAuthToken(request, createResponse(), () => {});
+		await extractUserIsAdminFromAuthToken(request, createResponse(), jest.fn());
 		const {
 			body: { admin },
 		} = request as { body: { admin: boolean } };
@@ -616,7 +616,7 @@ describe("extractUserIsAdminFromAuthToken", () => {
 
 	test("is admin will be false if there is no auth token", async () => {
 		const request = createRequest({ headers: { Authorization: "" } });
-		await extractUserIsAdminFromAuthToken(request, createResponse(), () => {});
+		await extractUserIsAdminFromAuthToken(request, createResponse(), jest.fn());
 		const {
 			body: { admin },
 		} = request as { body: { admin: boolean } };
@@ -630,7 +630,7 @@ describe("extractUserIsAdminFromAuthToken", () => {
 		jest
 			.spyOn(fusionAuthClient, "introspectAccessToken")
 			.mockImplementationOnce(async () => failedIntrospectionResponse);
-		await extractUserIsAdminFromAuthToken(request, createResponse(), () => {});
+		await extractUserIsAdminFromAuthToken(request, createResponse(), jest.fn());
 		const {
 			body: { admin },
 		} = request as { body: { admin: boolean } };
@@ -644,7 +644,7 @@ describe("extractShareTokenFromHeaders", () => {
 		const request = createRequest({
 			headers: { "X-Permanent-Share-Token": testShareToken },
 		});
-		extractShareTokenFromHeaders(request, createResponse(), () => {});
+		extractShareTokenFromHeaders(request, createResponse(), jest.fn());
 		const {
 			body: { shareToken },
 		} = request as { body: { shareToken: string } };
