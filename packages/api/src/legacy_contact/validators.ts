@@ -7,9 +7,11 @@ import {
 
 export { validateBodyFromAuthentication };
 
-export function validateCreateLegacyContactRequest(
+export const validateCreateLegacyContactRequest: (
 	data: unknown,
-): asserts data is CreateLegacyContactRequest {
+) => asserts data is CreateLegacyContactRequest = (
+	data: unknown,
+): asserts data is CreateLegacyContactRequest => {
 	const validation = Joi.object()
 		.keys({
 			...fieldsFromUserAuthentication,
@@ -20,14 +22,16 @@ export function validateCreateLegacyContactRequest(
 			name: Joi.string().required(),
 		})
 		.validate(data);
-	if (validation.error) {
+	if (validation.error !== undefined) {
 		throw validation.error;
 	}
-}
+};
 
-export function validateUpdateLegacyContactRequest(
+export const validateUpdateLegacyContactRequest: (
 	data: unknown,
-): asserts data is CreateLegacyContactRequest {
+) => asserts data is CreateLegacyContactRequest = (
+	data: unknown,
+): asserts data is CreateLegacyContactRequest => {
 	const validation = Joi.object()
 		.keys({
 			...fieldsFromUserAuthentication,
@@ -35,20 +39,22 @@ export function validateUpdateLegacyContactRequest(
 			name: Joi.string(),
 		})
 		.validate(data);
-	if (validation.error) {
+	if (validation.error !== undefined) {
 		throw validation.error;
 	}
-}
+};
 
-export function validateUpdateLegacyContactParams(
+export const validateUpdateLegacyContactParams: (
 	data: unknown,
-): asserts data is { legacyContactId: string } {
+) => asserts data is { legacyContactId: string } = (
+	data: unknown,
+): asserts data is { legacyContactId: string } => {
 	const validation = Joi.object()
 		.keys({
 			legacyContactId: Joi.string().uuid().required(),
 		})
 		.validate(data);
-	if (validation.error) {
+	if (validation.error !== undefined) {
 		throw validation.error;
 	}
-}
+};

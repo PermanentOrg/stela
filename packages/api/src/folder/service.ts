@@ -205,7 +205,9 @@ export const getFolderChildren = async (
 	};
 };
 
-function buildPatchQuery(patchFolderRequest: FolderColumnsForUpdate): string {
+const buildPatchQuery = (
+	patchFolderRequest: FolderColumnsForUpdate,
+): string => {
 	const updates = Object.entries(patchFolderRequest)
 		.filter(([key, value]) => value !== undefined && key !== "folderId")
 		.map(([key, _]) => `${key} = :${key}`);
@@ -222,7 +224,7 @@ function buildPatchQuery(patchFolderRequest: FolderColumnsForUpdate): string {
   `;
 
 	return query.trim();
-}
+};
 
 const validateCanPatchFolder = async (
 	folderId: string,

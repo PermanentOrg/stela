@@ -11,18 +11,19 @@ import {
 } from "../database_util";
 
 export const createEvent = async (data: CreateEventRequest): Promise<void> => {
-	if (data.body.analytics) {
+	if (data.body.analytics !== undefined) {
 		const { browser, os, device } = UAParser(data.userAgent);
 		try {
-			const analyticsData: { [key: string]: unknown; distinct_id?: string } =
-				data.body.analytics.data;
-			analyticsData.distinct_id = data.body.analytics.distinctId;
-			analyticsData["$browser"] = browser.name;
-			analyticsData["$os"] = os.name;
-			analyticsData["$device"] = device.type;
+			const analyticsData: { [key: string]: unknown; distinct_id?: string } = {
+				...data.body.analytics.data,
+				distinct_id: data.body.analytics.distinctId,
+			};
+			({ name: analyticsData["$browser"] } = browser);
+			({ name: analyticsData["$os"] } = os);
+			({ type: analyticsData["$device"] } = device);
 			analyticsData["$email"] =
 				data.userEmailFromAuthToken ?? data.adminEmailFromAuthToken;
-			analyticsData["ip"] = data.ip;
+			({ ip: analyticsData["ip"] } = data);
 			mixpanelClient.track(data.body.analytics.event, analyticsData);
 		} catch (err) {
 			logger.error(err);
@@ -32,7 +33,8 @@ export const createEvent = async (data: CreateEventRequest): Promise<void> => {
 		}
 	}
 
-	const actorType = (data.userSubjectFromAuthToken ?? "") ? "user" : "admin";
+	const actorType =
+		data.userSubjectFromAuthToken !== undefined ? "user" : "admin";
 	const event = {
 		entity: data.entity,
 		action: data.action,
@@ -100,12 +102,14 @@ export const getChecklistEvents = async (
 				"Failed to retrieve checklist data",
 			);
 		});
-	if (!eventResult.rows[0]) {
+	if (eventResult.rows[0] === undefined) {
 		throw new createError.InternalServerError(
 			"Failed to retrieve checklist data",
 		);
 	}
-	const eventData = eventResult.rows[0];
+	const {
+		rows: [eventData],
+	} = eventResult;
 	return Object.keys(checklistEvents).map((key: string) => ({
 		id: key,
 		title: checklistEvents[key] ?? "",

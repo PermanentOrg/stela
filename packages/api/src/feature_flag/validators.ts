@@ -5,9 +5,11 @@ import type {
 } from "./models";
 import { fieldsFromAdminAuthentication } from "../validators";
 
-export function validateCreateFeatureFlagRequest(
+export const validateCreateFeatureFlagRequest: (
 	data: unknown,
-): asserts data is CreateFeatureFlagRequest {
+) => asserts data is CreateFeatureFlagRequest = (
+	data: unknown,
+): asserts data is CreateFeatureFlagRequest => {
 	const validation = Joi.object()
 		.keys({
 			...fieldsFromAdminAuthentication,
@@ -16,14 +18,16 @@ export function validateCreateFeatureFlagRequest(
 		})
 		.validate(data);
 
-	if (validation.error) {
+	if (validation.error !== undefined) {
 		throw validation.error;
 	}
-}
+};
 
-export function validateUpdateFeatureFlagRequest(
+export const validateUpdateFeatureFlagRequest: (
 	data: unknown,
-): asserts data is UpdateFeatureFlagRequest {
+) => asserts data is UpdateFeatureFlagRequest = (
+	data: unknown,
+): asserts data is UpdateFeatureFlagRequest => {
 	const validation = Joi.object()
 		.keys({
 			...fieldsFromAdminAuthentication,
@@ -32,20 +36,22 @@ export function validateUpdateFeatureFlagRequest(
 		})
 		.validate(data);
 
-	if (validation.error) {
+	if (validation.error !== undefined) {
 		throw validation.error;
 	}
-}
+};
 
-export function validateFeatureFlagParams(
+export const validateFeatureFlagParams: (
 	data: unknown,
-): asserts data is { featureId: string } {
+) => asserts data is { featureId: string } = (
+	data: unknown,
+): asserts data is { featureId: string } => {
 	const validation = Joi.object()
 		.keys({
 			featureId: Joi.string().uuid().required(),
 		})
 		.validate(data);
-	if (validation.error) {
+	if (validation.error !== undefined) {
 		throw validation.error;
 	}
-}
+};

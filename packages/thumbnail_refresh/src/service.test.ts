@@ -49,7 +49,7 @@ const getThumbnailsFromRecord = async (
 		},
 	);
 
-	if (!thumbnailResult.rows[0]) {
+	if (thumbnailResult.rows[0] === undefined) {
 		expect(false).toBe(true);
 		return {
 			thumbnail256: "",
@@ -95,7 +95,7 @@ const getThumbnailsFromFolder = async (
 		},
 	);
 
-	if (!thumbnailResult.rows[0]) {
+	if (thumbnailResult.rows[0] === undefined) {
 		expect(false).toBe(true);
 		return {
 			thumbnail256: "",
@@ -135,7 +135,7 @@ describe("refreshThumbnails", () => {
 		"https://testcdn.permanent.org/access_copies/a755/62ca/8bd5/40f0/9960/d05b/a5ea/8bfa/7028987_upload-b35bfcf6-9c51-47f9-a502-555b601dbcf0/thumbnails/c6561367-6bb4-4454-ad32-0bdb68df80fe.jpg?Expires=2757200649&Policy=new-test-policy&Signature=new-test-signature&Key-Pair-Id=test-key-pair";
 
 	beforeEach(async () => {
-		(getSignedUrl as jest.Mock).mockReturnValue(testNewThumbnail256);
+		jest.mocked(getSignedUrl).mockReturnValue(testNewThumbnail256);
 		await loadFixtures();
 	});
 
@@ -371,20 +371,22 @@ describe("refreshThumbnails", () => {
 		const errorMessage = "out of cheese - redo from start";
 		jest
 			.spyOn(db, "sql")
-			.mockImplementationOnce((async () => ({
-				rows: [
-					{
-						recordId: "1",
-						archiveNumber: "0001-0001",
-						thumbnail256CloudPath: "test-cloud-path",
-					},
-					{
-						recordId: "2",
-						archiveNumber: "0001-0002",
-						thumbnail256CloudPath: "test-cloud-path",
-					},
-				],
-			})) as unknown as typeof db.sql)
+			.mockImplementationOnce(
+				jest.fn().mockResolvedValue({
+					rows: [
+						{
+							recordId: "1",
+							archiveNumber: "0001-0001",
+							thumbnail256CloudPath: "test-cloud-path",
+						},
+						{
+							recordId: "2",
+							archiveNumber: "0001-0002",
+							thumbnail256CloudPath: "test-cloud-path",
+						},
+					],
+				}),
+			)
 			.mockRejectedValueOnce(errorMessage);
 
 		await refreshThumbnails();

@@ -2,22 +2,26 @@ import Joi from "joi";
 import type { PatchFolderRequest } from "./models";
 import { fieldsFromUserAuthentication } from "../validators";
 
-export function validateFolderRequest(
+export const validateFolderRequest: (
 	data: unknown,
-): asserts data is { folderId: string } {
+) => asserts data is { folderId: string } = (
+	data: unknown,
+): asserts data is { folderId: string } => {
 	const validation = Joi.object()
 		.keys({
 			folderId: Joi.string().required(),
 		})
 		.validate(data);
-	if (validation.error) {
+	if (validation.error !== undefined) {
 		throw validation.error;
 	}
-}
+};
 
-export function validatePatchFolderRequest(
+export const validatePatchFolderRequest: (
 	data: unknown,
-): asserts data is PatchFolderRequest {
+) => asserts data is PatchFolderRequest = (
+	data: unknown,
+): asserts data is PatchFolderRequest => {
 	const validation = Joi.object()
 		.keys({
 			...fieldsFromUserAuthentication,
@@ -26,20 +30,22 @@ export function validatePatchFolderRequest(
 		})
 		.validate(data);
 
-	if (validation.error) {
+	if (validation.error !== undefined) {
 		throw validation.error;
 	}
-}
+};
 
-export function validateGetFoldersQuery(
+export const validateGetFoldersQuery: (
 	data: unknown,
-): asserts data is { folderIds: string[] } {
+) => asserts data is { folderIds: string[] } = (
+	data: unknown,
+): asserts data is { folderIds: string[] } => {
 	const validation = Joi.object()
 		.keys({
 			folderIds: Joi.array().items(Joi.string().required()).required(),
 		})
 		.validate(data);
-	if (validation.error) {
+	if (validation.error !== undefined) {
 		throw validation.error;
 	}
-}
+};

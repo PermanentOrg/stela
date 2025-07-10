@@ -2,9 +2,11 @@ import Joi from "joi";
 import type { CreateEventRequest } from "./models";
 import { fieldsFromUserOrAdminAuthentication } from "../validators";
 
-export function validateCreateEventRequest(
+export const validateCreateEventRequest: (
 	data: unknown,
-): asserts data is CreateEventRequest {
+) => asserts data is CreateEventRequest = (
+	data: unknown,
+): asserts data is CreateEventRequest => {
 	const validation = fieldsFromUserOrAdminAuthentication
 		.append({
 			entity: Joi.string().required(),
@@ -25,7 +27,7 @@ export function validateCreateEventRequest(
 				.required(),
 		})
 		.validate(data);
-	if (validation.error) {
+	if (validation.error !== undefined) {
 		throw validation.error;
 	}
-}
+};

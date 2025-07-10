@@ -37,7 +37,7 @@ const updateTags = async (requestBody: UpdateTagsRequest): Promise<void> => {
 		{ tags },
 	);
 
-	if (response) {
+	if (response !== undefined && response !== null) {
 		throw createError(response.status, response.detail);
 	}
 };
@@ -55,7 +55,7 @@ const getSignupDetails = async (
 				"Failed to retrieve signup details",
 			);
 		});
-	if (!signupDetailResult.rows[0]) {
+	if (signupDetailResult.rows[0] === undefined) {
 		throw new createError.NotFound("Signup details not found");
 	}
 	return signupDetailResult.rows[0];
@@ -79,9 +79,11 @@ const leaveArchive = async ({
 				},
 			);
 
-		const accountArchive = accountArchiveResult.rows[0];
+		const {
+			rows: [accountArchive],
+		} = accountArchiveResult;
 
-		if (!accountArchive) {
+		if (accountArchive === undefined) {
 			throw new createError.NotFound(
 				`Unable to find relationship with archiveId ${archiveId}`,
 			);
@@ -101,7 +103,7 @@ const leaveArchive = async ({
 			},
 		);
 
-		if (!deleteResult.rows[0]) {
+		if (deleteResult.rows[0] === undefined) {
 			throw new createError.InternalServerError(
 				"Unexpected result while performing DELETE on account archive relationship.",
 			);

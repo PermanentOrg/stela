@@ -133,13 +133,12 @@ describe("getRecordAccessRole", () => {
 
 	test("should throw not found error if the all access roles returned are null", async () => {
 		jest.spyOn(db, "sql").mockImplementation(
-			(async () =>
-				({
-					rows: [
-						{ archiveAccessRole: null, shareAccessRole: null },
-						{ archiveAccessRole: null, shareAccessRole: null },
-					],
-				}) as object) as unknown as typeof db.sql,
+			jest.fn().mockResolvedValue({
+				rows: [
+					{ archiveAccessRole: null, shareAccessRole: null },
+					{ archiveAccessRole: null, shareAccessRole: null },
+				],
+			}),
 		);
 		let error = null;
 		try {

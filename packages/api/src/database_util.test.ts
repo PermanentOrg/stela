@@ -25,7 +25,7 @@ describe("isInvalidEnumError", () => {
 		expect(
 			isInvalidEnumError({
 				message: testNotInvalidEnumError,
-			} as TinyPgError),
+			}),
 		).toBe(false);
 	});
 });

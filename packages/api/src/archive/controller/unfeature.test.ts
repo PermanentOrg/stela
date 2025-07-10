@@ -1,10 +1,9 @@
 import request from "supertest";
-import type { Request, NextFunction } from "express";
 import { logger } from "@stela/logger";
 import { app } from "../../app";
 import { db } from "../../database";
-import { verifyAdminAuthentication } from "../../middleware";
 import { archiveService } from "../service/index";
+import { mockVerifyAdminAuthentication } from "../../../test/middleware_mocks";
 
 jest.mock("../../database");
 jest.mock("../../middleware");
@@ -27,15 +26,9 @@ const clearDatabase = async (): Promise<void> => {
 describe("getFeatured", () => {
 	const agent = request(app);
 	beforeEach(async () => {
-		(verifyAdminAuthentication as jest.Mock).mockImplementation(
-			(req: Request, _: Response, next: NextFunction) => {
-				(req.body as { emailFromAuthToken: string }).emailFromAuthToken =
-					"test+1@permanent.org";
-				(
-					req.body as { adminSubjectFromAuthToken: string }
-				).adminSubjectFromAuthToken = "82bd483e-914b-4bfe-abf9-92ffe86d7803";
-				next();
-			},
+		mockVerifyAdminAuthentication(
+			"test+1@permanent.org",
+			"82bd483e-914b-4bfe-abf9-92ffe86d7803",
 		);
 		await loadFixtures();
 	});
