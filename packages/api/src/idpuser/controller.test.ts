@@ -1,51 +1,96 @@
 import request from "supertest";
 import createError from "http-errors";
-import type { NextFunction, Request } from "express";
+import type { NextFunction } from "express";
 import { app } from "../app";
 import { db } from "../database";
 import { verifyUserAuthentication } from "../middleware";
 import { fusionAuthClient } from "../fusionauth";
-import type {
-	TwoFactorRequestResponse,
-	SendEnableCodeRequest,
-	CreateTwoFactorMethodRequest,
-	SendDisableCodeRequest,
-	DisableTwoFactorRequest,
-} from "./models";
-
-interface TwoFactorRequest {
-	emailFromAuthToken: string;
-	userSubjectFromAuthToken: string;
-}
+import type { TwoFactorRequestResponse } from "./models";
+import { mockVerifyUserAuthentication } from "../../test/middleware_mocks";
 
 jest.mock("../database");
 jest.mock("../middleware");
-jest.mock("../fusionauth");
 global.fetch = jest.fn();
+jest.mock("../fusionauth", () => ({
+	fusionAuthClient: {
+		retrieveUserByEmail: jest.fn(),
+		sendTwoFactorCodeForEnableDisable: jest.fn(),
+		enableTwoFactor: jest.fn(),
+		disableTwoFactor: jest.fn(),
+	},
+}));
+
+const mockRetrieveUserByEmail = (
+	methods: {
+		id: string;
+		method: string;
+		email: string;
+		mobilePhone: string;
+	}[],
+	successful: boolean,
+	exception?: { code: string; message: string },
+): void => {
+	jest.mocked(fusionAuthClient.retrieveUserByEmail).mockImplementation(
+		jest.fn().mockResolvedValue({
+			response: {
+				user: {
+					twoFactor: {
+						methods,
+					},
+				},
+			},
+			wasSuccessful: () => successful,
+			exception,
+		}),
+	);
+};
+
+const mockSendTwoFactorCodeForEnableDisable = (
+	successful: boolean,
+	exception?: { code: string; message: string },
+): void => {
+	jest
+		.mocked(fusionAuthClient.sendTwoFactorCodeForEnableDisable)
+		.mockImplementation(
+			jest.fn().mockResolvedValue({
+				wasSuccessful: () => successful,
+				exception,
+			}),
+		);
+};
+
+const mockEnableTwoFactor = (
+	successful: boolean,
+	exception?: { code: string; message: string },
+): void => {
+	jest.mocked(fusionAuthClient.enableTwoFactor).mockImplementation(
+		jest.fn().mockResolvedValue({
+			wasSuccessful: () => successful,
+			exception,
+		}),
+	);
+};
+
+const mockDisableTwoFactor = (
+	successful: boolean,
+	exception?: { code: string; message: string },
+): void => {
+	jest.mocked(fusionAuthClient.disableTwoFactor).mockImplementation(
+		jest.fn().mockResolvedValue({
+			wasSuccessful: () => successful,
+			exception,
+		}),
+	);
+};
 
 describe("/idpuser", () => {
 	const agent = request(app);
 	beforeEach(async () => {
-		(verifyUserAuthentication as jest.Mock).mockImplementation(
-			(req: Request, __, next: NextFunction) => {
-				(req.body as TwoFactorRequest).emailFromAuthToken =
-					"test@permanent.org";
-				(req.body as TwoFactorRequest).userSubjectFromAuthToken =
-					"f8bc5749-a50e-4f8e-939b-fc8ae3c34f42";
-				next();
-			},
+		mockVerifyUserAuthentication(
+			"test@permanent.org",
+			"f8bc5749-a50e-4f8e-939b-fc8ae3c34f42",
 		);
-
-		(fusionAuthClient.retrieveUserByEmail as jest.Mock).mockResolvedValue({
-			response: {
-				user: {
-					twoFactor: {
-						methods: [],
-					},
-				},
-			},
-			wasSuccessful: () => true,
-		});
+		mockRetrieveUserByEmail([], true);
 	});
 
 	afterEach(async () => {
@@ -57,48 +102,28 @@ describe("/idpuser", () => {
 	});
 
 	test("should return invalid request status if the value from the auth token is not a valid email", async () => {
-		(verifyUserAuthentication as jest.Mock).mockImplementation(
-			(req: Request, __, next: NextFunction) => {
-				(req.body as TwoFactorRequest).emailFromAuthToken = "not_an_email";
-				(req.body as TwoFactorRequest).userSubjectFromAuthToken =
-					"f8bc5749-a50e-4f8e-939b-fc8ae3c34f42";
-				next();
-			},
+		mockVerifyUserAuthentication(
+			"not_an_email",
+			"f8bc5749-a50e-4f8e-939b-fc8ae3c34f42",
 		);
 		await agent.get("/api/v2/idpuser").expect(400);
 	});
 
 	test("should return invalid request status if there is no email in the auth token", async () => {
-		(verifyUserAuthentication as jest.Mock).mockImplementation(
-			(req: Request, __, next: NextFunction) => {
-				(req.body as TwoFactorRequest).userSubjectFromAuthToken =
-					"f8bc5749-a50e-4f8e-939b-fc8ae3c34f42";
-				next();
-			},
+		mockVerifyUserAuthentication(
+			undefined,
+			"f8bc5749-a50e-4f8e-939b-fc8ae3c34f42",
 		);
 		await agent.get("/api/v2/idpuser").expect(400);
 	});
 
 	test("should return invalid request status if the user subject from the auth token is missing", async () => {
-		(verifyUserAuthentication as jest.Mock).mockImplementation(
-			(req: Request, __, next: NextFunction) => {
-				(req.body as TwoFactorRequest).emailFromAuthToken =
-					"test@permanent.org";
-				next();
-			},
-		);
+		mockVerifyUserAuthentication("test@permanent.org");
 		await agent.get("/api/v2/idpuser").expect(400);
 	});
 
 	test("should return invalid request status if the user subject from the auth token is not a uuid", async () => {
-		(verifyUserAuthentication as jest.Mock).mockImplementation(
-			(req: Request, __, next: NextFunction) => {
-				(req.body as TwoFactorRequest).emailFromAuthToken =
-					"test@permanent.org";
-				(req.body as TwoFactorRequest).userSubjectFromAuthToken = "not_a_uuid";
-				next();
-			},
-		);
+		mockVerifyUserAuthentication("test@permanent.org", "not_a_uuid");
 		await agent.get("/api/v2/idpuser").expect(400);
 	});
 
@@ -108,27 +133,24 @@ describe("/idpuser", () => {
 	});
 
 	test("should return an array with the length equal to 1 if the user has one multi factor method enabled", async () => {
-		(fusionAuthClient.retrieveUserByEmail as jest.Mock).mockResolvedValue({
-			response: {
-				user: {
-					twoFactor: {
-						methods: [
-							{
-								id: "1234",
-								method: "email",
-								email: "test@example.com",
-								mobilePhone: "",
-							},
-						],
-					},
+		mockRetrieveUserByEmail(
+			[
+				{
+					id: "1234",
+					method: "email",
+					email: "test@example.com",
+					mobilePhone: "",
 				},
-			},
-			wasSuccessful: () => true,
-		});
+			],
+			true,
+		);
 
 		const response = await agent.get("/api/v2/idpuser");
 
-		expect((response.body as TwoFactorRequestResponse[]).length).toEqual(1);
+		const { body: responseBody } = response as {
+			body: TwoFactorRequestResponse[];
+		};
+		expect(responseBody.length).toEqual(1);
 	});
 
 	test("should return an array with the length equal to 2 if the user has both multi factor methods enabled", async () => {
@@ -137,26 +159,19 @@ describe("/idpuser", () => {
 			{ id: "2", method: "sms", mobilePhone: "1234567890", email: "" },
 		];
 
-		(fusionAuthClient.retrieveUserByEmail as jest.Mock).mockResolvedValue({
-			response: {
-				user: {
-					twoFactor: {
-						methods,
-					},
-				},
-			},
-			wasSuccessful: () => true,
-		});
-
+		mockRetrieveUserByEmail(methods, true);
 		const response = await agent.get("/api/v2/idpuser");
 
-		expect((response.body as TwoFactorRequestResponse[]).length).toEqual(2);
+		const { body: responseBody } = response as {
+			body: TwoFactorRequestResponse[];
+		};
+		expect(responseBody.length).toEqual(2);
 	});
 
 	test("should return a 500 status if getTwoFactorMethods throws an error", async () => {
-		(fusionAuthClient.retrieveUserByEmail as jest.Mock).mockResolvedValue({
-			wasSuccessful: () => false,
-			exception: { code: "500", message: "test_message" },
+		mockRetrieveUserByEmail([], false, {
+			code: "500",
+			message: "test_message",
 		});
 
 		const response = await agent.get("/api/v2/idpuser");
@@ -169,17 +184,7 @@ describe("/idpuser", () => {
 			{ id: "2", method: "sms", mobilePhone: "1234567890", email: "" },
 		];
 
-		(fusionAuthClient.retrieveUserByEmail as jest.Mock).mockResolvedValue({
-			response: {
-				user: {
-					twoFactor: {
-						methods,
-					},
-				},
-			},
-			wasSuccessful: () => true,
-		});
-
+		mockRetrieveUserByEmail(methods, true);
 		const expected = [
 			{ methodId: "1", method: "email", value: "test1@example.com" },
 			{ methodId: "2", method: "sms", value: "1234567890" },
@@ -203,21 +208,11 @@ describe("idpuser/send-enable-code", () => {
 	};
 
 	beforeEach(async () => {
-		(verifyUserAuthentication as jest.Mock).mockImplementation(
-			(req: Request, __, next: NextFunction) => {
-				(req.body as SendEnableCodeRequest).emailFromAuthToken =
-					"test@permanent.org";
-				(req.body as TwoFactorRequest).userSubjectFromAuthToken =
-					"f8bc5749-a50e-4f8e-939b-fc8ae3c34f42";
-				next();
-			},
+		mockVerifyUserAuthentication(
+			"test@permanent.org",
+			"f8bc5749-a50e-4f8e-939b-fc8ae3c34f42",
 		);
-
-		(
-			fusionAuthClient.sendTwoFactorCodeForEnableDisable as jest.Mock
-		).mockResolvedValue({
-			wasSuccessful: () => true,
-		});
+		mockSendTwoFactorCodeForEnableDisable(true);
 
 		await loadFixtures();
 	});
@@ -235,54 +230,31 @@ describe("idpuser/send-enable-code", () => {
 	});
 
 	test("should return a 401 status if the request is not authenticated", async () => {
-		(verifyUserAuthentication as jest.Mock).mockImplementation(
-			(_: Request, __, next: NextFunction) => {
+		jest
+			.mocked(verifyUserAuthentication)
+			.mockImplementation(async (_, __, next: NextFunction) => {
 				next(createError(401, "Unauthorized"));
-			},
-		);
+			});
 		await agent.post("/api/v2/idpuser/send-enable-code").expect(401);
 	});
 
 	test("should return a 400 status if emailFromAuthToken is missing", async () => {
-		(verifyUserAuthentication as jest.Mock).mockImplementation(
-			(_: Request, __, next: NextFunction) => {
-				next();
-			},
-		);
+		mockVerifyUserAuthentication();
 		await agent.post("/api/v2/idpuser/send-enable-code").expect(400);
 	});
 
 	test("should return a 400 status if emailFromAuthToken is not an email", async () => {
-		(verifyUserAuthentication as jest.Mock).mockImplementation(
-			(req: Request, _, next: NextFunction) => {
-				(req.body as SendEnableCodeRequest).emailFromAuthToken = "not_an_email";
-				next();
-			},
-		);
+		mockVerifyUserAuthentication("not_an_email");
 		await agent.post("/api/v2/idpuser/send-enable-code").expect(400);
 	});
 
 	test("should return invalid request status if the user subject from the auth token is missing", async () => {
-		(verifyUserAuthentication as jest.Mock).mockImplementation(
-			(req: Request, __, next: NextFunction) => {
-				(req.body as SendEnableCodeRequest).emailFromAuthToken =
-					"test@permanent.org";
-				next();
-			},
-		);
+		mockVerifyUserAuthentication("test@permanent.org");
 		await agent.get("/api/v2/idpuser").expect(400);
 	});
 
 	test("should return invalid request status if the user subject from the auth token is not a uuid", async () => {
-		(verifyUserAuthentication as jest.Mock).mockImplementation(
-			(req: Request, __, next: NextFunction) => {
-				(req.body as SendEnableCodeRequest).emailFromAuthToken =
-					"test@permanent.org";
-				(req.body as SendEnableCodeRequest).userSubjectFromAuthToken =
-					"not_a_uuid";
-				next();
-			},
-		);
+		mockVerifyUserAuthentication("test@permanent.org", "not_a_uuid");
 		await agent.get("/api/v2/idpuser").expect(400);
 	});
 
@@ -330,14 +302,10 @@ describe("idpuser/send-enable-code", () => {
 	});
 
 	test("should return a 500 status if the fusionauth client throws an error", async () => {
-		(
-			fusionAuthClient.sendTwoFactorCodeForEnableDisable as jest.Mock
-		).mockResolvedValue({
-			wasSuccessful: () => false,
-			exception: { code: "500", message: "test_message" },
-		} as unknown as ReturnType<
-			typeof fusionAuthClient.sendTwoFactorCodeForEnableDisable
-		>);
+		mockSendTwoFactorCodeForEnableDisable(false, {
+			code: "500",
+			message: "test_message",
+		});
 		await agent
 			.post("/api/v2/idpuser/send-enable-code")
 			.send({ method: "email", value: "test@permanent.org" })
@@ -369,14 +337,9 @@ describe("POST /idpuser/enable-two-factor", () => {
 		jest.clearAllMocks();
 		jest.resetAllMocks();
 		await loadFixtures();
-		(verifyUserAuthentication as jest.Mock).mockImplementation(
-			(req: Request, __, next: NextFunction) => {
-				(req.body as CreateTwoFactorMethodRequest).emailFromAuthToken =
-					"test@permanent.org";
-				(req.body as TwoFactorRequest).userSubjectFromAuthToken =
-					"f8bc5749-a50e-4f8e-939b-fc8ae3c34f42";
-				next();
-			},
+		mockVerifyUserAuthentication(
+			"test@permanent.org",
+			"f8bc5749-a50e-4f8e-939b-fc8ae3c34f42",
 		);
 	});
 
@@ -386,11 +349,11 @@ describe("POST /idpuser/enable-two-factor", () => {
 	});
 
 	test("should return a 401 status if the caller is not authenticated", async () => {
-		(verifyUserAuthentication as jest.Mock).mockImplementation(
-			(_: Request, __, ___: NextFunction) => {
+		jest
+			.mocked(verifyUserAuthentication)
+			.mockImplementation((_, __, ___: NextFunction) => {
 				throw new createError.Unauthorized("Invalid token");
-			},
-		);
+			});
 		await agent
 			.post("/api/v2/idpuser/enable-two-factor")
 			.send({ code: "test_code", method: "sms", value: "000-000-0000" })
@@ -398,11 +361,7 @@ describe("POST /idpuser/enable-two-factor", () => {
 	});
 
 	test("should return a 400 status if the email from the auth token is missing", async () => {
-		(verifyUserAuthentication as jest.Mock).mockImplementation(
-			(_: Request, __, next: NextFunction) => {
-				next();
-			},
-		);
+		mockVerifyUserAuthentication();
 		await agent
 			.post("/api/v2/idpuser/enable-two-factor")
 			.send({ code: "test_code", method: "sms", value: "000-000-0000" })
@@ -410,13 +369,7 @@ describe("POST /idpuser/enable-two-factor", () => {
 	});
 
 	test("should return a 400 status if the email from the auth token is not an email", async () => {
-		(verifyUserAuthentication as jest.Mock).mockImplementation(
-			(req: Request, __, next: NextFunction) => {
-				(req.body as CreateTwoFactorMethodRequest).emailFromAuthToken =
-					"not_an_email";
-				next();
-			},
-		);
+		mockVerifyUserAuthentication("not_an_email");
 		await agent
 			.post("/api/v2/idpuser/enable-two-factor")
 			.send({ code: "test_code", method: "sms", value: "000-000-0000" })
@@ -424,26 +377,12 @@ describe("POST /idpuser/enable-two-factor", () => {
 	});
 
 	test("should return invalid request status if the user subject from the auth token is missing", async () => {
-		(verifyUserAuthentication as jest.Mock).mockImplementation(
-			(req: Request, __, next: NextFunction) => {
-				(req.body as CreateTwoFactorMethodRequest).emailFromAuthToken =
-					"test@permanent.org";
-				next();
-			},
-		);
+		mockVerifyUserAuthentication("test@permanent.org");
 		await agent.get("/api/v2/idpuser").expect(400);
 	});
 
 	test("should return invalid request status if the user subject from the auth token is not a uuid", async () => {
-		(verifyUserAuthentication as jest.Mock).mockImplementation(
-			(req: Request, __, next: NextFunction) => {
-				(req.body as CreateTwoFactorMethodRequest).emailFromAuthToken =
-					"test@permanent.org";
-				(req.body as CreateTwoFactorMethodRequest).userSubjectFromAuthToken =
-					"not_a_uuid";
-				next();
-			},
-		);
+		mockVerifyUserAuthentication("test@permanent.org", "not_a_uuid");
 		await agent.get("/api/v2/idpuser").expect(400);
 	});
 
@@ -483,9 +422,7 @@ describe("POST /idpuser/enable-two-factor", () => {
 	});
 
 	test("should call fusionAuth to create the MFA method", async () => {
-		(fusionAuthClient.enableTwoFactor as jest.Mock).mockResolvedValue({
-			wasSuccessful: () => true,
-		} as unknown as ReturnType<typeof fusionAuthClient.enableTwoFactor>);
+		mockEnableTwoFactor(true);
 		await agent
 			.post("/api/v2/idpuser/enable-two-factor")
 			.send({
@@ -510,10 +447,7 @@ describe("POST /idpuser/enable-two-factor", () => {
 	});
 
 	test("should return status 500 if the fusionAuth call fails", async () => {
-		(fusionAuthClient.enableTwoFactor as jest.Mock).mockResolvedValue({
-			wasSucccessful: () => false,
-			exception: { code: "500", message: "test_message" },
-		} as unknown as ReturnType<typeof fusionAuthClient.enableTwoFactor>);
+		mockEnableTwoFactor(false, { code: "500", message: "test_message" });
 		await agent
 			.post("/api/v2/idpuser/enable-two-factor")
 			.send({ code: "test_code", method: "sms", value: "000-000-0000" })
@@ -545,22 +479,11 @@ describe("idpuser/send-disable-code", () => {
 	};
 
 	beforeEach(async () => {
-		(verifyUserAuthentication as jest.Mock).mockImplementation(
-			(req: Request, __, next: NextFunction) => {
-				(req.body as SendDisableCodeRequest).emailFromAuthToken =
-					"test@permanent.org";
-				(req.body as TwoFactorRequest).userSubjectFromAuthToken =
-					"f8bc5749-a50e-4f8e-939b-fc8ae3c34f42";
-				next();
-			},
+		mockVerifyUserAuthentication(
+			"test@permanent.org",
+			"f8bc5749-a50e-4f8e-939b-fc8ae3c34f42",
 		);
-
-		(
-			fusionAuthClient.sendTwoFactorCodeForEnableDisable as jest.Mock
-		).mockResolvedValue({
-			wasSuccessful: () => true,
-		});
-
+		mockSendTwoFactorCodeForEnableDisable(true);
 		await loadFixtures();
 	});
 
@@ -577,11 +500,11 @@ describe("idpuser/send-disable-code", () => {
 	});
 
 	test("should return a 401 status if the request not authenticated", async () => {
-		(verifyUserAuthentication as jest.Mock).mockImplementation(
-			(_: Request, __, next: NextFunction) => {
+		jest
+			.mocked(verifyUserAuthentication)
+			.mockImplementation(async (_, __, next: NextFunction) => {
 				next(createError(401, "Unauthorized"));
-			},
-		);
+			});
 		await agent
 			.post("/api/v2/idpuser/send-disable-code")
 			.send({ methodId: "test_method_id" })
@@ -589,11 +512,7 @@ describe("idpuser/send-disable-code", () => {
 	});
 
 	test("should return a 400 status if emailFromAuthToken is missing", async () => {
-		(verifyUserAuthentication as jest.Mock).mockImplementation(
-			(_: Request, __, next: NextFunction) => {
-				next();
-			},
-		);
+		mockVerifyUserAuthentication();
 		await agent
 			.post("/api/v2/idpuser/send-disable-code")
 			.send({ methodId: "test_method_id" })
@@ -601,13 +520,7 @@ describe("idpuser/send-disable-code", () => {
 	});
 
 	test("should return a 400 status if emailFromAuthToken is not an email", async () => {
-		(verifyUserAuthentication as jest.Mock).mockImplementation(
-			(req: Request, _, next: NextFunction) => {
-				(req.body as SendDisableCodeRequest).emailFromAuthToken =
-					"not_an_email";
-				next();
-			},
-		);
+		mockVerifyUserAuthentication("not_an_email");
 		await agent
 			.post("/api/v2/idpuser/send-disable-code")
 			.send({ methodId: "test_method_id" })
@@ -615,26 +528,12 @@ describe("idpuser/send-disable-code", () => {
 	});
 
 	test("should return invalid request status if the user subject from the auth token is missing", async () => {
-		(verifyUserAuthentication as jest.Mock).mockImplementation(
-			(req: Request, __, next: NextFunction) => {
-				(req.body as SendDisableCodeRequest).emailFromAuthToken =
-					"test@permanent.org";
-				next();
-			},
-		);
+		mockVerifyUserAuthentication("test@permanent.org");
 		await agent.get("/api/v2/idpuser").expect(400);
 	});
 
 	test("should return invalid request status if the user subject from the auth token is not a uuid", async () => {
-		(verifyUserAuthentication as jest.Mock).mockImplementation(
-			(req: Request, __, next: NextFunction) => {
-				(req.body as SendDisableCodeRequest).emailFromAuthToken =
-					"test@permanent.org";
-				(req.body as SendDisableCodeRequest).userSubjectFromAuthToken =
-					"not_a_uuid";
-				next();
-			},
-		);
+		mockVerifyUserAuthentication("test@permanent.org", "not_a_uuid");
 		await agent.get("/api/v2/idpuser").expect(400);
 	});
 
@@ -661,14 +560,10 @@ describe("idpuser/send-disable-code", () => {
 	});
 
 	test("should return a 500 status if the fusionauth client throws an error", async () => {
-		(
-			fusionAuthClient.sendTwoFactorCodeForEnableDisable as jest.Mock
-		).mockResolvedValue({
-			wasSuccessful: () => false,
-			exception: { code: "500", message: "test_message" },
-		} as unknown as ReturnType<
-			typeof fusionAuthClient.sendTwoFactorCodeForEnableDisable
-		>);
+		mockSendTwoFactorCodeForEnableDisable(false, {
+			code: "500",
+			message: "test_message",
+		});
 		await agent
 			.post("/api/v2/idpuser/send-disable-code")
 			.send({ methodId: "test_method_id" })
@@ -696,20 +591,11 @@ describe("/idpuser/disable-two-factor", () => {
 	};
 
 	beforeEach(async () => {
-		(verifyUserAuthentication as jest.Mock).mockImplementation(
-			(req: Request, __, next: NextFunction) => {
-				(req.body as DisableTwoFactorRequest).emailFromAuthToken =
-					"test@permanent.org";
-				(req.body as TwoFactorRequest).userSubjectFromAuthToken =
-					"f8bc5749-a50e-4f8e-939b-fc8ae3c34f42";
-				next();
-			},
+		mockVerifyUserAuthentication(
+			"test@permanent.org",
+			"f8bc5749-a50e-4f8e-939b-fc8ae3c34f42",
 		);
-
-		(fusionAuthClient.disableTwoFactor as jest.Mock).mockResolvedValue({
-			wasSuccessful: () => true,
-		});
-
+		mockDisableTwoFactor(true);
 		await loadFixtures();
 	});
 
@@ -726,11 +612,11 @@ describe("/idpuser/disable-two-factor", () => {
 	});
 
 	test("should return 401 status if the request is not authenticated", async () => {
-		(verifyUserAuthentication as jest.Mock).mockImplementation(
-			(_: Request, __, next: NextFunction) => {
+		jest
+			.mocked(verifyUserAuthentication)
+			.mockImplementation(async (_, __, next: NextFunction) => {
 				next(createError.Unauthorized("Invalid token"));
-			},
-		);
+			});
 		await agent
 			.post("/api/v2/idpuser/disable-two-factor")
 			.send({ methodId: "test_method_id", code: "test_code" })
@@ -738,11 +624,7 @@ describe("/idpuser/disable-two-factor", () => {
 	});
 
 	test("should return 400 status if emailFromAuthToken is missing", async () => {
-		(verifyUserAuthentication as jest.Mock).mockImplementation(
-			(_: Request, __, next: NextFunction) => {
-				next();
-			},
-		);
+		mockVerifyUserAuthentication();
 		await agent
 			.post("/api/v2/idpuser/disable-two-factor")
 			.send({ methodId: "test_method_id", code: "test_code" })
@@ -750,13 +632,7 @@ describe("/idpuser/disable-two-factor", () => {
 	});
 
 	test("should return 400 status if emailFromAuthToken is not an email", async () => {
-		(verifyUserAuthentication as jest.Mock).mockImplementation(
-			(req: Request, __, next: NextFunction) => {
-				(req.body as DisableTwoFactorRequest).emailFromAuthToken =
-					"not_an_email";
-				next();
-			},
-		);
+		mockVerifyUserAuthentication("not_an_email");
 		await agent
 			.post("/api/v2/idpuser/disable-two-factor")
 			.send({ methodId: "test_method_id", code: "test_code" })
@@ -764,26 +640,12 @@ describe("/idpuser/disable-two-factor", () => {
 	});
 
 	test("should return invalid request status if the user subject from the auth token is missing", async () => {
-		(verifyUserAuthentication as jest.Mock).mockImplementation(
-			(req: Request, __, next: NextFunction) => {
-				(req.body as DisableTwoFactorRequest).emailFromAuthToken =
-					"test@permanent.org";
-				next();
-			},
-		);
+		mockVerifyUserAuthentication("test@permanent.org");
 		await agent.get("/api/v2/idpuser").expect(400);
 	});
 
 	test("should return invalid request status if the user subject from the auth token is not a uuid", async () => {
-		(verifyUserAuthentication as jest.Mock).mockImplementation(
-			(req: Request, __, next: NextFunction) => {
-				(req.body as DisableTwoFactorRequest).emailFromAuthToken =
-					"test@permanent.org";
-				(req.body as DisableTwoFactorRequest).userSubjectFromAuthToken =
-					"not_a_uuid";
-				next();
-			},
-		);
+		mockVerifyUserAuthentication("test@permanent.org", "not_a_uuid");
 		await agent.get("/api/v2/idpuser").expect(400);
 	});
 
@@ -818,10 +680,7 @@ describe("/idpuser/disable-two-factor", () => {
 	});
 
 	test("should return status 500 if the fusionAuth call fails", async () => {
-		(fusionAuthClient.disableTwoFactor as jest.Mock).mockResolvedValue({
-			wasSucccessful: () => false,
-			exception: { code: "500", message: "test_message" },
-		} as unknown as ReturnType<typeof fusionAuthClient.disableTwoFactor>);
+		mockDisableTwoFactor(false, { code: "500", message: "test_message" });
 		await agent
 			.post("/api/v2/idpuser/disable-two-factor")
 			.send({ methodId: "test_method_id", code: "test_code" })

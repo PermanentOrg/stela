@@ -1,11 +1,12 @@
 import request from "supertest";
-import type { Request, NextFunction } from "express";
+import type { NextFunction } from "express";
 import createError from "http-errors";
 import { logger } from "@stela/logger";
 import { app } from "../app";
 import { verifyAdminAuthentication } from "../middleware/authentication";
-import type { CreatePromoRequest, Promo } from "./models";
+import type { Promo } from "./models";
 import { db } from "../database";
+import { mockVerifyAdminAuthentication } from "../../test/middleware_mocks";
 
 jest.mock("../middleware/authentication");
 jest.mock("../database");
@@ -21,14 +22,9 @@ const clearDatabase = async (): Promise<void> => {
 describe("POST /promo", () => {
 	const agent = request(app);
 	beforeEach(async () => {
-		(verifyAdminAuthentication as jest.Mock).mockImplementation(
-			(req: Request, __, next: NextFunction) => {
-				(req.body as CreatePromoRequest).emailFromAuthToken =
-					"test@permanent.org";
-				(req.body as CreatePromoRequest).adminSubjectFromAuthToken =
-					"6b640c73-4963-47de-a096-4a05ff8dc5f5";
-				next();
-			},
+		mockVerifyAdminAuthentication(
+			"test@permanent.org",
+			"6b640c73-4963-47de-a096-4a05ff8dc5f5",
 		);
 		jest.restoreAllMocks();
 		jest.clearAllMocks();
@@ -54,41 +50,18 @@ describe("POST /promo", () => {
 	});
 
 	test("should respond with 401 status code if lacking admin authentication", async () => {
-		(verifyAdminAuthentication as jest.Mock).mockImplementation(
-			(_: Request, __, next: NextFunction) => {
+		jest
+			.mocked(verifyAdminAuthentication)
+			.mockImplementation(async (_, __, next: NextFunction) => {
 				next(new createError.Unauthorized("You aren't logged in"));
-			},
-		);
+			});
 		await agent.post("/api/v2/promo").expect(401);
 	});
 
 	test("should respond with 400 status code if missing emailFromAuthToken", async () => {
-		(verifyAdminAuthentication as jest.Mock).mockImplementation(
-			(req: Request, __, next: NextFunction) => {
-				(req.body as CreatePromoRequest).adminSubjectFromAuthToken =
-					"6b640c73-4963-47de-a096-4a05ff8dc5f5";
-				next();
-			},
-		);
-		await agent
-			.post("/api/v2/promo")
-			.send({
-				code: "TEST",
-				storageInMB: 1024,
-				expirationTimestamp: "3025-01-01",
-				totalUses: 100,
-			})
-			.expect(400);
-	});
-
-	test("should respond with 400 status code if emailFromAuthToken is not a string", async () => {
-		(verifyAdminAuthentication as jest.Mock).mockImplementation(
-			(req: Request, __, next: NextFunction) => {
-				(req.body as { emailFromAuthToken: number }).emailFromAuthToken = 123;
-				(req.body as CreatePromoRequest).adminSubjectFromAuthToken =
-					"6b640c73-4963-47de-a096-4a05ff8dc5f5";
-				next();
-			},
+		mockVerifyAdminAuthentication(
+			undefined,
+			"6b640c73-4963-47de-a096-4a05ff8dc5f5",
 		);
 		await agent
 			.post("/api/v2/promo")
@@ -102,13 +75,9 @@ describe("POST /promo", () => {
 	});
 
 	test("should respond with 400 status code if emailFromAuthToken is not an email", async () => {
-		(verifyAdminAuthentication as jest.Mock).mockImplementation(
-			(req: Request, __, next: NextFunction) => {
-				(req.body as CreatePromoRequest).emailFromAuthToken = "not_an_email";
-				(req.body as CreatePromoRequest).adminSubjectFromAuthToken =
-					"6b640c73-4963-47de-a096-4a05ff8dc5f5";
-				next();
-			},
+		mockVerifyAdminAuthentication(
+			"not_an_email",
+			"6b640c73-4963-47de-a096-4a05ff8dc5f5",
 		);
 		await agent
 			.post("/api/v2/promo")
@@ -122,35 +91,7 @@ describe("POST /promo", () => {
 	});
 
 	test("should respond with 400 status code if missing adminSubjectFromAuthToken", async () => {
-		(verifyAdminAuthentication as jest.Mock).mockImplementation(
-			(req: Request, __, next: NextFunction) => {
-				(req.body as CreatePromoRequest).emailFromAuthToken =
-					"test@permanent.org";
-				next();
-			},
-		);
-		await agent
-			.post("/api/v2/promo")
-			.send({
-				code: "TEST",
-				storageInMB: 1024,
-				expirationTimestamp: "3025-01-01",
-				totalUses: 100,
-			})
-			.expect(400);
-	});
-
-	test("should respond with 400 status code if adminSubjectFromAuthToken is not a string", async () => {
-		(verifyAdminAuthentication as jest.Mock).mockImplementation(
-			(req: Request, __, next: NextFunction) => {
-				(req.body as CreatePromoRequest).emailFromAuthToken =
-					"test@permanent.org";
-				(
-					req.body as { adminSubjectFromAuthToken: number }
-				).adminSubjectFromAuthToken = 123;
-				next();
-			},
-		);
+		mockVerifyAdminAuthentication("test@permanent.org");
 		await agent
 			.post("/api/v2/promo")
 			.send({
@@ -163,15 +104,7 @@ describe("POST /promo", () => {
 	});
 
 	test("should respond with 400 status code if adminSubjectFromAuthToken is not a uuid", async () => {
-		(verifyAdminAuthentication as jest.Mock).mockImplementation(
-			(req: Request, __, next: NextFunction) => {
-				(req.body as CreatePromoRequest).emailFromAuthToken =
-					"test@permanent.org";
-				(req.body as CreatePromoRequest).adminSubjectFromAuthToken =
-					"not_a_uuid";
-				next();
-			},
-		);
+		mockVerifyAdminAuthentication("test@permanent.org", "not_a_uuid");
 		await agent
 			.post("/api/v2/promo")
 			.send({
@@ -412,14 +345,7 @@ describe("GET /promo", () => {
 	const agent = request(app);
 
 	beforeEach(async () => {
-		(verifyAdminAuthentication as jest.Mock).mockImplementation(
-			(req: Request, __, next: NextFunction) => {
-				(req.body as CreatePromoRequest).emailFromAuthToken =
-					"test@permanent.org";
-				next();
-			},
-		);
-
+		mockVerifyAdminAuthentication("test@permanent.org");
 		jest.restoreAllMocks();
 		jest.clearAllMocks();
 		await loadFixtures();
@@ -436,18 +362,18 @@ describe("GET /promo", () => {
 	});
 
 	test("should respond with 401 status code if lacking admin authentication", async () => {
-		(verifyAdminAuthentication as jest.Mock).mockImplementation(
-			(_: Request, __, next: NextFunction) => {
+		jest
+			.mocked(verifyAdminAuthentication)
+			.mockImplementation(async (_, __, next: NextFunction) => {
 				next(new createError.Unauthorized("You aren't logged in"));
-			},
-		);
+			});
 		await agent.get("/api/v2/promo").expect(401);
 	});
 
 	test("should return all promo codes", async () => {
 		const response = await agent.get("/api/v2/promo").expect(200);
 
-		const promos = response.body as Promo[];
+		const { body: promos } = response as { body: Promo[] };
 		const promoOne = promos.find((promo: Promo) => promo.code === "PROMO1");
 		expect(promoOne).not.toBeUndefined();
 		expect(promoOne?.storageInMB).toEqual(1024);

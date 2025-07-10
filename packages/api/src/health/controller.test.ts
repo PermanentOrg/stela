@@ -9,9 +9,12 @@ describe("/health", () => {
 
 	test("should be available when DB connection works", async () => {
 		const result = await agent.get("/api/v2/health").expect(200);
-		expect(
-			(result.body as { status: "available" | "unavailable" }).status,
-		).toBe("available");
+		const {
+			body: { status },
+		} = result as {
+			body: { status: "available" | "unavailable" };
+		};
+		expect(status).toBe("available");
 	});
 
 	test("should be unavailable when DB connection fails", async () => {
@@ -20,8 +23,11 @@ describe("/health", () => {
 		});
 
 		const result = await agent.get("/api/v2/health").expect(200);
-		expect(
-			(result.body as { status: "available" | "unavailable" }).status,
-		).toBe("unavailable");
+		const {
+			body: { status },
+		} = result as {
+			body: { status: "available" | "unavailable" };
+		};
+		expect(status).toBe("unavailable");
 	});
 });

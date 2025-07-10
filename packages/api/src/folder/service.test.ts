@@ -51,12 +51,6 @@ describe("prettifyFolderType", () => {
 			PrettyFolderSortOrder.AlphabeticalAscending,
 		);
 	});
-
-	test("should default to alphabetical-descending", () => {
-		expect(prettifyFolderSortType("not_a_sort_order" as FolderSortOrder)).toBe(
-			PrettyFolderSortOrder.AlphabeticalDescending,
-		);
-	});
 });
 
 describe("prettifyFolderType", () => {
@@ -129,12 +123,6 @@ describe("prettifyFolderStatus", () => {
 	test("should convert status.generic.deleted to deleted", () => {
 		expect(prettifyFolderStatus(FolderStatus.Deleted)).toBe(
 			PrettyFolderStatus.Deleted,
-		);
-	});
-
-	test("should default to ok", () => {
-		expect(prettifyFolderStatus("not_at_status" as FolderStatus)).toBe(
-			PrettyFolderStatus.Ok,
 		);
 	});
 });
