@@ -1,11 +1,9 @@
 import request from "supertest";
-import type { Request, NextFunction } from "express";
 import { logger } from "@stela/logger";
 import { app } from "../../app";
-import { verifyUserAuthentication } from "../../middleware";
 import { db } from "../../database";
 import { GB } from "../../constants";
-import type { AccountStorage } from "../models";
+import { mockVerifyUserAuthentication } from "../../../test/middleware_mocks";
 
 jest.mock("../../database");
 jest.mock("../../middleware");
@@ -27,15 +25,9 @@ const clearDatabase = async (): Promise<void> => {
 describe("getPayerAccountStorage", () => {
 	const agent = request(app);
 	beforeEach(async () => {
-		(verifyUserAuthentication as jest.Mock).mockImplementation(
-			(req: Request, _: Response, next: NextFunction) => {
-				(req.body as { emailFromAuthToken: string }).emailFromAuthToken =
-					"test+1@permanent.org";
-				(
-					req.body as { userSubjectFromAuthToken: string }
-				).userSubjectFromAuthToken = "82bd483e-914b-4bfe-abf9-92ffe86d7803";
-				next();
-			},
+		mockVerifyUserAuthentication(
+			"test+1@permanent.org",
+			"82bd483e-914b-4bfe-abf9-92ffe86d7803",
 		);
 		await clearDatabase();
 		await loadFixtures();
@@ -49,21 +41,24 @@ describe("getPayerAccountStorage", () => {
 		const response = await agent
 			.get("/api/v2/archive/1/payer-account-storage")
 			.expect(200);
-		const payerAccountStorage = response.body as AccountStorage;
-		expect(payerAccountStorage.accountId).toEqual("2");
-		expect(+payerAccountStorage.spaceLeft).toEqual(2 * GB);
+		expect(response.body).toEqual({
+			accountId: "2",
+			accountSpaceId: expect.any(String) as unknown,
+			spaceLeft: (2 * GB).toString(),
+			spaceTotal: (2 * GB).toString(),
+			filesLeft: "100000",
+			filesTotal: "100000",
+			status: "status.generic.ok",
+			type: "type.generic.placeholder",
+			createdDt: expect.any(String) as unknown,
+			updatedDt: expect.any(String) as unknown,
+		});
 	});
 
 	test("should throw a not found error if account can't access the archive", async () => {
-		(verifyUserAuthentication as jest.Mock).mockImplementation(
-			(req: Request, _: Response, next: NextFunction) => {
-				(req.body as { emailFromAuthToken: string }).emailFromAuthToken =
-					"test+2@permanent.org";
-				(
-					req.body as { userSubjectFromAuthToken: string }
-				).userSubjectFromAuthToken = "82bd483e-914b-4bfe-abf9-92ffe86d7803";
-				next();
-			},
+		mockVerifyUserAuthentication(
+			"test+2@permanent.org",
+			"82bd483e-914b-4bfe-abf9-92ffe86d7803",
 		);
 		await agent.get("/api/v2/archive/1/payer-account-storage").expect(404);
 	});
@@ -73,13 +68,7 @@ describe("getPayerAccountStorage", () => {
 	});
 
 	test("should throw a bad request error if the request is invalid", async () => {
-		(verifyUserAuthentication as jest.Mock).mockImplementation(
-			(req: Request, _: Response, next: NextFunction) => {
-				(req.body as { emailFromAuthToken: string }).emailFromAuthToken =
-					"test+1@permanent.org";
-				next();
-			},
-		);
+		mockVerifyUserAuthentication("test+1@permanent.org");
 		await agent.get("/api/v2/archive/1/payer-account-storage").expect(400);
 	});
 

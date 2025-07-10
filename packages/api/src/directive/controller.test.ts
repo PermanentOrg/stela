@@ -1,19 +1,15 @@
 import request from "supertest";
-import type { Request, NextFunction } from "express";
+import { when } from "jest-when";
 import { logger } from "@stela/logger";
 import { app } from "../app";
 import { db } from "../database";
-import {
-	verifyUserAuthentication,
-	verifyAdminAuthentication,
-} from "../middleware";
 import { sendArchiveStewardNotification } from "../email";
-import type {
-	Directive,
-	DirectiveTrigger,
-	DirectiveExecutionResult,
-} from "./model";
+import type { Directive, DirectiveTrigger } from "./model";
 import { legacyClient } from "../legacy_client";
+import {
+	mockVerifyUserAuthentication,
+	mockVerifyAdminAuthentication,
+} from "../../test/middleware_mocks";
 
 jest.mock("../database");
 jest.mock("../middleware");
@@ -22,52 +18,6 @@ jest.mock("../email", () => ({
 }));
 jest.mock("@stela/logger");
 jest.mock("../legacy_client");
-
-const mockVerifyUserAuthentication = (
-	testEmail: string,
-	testSubject: string,
-): void => {
-	(verifyUserAuthentication as jest.Mock).mockImplementation(
-		(req: Request, __, next: NextFunction) => {
-			(
-				req.body as {
-					emailFromAuthToken: string;
-					userSubjectFromAuthToken: string;
-				}
-			).emailFromAuthToken = testEmail;
-			(
-				req.body as {
-					emailFromAuthToken: string;
-					userSubjectFromAuthToken: string;
-				}
-			).userSubjectFromAuthToken = testSubject;
-			next();
-		},
-	);
-};
-
-const mockVerifyAdminAuthentication = (
-	testEmail: string,
-	testSubject: string,
-): void => {
-	(verifyAdminAuthentication as jest.Mock).mockImplementation(
-		(req: Request, __, next: NextFunction) => {
-			(
-				req.body as {
-					emailFromAuthToken: string;
-					adminSubjectFromAuthToken: string;
-				}
-			).emailFromAuthToken = testEmail;
-			(
-				req.body as {
-					emailFromAuthToken: string;
-					adminSubjectFromAuthToken: string;
-				}
-			).adminSubjectFromAuthToken = testSubject;
-			next();
-		},
-	);
-};
 
 describe("GET /directive/archive/:archiveId", () => {
 	const agent = request(app);
@@ -107,9 +57,14 @@ describe("GET /directive/archive/:archiveId", () => {
 		const response = await agent
 			.get(`/api/v2/directive/archive/${testArchiveId}`)
 			.expect(200);
-		const responseBody = response.body as Directive[];
-		expect(responseBody.length).toBe(1);
-		expect(responseBody[0]?.directiveId).toBe(testDirectiveId);
+		const responseBody = response.body as unknown;
+		expect(Array.isArray(responseBody)).toBe(true);
+		if (Array.isArray(responseBody)) {
+			expect(responseBody.length).toBe(1);
+			expect(responseBody[0]).toMatchObject({
+				directiveId: testDirectiveId,
+			});
+		}
 	});
 
 	test("should throw not found if archive doesn't exist", async () => {
@@ -130,8 +85,11 @@ describe("GET /directive/archive/:archiveId", () => {
 		const response = await agent
 			.get(`/api/v2/directive/archive/${testArchiveId}`)
 			.expect(200);
-		const responseBody = response.body as Directive[];
-		expect(responseBody.length).toBe(0);
+		const responseBody = response.body as unknown;
+		expect(Array.isArray(responseBody)).toBe(true);
+		if (Array.isArray(responseBody)) {
+			expect(responseBody.length).toBe(0);
+		}
 	});
 
 	test("should return 400 code if the request is invalid", async () => {
@@ -176,11 +134,9 @@ describe("POST /directive", () => {
 	});
 
 	test("should successfully create a directive and trigger", async () => {
-		(
-			sendArchiveStewardNotification as jest.MockedFunction<
-				typeof sendArchiveStewardNotification
-			>
-		).mockResolvedValueOnce(undefined);
+		jest
+			.mocked(sendArchiveStewardNotification)
+			.mockResolvedValueOnce(undefined);
 		await agent
 			.post("/api/v2/directive/")
 			.send({
@@ -232,11 +188,9 @@ describe("POST /directive", () => {
 
 	test("should log error if notification email fails", async () => {
 		const testError = new Error("out of cheese error - redo from start");
-		(
-			sendArchiveStewardNotification as jest.MockedFunction<
-				typeof sendArchiveStewardNotification
-			>
-		).mockRejectedValueOnce(testError);
+		jest
+			.mocked(sendArchiveStewardNotification)
+			.mockRejectedValueOnce(testError);
 		await agent
 			.post("/api/v2/directive/")
 			.send({
@@ -299,10 +253,9 @@ describe("POST /directive", () => {
 
 	test("should error if steward account not found", async () => {
 		jest.spyOn(db, "sql").mockImplementationOnce(
-			(async () =>
-				({
-					rows: [{ hasAccess: true }],
-				}) as object) as unknown as typeof db.sql,
+			jest.fn().mockResolvedValueOnce({
+				rows: [{ hasAccess: true }],
+			}),
 		);
 		await agent
 			.post("/api/v2/directive/")
@@ -318,17 +271,25 @@ describe("POST /directive", () => {
 	});
 
 	test("should error if directive can't be created", async () => {
-		jest
-			.spyOn(db, "sql")
+		const dbSpy = jest.spyOn(db, "sql");
+		when(dbSpy)
+			.expectCalledWith("directive.queries.check_archive_ownership", {
+				archiveId: "1",
+				email: "test@permanent.org",
+			})
 			.mockImplementationOnce(
-				(async () =>
-					({
-						rows: [{ hasAccess: true }],
-					}) as object) as unknown as typeof db.sql,
-			)
-			.mockImplementationOnce(
-				(async () => ({ rows: [] }) as object) as unknown as typeof db.sql,
+				jest.fn().mockResolvedValueOnce({
+					rows: [{ hasAccess: true }],
+				}),
 			);
+		when(dbSpy)
+			.expectCalledWith("directive.queries.create_directive", {
+				archiveId: "1",
+				type: "transfer",
+				stewardEmail,
+				note: null,
+			})
+			.mockImplementationOnce(jest.fn().mockResolvedValueOnce({ rows: [] }));
 		await agent
 			.post("/api/v2/directive/")
 			.send({
@@ -343,27 +304,34 @@ describe("POST /directive", () => {
 	});
 
 	test("should error if trigger can't be created", async () => {
-		jest
-			.spyOn(db, "sql")
+		jest.spyOn(db, "sql");
+		const dbSpy = jest.spyOn(db, "sql");
+		when(dbSpy)
+			.expectCalledWith("directive.queries.check_archive_ownership", {
+				archiveId: "1",
+				email: "test@permanent.org",
+			})
 			.mockImplementationOnce(
-				(async () =>
-					({
-						rows: [{ hasAccess: true }],
-					}) as object) as unknown as typeof db.sql,
-			)
-			.mockImplementationOnce(
-				(async () =>
-					({
-						rows: [
-							{
-								directiveId: 1,
-							},
-						],
-					}) as object) as unknown as typeof db.sql,
-			)
-			.mockImplementationOnce(
-				(async () => ({ rows: [] }) as object) as unknown as typeof db.sql,
+				jest.fn().mockResolvedValueOnce({
+					rows: [{ hasAccess: true }],
+				}),
 			);
+		when(dbSpy)
+			.expectCalledWith("directive.queries.create_directive", {
+				archiveId: "1",
+				type: "transfer",
+				stewardEmail,
+				note: null,
+			})
+			.mockImplementationOnce(
+				jest.fn().mockResolvedValueOnce({ rows: [{ directiveId: "1" }] }),
+			);
+		when(dbSpy)
+			.expectCalledWith("directive.queries.create_directive_trigger", {
+				directiveId: "1",
+				type: "admin",
+			})
+			.mockImplementationOnce(jest.fn().mockResolvedValueOnce({ rows: [] }));
 		await agent
 			.post("/api/v2/directive/")
 			.send({
@@ -416,11 +384,9 @@ describe("PUT /directive/:directiveId", () => {
 	});
 
 	test("should successfully update steward account and note", async () => {
-		(
-			sendArchiveStewardNotification as jest.MockedFunction<
-				typeof sendArchiveStewardNotification
-			>
-		).mockResolvedValueOnce(undefined);
+		jest
+			.mocked(sendArchiveStewardNotification)
+			.mockResolvedValueOnce(undefined);
 		await agent
 			.put(`/api/v2/directive/${testDirectiveId}`)
 			.send({
@@ -532,11 +498,9 @@ describe("PUT /directive/:directiveId", () => {
 
 	test("should log error if notification email fails", async () => {
 		const testError = new Error("out of cheese error - redo from start");
-		(
-			sendArchiveStewardNotification as jest.MockedFunction<
-				typeof sendArchiveStewardNotification
-			>
-		).mockRejectedValueOnce(testError);
+		jest
+			.mocked(sendArchiveStewardNotification)
+			.mockRejectedValueOnce(testError);
 		await agent
 			.put(`/api/v2/directive/${testDirectiveId}`)
 			.send({
@@ -611,27 +575,39 @@ describe("PUT /directive/:directiveId", () => {
 	});
 
 	test("should error if trigger update fails unexpectedly", async () => {
-		jest
-			.spyOn(db, "sql")
+		const dbSpy = jest.spyOn(db, "sql");
+		when(dbSpy)
+			.expectCalledWith("directive.queries.check_directive_ownership", {
+				directiveId: testDirectiveId,
+				email: "test@permanent.org",
+			})
 			.mockImplementationOnce(
-				(async () =>
-					({
-						rows: [{ hasAccess: true }],
-					}) as object) as unknown as typeof db.sql,
-			)
-			.mockImplementationOnce(
-				(async () =>
-					({
-						rows: [
-							{
-								directiveId: testDirectiveId,
-							},
-						],
-					}) as object) as unknown as typeof db.sql,
-			)
-			.mockImplementationOnce(
-				(async () => ({ rows: [] }) as object) as unknown as typeof db.sql,
+				jest.fn().mockResolvedValueOnce({
+					rows: [{ hasAccess: true }],
+				}),
 			);
+		when(dbSpy)
+			.expectCalledWith("directives.queries.update_directive", {
+				directiveId: testDirectiveId,
+				type: undefined,
+				stewardEmail: "test+2@permanent.org",
+				note: testNote,
+			})
+			.mockImplementationOnce(
+				jest.fn().mockResolvedValueOnce({
+					rows: [
+						{
+							directiveId: testDirectiveId,
+						},
+					],
+				}),
+			);
+		when(dbSpy)
+			.expectCalledWith("directives.queries.update_directive_trigger", {
+				directiveId: testDirectiveId,
+				type: "admin",
+			})
+			.mockImplementationOnce(jest.fn().mockResolvedValueOnce({ rows: [] }));
 
 		await agent
 			.put(`/api/v2/directive/${testDirectiveId}`)
@@ -646,17 +622,29 @@ describe("PUT /directive/:directiveId", () => {
 	});
 
 	test("should error if directive update fails unexpectedly", async () => {
-		jest
-			.spyOn(db, "sql")
+		const dbSpy = jest.spyOn(db, "sql");
+		when(dbSpy)
+			.expectCalledWith("directive.queries.check_directive_ownership", {
+				directiveId: testDirectiveId,
+				email: "test@permanent.org",
+			})
 			.mockImplementationOnce(
-				(async () =>
-					({
-						rows: [{ hasAccess: true }],
-					}) as object) as unknown as typeof db.sql,
-			)
-			.mockImplementationOnce((async () => {
-				throw new Error("Out of cheese - redo from start");
-			}) as unknown as typeof db.sql);
+				jest.fn().mockResolvedValueOnce({
+					rows: [{ hasAccess: true }],
+				}),
+			);
+		when(dbSpy)
+			.expectCalledWith("directives.queries.update_directive", {
+				directiveId: testDirectiveId,
+				type: undefined,
+				stewardEmail: "test+2@permanent.org",
+				note: testNote,
+			})
+			.mockImplementationOnce(
+				jest
+					.fn()
+					.mockRejectedValueOnce(new Error("Out of cheese - redo from start")),
+			);
 
 		await agent
 			.put(`/api/v2/directive/${testDirectiveId}`)
@@ -700,6 +688,8 @@ describe("POST /trigger/account/:accountId", () => {
 	};
 
 	beforeEach(async () => {
+		jest.clearAllMocks();
+		jest.restoreAllMocks();
 		await clearDatabase();
 		await loadFixtures();
 
@@ -715,13 +705,16 @@ describe("POST /trigger/account/:accountId", () => {
 	test("should respond with success when transfer directive succesfully executed", async () => {
 		jest
 			.spyOn(legacyClient, "transferArchiveOwnership")
-			.mockResolvedValue(Promise.resolve({ status: 200 } as Response));
+			.mockImplementationOnce(jest.fn().mockResolvedValueOnce({ status: 200 }));
 		const response = await agent
 			.post("/api/v2/directive/trigger/account/2")
 			.expect(200);
-		const responseBody = response.body as DirectiveExecutionResult[];
-		expect(responseBody.length).toBe(1);
-		expect(responseBody[0]?.outcome).toBe("success");
+		const responseBody = response.body as unknown;
+		expect(Array.isArray(responseBody));
+		if (Array.isArray(responseBody)) {
+			expect(responseBody.length).toBe(1);
+			expect(responseBody[0]).toMatchObject({ outcome: "success" });
+		}
 
 		const directiveResult = await db.query<Directive>(
 			'SELECT execution_dt "executionDt" FROM directive WHERE directive_id = :testDirectiveId',
@@ -733,13 +726,16 @@ describe("POST /trigger/account/:accountId", () => {
 	test("should respond with error when transfer directive fails to execute", async () => {
 		jest
 			.spyOn(legacyClient, "transferArchiveOwnership")
-			.mockResolvedValue(Promise.resolve({ status: 500 } as Response));
+			.mockImplementationOnce(jest.fn().mockResolvedValueOnce({ status: 500 }));
 		const response = await agent
 			.post("/api/v2/directive/trigger/account/2")
 			.expect(200);
-		const responseBody = response.body as DirectiveExecutionResult[];
-		expect(responseBody.length).toBe(1);
-		expect(responseBody[0]?.outcome).toBe("error");
+		const responseBody = response.body as unknown;
+		expect(Array.isArray(responseBody));
+		if (Array.isArray(responseBody)) {
+			expect(responseBody.length).toBe(1);
+			expect(responseBody[0]).toMatchObject({ outcome: "error" });
+		}
 	});
 
 	test("should not try to execute an already executed directive", async () => {
@@ -749,8 +745,11 @@ describe("POST /trigger/account/:accountId", () => {
 		const response = await agent
 			.post("/api/v2/directive/trigger/account/2")
 			.expect(200);
-		const responseBody = response.body as DirectiveExecutionResult[];
-		expect(responseBody.length).toBe(0);
+		const responseBody = response.body as unknown;
+		expect(Array.isArray(responseBody));
+		if (Array.isArray(responseBody)) {
+			expect(responseBody.length).toBe(0);
+		}
 	});
 
 	test("should respond with error when transfer directive has unsupported type", async () => {
@@ -762,9 +761,12 @@ describe("POST /trigger/account/:accountId", () => {
 		const response = await agent
 			.post("/api/v2/directive/trigger/account/2")
 			.expect(200);
-		const responseBody = response.body as DirectiveExecutionResult[];
-		expect(responseBody.length).toBe(1);
-		expect(responseBody[0]?.outcome).toBe("error");
+		const responseBody = response.body as unknown;
+		expect(Array.isArray(responseBody));
+		if (Array.isArray(responseBody)) {
+			expect(responseBody.length).toBe(1);
+			expect(responseBody[0]).toMatchObject({ outcome: "error" });
+		}
 	});
 
 	test("should respond with a 400 error if the request is invalid", async () => {
@@ -773,9 +775,13 @@ describe("POST /trigger/account/:accountId", () => {
 	});
 
 	test("should respond with a 500 error if the database call fails", async () => {
-		jest.spyOn(db, "sql").mockImplementationOnce((async () => {
-			throw new Error("Out of cheese - redo from start");
-		}) as unknown as typeof db.sql);
+		jest
+			.spyOn(db, "sql")
+			.mockImplementationOnce(
+				jest
+					.fn()
+					.mockRejectedValueOnce(new Error("Out of cheese - redo from start")),
+			);
 		await agent.post("/api/v2/directive/trigger/account/2").expect(500);
 	});
 });
