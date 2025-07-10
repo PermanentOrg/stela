@@ -14,8 +14,8 @@ jest.mock("../email");
 jest.mock("@stela/logger");
 
 interface AccountSpace {
-	spaceLeft: number;
-	spaceTotal: number;
+	spaceLeft: string;
+	spaceTotal: string;
 }
 
 const senderAccountId = "2";
@@ -297,7 +297,7 @@ describe("/billing/gift", () => {
 			expect(false).toBe(true);
 		} else {
 			expect(+updatedAccountSpace.spaceLeft).toBe(
-				initialAccountSpace.spaceLeft - GB,
+				+initialAccountSpace.spaceLeft - GB,
 			);
 		}
 		if (
@@ -307,7 +307,7 @@ describe("/billing/gift", () => {
 			expect(false).toBe(true);
 		} else {
 			expect(+updatedAccountSpace.spaceTotal).toBe(
-				initialAccountSpace.spaceTotal - GB,
+				+initialAccountSpace.spaceTotal - GB,
 			);
 		}
 	});
@@ -465,8 +465,8 @@ describe("/billing/gift", () => {
 			.expect(200);
 
 		await checkLedgerEntries(senderAccountId, "0", 1, initialSenderSpace, {
-			spaceLeft: 0,
-			spaceTotal: 0,
+			spaceLeft: "0",
+			spaceTotal: "0",
 		});
 	});
 

@@ -33,3 +33,21 @@ export interface ShareLink {
 	createdAt: Date;
 	updatedAt: Date;
 }
+
+export interface ShareLinkRow {
+	id: string;
+	itemId: string;
+	itemType: "folder" | "record";
+	token: string;
+	permissionsLevel: "contributor" | "editor" | "manager" | "owner" | "viewer";
+	accessRestrictions: "account" | "approval" | "none";
+	maxUses: string | null;
+	usesExpended: string | null;
+	expirationTimestamp?: Date;
+	creatorAccount: {
+		id: string;
+		name: string;
+	};
+	createdAt: Date;
+	updatedAt: Date;
+}
