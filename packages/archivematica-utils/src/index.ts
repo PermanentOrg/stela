@@ -34,7 +34,7 @@ export const triggerArchivematicaProcessing = async (
 	archivematicaOriginalLocationId: string,
 ): Promise<Response> => {
 	validateCloudPath(fileCloudPath);
-	return fetch(`${archivematicaHostUrl}/api/v2beta/package`, {
+	return await fetch(`${archivematicaHostUrl}/api/v2beta/package`, {
 		method: "POST",
 		headers: {
 			"Content-Type": "application/json",

@@ -22,5 +22,5 @@ export const getSharedFolders = async (
 
 	const folderIds = result.rows.map((row) => row.folderId);
 
-	return getFolders(folderIds, email);
+	return await getFolders(folderIds, email);
 };

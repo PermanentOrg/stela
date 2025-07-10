@@ -37,9 +37,9 @@ const getFeatureFlags = async (
 	admin: boolean,
 ): Promise<FeatureFlagNameRow[] | FeatureFlagRow[]> => {
 	if (admin) {
-		return getAllFeatureFlags();
+		return await getAllFeatureFlags();
 	}
-	return getGlobalFeatureFlagNames();
+	return await getGlobalFeatureFlagNames();
 };
 
 export const featureService = {
