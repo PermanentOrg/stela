@@ -115,7 +115,7 @@ export const getFolders = async (
 			email,
 			shareToken,
 		})
-		.catch((err) => {
+		.catch((err: unknown) => {
 			logger.error(err);
 			throw new createError.InternalServerError("Failed to retrieve folders");
 		});
@@ -152,7 +152,7 @@ export const getFolderChildren = async (
 				shareToken,
 			},
 		)
-		.catch((err) => {
+		.catch((err: unknown) => {
 			logger.error(err);
 			throw new createError.InternalServerError(
 				"Failed to retrieve folder children",
@@ -248,7 +248,7 @@ export const patchFolder = async (
 
 	const result = await db
 		.query<{ folderId: string }>(query, columnsForUpdate)
-		.catch((err) => {
+		.catch((err: unknown) => {
 			logger.error(err);
 			throw new createError.InternalServerError("Failed to update folder");
 		});
@@ -268,7 +268,7 @@ export const getFolderShareLinks = async (
 			email,
 			folderId,
 		})
-		.catch((err) => {
+		.catch((err: unknown) => {
 			logger.error(err);
 			throw new createError.InternalServerError(
 				"Failed to get folder share links",

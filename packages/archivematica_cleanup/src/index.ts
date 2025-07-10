@@ -8,7 +8,7 @@ cleanupDashboard()
 	.then(() => {
 		process.exit(0);
 	})
-	.catch((error) => {
+	.catch((error: unknown) => {
 		logger.error(error);
 		Sentry.captureException(error);
 		process.exit(1);

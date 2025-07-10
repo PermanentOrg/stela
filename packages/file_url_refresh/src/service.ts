@@ -20,7 +20,7 @@ interface FileData {
 export const refreshFileUrls = async (): Promise<void> => {
 	const filesToRefreshUrls = await db
 		.sql<FileData>("queries.get_files_where_urls_expire_soon")
-		.catch((err) => {
+		.catch((err: unknown) => {
 			logger.error(err);
 			throw err;
 		});
@@ -40,7 +40,7 @@ export const refreshFileUrls = async (): Promise<void> => {
 					downloadUrl: newDownloadUrl,
 					fileId: file.id,
 				});
-			} catch (err) {
+			} catch (err: unknown) {
 				logger.error(err);
 			}
 		}),

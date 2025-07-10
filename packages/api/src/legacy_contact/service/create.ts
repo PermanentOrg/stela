@@ -13,7 +13,7 @@ export const createLegacyContact = async (
 			name: requestBody.name,
 			email: requestBody.email,
 		})
-		.catch((err) => {
+		.catch((err: unknown) => {
 			logger.error(err);
 			throw new createError.InternalServerError(
 				"Failed to create legacy contact",

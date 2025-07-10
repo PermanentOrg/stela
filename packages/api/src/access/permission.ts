@@ -46,7 +46,7 @@ export const getItemAccessRole = async (
 			archiveAccessRole: AccessRole;
 			shareAccessRole: AccessRole;
 		}>(query, { itemId, email: callerEmail })
-		.catch((err) => {
+		.catch((err: unknown) => {
 			logger.error(err);
 			throw createError.InternalServerError("Failed to access database");
 		});
@@ -96,7 +96,7 @@ export const isItemPublic = async (
 			: "access.queries.is_folder_public";
 	const result = await db
 		.sql<{ isPublic: boolean }>(query, { itemId })
-		.catch((err) => {
+		.catch((err: unknown) => {
 			logger.error(err);
 			throw createError.InternalServerError("Failed to access database");
 		});

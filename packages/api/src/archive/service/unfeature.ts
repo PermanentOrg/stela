@@ -7,7 +7,7 @@ export const unfeature = async (archiveId: string): Promise<void> => {
 		.sql("archive.queries.unfeature_archive", {
 			archiveId,
 		})
-		.catch((err) => {
+		.catch((err: unknown) => {
 			logger.error(err);
 			throw new createError.InternalServerError(
 				"failed to remove archive from featured archive",

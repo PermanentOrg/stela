@@ -49,7 +49,7 @@ const getSignupDetails = async (
 		.sql<SignupDetails>("account.queries.get_signup", {
 			email: accountEmail,
 		})
-		.catch((err) => {
+		.catch((err: unknown) => {
 			logger.error(err);
 			throw new createError.InternalServerError(
 				"Failed to retrieve signup details",
@@ -137,7 +137,7 @@ const getAccountArchive = async (
 			archiveId,
 			email,
 		})
-		.catch((err) => {
+		.catch((err: unknown) => {
 			logger.error(err);
 			throw new createError.InternalServerError(
 				"Failed to retrieve account archive",
@@ -154,7 +154,7 @@ const getCurrentAccountArchiveMemberships = async (
 			"account.queries.get_current_account_archive_memberships",
 			{ email },
 		)
-		.catch((err) => {
+		.catch((err: unknown) => {
 			logger.error(err);
 			throw new createError.InternalServerError(
 				"Failed to retrieve current account archive memberships",

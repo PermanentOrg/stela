@@ -7,7 +7,7 @@ export const makeFeatured = async (archiveId: string): Promise<void> => {
 		.sql("archive.queries.make_featured_archive", {
 			archiveId,
 		})
-		.catch((err) => {
+		.catch((err: unknown) => {
 			logger.error(err);
 			throw new createError.InternalServerError(
 				"failed to make archive featured",
