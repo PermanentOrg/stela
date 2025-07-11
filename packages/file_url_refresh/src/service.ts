@@ -7,7 +7,7 @@ import { db } from "./database";
 
 interface FileData {
 	id: string;
-	cloudPath: string;
+	cloudPath: string | null;
 	uploadName: string;
 	type: FileType;
 	format:
@@ -28,12 +28,15 @@ export const refreshFileUrls = async (): Promise<void> => {
 		filesToRefreshUrls.rows.map(async (file) => {
 			const newAccessUrl =
 				file.cloudPath !== null ? constructSignedCdnUrl(file.cloudPath) : null;
-			const newDownloadUrl = constructSignedCdnUrl(
-				file.cloudPath,
-				file.format === "file.format.original"
-					? file.uploadName
-					: `${parse(file.uploadName).name}.${getFileExtensionByFileType(file.type)}`,
-			);
+			const newDownloadUrl =
+				file.cloudPath !== null
+					? constructSignedCdnUrl(
+							file.cloudPath,
+							file.format === "file.format.original"
+								? file.uploadName
+								: `${parse(file.uploadName).name}.${getFileExtensionByFileType(file.type)}`,
+						)
+					: null;
 			try {
 				await db.sql("queries.update_file_url", {
 					url: newAccessUrl,

@@ -98,9 +98,15 @@ export const validateUpdateShareLinkRequest: (
 
 export const validateGetShareLinksParameters: (
 	data: unknown,
-) => asserts data is { shareTokens: string[]; shareLinkIds: string[] } = (
+) => asserts data is {
+	shareTokens: string[] | undefined;
+	shareLinkIds: string[] | undefined;
+} = (
 	data: unknown,
-): asserts data is { shareTokens: string[]; shareLinkIds: string[] } => {
+): asserts data is {
+	shareTokens: string[] | undefined;
+	shareLinkIds: string[] | undefined;
+} => {
 	const validation = Joi.object()
 		.keys({
 			shareTokens: Joi.array().items(Joi.string()).optional(),

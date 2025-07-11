@@ -37,7 +37,7 @@ const updateTags = async (requestBody: UpdateTagsRequest): Promise<void> => {
 		{ tags },
 	);
 
-	if (response !== undefined && response !== null) {
+	if (response !== null) {
 		throw createError(response.status, response.detail);
 	}
 };

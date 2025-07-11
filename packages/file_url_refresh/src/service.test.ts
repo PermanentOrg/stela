@@ -80,7 +80,7 @@ describe("refreshThumbnails", () => {
 		jest
 			.mocked(constructSignedCdnUrl)
 			.mockImplementation((_: string, fileName?: string) => {
-				if (fileName === null) {
+				if (fileName === undefined) {
 					return testDownloadUrl;
 				}
 				return testFileUrl;

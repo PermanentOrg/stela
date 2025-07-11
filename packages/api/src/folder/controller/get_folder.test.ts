@@ -216,7 +216,7 @@ describe("GET /folder", () => {
 			expect(folders[0].shares).toBeDefined();
 			if (folders[0].shares !== undefined) {
 				expect(folders[0].shares.length).toEqual(1);
-				if (folders[0]?.shares[0] !== undefined) {
+				if (folders[0].shares[0] !== undefined) {
 					expect(folders[0].shares[0].id).toEqual("1");
 					expect(folders[0].shares[0].accessRole).toEqual(
 						"access.role.curator",
