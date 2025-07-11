@@ -124,15 +124,15 @@ export const issueGift = async (
 
 	await Promise.all(
 		emailsToInvite.map(async (email, idx) => {
-			await sendInvitationNotification(
-				requestBody.emailFromAuthToken,
-				email,
-				requestBody.note,
-				requestBody.storageAmount,
+			await sendInvitationNotification({
+				fromEmail: requestBody.emailFromAuthToken,
+				toEmail: email,
+				message: requestBody.note,
+				giftAmount: requestBody.storageAmount,
 				// inviteTokens should always be the same length as emailsToInvite, so this will always be defined, but
 				// TypeScript doesn't know that
-				inviteTokens[idx] ?? "",
-			);
+				token: inviteTokens[idx] ?? "",
+			});
 		}),
 	);
 

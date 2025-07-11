@@ -191,9 +191,11 @@ describe("handler", () => {
 		expect(triggerArchivematicaProcessing).toHaveBeenCalledWith(
 			"1",
 			"originals/1/1",
-			"https://example.com",
-			"test-api-key",
-			"a6962a82-5462-4d9c-9ea1-5b9982ed625a",
+			{
+				archivematicaHostUrl: "https://example.com",
+				archivematicaApiKey: "test-api-key",
+				archivematicaOriginalLocationId: "a6962a82-5462-4d9c-9ea1-5b9982ed625a",
+			},
 		);
 	});
 
@@ -290,9 +292,11 @@ describe("handler", () => {
 		expect(triggerArchivematicaProcessing).toHaveBeenCalledWith(
 			"1",
 			"originals/1/1",
-			"https://example.com",
-			"test-api-key",
-			"a6962a82-5462-4d9c-9ea1-5b9982ed625a",
+			{
+				archivematicaHostUrl: "https://example.com",
+				archivematicaApiKey: "test-api-key",
+				archivematicaOriginalLocationId: "a6962a82-5462-4d9c-9ea1-5b9982ed625a",
+			},
 		);
 	});
 	test("should throw error when database query fails", async () => {
@@ -379,9 +383,11 @@ describe("handler", () => {
 		expect(triggerArchivematicaProcessing).toHaveBeenCalledWith(
 			"1",
 			"originals/1/1",
-			"https://example.com",
-			"test-api-key",
-			"a6962a82-5462-4d9c-9ea1-5b9982ed625a",
+			{
+				archivematicaHostUrl: "https://example.com",
+				archivematicaApiKey: "test-api-key",
+				archivematicaOriginalLocationId: "a6962a82-5462-4d9c-9ea1-5b9982ed625a",
+			},
 		);
 	});
 
@@ -429,9 +435,11 @@ describe("handler", () => {
 		expect(triggerArchivematicaProcessing).toHaveBeenCalledWith(
 			"1",
 			"originals/1/1",
-			"https://example.com",
-			"test-api-key",
-			"a6962a82-5462-4d9c-9ea1-5b9982ed625a",
+			{
+				archivematicaHostUrl: "https://example.com",
+				archivematicaApiKey: "test-api-key",
+				archivematicaOriginalLocationId: "a6962a82-5462-4d9c-9ea1-5b9982ed625a",
+			},
 		);
 	});
 });

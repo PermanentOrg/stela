@@ -136,8 +136,10 @@ export const getFolders = async (
 
 export const getFolderChildren = async (
 	parentFolderId: string,
-	pageSize: number,
-	cursor?: string,
+	pagination: {
+		pageSize: number;
+		cursor: string | undefined;
+	},
 	email?: string,
 	shareToken?: string,
 ): Promise<GetFolderChildrenResponse> => {
@@ -146,8 +148,8 @@ export const getFolderChildren = async (
 			"folder.queries.get_folder_children",
 			{
 				parentFolderId,
-				pageSize,
-				cursor,
+				pageSize: pagination.pageSize,
+				cursor: pagination.cursor,
 				email,
 				shareToken,
 			},
@@ -198,7 +200,7 @@ export const getFolderChildren = async (
 				nextCursor !== undefined
 					? `https://${
 							process.env["SITE_URL"] ?? ""
-						}/api/v2/folder/${parentFolderId}/children?pageSize=${pageSize}&cursor=${nextCursor}`
+						}/api/v2/folder/${parentFolderId}/children?pageSize=${pagination.pageSize}&cursor=${nextCursor}`
 					: undefined,
 			totalPages: result.rows[0] !== undefined ? result.rows[0].totalPages : 0,
 		},

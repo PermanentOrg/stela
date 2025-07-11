@@ -56,9 +56,11 @@ export const handler: SQSHandler = async (event: SQSEvent, _, __) => {
 				const response = await triggerArchivematicaProcessing(
 					fileResult.rows[0].fileId,
 					fileResult.rows[0].filePath,
-					ARCHIVEMATICA_HOST_URL,
-					ARCHIVEMATICA_API_KEY,
-					ARCHIVEMATICA_ORIGINAL_LOCATION_ID,
+					{
+						archivematicaHostUrl: ARCHIVEMATICA_HOST_URL,
+						archivematicaApiKey: ARCHIVEMATICA_API_KEY,
+						archivematicaOriginalLocationId: ARCHIVEMATICA_ORIGINAL_LOCATION_ID,
+					},
 				);
 				if (!response.ok) {
 					logger.error(response.status);

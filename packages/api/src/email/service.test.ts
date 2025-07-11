@@ -177,16 +177,15 @@ describe("sendEmail", () => {
 			.mocked(MailchimpTransactional.messages.sendTemplate)
 			.mockResolvedValueOnce(mockResponse);
 
-		await sendEmail(
-			"legacy-contact-added",
-			"Jack Rando",
-			[{ email: "contact@permanent.org", name: "John Rando" }],
-			"*|FROM_FULLNAME|* wants you to be their Legacy Contact",
-			[
+		await sendEmail("legacy-contact-added", {
+			fromName: "Jack Rando",
+			toData: [{ email: "contact@permanent.org", name: "John Rando" }],
+			subject: "*|FROM_FULLNAME|* wants you to be their Legacy Contact",
+			mergeVariables: [
 				{ name: "from_fullname", content: "Jack Rando" },
 				{ name: "to_fullname", content: "John Rando" },
 			],
-		);
+		});
 
 		expect(MailchimpTransactional.messages.sendTemplate).toHaveBeenCalledWith({
 			template_name: "legacy-contact-added",
@@ -216,16 +215,15 @@ describe("sendEmail", () => {
 			.mockResolvedValueOnce(mockResponse);
 
 		await expect(
-			sendEmail(
-				"legacy-contact-added",
-				"Jack Rando",
-				[{ email: "contact@permanent.org", name: "John Rando" }],
-				"*|FROM_FULLNAME|* wants you to be their Legacy Contact",
-				[
+			sendEmail("legacy-contact-added", {
+				fromName: "Jack Rando",
+				toData: [{ email: "contact@permanent.org", name: "John Rando" }],
+				subject: "*|FROM_FULLNAME|* wants you to be their Legacy Contact",
+				mergeVariables: [
 					{ name: "from_fullname", content: "Jack Rando" },
 					{ name: "to_fullname", content: "John Rando" },
 				],
-			),
+			}),
 		).rejects.toThrow("no email sent");
 	});
 
@@ -243,16 +241,15 @@ describe("sendEmail", () => {
 			.mockResolvedValueOnce(mockResponse);
 
 		await expect(
-			sendEmail(
-				"legacy-contact-added",
-				"Jack Rando",
-				[{ email: "contact@permanent.org", name: "John Rando" }],
-				"*|FROM_FULLNAME|* wants you to be their Legacy Contact",
-				[
+			sendEmail("legacy-contact-added", {
+				fromName: "Jack Rando",
+				toData: [{ email: "contact@permanent.org", name: "John Rando" }],
+				subject: "*|FROM_FULLNAME|* wants you to be their Legacy Contact",
+				mergeVariables: [
 					{ name: "from_fullname", content: "Jack Rando" },
 					{ name: "to_fullname", content: "John Rando" },
 				],
-			),
+			}),
 		).rejects.toThrow("Email not sent. Status: invalid; Reason: invalid");
 	});
 
@@ -270,16 +267,15 @@ describe("sendEmail", () => {
 			.mockImplementationOnce(jest.fn().mockResolvedValueOnce(mockResponse));
 
 		await expect(
-			sendEmail(
-				"legacy-contact-added",
-				"Jack Rando",
-				[{ email: "contact@permanent.org", name: "John Rando" }],
-				"*|FROM_FULLNAME|* wants you to be their Legacy Contact",
-				[
+			sendEmail("legacy-contact-added", {
+				fromName: "Jack Rando",
+				toData: [{ email: "contact@permanent.org", name: "John Rando" }],
+				subject: "*|FROM_FULLNAME|* wants you to be their Legacy Contact",
+				mergeVariables: [
 					{ name: "from_fullname", content: "Jack Rando" },
 					{ name: "to_fullname", content: "John Rando" },
 				],
-			),
+			}),
 		).rejects.toThrow("Error calling Mailchimp. Status: 500");
 	});
 });
@@ -313,13 +309,13 @@ describe("sendInvitationNotification", () => {
 			.mocked(MailchimpTransactional.messages.sendTemplate)
 			.mockResolvedValueOnce(mockResponse);
 
-		await sendInvitationNotification(
-			senderEmail,
-			recipientEmail,
-			testMessage,
-			1,
-			testToken,
-		);
+		await sendInvitationNotification({
+			fromEmail: senderEmail,
+			toEmail: recipientEmail,
+			message: testMessage,
+			giftAmount: 1,
+			token: testToken,
+		});
 
 		expect(MailchimpTransactional.messages.sendTemplate).toHaveBeenCalledWith({
 			template_name: "invitation-from-relationship",
@@ -354,13 +350,13 @@ describe("sendInvitationNotification", () => {
 		await db.query("TRUNCATE account CASCADE;");
 
 		await expect(
-			sendInvitationNotification(
-				senderEmail,
-				recipientEmail,
-				testMessage,
-				1,
-				testToken,
-			),
+			sendInvitationNotification({
+				fromEmail: senderEmail,
+				toEmail: recipientEmail,
+				message: testMessage,
+				giftAmount: 1,
+				token: testToken,
+			}),
 		).rejects.toThrow(`Account with primary email ${senderEmail} not found`);
 
 		expect(MailchimpTransactional.messages.sendTemplate).not.toHaveBeenCalled();
