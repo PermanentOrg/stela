@@ -26,7 +26,6 @@ export default defineConfig([
 		},
 
 		rules: {
-			"no-unused-vars": "off",
 			"no-use-before-define": "off",
 			"require-await": "off",
 			"import/prefer-default-export": "off",
