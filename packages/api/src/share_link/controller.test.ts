@@ -148,20 +148,23 @@ describe("POST /share-links", () => {
 			.expect(201);
 
 		const shareLink = await retrieveShareLink("1");
-		expect(shareLink?.status).toEqual("status.generic.ok");
-		expect(shareLink?.shareurl).toEqual(
-			`https://${process.env["SITE_URL"] ?? ""}/share/${
-				shareLink?.urltoken ?? ""
-			}`,
-		);
-		expect(shareLink?.maxuses).toEqual("0");
-		expect(shareLink?.uses).toBeNull();
-		expect(shareLink?.unrestricted).toEqual(true);
-		expect(shareLink?.autoapprovetoggle).toEqual(1);
-		expect(shareLink?.defaultaccessrole).toEqual("access.role.viewer");
-		expect(shareLink?.expiresdt).toBeNull();
-		expect(shareLink?.byaccountid).toEqual("2");
-		expect(shareLink?.byarchiveid).toEqual("1");
+		expect(shareLink).toBeDefined();
+		if (shareLink !== undefined) {
+			expect(shareLink.status).toEqual("status.generic.ok");
+			expect(shareLink.shareurl).toEqual(
+				`https://${process.env["SITE_URL"] ?? ""}/share/${
+					shareLink.urltoken ?? ""
+				}`,
+			);
+			expect(shareLink.maxuses).toEqual("0");
+			expect(shareLink.uses).toBeNull();
+			expect(shareLink.unrestricted).toEqual(true);
+			expect(shareLink.autoapprovetoggle).toEqual(1);
+			expect(shareLink.defaultaccessrole).toEqual("access.role.viewer");
+			expect(shareLink.expiresdt).toBeNull();
+			expect(shareLink.byaccountid).toEqual("2");
+			expect(shareLink.byarchiveid).toEqual("1");
+		}
 	});
 
 	test("should correctly record optional fields in the database", async () => {
