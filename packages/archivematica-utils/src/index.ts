@@ -14,11 +14,12 @@ export const getOriginalFileIdFromInformationPackagePath = (
 	const fileIdRegex =
 		/access_copies(?:\/[0-9a-f]{4}){8}\/(\d+|[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})_upload/;
 	const match = fileIdRegex.exec(path);
-	if (match?.[1] === undefined) {
+	const fileIdMatchIndex = 1;
+	if (match?.[fileIdMatchIndex] === undefined) {
 		logger.error(`Invalid file key: ${path}`);
 		throw new Error("Invalid file key");
 	}
-	return match[1];
+	return match[fileIdMatchIndex];
 };
 
 const validateCloudPath = (cloudPath: string): void => {

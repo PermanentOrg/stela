@@ -19,6 +19,11 @@ import { db } from "./database";
 const duplicateArchivematicaFileError =
 	'duplicate key value violates unique constraint "unique_parent_file_id_format"';
 
+const removeFirstCharacter = (str: string): string => {
+	const secondCharacterIndex = 1;
+	return str.slice(secondCharacterIndex);
+};
+
 export const handler: SQSHandler = Sentry.wrapHandler(
 	async (event: SQSEvent, _, __) => {
 		await Promise.all(
@@ -55,7 +60,7 @@ export const handler: SQSHandler = Sentry.wrapHandler(
 
 				const type =
 					// slice the leading . off the file extension
-					PermanentTypeByFileExtension[fileExtension.slice(1)] ??
+					PermanentTypeByFileExtension[removeFirstCharacter(fileExtension)] ??
 					UnrecognizedExtensionPermanentType;
 
 				await db

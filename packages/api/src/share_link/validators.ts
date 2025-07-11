@@ -2,6 +2,8 @@ import Joi from "joi";
 import type { CreateShareLinkRequest, UpdateShareLinkRequest } from "./models";
 import { fieldsFromUserAuthentication } from "../validators";
 
+const MINIMUM_MAX_USES = 1;
+
 export const validateCreateShareLinkRequest: (
 	data: unknown,
 ) => asserts data is CreateShareLinkRequest = (
@@ -34,7 +36,7 @@ export const validateCreateShareLinkRequest: (
 				.optional(),
 			maxUses: Joi.number()
 				.integer()
-				.min(1)
+				.min(MINIMUM_MAX_USES)
 				.when("accessRestrictions", {
 					is: Joi.exist(),
 					then: Joi.when("accessRestrictions", {
@@ -79,7 +81,7 @@ export const validateUpdateShareLinkRequest: (
 			expirationTimestamp: Joi.string().isoDate().allow(null).optional(),
 			maxUses: Joi.number()
 				.integer()
-				.min(1)
+				.min(MINIMUM_MAX_USES)
 				.allow(null)
 				.when("accessRestrictions", { is: "none", then: Joi.valid(null) })
 				.optional(),

@@ -20,6 +20,7 @@ import {
 	validateOptionalAuthenticationValues,
 } from "../validators/shared";
 import { isValidationError } from "../validators/validator_util";
+import { HTTP_STATUS } from "@pdc/http-status-codes";
 
 export const recordController = Router();
 
@@ -39,7 +40,9 @@ recordController.get(
 			res.send(records);
 		} catch (error) {
 			if (isValidationError(error)) {
-				res.status(400).json({ error: error.message });
+				res
+					.status(HTTP_STATUS.CLIENT_ERROR.BAD_REQUEST)
+					.json({ error: error.message });
 				return;
 			}
 			next(error);
@@ -60,10 +63,12 @@ recordController.patch(
 				accountEmail: req.body.emailFromAuthToken,
 			});
 
-			res.status(200).send({ data: record });
+			res.status(HTTP_STATUS.SUCCESSFUL.OK).send({ data: record });
 		} catch (err) {
 			if (isValidationError(err)) {
-				res.status(400).json({ error: err.message });
+				res
+					.status(HTTP_STATUS.CLIENT_ERROR.BAD_REQUEST)
+					.json({ error: err.message });
 				return;
 			}
 			next(err);
@@ -82,10 +87,12 @@ recordController.get(
 				req.body.emailFromAuthToken,
 				req.params.recordId,
 			);
-			res.status(200).send({ items: shareLinks });
+			res.status(HTTP_STATUS.SUCCESSFUL.OK).send({ items: shareLinks });
 		} catch (err) {
 			if (isValidationError(err)) {
-				res.status(400).json({ error: err.message });
+				res
+					.status(HTTP_STATUS.CLIENT_ERROR.BAD_REQUEST)
+					.json({ error: err.message });
 				return;
 			}
 			next(err);

@@ -10,10 +10,12 @@ export const isInvalidEnumError = (err: unknown): err is TinyPgError =>
 
 export const getInvalidValueFromInvalidEnumMessage = (
 	message: string,
-): string =>
+): string => {
 	// These error messages take the form:
 	// invalid input value for enum <SPECIFIC_ENUM>: "<OFFENDING_VALUE>"
-	(message.split(": ")[1] ?? "").replaceAll('"', "");
+	const [, offendingValue] = message.split(": ");
+	return (offendingValue ?? "").replaceAll('"', "");
+};
 
 export const isMissingStewardAccountError = (
 	err: unknown,

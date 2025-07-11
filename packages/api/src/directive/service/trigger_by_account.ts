@@ -1,6 +1,7 @@
 import type { DirectiveExecutionResult } from "../model";
 import { db } from "../../database";
 import { legacyClient } from "../../legacy_client";
+import { HTTP_STATUS } from "@pdc/http-status-codes";
 
 const directiveExecutionOutcomeSuccess = "success";
 const directiveExecutionOutcomeError = "error";
@@ -29,7 +30,7 @@ export const triggerAccountAdminDirectives = async (
 						message: directive.note,
 						isLegacyAction: true,
 					});
-					if (response.status === 200) {
+					if (response.status === (HTTP_STATUS.SUCCESSFUL.OK as number)) {
 						return {
 							archiveId: directive.archiveId,
 							directiveId: directive.directiveId,

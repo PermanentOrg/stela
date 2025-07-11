@@ -17,6 +17,9 @@ import {
 } from "../access/permission";
 import { AccessRole } from "../access/models";
 
+const APPROVAL_NOT_REQUIRED = 1;
+const APPROVAL_REQUIRED = 0;
+
 const createShareLinkRequestParamsToDatabaseParams = (
 	data: CreateShareLinkRequest,
 	itemIsPublic: boolean,
@@ -29,7 +32,10 @@ const createShareLinkRequestParamsToDatabaseParams = (
 		(data.accessRestrictions === "none" ||
 			data.accessRestrictions === undefined) &&
 		!itemIsPublic,
-	noApproval: data.accessRestrictions !== "approval" ? 1 : 0,
+	noApproval:
+		data.accessRestrictions !== "approval"
+			? APPROVAL_NOT_REQUIRED
+			: APPROVAL_REQUIRED,
 	maxUses: data.maxUses ?? 0,
 	expirationTimestamp: data.expirationTimestamp,
 	urlToken: shareToken,
@@ -166,7 +172,10 @@ const updateShareLink = async (
 
 	let noApproval = null;
 	if (data.accessRestrictions !== undefined) {
-		noApproval = data.accessRestrictions === "approval" ? 0 : 1;
+		noApproval =
+			data.accessRestrictions === "approval"
+				? APPROVAL_REQUIRED
+				: APPROVAL_NOT_REQUIRED;
 	}
 
 	const updateResult = await db
