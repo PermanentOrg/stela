@@ -29,7 +29,6 @@ export default defineConfig([
 		},
 
 		rules: {
-			"no-shadow": "off",
 			"no-undef": "off",
 			"no-unused-vars": "off",
 			"no-use-before-define": "off",
