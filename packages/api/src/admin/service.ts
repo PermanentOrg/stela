@@ -88,10 +88,10 @@ const recalculateRecordThumbnail = async (recordId: string): Promise<void> => {
 };
 
 const setNullAccountSubjects = async (
-	accounts: {
+	accounts: Array<{
 		email: string;
 		subject: string;
-	}[],
+	}>,
 ): Promise<{ updatedAccounts: string[]; emailsWithErrors: string[] }> => {
 	const updatedAccounts: string[] = [];
 	const emailsWithErrors: string[] = [];

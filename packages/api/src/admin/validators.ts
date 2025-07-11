@@ -20,9 +20,9 @@ export const validateRecalculateFolderThumbnailsRequest: (
 
 export const validateAccountSetNullSubjectsRequest: (
 	data: unknown,
-) => asserts data is { accounts: { email: string; subject: string }[] } = (
+) => asserts data is { accounts: Array<{ email: string; subject: string }> } = (
 	data: unknown,
-): asserts data is { accounts: { email: string; subject: string }[] } => {
+): asserts data is { accounts: Array<{ email: string; subject: string }> } => {
 	const validation = Joi.object()
 		.keys({
 			...fieldsFromAdminAuthentication,

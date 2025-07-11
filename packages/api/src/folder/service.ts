@@ -7,6 +7,7 @@ import type {
 	FolderColumnsForUpdate,
 	PatchFolderRequest,
 	GetFolderChildrenResponse,
+	FolderChildItem,
 } from "./models";
 import {
 	FolderType,
@@ -18,7 +19,6 @@ import {
 	PrettyFolderStatus,
 	PrettyFolderView,
 } from "./models";
-import type { ArchiveRecord } from "../record/models";
 import { requestFieldsToDatabaseFields } from "./helper";
 import { getFolderAccessRole, accessRoleLessThan } from "../access/permission";
 import { AccessRole } from "../access/models";
@@ -175,8 +175,8 @@ export const getFolderChildren = async (
 		shareToken,
 	});
 
-	const children: (ArchiveRecord | Folder)[] = result.rows.reduce(
-		(accumulator: (ArchiveRecord | Folder)[], row) => {
+	const children: FolderChildItem[] = result.rows.reduce(
+		(accumulator: FolderChildItem[], row) => {
 			const child =
 				row.item_type === "folder"
 					? folders.find((folder) => folder.folderId === row.id)
