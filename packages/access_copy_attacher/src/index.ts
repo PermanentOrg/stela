@@ -1,6 +1,6 @@
 import type { SQSHandler, SQSEvent } from "aws-lambda";
 import { lookup as mimeLookup } from "mime-types";
-import * as path from "path";
+import * as path from "node:path";
 import { TinyPgError } from "tinypg";
 import * as Sentry from "@sentry/aws-serverless";
 import {
