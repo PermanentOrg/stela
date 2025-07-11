@@ -29,7 +29,6 @@ export default defineConfig([
 		},
 
 		rules: {
-			"lines-between-class-members": "off",
 			"no-shadow": "off",
 			"no-undef": "off",
 			"no-unused-vars": "off",
