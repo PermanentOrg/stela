@@ -1,4 +1,4 @@
-import { parse } from "path";
+import { parse } from "node:path";
 import { logger } from "@stela/logger";
 import { getFileExtensionByFileType } from "@stela/permanent_models";
 import { constructSignedCdnUrl } from "@stela/s3-utils";
