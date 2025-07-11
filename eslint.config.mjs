@@ -36,8 +36,6 @@ export default defineConfig([
 					caughtErrorsIgnorePattern: "^_",
 				},
 			],
-
-			"@typescript-eslint/no-throw-literal": "off",
 			"@typescript-eslint/no-magic-numbers": [
 				"error",
 				{ ignore: [0, 1], ignoreEnums: true },
