@@ -28,8 +28,6 @@ export default defineConfig([
 		rules: {
 			"import/prefer-default-export": "off",
 			"import/no-default-export": "error",
-			"@typescript-eslint/prefer-readonly-parameter-types": "off",
-
 			"@typescript-eslint/no-unused-vars": [
 				"error",
 				{
