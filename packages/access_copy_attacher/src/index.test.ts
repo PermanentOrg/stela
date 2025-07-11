@@ -173,16 +173,19 @@ describe("handler", () => {
 		const {
 			rows: [file],
 		} = fileResult;
-		expect(file?.size ?? "0").toEqual(testSize.toString());
-		expect(file?.format).toEqual("file.format.archivematica.access");
-		expect(file?.contentType).toEqual("image/jpeg");
-		expect(file?.s3VersionId).toEqual(testVersionId);
-		expect(file?.archiveId).toEqual("1");
-		expect(file?.fileUrl).toEqual(testUrl);
-		expect(file?.downloadUrl).toEqual(testUrl);
-		expect(file?.status).toEqual("status.generic.ok");
-		expect(file?.type).toEqual("type.file.image.jpg");
-		expect(file?.cloudPath).toEqual(testKey);
+		expect(file).toBeDefined();
+		if (file !== undefined) {
+			expect(file.size ?? "0").toEqual(testSize.toString());
+			expect(file.format).toEqual("file.format.archivematica.access");
+			expect(file.contentType).toEqual("image/jpeg");
+			expect(file.s3VersionId).toEqual(testVersionId);
+			expect(file.archiveId).toEqual("1");
+			expect(file.fileUrl).toEqual(testUrl);
+			expect(file.downloadUrl).toEqual(testUrl);
+			expect(file.status).toEqual("status.generic.ok");
+			expect(file.type).toEqual("type.file.image.jpg");
+			expect(file.cloudPath).toEqual(testKey);
+		}
 
 		expect(constructSignedCdnUrl).toHaveBeenCalledWith(testKey);
 		expect(constructSignedCdnUrl).toHaveBeenCalledWith(
