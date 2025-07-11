@@ -277,19 +277,17 @@ describe("GET /record", () => {
 			expect(record.altText).toEqual("An image");
 
 			expect(record.location).toBeDefined();
-			if (record.location !== undefined) {
-				expect(record.location.id).toEqual("1");
-				expect(record.location.streetNumber).toEqual("55");
-				expect(record.location.streetName).toEqual("Rue Plumet");
-				expect(record.location.locality).toEqual("Paris");
-				expect(record.location.county).toEqual("Ile-de-France");
-				expect(record.location.state).toBeNull();
-				expect(record.location.latitude).toEqual(48.838608548520966);
-				expect(record.location.longitude).toEqual(2.3069214988665303);
-				expect(record.location.country).toEqual("France");
-				expect(record.location.countryCode).toEqual("FR");
-				expect(record.location.displayName).toEqual("Jean Valjean's House");
-			}
+			expect(record.location.id).toEqual("1");
+			expect(record.location.streetNumber).toEqual("55");
+			expect(record.location.streetName).toEqual("Rue Plumet");
+			expect(record.location.locality).toEqual("Paris");
+			expect(record.location.county).toEqual("Ile-de-France");
+			expect(record.location.state).toBeNull();
+			expect(record.location.latitude).toEqual(48.838608548520966);
+			expect(record.location.longitude).toEqual(2.3069214988665303);
+			expect(record.location.country).toEqual("France");
+			expect(record.location.countryCode).toEqual("FR");
+			expect(record.location.displayName).toEqual("Jean Valjean's House");
 
 			expect(record.files.length).toEqual(2);
 			const originalFile = record.files.find(

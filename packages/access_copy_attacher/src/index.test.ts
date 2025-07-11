@@ -175,7 +175,7 @@ describe("handler", () => {
 		} = fileResult;
 		expect(file).toBeDefined();
 		if (file !== undefined) {
-			expect(file.size ?? "0").toEqual(testSize.toString());
+			expect(file.size).toEqual(testSize.toString());
 			expect(file.format).toEqual("file.format.archivematica.access");
 			expect(file.contentType).toEqual("image/jpeg");
 			expect(file.s3VersionId).toEqual(testVersionId);

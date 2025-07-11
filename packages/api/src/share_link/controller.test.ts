@@ -152,9 +152,7 @@ describe("POST /share-links", () => {
 		if (shareLink !== undefined) {
 			expect(shareLink.status).toEqual("status.generic.ok");
 			expect(shareLink.shareurl).toEqual(
-				`https://${process.env["SITE_URL"] ?? ""}/share/${
-					shareLink.urltoken ?? ""
-				}`,
+				`https://${process.env["SITE_URL"] ?? ""}/share/${shareLink.urltoken}`,
 			);
 			expect(shareLink.maxuses).toEqual("0");
 			expect(shareLink.uses).toBeNull();
