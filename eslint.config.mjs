@@ -28,7 +28,6 @@ export default defineConfig([
 		rules: {
 			"import/prefer-default-export": "off",
 			"import/no-default-export": "error",
-			"@typescript-eslint/require-await": "off",
 			"@typescript-eslint/prefer-readonly-parameter-types": "off",
 
 			"@typescript-eslint/no-unused-vars": [
@@ -63,6 +62,8 @@ export default defineConfig([
 			// them more navigable than other lengthy files might be.
 			"max-lines": "off",
 			"@typescript-eslint/no-magic-numbers": "off",
+			// async methods without awaits are sometimes needed for mocking
+			"@typescript-eslint/require-await": "off",
 		},
 	},
 ]);
