@@ -42,10 +42,6 @@ export const prettifyFolderSortType = (
 			return PrettyFolderSortOrder.AlphabeticalDescending;
 		case FolderSortOrder.AlphabeticalAscending:
 			return PrettyFolderSortOrder.AlphabeticalAscending;
-		default:
-			// This should never happen, because the cases above are
-			// exhaustive, but just in case
-			return PrettyFolderSortOrder.AlphabeticalDescending;
 	}
 };
 
@@ -84,10 +80,6 @@ export const prettifyFolderStatus = (
 			return PrettyFolderStatus.Moving;
 		case FolderStatus.Deleted:
 			return PrettyFolderStatus.Deleted;
-		default:
-			// This should never happen, because the cases above are
-			// exhaustive, but just in case
-			return PrettyFolderStatus.Ok;
 	}
 };
 
