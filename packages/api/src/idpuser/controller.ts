@@ -20,6 +20,7 @@ import {
 	sendDisableCode,
 	removeTwoFactorMethod,
 } from "./service";
+import { HTTP_STATUS } from "@pdc/http-status-codes";
 
 export const idpUserController = Router();
 
@@ -34,7 +35,7 @@ idpUserController.get(
 			res.send(response);
 		} catch (err) {
 			if (isValidationError(err)) {
-				res.status(400).json({ error: err });
+				res.status(HTTP_STATUS.CLIENT_ERROR.BAD_REQUEST).json({ error: err });
 				return;
 			}
 			next(err);
@@ -49,10 +50,10 @@ idpUserController.post(
 		try {
 			validateSendEnableCodeRequest(req.body);
 			await sendEnableCode(req.body);
-			res.send(200);
+			res.send(HTTP_STATUS.SUCCESSFUL.OK);
 		} catch (err) {
 			if (isValidationError(err)) {
-				res.status(400).json({ error: err });
+				res.status(HTTP_STATUS.CLIENT_ERROR.BAD_REQUEST).json({ error: err });
 				return;
 			}
 			next(err);
@@ -67,10 +68,10 @@ idpUserController.post(
 		try {
 			validateCreateTwoFactorMethodRequest(req.body);
 			await addTwoFactorMethod(req.body);
-			res.status(200).send();
+			res.status(HTTP_STATUS.SUCCESSFUL.OK).send();
 		} catch (err) {
 			if (isValidationError(err)) {
-				res.status(400).json({ error: err });
+				res.status(HTTP_STATUS.CLIENT_ERROR.BAD_REQUEST).json({ error: err });
 				return;
 			}
 			next(err);
@@ -85,10 +86,10 @@ idpUserController.post(
 		try {
 			validateSendDisableCodeRequest(req.body);
 			await sendDisableCode(req.body);
-			res.send(200);
+			res.send(HTTP_STATUS.SUCCESSFUL.OK);
 		} catch (err) {
 			if (isValidationError(err)) {
-				res.status(400).json({ error: err });
+				res.status(HTTP_STATUS.CLIENT_ERROR.BAD_REQUEST).json({ error: err });
 				return;
 			}
 			next(err);
@@ -103,10 +104,10 @@ idpUserController.post(
 		try {
 			validateDisableTwoFactorRequest(req.body);
 			await removeTwoFactorMethod(req.body);
-			res.send(200);
+			res.send(HTTP_STATUS.SUCCESSFUL.OK);
 		} catch (err) {
 			if (isValidationError(err)) {
-				res.status(400).json({ error: err });
+				res.status(HTTP_STATUS.CLIENT_ERROR.BAD_REQUEST).json({ error: err });
 				return;
 			}
 			next(err);

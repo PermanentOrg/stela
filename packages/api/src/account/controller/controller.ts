@@ -1,5 +1,6 @@
 import { Router } from "express";
 import type { Request, Response, NextFunction } from "express";
+import { HTTP_STATUS } from "@pdc/http-status-codes";
 
 import { extractIp, verifyUserAuthentication } from "../../middleware";
 import { isValidationError } from "../../validators/validator_util";
@@ -24,7 +25,7 @@ accountController.put(
 			res.json({});
 		} catch (err) {
 			if (isValidationError(err)) {
-				res.status(400).json({ error: err });
+				res.status(HTTP_STATUS.CLIENT_ERROR.BAD_REQUEST).json({ error: err });
 				return;
 			}
 			next(err);
@@ -43,7 +44,7 @@ accountController.get(
 			res.json(signupDetails);
 		} catch (err) {
 			if (isValidationError(err)) {
-				res.status(400).json({ error: err });
+				res.status(HTTP_STATUS.CLIENT_ERROR.BAD_REQUEST).json({ error: err });
 				return;
 			}
 			next(err);
@@ -66,10 +67,10 @@ accountController.delete(
 
 			await accountService.leaveArchive(data);
 
-			res.status(204).send();
+			res.status(HTTP_STATUS.SUCCESSFUL.NO_CONTENT).send();
 		} catch (err) {
 			if (isValidationError(err)) {
-				res.status(400).json({ error: err });
+				res.status(HTTP_STATUS.CLIENT_ERROR.BAD_REQUEST).json({ error: err });
 				return;
 			}
 			next(err);

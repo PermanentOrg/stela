@@ -3,18 +3,26 @@ import { logger } from "@stela/logger";
 import { AccessRole } from "./models";
 import { db } from "../database";
 
+const VIEWER_ACCESS_ROLE_RANK = 1;
+const CONTRIBUTOR_ACCESS_ROLE_RANK = 2;
+const EDITOR_ACCESS_ROLE_RANK = 3;
+const CURATOR_ACCESS_ROLE_RANK = 4;
+const MANAGER_ACCESS_ROLE_RANK = 5;
+const OWNER_ACCESS_ROLE_RANK = 6;
+const ADMIN_ACCESS_ROLE_RANK = 7;
+
 export const accessRoleLessThan = (
 	roleOne: AccessRole,
 	roleTwo: AccessRole,
 ): boolean => {
 	const accessRoleRank = new Map();
-	accessRoleRank.set(AccessRole.Viewer, 1);
-	accessRoleRank.set(AccessRole.Contributor, 2);
-	accessRoleRank.set(AccessRole.Editor, 3);
-	accessRoleRank.set(AccessRole.Curator, 4);
-	accessRoleRank.set(AccessRole.Manager, 5);
-	accessRoleRank.set(AccessRole.Owner, 6);
-	accessRoleRank.set(AccessRole.Admin, 7);
+	accessRoleRank.set(AccessRole.Viewer, VIEWER_ACCESS_ROLE_RANK);
+	accessRoleRank.set(AccessRole.Contributor, CONTRIBUTOR_ACCESS_ROLE_RANK);
+	accessRoleRank.set(AccessRole.Editor, EDITOR_ACCESS_ROLE_RANK);
+	accessRoleRank.set(AccessRole.Curator, CURATOR_ACCESS_ROLE_RANK);
+	accessRoleRank.set(AccessRole.Manager, MANAGER_ACCESS_ROLE_RANK);
+	accessRoleRank.set(AccessRole.Owner, OWNER_ACCESS_ROLE_RANK);
+	accessRoleRank.set(AccessRole.Admin, ADMIN_ACCESS_ROLE_RANK);
 
 	return accessRoleRank.get(roleOne) < accessRoleRank.get(roleTwo);
 };

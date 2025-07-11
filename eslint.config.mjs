@@ -50,9 +50,10 @@ export default defineConfig([
 			],
 
 			"@typescript-eslint/no-throw-literal": "off",
-
-			// These are `love` rules that we were violating.  We should review these one at a time.
-			"@typescript-eslint/no-magic-numbers": "off",
+			"@typescript-eslint/no-magic-numbers": [
+				"error",
+				{ ignore: [0, 1], ignoreEnums: true },
+			],
 		},
 	},
 	{
@@ -70,6 +71,7 @@ export default defineConfig([
 			// the relevant code, however many tests that takes. Their natural structure also makes
 			// them more navigable than other lengthy files might be.
 			"max-lines": "off",
+			"@typescript-eslint/no-magic-numbers": "off",
 		},
 	},
 ]);

@@ -4,6 +4,7 @@ import { verifyUserAuthentication } from "../middleware";
 import { validateGiftStorageRequest } from "./validators";
 import { isValidationError } from "../validators/validator_util";
 import { issueGift } from "./service";
+import { HTTP_STATUS } from "@pdc/http-status-codes";
 
 export const billingController = Router();
 
@@ -15,10 +16,12 @@ billingController.post(
 			validateGiftStorageRequest(req.body);
 			const result = await issueGift(req.body);
 
-			res.status(200).json(result);
+			res.status(HTTP_STATUS.SUCCESSFUL.OK).json(result);
 		} catch (err) {
 			if (isValidationError(err)) {
-				res.status(400).json({ error: err.message });
+				res
+					.status(HTTP_STATUS.CLIENT_ERROR.BAD_REQUEST)
+					.json({ error: err.message });
 				return;
 			}
 			next(err);

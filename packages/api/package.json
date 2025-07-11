@@ -44,7 +44,7 @@
 		"@sentry/node": "^9.33.0",
 		"@stela/logger": "^1.0.0",
 		"@stela/permanent_models": "^1.0.0",
-		"@types/http-errors": "^2.0.1",
+		"@pdc/http-status-codes": "^1.0.1",
 		"body-parser": "^1.20.3",
 		"cors": "^2.8.5",
 		"dotenv": "^17.2.0",
@@ -67,6 +67,7 @@
 		"@types/memoizee": "^0.4.12",
 		"@types/newrelic": "^9.14.4",
 		"@types/ua-parser-js": "^0.7.39",
+		"@types/http-errors": "^2.0.1",
 		"jest-when": "^3.7.0",
 		"nock": "^14.0.5",
 		"supertest": "^7.1.0"

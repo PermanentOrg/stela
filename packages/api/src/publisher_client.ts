@@ -13,17 +13,21 @@ export interface Message {
 	attributes?: Record<string, string>;
 }
 
+const CHUNK_SIZE = 10;
+
 const batchPublishMessages = async (
 	topicArn: string,
 	messages: Message[],
 ): Promise<{ messagesSent: number; failedMessages: string[] }> => {
 	const snsClient = new SNSClient({ region: process.env["AWS_REGION"] ?? "" });
-	const groupsOfTenMessages = [
-		...Array(Math.ceil(messages.length / 10)).keys(),
-	].map((tenthIndex) => messages.slice(tenthIndex * 10, tenthIndex * 10 + 10));
+	const chunksOfMessages = [
+		...Array(Math.ceil(messages.length / CHUNK_SIZE)).keys(),
+	].map((chunkIndex) =>
+		messages.slice(chunkIndex * CHUNK_SIZE, chunkIndex++ * CHUNK_SIZE),
+	);
 
 	const responses = await Promise.all(
-		groupsOfTenMessages.map(async (groupOfTenMessages) => {
+		chunksOfMessages.map(async (groupOfTenMessages) => {
 			const command = new PublishBatchCommand({
 				TopicArn: topicArn,
 				PublishBatchRequestEntries: groupOfTenMessages.map((message) => {

@@ -10,6 +10,7 @@ import {
 } from "../validators";
 import { isValidationError } from "../../validators/validator_util";
 import { archiveService } from "../service";
+import { HTTP_STATUS } from "@pdc/http-status-codes";
 
 export const archiveController = Router();
 archiveController.get(
@@ -39,7 +40,7 @@ archiveController.get(
 			res.json(accountStorage);
 		} catch (err) {
 			if (isValidationError(err)) {
-				res.status(400).json({ error: err });
+				res.status(HTTP_STATUS.CLIENT_ERROR.BAD_REQUEST).json({ error: err });
 				return;
 			}
 			next(err);
@@ -54,7 +55,7 @@ archiveController.post(
 		try {
 			validateArchiveIdFromParams(req.params);
 			await archiveService.makeFeatured(req.params.archiveId);
-			res.sendStatus(200);
+			res.sendStatus(HTTP_STATUS.SUCCESSFUL.OK);
 		} catch (err) {
 			next(err);
 		}
@@ -68,7 +69,7 @@ archiveController.delete(
 		try {
 			validateArchiveIdFromParams(req.params);
 			await archiveService.unfeature(req.params.archiveId);
-			res.sendStatus(200);
+			res.sendStatus(HTTP_STATUS.SUCCESSFUL.OK);
 		} catch (err) {
 			next(err);
 		}
@@ -94,7 +95,7 @@ archiveController.post(
 		try {
 			validateArchiveIdFromParams(req.params);
 			await archiveService.backfillLedger(req.params.archiveId);
-			res.sendStatus(200);
+			res.sendStatus(HTTP_STATUS.SUCCESSFUL.OK);
 		} catch (err) {
 			next(err);
 		}
@@ -115,7 +116,7 @@ archiveController.get(
 			res.json({ items: folders });
 		} catch (err) {
 			if (isValidationError(err)) {
-				res.status(400).json({ error: err });
+				res.status(HTTP_STATUS.CLIENT_ERROR.BAD_REQUEST).json({ error: err });
 				return;
 			}
 			next(err);

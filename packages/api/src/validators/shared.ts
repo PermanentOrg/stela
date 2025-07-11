@@ -1,5 +1,7 @@
 import Joi from "joi";
 
+const MINIMUM_PAGE_SIZE = 1;
+
 export const fieldsFromUserAuthentication = {
 	emailFromAuthToken: Joi.string().email().required(),
 	userSubjectFromAuthToken: Joi.string().uuid().required(),
@@ -102,7 +104,7 @@ export const validatePaginationParameters: (
 	const validation = Joi.object()
 		.keys({
 			cursor: Joi.string(),
-			pageSize: Joi.number().integer().min(1).required(),
+			pageSize: Joi.number().integer().min(MINIMUM_PAGE_SIZE).required(),
 		})
 		.validate(data);
 
