@@ -16,7 +16,10 @@ export const confirmArchiveOwnership = async (
 			email,
 		},
 	);
-	if (accessResult.rows[0] === undefined || !accessResult.rows[0].hasAccess) {
+	if (
+		accessResult.rows[0]?.hasAccess === undefined ||
+		!accessResult.rows[0].hasAccess
+	) {
 		throw new createError.NotFound("Archive not found");
 	}
 };
