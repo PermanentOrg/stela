@@ -3,8 +3,10 @@ import type { Tag } from "../tag/models";
 import type { ArchiveRecord } from "../record/models";
 import type { Location } from "../common/models";
 
+export type FolderChildItem = ArchiveRecord | Folder;
+
 export interface GetFolderChildrenResponse {
-	items: (ArchiveRecord | Folder)[];
+	items: FolderChildItem[];
 	pagination: {
 		nextCursor: string | undefined;
 		nextPage: string | undefined;

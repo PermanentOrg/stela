@@ -14,9 +14,9 @@ const defaultMessage = {
 export const sendEmail = async (
 	templateName: string,
 	fromName: string,
-	toData: { email: string; name?: string }[],
+	toData: Array<{ email: string; name?: string }>,
 	subject: string,
-	mergeVariables: { name: string; content: string }[],
+	mergeVariables: Array<{ name: string; content: string }>,
 ): Promise<void> => {
 	const response = await MailchimpTransactional.messages.sendTemplate({
 		template_name: templateName,

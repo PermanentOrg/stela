@@ -21,12 +21,12 @@ jest.mock("../fusionauth", () => ({
 }));
 
 const mockRetrieveUserByEmail = (
-	methods: {
+	methods: Array<{
 		id: string;
 		method: string;
 		email: string;
 		mobilePhone: string;
-	}[],
+	}>,
 	successful: boolean,
 	exception?: { code: string; message: string },
 ): void => {

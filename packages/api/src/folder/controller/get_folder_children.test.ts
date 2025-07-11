@@ -1,6 +1,6 @@
 import request from "supertest";
-import type { Folder } from "../models";
-import type { ArchiveRecord, ArchiveFile } from "../../record/models";
+import type { FolderChildItem } from "../models";
+import type { ArchiveFile } from "../../record/models";
 import type { Tag } from "../../tag/models";
 import type { Share } from "../../share/models";
 import { app } from "../../app";
@@ -61,7 +61,7 @@ describe("GET /folder/{id}/children", () => {
 			.expect(200);
 		const {
 			body: { items: children },
-		} = response as { body: { items: (ArchiveRecord | Folder)[] } };
+		} = response as { body: { items: FolderChildItem[] } };
 		expect(children.length).toEqual(2);
 		const [folder] = children;
 
@@ -153,7 +153,7 @@ describe("GET /folder/{id}/children", () => {
 			.expect(200);
 		const {
 			body: { items: children },
-		} = response as { body: { items: (ArchiveRecord | Folder)[] } };
+		} = response as { body: { items: FolderChildItem[] } };
 		expect(children.length).toEqual(2);
 		const [, record] = children;
 		if (record !== undefined) {
@@ -283,7 +283,7 @@ describe("GET /folder/{id}/children", () => {
 			.expect(200);
 		const {
 			body: { items: children },
-		} = response as { body: { items: (ArchiveRecord | Folder)[] } };
+		} = response as { body: { items: FolderChildItem[] } };
 		expect(children.length).toEqual(2);
 		expect(children[0]?.displayName).toEqual("Private Folder");
 		expect(children[1]?.displayName).toEqual("Public File");
@@ -298,7 +298,7 @@ describe("GET /folder/{id}/children", () => {
 			.expect(200);
 		const {
 			body: { items: children },
-		} = response as { body: { items: (ArchiveRecord | Folder)[] } };
+		} = response as { body: { items: FolderChildItem[] } };
 		expect(children.length).toEqual(2);
 		expect(children[0]?.displayName).toEqual("Public File");
 		expect(children[1]?.displayName).toEqual("Private Folder");
@@ -313,7 +313,7 @@ describe("GET /folder/{id}/children", () => {
 			.expect(200);
 		const {
 			body: { items: children },
-		} = response as { body: { items: (ArchiveRecord | Folder)[] } };
+		} = response as { body: { items: FolderChildItem[] } };
 		expect(children.length).toEqual(2);
 		expect(children[0]?.displayName).toEqual("Public File");
 		expect(children[1]?.displayName).toEqual("Private Folder");
@@ -328,7 +328,7 @@ describe("GET /folder/{id}/children", () => {
 			.expect(200);
 		const {
 			body: { items: children },
-		} = response as { body: { items: (ArchiveRecord | Folder)[] } };
+		} = response as { body: { items: FolderChildItem[] } };
 		expect(children.length).toEqual(2);
 		expect(children[0]?.displayName).toEqual("Private Folder");
 		expect(children[1]?.displayName).toEqual("Public File");
@@ -343,7 +343,7 @@ describe("GET /folder/{id}/children", () => {
 			.expect(200);
 		const {
 			body: { items: children },
-		} = response as { body: { items: (ArchiveRecord | Folder)[] } };
+		} = response as { body: { items: FolderChildItem[] } };
 		expect(children.length).toEqual(2);
 		expect(children[0]?.displayName).toEqual("Private Folder");
 		expect(children[1]?.displayName).toEqual("Public File");
@@ -358,7 +358,7 @@ describe("GET /folder/{id}/children", () => {
 			.expect(200);
 		const {
 			body: { items: children },
-		} = response as { body: { items: (ArchiveRecord | Folder)[] } };
+		} = response as { body: { items: FolderChildItem[] } };
 		expect(children.length).toEqual(2);
 		expect(children[0]?.displayName).toEqual("Public File");
 		expect(children[1]?.displayName).toEqual("Private Folder");
@@ -371,7 +371,7 @@ describe("GET /folder/{id}/children", () => {
 			.expect(200);
 		const {
 			body: { items: children },
-		} = response as { body: { items: (ArchiveRecord | Folder)[] } };
+		} = response as { body: { items: FolderChildItem[] } };
 		expect(children.length).toEqual(0);
 	});
 
@@ -381,7 +381,7 @@ describe("GET /folder/{id}/children", () => {
 			.expect(200);
 		const {
 			body: { items: children },
-		} = response as { body: { items: (ArchiveRecord | Folder)[] } };
+		} = response as { body: { items: FolderChildItem[] } };
 		expect(children.length).toEqual(1);
 	});
 
@@ -391,7 +391,7 @@ describe("GET /folder/{id}/children", () => {
 			.expect(200);
 		const {
 			body: { items: children },
-		} = response as { body: { items: (ArchiveRecord | Folder)[] } };
+		} = response as { body: { items: FolderChildItem[] } };
 		expect(children.length).toEqual(1);
 		expect(children[0]?.displayName).toEqual("Public File");
 	});
