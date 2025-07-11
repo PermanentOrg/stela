@@ -28,7 +28,6 @@ export default defineConfig([
 		rules: {
 			"import/prefer-default-export": "off",
 			"import/no-default-export": "error",
-			"import/extensions": "off",
 			"import/no-unresolved": "off",
 			"import/no-extraneous-dependencies": "off",
 			"@typescript-eslint/require-await": "off",
