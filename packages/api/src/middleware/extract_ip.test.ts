@@ -15,7 +15,7 @@ describe("extractIp", () => {
 	test("should extract IP from the remoteAddress if not forwarded", () => {
 		const testIp = "192.168.0.1";
 		const request = createRequest({
-			connection: {
+			socket: {
 				remoteAddress: testIp,
 			},
 		});
