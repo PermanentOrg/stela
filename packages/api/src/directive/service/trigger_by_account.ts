@@ -23,12 +23,12 @@ export const triggerAccountAdminDirectives = async (
 		adminDirectives.rows.map(
 			async (directive): Promise<DirectiveExecutionResult> => {
 				if (directive.directiveType === "transfer") {
-					const response = await legacyClient.transferArchiveOwnership(
-						directive.stewardEmail,
-						directive.archiveSlug,
-						directive.note,
-						true,
-					);
+					const response = await legacyClient.transferArchiveOwnership({
+						recipientEmail: directive.stewardEmail,
+						archiveSlug: directive.archiveSlug,
+						message: directive.note,
+						isLegacyAction: true,
+					});
 					if (response.status === 200) {
 						return {
 							archiveId: directive.archiveId,

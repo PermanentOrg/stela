@@ -1,5 +1,11 @@
 import { logger } from "@stela/logger";
 
+interface ArchivematicaConfig {
+	archivematicaHostUrl: string;
+	archivematicaApiKey: string;
+	archivematicaOriginalLocationId: string;
+}
+
 export const getOriginalFileIdFromInformationPackagePath = (
 	path: string,
 ): string => {
@@ -29,16 +35,14 @@ const trimLastComponentFromCloudPath = (cloudPath: string): string =>
 export const triggerArchivematicaProcessing = async (
 	fileId: string,
 	fileCloudPath: string,
-	archivematicaHostUrl: string,
-	archivematicaApiKey: string,
-	archivematicaOriginalLocationId: string,
+	config: ArchivematicaConfig,
 ): Promise<Response> => {
 	validateCloudPath(fileCloudPath);
-	return await fetch(`${archivematicaHostUrl}/api/v2beta/package`, {
+	return await fetch(`${config.archivematicaHostUrl}/api/v2beta/package`, {
 		method: "POST",
 		headers: {
 			"Content-Type": "application/json",
-			Authorization: `ApiKey ${archivematicaApiKey}`,
+			Authorization: `ApiKey ${config.archivematicaApiKey}`,
 		},
 		body: JSON.stringify({
 			name: `${fileId}_upload`,
@@ -49,7 +53,7 @@ export const triggerArchivematicaProcessing = async (
 			auto_approve: true,
 			metadata_set_id: "",
 			path: Buffer.from(
-				`${archivematicaOriginalLocationId}:${trimLastComponentFromCloudPath(fileCloudPath)}`,
+				`${config.archivematicaOriginalLocationId}:${trimLastComponentFromCloudPath(fileCloudPath)}`,
 				"utf-8",
 			).toString("base64"),
 		}),

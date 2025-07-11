@@ -91,8 +91,7 @@ folderController.get(
 			validateFolderRequest(req.params);
 			const response = await getFolderChildren(
 				req.params.folderId,
-				req.query.pageSize,
-				req.query.cursor,
+				{ pageSize: req.query.pageSize, cursor: req.query.cursor },
 				req.body.emailFromAuthToken,
 				req.body.shareToken,
 			);
