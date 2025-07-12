@@ -4,12 +4,15 @@ import { logger } from "@stela/logger";
 import "./env";
 import { cleanupDashboard } from "./service";
 
+const EXIT_CODE_SUCCESS = 0;
+const EXIT_CODE_ERROR = 1;
+
 cleanupDashboard()
 	.then(() => {
-		process.exit(0);
+		process.exit(EXIT_CODE_SUCCESS);
 	})
-	.catch((error) => {
+	.catch((error: unknown) => {
 		logger.error(error);
 		Sentry.captureException(error);
-		process.exit(1);
+		process.exit(EXIT_CODE_ERROR);
 	});

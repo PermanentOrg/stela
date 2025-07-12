@@ -1,5 +1,11 @@
 import { logger } from "@stela/logger";
 
+interface ArchivematicaConfig {
+	archivematicaHostUrl: string;
+	archivematicaApiKey: string;
+	archivematicaOriginalLocationId: string;
+}
+
 export const getOriginalFileIdFromInformationPackagePath = (
 	path: string,
 ): string => {
@@ -8,11 +14,12 @@ export const getOriginalFileIdFromInformationPackagePath = (
 	const fileIdRegex =
 		/access_copies(?:\/[0-9a-f]{4}){8}\/(\d+|[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})_upload/;
 	const match = fileIdRegex.exec(path);
-	if (match === null || match[1] === undefined) {
+	const fileIdMatchIndex = 1;
+	if (match?.[fileIdMatchIndex] === undefined) {
 		logger.error(`Invalid file key: ${path}`);
 		throw new Error("Invalid file key");
 	}
-	return match[1];
+	return match[fileIdMatchIndex];
 };
 
 const validateCloudPath = (cloudPath: string): void => {
@@ -29,16 +36,14 @@ const trimLastComponentFromCloudPath = (cloudPath: string): string =>
 export const triggerArchivematicaProcessing = async (
 	fileId: string,
 	fileCloudPath: string,
-	archivematicaHostUrl: string,
-	archivematicaApiKey: string,
-	archivematicaOriginalLocationId: string,
+	config: ArchivematicaConfig,
 ): Promise<Response> => {
 	validateCloudPath(fileCloudPath);
-	return fetch(`${archivematicaHostUrl}/api/v2beta/package`, {
+	return await fetch(`${config.archivematicaHostUrl}/api/v2beta/package`, {
 		method: "POST",
 		headers: {
 			"Content-Type": "application/json",
-			Authorization: `ApiKey ${archivematicaApiKey}`,
+			Authorization: `ApiKey ${config.archivematicaApiKey}`,
 		},
 		body: JSON.stringify({
 			name: `${fileId}_upload`,
@@ -49,7 +54,7 @@ export const triggerArchivematicaProcessing = async (
 			auto_approve: true,
 			metadata_set_id: "",
 			path: Buffer.from(
-				`${archivematicaOriginalLocationId}:${trimLastComponentFromCloudPath(fileCloudPath)}`,
+				`${config.archivematicaOriginalLocationId}:${trimLastComponentFromCloudPath(fileCloudPath)}`,
 				"utf-8",
 			).toString("base64"),
 		}),

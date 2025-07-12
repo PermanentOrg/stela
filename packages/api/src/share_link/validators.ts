@@ -2,9 +2,13 @@ import Joi from "joi";
 import type { CreateShareLinkRequest, UpdateShareLinkRequest } from "./models";
 import { fieldsFromUserAuthentication } from "../validators";
 
-export function validateCreateShareLinkRequest(
+const MINIMUM_MAX_USES = 1;
+
+export const validateCreateShareLinkRequest: (
 	data: unknown,
-): asserts data is CreateShareLinkRequest {
+) => asserts data is CreateShareLinkRequest = (
+	data: unknown,
+): asserts data is CreateShareLinkRequest => {
 	const validation = Joi.object()
 		.keys({
 			...fieldsFromUserAuthentication,
@@ -32,7 +36,7 @@ export function validateCreateShareLinkRequest(
 				.optional(),
 			maxUses: Joi.number()
 				.integer()
-				.min(1)
+				.min(MINIMUM_MAX_USES)
 				.when("accessRestrictions", {
 					is: Joi.exist(),
 					then: Joi.when("accessRestrictions", {
@@ -45,14 +49,16 @@ export function validateCreateShareLinkRequest(
 			expirationTimestamp: Joi.string().isoDate().optional(),
 		})
 		.validate(data);
-	if (validation.error) {
+	if (validation.error !== undefined) {
 		throw validation.error;
 	}
-}
+};
 
-export function validateUpdateShareLinkRequest(
+export const validateUpdateShareLinkRequest: (
 	data: unknown,
-): asserts data is UpdateShareLinkRequest {
+) => asserts data is UpdateShareLinkRequest = (
+	data: unknown,
+): asserts data is UpdateShareLinkRequest => {
 	const validation = Joi.object()
 		.keys({
 			...fieldsFromUserAuthentication,
@@ -75,7 +81,7 @@ export function validateUpdateShareLinkRequest(
 			expirationTimestamp: Joi.string().isoDate().allow(null).optional(),
 			maxUses: Joi.number()
 				.integer()
-				.min(1)
+				.min(MINIMUM_MAX_USES)
 				.allow(null)
 				.when("accessRestrictions", { is: "none", then: Joi.valid(null) })
 				.optional(),
@@ -87,21 +93,29 @@ export function validateUpdateShareLinkRequest(
 			"maxUses",
 		)
 		.validate(data);
-	if (validation.error) {
+	if (validation.error !== undefined) {
 		throw validation.error;
 	}
-}
+};
 
-export function validateGetShareLinksParameters(
+export const validateGetShareLinksParameters: (
 	data: unknown,
-): asserts data is { shareTokens: string[]; shareLinkIds: string[] } {
+) => asserts data is {
+	shareTokens: string[] | undefined;
+	shareLinkIds: string[] | undefined;
+} = (
+	data: unknown,
+): asserts data is {
+	shareTokens: string[] | undefined;
+	shareLinkIds: string[] | undefined;
+} => {
 	const validation = Joi.object()
 		.keys({
 			shareTokens: Joi.array().items(Joi.string()).optional(),
 			shareLinkIds: Joi.array().items(Joi.string()).optional(),
 		})
 		.validate(data);
-	if (validation.error) {
+	if (validation.error !== undefined) {
 		throw validation.error;
 	}
-}
+};

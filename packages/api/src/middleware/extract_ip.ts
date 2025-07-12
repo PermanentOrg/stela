@@ -18,6 +18,6 @@ export const extractIp = (
 ): void => {
 	req.body["ip"] =
 		extractClientIpFromProxyList(req.get("X-Forwarded-For")) ??
-		req.connection.remoteAddress;
+		req.socket.remoteAddress;
 	next();
 };

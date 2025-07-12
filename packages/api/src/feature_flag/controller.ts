@@ -17,6 +17,7 @@ import {
 	validateFeatureFlagParams,
 } from "./validators";
 import { validateIsAdminFromAuthentication } from "../validators/shared";
+import { HTTP_STATUS } from "@pdc/http-status-codes";
 
 export const featureController = Router();
 
@@ -30,7 +31,9 @@ featureController.get(
 			res.json({ items: featureFlags });
 		} catch (err) {
 			if (isValidationError(err)) {
-				res.status(400).json({ error: err.message });
+				res
+					.status(HTTP_STATUS.CLIENT_ERROR.BAD_REQUEST)
+					.json({ error: err.message });
 				return;
 			}
 			logger.error(err);
@@ -48,10 +51,12 @@ featureController.post(
 			const insertedFeatureFlag = await createFeatureService.createFeatureFlag(
 				req.body,
 			);
-			res.status(200).send({ data: insertedFeatureFlag });
+			res.status(HTTP_STATUS.SUCCESSFUL.OK).send({ data: insertedFeatureFlag });
 		} catch (err) {
 			if (isValidationError(err)) {
-				res.status(400).json({ error: err.message });
+				res
+					.status(HTTP_STATUS.CLIENT_ERROR.BAD_REQUEST)
+					.json({ error: err.message });
 				return;
 			}
 			next(err);
@@ -70,10 +75,12 @@ featureController.put(
 				req.params.featureId,
 				req.body,
 			);
-			res.status(200).send({ data: featureFlag });
+			res.status(HTTP_STATUS.SUCCESSFUL.OK).send({ data: featureFlag });
 		} catch (err) {
 			if (isValidationError(err)) {
-				res.status(400).json({ error: err.message });
+				res
+					.status(HTTP_STATUS.CLIENT_ERROR.BAD_REQUEST)
+					.json({ error: err.message });
 				return;
 			}
 			next(err);
@@ -88,10 +95,12 @@ featureController.delete(
 		try {
 			validateFeatureFlagParams(req.params);
 			await deleteFeatureService.deleteFeatureFlag(req.params.featureId);
-			res.status(204).send();
+			res.status(HTTP_STATUS.SUCCESSFUL.NO_CONTENT).send();
 		} catch (err) {
 			if (isValidationError(err)) {
-				res.status(400).json({ error: err.message });
+				res
+					.status(HTTP_STATUS.CLIENT_ERROR.BAD_REQUEST)
+					.json({ error: err.message });
 				return;
 			}
 			next(err);

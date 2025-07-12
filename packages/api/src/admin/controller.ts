@@ -1,5 +1,6 @@
 import { Router } from "express";
 import type { Request, Response, NextFunction } from "express";
+import { HTTP_STATUS } from "@pdc/http-status-codes";
 import { adminService } from "./service";
 import { verifyAdminAuthentication } from "../middleware";
 import {
@@ -21,13 +22,15 @@ adminController.post(
 				req.body.endTimestamp,
 			);
 			if (results.failedFolders.length > 0) {
-				res.status(500).json(results);
+				res
+					.status(HTTP_STATUS.SERVER_ERROR.INTERNAL_SERVER_ERROR)
+					.json(results);
 			} else {
 				res.json(results);
 			}
 		} catch (err) {
 			if (isValidationError(err)) {
-				res.status(400).json({ error: err });
+				res.status(HTTP_STATUS.CLIENT_ERROR.BAD_REQUEST).json({ error: err });
 				return;
 			}
 			next(err);
@@ -47,7 +50,7 @@ adminController.post(
 			res.json(response);
 		} catch (err) {
 			if (isValidationError(err)) {
-				res.status(400).json({ error: err });
+				res.status(HTTP_STATUS.CLIENT_ERROR.BAD_REQUEST).json({ error: err });
 				return;
 			}
 			next(err);
@@ -65,7 +68,7 @@ adminController.post(
 			// This is why there is no error handling for validation errors.
 			validateRecalculateRecordThumbnailRequest(req.params);
 			await adminService.recalculateRecordThumbnail(req.params.recordId);
-			res.status(200).json({});
+			res.status(HTTP_STATUS.SUCCESSFUL.OK).json({});
 		} catch (err) {
 			next(err);
 		}
@@ -80,7 +83,7 @@ adminController.post(
 	async (_: Request, res: Response, next: NextFunction): Promise<void> => {
 		try {
 			const response = await adminService.triggerOrphanedFolderDeletion();
-			res.status(200).json(response);
+			res.status(HTTP_STATUS.SUCCESSFUL.OK).json(response);
 		} catch (err) {
 			next(err);
 		}

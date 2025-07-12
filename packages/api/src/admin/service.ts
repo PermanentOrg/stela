@@ -13,11 +13,11 @@ const recalculateFolderThumbnails = async (
 			beginTimestamp,
 			endTimestamp,
 		})
-		.catch((err) => {
+		.catch((err: unknown) => {
 			logger.error(err);
 			throw new createError.InternalServerError("Failed to retrieve folders");
 		});
-	const folders = folderResult.rows;
+	const { rows: folders } = folderResult;
 
 	const publishResults = await publisherClient
 		.batchPublishMessages(
@@ -37,7 +37,7 @@ const recalculateFolderThumbnails = async (
 				}),
 			})),
 		)
-		.catch((err) => {
+		.catch((err: unknown) => {
 			logger.error(err);
 			throw new createError.InternalServerError("Failed to publish messages");
 		});
@@ -53,12 +53,12 @@ const recalculateRecordThumbnail = async (recordId: string): Promise<void> => {
 		.sql<ArchiveRecord>("admin.queries.get_record", {
 			recordId,
 		})
-		.catch((err) => {
+		.catch((err: unknown) => {
 			logger.error(err);
 			throw new createError.InternalServerError("Failed to retrieve record");
 		});
 
-	if (!recordResult.rows[0]) {
+	if (recordResult.rows[0] === undefined) {
 		throw new createError.NotFound("Record not found");
 	}
 
@@ -88,10 +88,10 @@ const recalculateRecordThumbnail = async (recordId: string): Promise<void> => {
 };
 
 const setNullAccountSubjects = async (
-	accounts: {
+	accounts: Array<{
 		email: string;
 		subject: string;
-	}[],
+	}>,
 ): Promise<{ updatedAccounts: string[]; emailsWithErrors: string[] }> => {
 	const updatedAccounts: string[] = [];
 	const emailsWithErrors: string[] = [];
@@ -102,12 +102,12 @@ const setNullAccountSubjects = async (
 					email: account.email,
 					subject: account.subject,
 				})
-				.catch((err) => {
+				.catch((err: unknown) => {
 					logger.error(err);
 					emailsWithErrors.push(account.email);
 					return null;
 				});
-			if (result?.rows[0]) {
+			if (result?.rows[0] !== undefined) {
 				updatedAccounts.push(result.rows[0].accountId);
 			}
 		}),
@@ -130,12 +130,12 @@ const triggerOrphanedFolderDeletion = async (): Promise<{
 			archiveId: number;
 			folderLinkId: number;
 		}>("admin.queries.get_orphaned_folders")
-		.catch((err) => {
+		.catch((err: unknown) => {
 			logger.error(err);
 			throw new createError.InternalServerError("Failed to retrieve folders");
 		});
 
-	const folders = folderResult.rows;
+	const { rows: folders } = folderResult;
 
 	const publishResults = await publisherClient
 		.batchPublishMessages(
@@ -153,7 +153,7 @@ const triggerOrphanedFolderDeletion = async (): Promise<{
 				}),
 			})),
 		)
-		.catch((err) => {
+		.catch((err: unknown) => {
 			logger.error(err);
 			throw new createError.InternalServerError("Failed to publish messages");
 		});

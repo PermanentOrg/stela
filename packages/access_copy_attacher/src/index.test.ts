@@ -1,4 +1,5 @@
 import type { Context } from "aws-lambda";
+import { mock } from "jest-mock-extended";
 import { logger } from "@stela/logger";
 import { constructSignedCdnUrl } from "@stela/s3-utils";
 import { db } from "./database";
@@ -75,7 +76,7 @@ describe("handler", () => {
 				},
 			],
 		};
-		await handler(event, {} as Context, () => {});
+		await handler(event, mock<Context>(), jest.fn());
 
 		const recordThumbnail256Result = await db.query<{
 			fileId: string;
@@ -99,7 +100,7 @@ describe("handler", () => {
 		const testSize = 102400;
 		const testVersionId = "test-s3-version-id";
 
-		(constructSignedCdnUrl as jest.Mock).mockReturnValue(testUrl);
+		jest.mocked(constructSignedCdnUrl).mockReturnValue(testUrl);
 
 		const event = {
 			Records: [
@@ -135,7 +136,7 @@ describe("handler", () => {
 				},
 			],
 		};
-		await handler(event, {} as Context, () => {});
+		await handler(event, mock<Context>(), jest.fn());
 
 		const fileResult = await db.query<{
 			size: number;
@@ -169,17 +170,22 @@ describe("handler", () => {
 
 		expect(fileResult.rows.length).toEqual(1);
 
-		const file = fileResult.rows[0];
-		expect(+(file?.size ?? 0)).toEqual(testSize);
-		expect(file?.format).toEqual("file.format.archivematica.access");
-		expect(file?.contentType).toEqual("image/jpeg");
-		expect(file?.s3VersionId).toEqual(testVersionId);
-		expect(file?.archiveId).toEqual("1");
-		expect(file?.fileUrl).toEqual(testUrl);
-		expect(file?.downloadUrl).toEqual(testUrl);
-		expect(file?.status).toEqual("status.generic.ok");
-		expect(file?.type).toEqual("type.file.image.jpg");
-		expect(file?.cloudPath).toEqual(testKey);
+		const {
+			rows: [file],
+		} = fileResult;
+		expect(file).toBeDefined();
+		if (file !== undefined) {
+			expect(file.size).toEqual(testSize.toString());
+			expect(file.format).toEqual("file.format.archivematica.access");
+			expect(file.contentType).toEqual("image/jpeg");
+			expect(file.s3VersionId).toEqual(testVersionId);
+			expect(file.archiveId).toEqual("1");
+			expect(file.fileUrl).toEqual(testUrl);
+			expect(file.downloadUrl).toEqual(testUrl);
+			expect(file.status).toEqual("status.generic.ok");
+			expect(file.type).toEqual("type.file.image.jpg");
+			expect(file.cloudPath).toEqual(testKey);
+		}
 
 		expect(constructSignedCdnUrl).toHaveBeenCalledWith(testKey);
 		expect(constructSignedCdnUrl).toHaveBeenCalledWith(
@@ -230,7 +236,7 @@ describe("handler", () => {
 
 		let error = null;
 		try {
-			await handler(event, {} as Context, () => {});
+			await handler(event, mock<Context>(), jest.fn());
 		} catch (err) {
 			error = err;
 		} finally {
@@ -286,7 +292,7 @@ describe("handler", () => {
 
 		let error = null;
 		try {
-			await handler(event, {} as Context, () => {});
+			await handler(event, mock<Context>(), jest.fn());
 		} catch (err) {
 			error = err;
 		} finally {
@@ -349,7 +355,7 @@ describe("handler", () => {
 
 		let error = null;
 		try {
-			await handler(event, {} as Context, () => {});
+			await handler(event, mock<Context>(), jest.fn());
 		} catch (err) {
 			error = err;
 		} finally {
@@ -366,7 +372,7 @@ describe("handler", () => {
 		const testSize = 102400;
 		const testVersionId = "test-s3-version-id";
 
-		(constructSignedCdnUrl as jest.Mock).mockReturnValue(testUrl);
+		jest.mocked(constructSignedCdnUrl).mockReturnValue(testUrl);
 
 		const event = {
 			Records: [
@@ -402,7 +408,7 @@ describe("handler", () => {
 				},
 			],
 		};
-		await handler(event, {} as Context, () => {});
+		await handler(event, mock<Context>(), jest.fn());
 
 		const fileResult = await db.query<{
 			size: number;
@@ -436,7 +442,7 @@ describe("handler", () => {
 
 		expect(fileResult.rows.length).toEqual(1);
 
-		await handler(event, {} as Context, () => {});
+		await handler(event, mock<Context>(), jest.fn());
 
 		const fileResultAfterSecondRun = await db.query<{
 			size: number;

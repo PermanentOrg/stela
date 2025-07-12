@@ -2,6 +2,7 @@ import type { Request, Response, NextFunction } from "express";
 import createError from "http-errors";
 import { fusionAuthClient } from "../fusionauth";
 import { isObjectWithStatusCode } from "./handleError";
+import { HTTP_STATUS } from "@pdc/http-status-codes";
 
 const emailKey = "email";
 const subjectKey = "sub";
@@ -47,7 +48,11 @@ const getOptionalValueFromAuthToken = async (
 				);
 				return response;
 			} catch (err) {
-				if (isObjectWithStatusCode(err) && err.statusCode === 429) {
+				if (
+					isObjectWithStatusCode(err) &&
+					err.statusCode ===
+						(HTTP_STATUS.CLIENT_ERROR.TOO_MANY_REQUESTS as number)
+				) {
 					throw err;
 				}
 				return null;
@@ -56,7 +61,10 @@ const getOptionalValueFromAuthToken = async (
 	);
 
 	const successfulIntrospectionResponse = introspectionResponses.find(
-		(introspectionResponse) => introspectionResponse?.wasSuccessful(),
+		(introspectionResponse) =>
+			introspectionResponse !== null
+				? introspectionResponse.wasSuccessful()
+				: false,
 	);
 	if (
 		successfulIntrospectionResponse === undefined ||
@@ -110,14 +118,15 @@ const getAuthTokenFromRequest = (
 	req: Request<unknown, unknown, unknown>,
 ): string => {
 	const authorizationHeaderParts = req.get("Authorization")?.split(" ");
-	if (
-		!authorizationHeaderParts ||
-		authorizationHeaderParts.length !== 2 ||
-		authorizationHeaderParts[0] !== "Bearer"
-	) {
+	if (authorizationHeaderParts === undefined) {
 		return "";
 	}
-	return authorizationHeaderParts[1] ?? "";
+	const [firstWordInAuthorizationHeader, secondWordInAuthorizationHeader] =
+		authorizationHeaderParts;
+	if (firstWordInAuthorizationHeader !== "Bearer") {
+		return "";
+	}
+	return secondWordInAuthorizationHeader ?? "";
 };
 
 const verifyUserAuthentication = async (

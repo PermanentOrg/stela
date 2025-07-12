@@ -13,7 +13,7 @@ export const getSharedFolders = async (
 			archiveId,
 			email,
 		})
-		.catch((err) => {
+		.catch((err: unknown) => {
 			logger.error(err);
 			throw new createError.InternalServerError(
 				"Failed to retrieve shared folder IDs",
@@ -22,5 +22,5 @@ export const getSharedFolders = async (
 
 	const folderIds = result.rows.map((row) => row.folderId);
 
-	return getFolders(folderIds, email);
+	return await getFolders(folderIds, email);
 };

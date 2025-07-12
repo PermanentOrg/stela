@@ -2,21 +2,26 @@ import Joi from "joi";
 import type { GiftStorageRequest } from "./models";
 import { fieldsFromUserAuthentication } from "../validators";
 
-export function validateGiftStorageRequest(
+const MINIMUM_GIFT_AMOUNT = 1;
+const MINIMUM_GIFT_RECIPIENTS = 1;
+
+export const validateGiftStorageRequest: (
 	data: unknown,
-): asserts data is GiftStorageRequest {
+) => asserts data is GiftStorageRequest = (
+	data: unknown,
+): asserts data is GiftStorageRequest => {
 	const validation = Joi.object()
 		.keys({
 			...fieldsFromUserAuthentication,
-			storageAmount: Joi.number().integer().min(1).required(),
+			storageAmount: Joi.number().integer().min(MINIMUM_GIFT_AMOUNT).required(),
 			recipientEmails: Joi.array()
-				.min(1)
+				.min(MINIMUM_GIFT_RECIPIENTS)
 				.items(Joi.string().email())
 				.required(),
 			note: Joi.string().allow("").optional(),
 		})
 		.validate(data);
-	if (validation.error) {
+	if (validation.error !== undefined) {
 		throw validation.error;
 	}
-}
+};

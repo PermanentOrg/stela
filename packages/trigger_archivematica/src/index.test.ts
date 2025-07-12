@@ -1,5 +1,5 @@
 import type { Context } from "aws-lambda";
-import type { Response } from "node-fetch";
+import { mock } from "jest-mock-extended";
 import { logger } from "@stela/logger";
 import { triggerArchivematicaProcessing } from "@stela/archivematica-utils";
 import { db } from "./database";
@@ -184,16 +184,18 @@ describe("handler", () => {
 					},
 				],
 			},
-			{} as Context,
-			() => {},
+			mock<Context>(),
+			jest.fn(),
 		);
 
 		expect(triggerArchivematicaProcessing).toHaveBeenCalledWith(
 			"1",
 			"originals/1/1",
-			"https://example.com",
-			"test-api-key",
-			"a6962a82-5462-4d9c-9ea1-5b9982ed625a",
+			{
+				archivematicaHostUrl: "https://example.com",
+				archivematicaApiKey: "test-api-key",
+				archivematicaOriginalLocationId: "a6962a82-5462-4d9c-9ea1-5b9982ed625a",
+			},
 		);
 	});
 
@@ -225,8 +227,8 @@ describe("handler", () => {
 					},
 				],
 			},
-			{} as Context,
-			() => {},
+			mock<Context>(),
+			jest.fn(),
 		);
 
 		expect(triggerArchivematicaProcessing).not.toHaveBeenCalled();
@@ -282,17 +284,19 @@ describe("handler", () => {
 					},
 				],
 			},
-			{} as Context,
-			() => {},
+			mock<Context>(),
+			jest.fn(),
 		);
 
 		expect(triggerArchivematicaProcessing).toHaveBeenCalledTimes(1);
 		expect(triggerArchivematicaProcessing).toHaveBeenCalledWith(
 			"1",
 			"originals/1/1",
-			"https://example.com",
-			"test-api-key",
-			"a6962a82-5462-4d9c-9ea1-5b9982ed625a",
+			{
+				archivematicaHostUrl: "https://example.com",
+				archivematicaApiKey: "test-api-key",
+				archivematicaOriginalLocationId: "a6962a82-5462-4d9c-9ea1-5b9982ed625a",
+			},
 		);
 	});
 	test("should throw error when database query fails", async () => {
@@ -327,8 +331,8 @@ describe("handler", () => {
 						},
 					],
 				},
-				{} as Context,
-				() => {},
+				mock<Context>(),
+				jest.fn(),
 			),
 		).rejects.toThrow("Database connection failed");
 
@@ -370,8 +374,8 @@ describe("handler", () => {
 						},
 					],
 				},
-				{} as Context,
-				() => {},
+				mock<Context>(),
+				jest.fn(),
 			),
 		).rejects.toThrow("Failed to trigger Archivematica");
 
@@ -379,16 +383,20 @@ describe("handler", () => {
 		expect(triggerArchivematicaProcessing).toHaveBeenCalledWith(
 			"1",
 			"originals/1/1",
-			"https://example.com",
-			"test-api-key",
-			"a6962a82-5462-4d9c-9ea1-5b9982ed625a",
+			{
+				archivematicaHostUrl: "https://example.com",
+				archivematicaApiKey: "test-api-key",
+				archivematicaOriginalLocationId: "a6962a82-5462-4d9c-9ea1-5b9982ed625a",
+			},
 		);
 	});
 
 	test("should throw error when Archivematica processing fails without an exception", async () => {
 		jest
 			.mocked(triggerArchivematicaProcessing)
-			.mockResolvedValueOnce({ ok: false, status: 404 } as Response);
+			.mockImplementation(
+				jest.fn().mockResolvedValueOnce({ ok: false, status: 404 }),
+			);
 
 		await expect(
 			handler(
@@ -418,8 +426,8 @@ describe("handler", () => {
 						},
 					],
 				},
-				{} as Context,
-				() => {},
+				mock<Context>(),
+				jest.fn(),
 			),
 		).rejects.toThrow("Call to Archivematica failed with status 404");
 
@@ -427,9 +435,11 @@ describe("handler", () => {
 		expect(triggerArchivematicaProcessing).toHaveBeenCalledWith(
 			"1",
 			"originals/1/1",
-			"https://example.com",
-			"test-api-key",
-			"a6962a82-5462-4d9c-9ea1-5b9982ed625a",
+			{
+				archivematicaHostUrl: "https://example.com",
+				archivematicaApiKey: "test-api-key",
+				archivematicaOriginalLocationId: "a6962a82-5462-4d9c-9ea1-5b9982ed625a",
+			},
 		);
 	});
 });

@@ -21,12 +21,12 @@ export const isObjectWithStatusCode = (
 	"statusCode" in value &&
 	typeof (value as { statusCode: unknown }).statusCode === "number";
 
-export const handleError = async (
+export const handleError = (
 	err: unknown,
 	_: Request,
 	res: Response,
 	next: NextFunction,
-): Promise<void> => {
+): void => {
 	Sentry.captureException(err);
 	if (isObjectWithStatus(err)) {
 		res.status(err.status).json({ error: err });

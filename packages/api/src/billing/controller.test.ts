@@ -1,12 +1,12 @@
 import request from "supertest";
-import type { Request, NextFunction } from "express";
+import { when } from "jest-when";
 import { logger } from "@stela/logger";
 import { app } from "../app";
 import { verifyUserAuthentication } from "../middleware";
 import { db } from "../database";
 import { GB } from "../constants";
 import { sendInvitationNotification, sendGiftNotification } from "../email";
-import type { GiftStorageRequest, GiftStorageResponse } from "./models";
+import { mockVerifyUserAuthentication } from "../../test/middleware_mocks";
 
 jest.mock("../database");
 jest.mock("../middleware");
@@ -14,8 +14,8 @@ jest.mock("../email");
 jest.mock("@stela/logger");
 
 interface AccountSpace {
-	spaceLeft: number;
-	spaceTotal: number;
+	spaceLeft: string;
+	spaceTotal: string;
 }
 
 const senderAccountId = "2";
@@ -38,13 +38,13 @@ const getAccountSpace = async (
 	return result.rows[0];
 };
 
-const checkLedgerEntries = async (
-	gifterAccountId: string,
-	recipientAccountId: string,
-	giftAmountInGB: number,
-	initialSenderSpace: AccountSpace | undefined,
-	initialRecipientSpace: AccountSpace | undefined,
-): Promise<void> => {
+const checkLedgerEntries = async (giftData: {
+	gifterAccountId: string;
+	recipientAccountId: string;
+	amountInGB: number;
+	initialSenderSpace: AccountSpace | undefined;
+	initialRecipientSpace: AccountSpace | undefined;
+}): Promise<void> => {
 	const ledgerEntryResponse = await db.query<{
 		spaceDelta: string;
 		fromSpaceBefore: string;
@@ -67,15 +67,18 @@ const checkLedgerEntries = async (
     WHERE
       fromAccountId = :senderAccountId
       AND toAccountId = :recipientAccountId`,
-		{ senderAccountId: gifterAccountId, recipientAccountId },
+		{
+			senderAccountId: giftData.gifterAccountId,
+			recipientAccountId: giftData.recipientAccountId,
+		},
 	);
 
 	ledgerEntryResponse.rows.forEach((ledgerEntry) => {
-		expect(ledgerEntry.spaceDelta).toBe((giftAmountInGB * GB).toString());
+		expect(ledgerEntry.spaceDelta).toBe((giftData.amountInGB * GB).toString());
 
 		if (
-			initialSenderSpace?.spaceTotal === undefined ||
-			initialRecipientSpace?.spaceTotal === undefined
+			giftData.initialSenderSpace?.spaceTotal === undefined ||
+			giftData.initialRecipientSpace?.spaceTotal === undefined
 		) {
 			expect(true).toBe(false);
 		} else {
@@ -83,32 +86,33 @@ const checkLedgerEntries = async (
 			// so we check that it's less than or equal to the initial space total and that it's decreased in increments
 			// equal to the gift size
 			expect(+ledgerEntry.fromSpaceBefore).toBeLessThanOrEqual(
-				+initialSenderSpace.spaceTotal,
+				+giftData.initialSenderSpace.spaceTotal,
 			);
 			expect(
-				(+initialSenderSpace.spaceTotal - +ledgerEntry.fromSpaceBefore) %
-					(giftAmountInGB * GB),
+				(+giftData.initialSenderSpace.spaceTotal -
+					+ledgerEntry.fromSpaceBefore) %
+					(giftData.amountInGB * GB),
 			).toStrictEqual(0);
 			expect(+ledgerEntry.fromSpaceLeft).toBe(
-				+ledgerEntry.fromSpaceBefore - giftAmountInGB * GB,
+				+ledgerEntry.fromSpaceBefore - giftData.amountInGB * GB,
 			);
 			expect(+ledgerEntry.fromSpaceTotal).toBe(
-				+ledgerEntry.fromSpaceBefore - giftAmountInGB * GB,
+				+ledgerEntry.fromSpaceBefore - giftData.amountInGB * GB,
 			);
 
-			if (recipientAccountId === "0") {
+			if (giftData.recipientAccountId === "0") {
 				expect(+ledgerEntry.toSpaceBefore).toBe(0);
 				expect(+ledgerEntry.toSpaceLeft).toBe(0);
 				expect(+ledgerEntry.toSpaceTotal).toBe(0);
 			} else {
 				expect(ledgerEntry.toSpaceBefore).toBe(
-					initialRecipientSpace.spaceTotal,
+					giftData.initialRecipientSpace.spaceTotal,
 				);
 				expect(+ledgerEntry.toSpaceLeft).toBe(
-					+initialRecipientSpace.spaceTotal + giftAmountInGB * GB,
+					+giftData.initialRecipientSpace.spaceTotal + giftData.amountInGB * GB,
 				);
 				expect(+ledgerEntry.toSpaceTotal).toBe(
-					+initialRecipientSpace.spaceTotal + giftAmountInGB * GB,
+					+giftData.initialRecipientSpace.spaceTotal + giftData.amountInGB * GB,
 				);
 			}
 		}
@@ -119,14 +123,9 @@ describe("/billing/gift", () => {
 	const agent = request(app);
 
 	beforeEach(async () => {
-		(verifyUserAuthentication as jest.Mock).mockImplementation(
-			(req: Request, __, next: NextFunction) => {
-				(req.body as GiftStorageRequest).emailFromAuthToken =
-					"test@permanent.org";
-				(req.body as GiftStorageRequest).userSubjectFromAuthToken =
-					"13bb917e-7c75-4971-a8ee-b22e82432888";
-				next();
-			},
+		mockVerifyUserAuthentication(
+			"test@permanent.org",
+			"13bb917e-7c75-4971-a8ee-b22e82432888",
 		);
 		await clearDatabase();
 	});
@@ -142,75 +141,28 @@ describe("/billing/gift", () => {
 	});
 
 	test("should return invalid request status if email from auth token is missing", async () => {
-		(verifyUserAuthentication as jest.Mock).mockImplementation(
-			(req: Request, __, next: NextFunction) => {
-				(req.body as GiftStorageRequest).userSubjectFromAuthToken =
-					"13bb917e-7c75-4971-a8ee-b22e82432888";
-				next();
-			},
-		);
-		await agent.post("/api/v2/billing/gift").expect(400);
-	});
-
-	test("should return invalid request status if email from auth token is wrong type", async () => {
-		(verifyUserAuthentication as jest.Mock).mockImplementation(
-			(req: Request, __, next: NextFunction) => {
-				(req.body as GiftStorageRequest).emailFromAuthToken =
-					1 as unknown as string;
-				(req.body as GiftStorageRequest).userSubjectFromAuthToken =
-					"13bb917e-7c75-4971-a8ee-b22e82432888";
-				next();
-			},
+		mockVerifyUserAuthentication(
+			undefined,
+			"13bb917e-7c75-4971-a8ee-b22e82432888",
 		);
 		await agent.post("/api/v2/billing/gift").expect(400);
 	});
 
 	test("should return invalid request status if email from auth token is not an email", async () => {
-		(verifyUserAuthentication as jest.Mock).mockImplementation(
-			(req: Request, __, next: NextFunction) => {
-				(req.body as GiftStorageRequest).emailFromAuthToken = "test";
-				(req.body as GiftStorageRequest).userSubjectFromAuthToken =
-					"13bb917e-7c75-4971-a8ee-b22e82432888";
-				next();
-			},
+		mockVerifyUserAuthentication(
+			"test",
+			"13bb917e-7c75-4971-a8ee-b22e82432888",
 		);
 		await agent.post("/api/v2/billing/gift").expect(400);
 	});
 
 	test("should return invalid request status if subject from auth token is missing", async () => {
-		(verifyUserAuthentication as jest.Mock).mockImplementation(
-			(req: Request, __, next: NextFunction) => {
-				(req.body as GiftStorageRequest).emailFromAuthToken =
-					"test@permanent.org";
-				next();
-			},
-		);
-		await agent.post("/api/v2/billing/gift").expect(400);
-	});
-
-	test("should return invalid request status if subject from auth token is wrong type", async () => {
-		(verifyUserAuthentication as jest.Mock).mockImplementation(
-			(req: Request, __, next: NextFunction) => {
-				(req.body as GiftStorageRequest).emailFromAuthToken =
-					"test@permanent.org";
-				(req.body as GiftStorageRequest).userSubjectFromAuthToken =
-					1 as unknown as string;
-				next();
-			},
-		);
+		mockVerifyUserAuthentication("test@permanent.org");
 		await agent.post("/api/v2/billing/gift").expect(400);
 	});
 
 	test("should return invalid request status if subject from auth token is not a uuid", async () => {
-		(verifyUserAuthentication as jest.Mock).mockImplementation(
-			(req: Request, __, next: NextFunction) => {
-				(req.body as GiftStorageRequest).emailFromAuthToken =
-					"test@permanent.org";
-				(req.body as GiftStorageRequest).userSubjectFromAuthToken =
-					"not_a_uuid";
-				next();
-			},
-		);
+		mockVerifyUserAuthentication("test@permanent.org", "not_a_uuid");
 		await agent.post("/api/v2/billing/gift").expect(400);
 	});
 
@@ -297,14 +249,9 @@ describe("/billing/gift", () => {
 		await db.sql("billing.fixtures.create_test_accounts");
 		await db.sql("billing.fixtures.create_test_account_space");
 		await db.sql("billing.fixtures.create_test_emails");
-		(verifyUserAuthentication as jest.Mock).mockImplementation(
-			(req: Request, __, next: NextFunction) => {
-				(req.body as GiftStorageRequest).emailFromAuthToken =
-					"not_a_user@permanent.org";
-				(req.body as GiftStorageRequest).userSubjectFromAuthToken =
-					"13bb917e-7c75-4971-a8ee-b22e82432888";
-				next();
-			},
+		mockVerifyUserAuthentication(
+			"not_a_user@permanent.org",
+			"13bb917e-7c75-4971-a8ee-b22e82432888",
 		);
 
 		await agent
@@ -327,13 +274,13 @@ describe("/billing/gift", () => {
 			.post("/api/v2/billing/gift")
 			.send({ storageAmount: 1, recipientEmails: ["test+1@permanent.org"] })
 			.expect(200);
-		await checkLedgerEntries(
-			senderAccountId,
-			recipientOneAccountId,
-			1,
+		await checkLedgerEntries({
+			gifterAccountId: senderAccountId,
+			recipientAccountId: recipientOneAccountId,
+			amountInGB: 1,
 			initialSenderSpace,
 			initialRecipientSpace,
-		);
+		});
 	});
 
 	test("successful gift should update account_space for sender", async () => {
@@ -354,7 +301,7 @@ describe("/billing/gift", () => {
 			expect(false).toBe(true);
 		} else {
 			expect(+updatedAccountSpace.spaceLeft).toBe(
-				initialAccountSpace.spaceLeft - GB,
+				+initialAccountSpace.spaceLeft - GB,
 			);
 		}
 		if (
@@ -364,7 +311,7 @@ describe("/billing/gift", () => {
 			expect(false).toBe(true);
 		} else {
 			expect(+updatedAccountSpace.spaceTotal).toBe(
-				initialAccountSpace.spaceTotal - GB,
+				+initialAccountSpace.spaceTotal - GB,
 			);
 		}
 	});
@@ -420,20 +367,20 @@ describe("/billing/gift", () => {
 				recipientEmails: ["test+1@permanent.org", "test+2@permanent.org"],
 			})
 			.expect(200);
-		await checkLedgerEntries(
-			senderAccountId,
-			recipientOneAccountId,
-			1,
+		await checkLedgerEntries({
+			gifterAccountId: senderAccountId,
+			recipientAccountId: recipientOneAccountId,
+			amountInGB: 1,
 			initialSenderSpace,
-			initialRecipientOneSpace,
-		);
-		await checkLedgerEntries(
-			senderAccountId,
-			recipientTwoAccountId,
-			1,
+			initialRecipientSpace: initialRecipientOneSpace,
+		});
+		await checkLedgerEntries({
+			gifterAccountId: senderAccountId,
+			recipientAccountId: recipientTwoAccountId,
+			amountInGB: 1,
 			initialSenderSpace,
-			initialRecipientTwoSpace,
-		);
+			initialRecipientSpace: initialRecipientTwoSpace,
+		});
 	});
 
 	test("should return an invalid request status if sender doesn't have enough storage", async () => {
@@ -521,9 +468,15 @@ describe("/billing/gift", () => {
 			})
 			.expect(200);
 
-		await checkLedgerEntries(senderAccountId, "0", 1, initialSenderSpace, {
-			spaceLeft: 0,
-			spaceTotal: 0,
+		await checkLedgerEntries({
+			gifterAccountId: senderAccountId,
+			recipientAccountId: "0",
+			amountInGB: 1,
+			initialSenderSpace,
+			initialRecipientSpace: {
+				spaceLeft: "0",
+				spaceTotal: "0",
+			},
 		});
 	});
 
@@ -586,21 +539,17 @@ describe("/billing/gift", () => {
 			})
 			.expect(200);
 
-		expect((results.body as GiftStorageResponse).giftDelivered).toEqual([
-			"test+1@permanent.org",
-		]);
-		expect((results.body as GiftStorageResponse).invitationSent).toEqual([
-			"test+not_a_user_yet@permanent.org",
-		]);
-		expect((results.body as GiftStorageResponse).alreadyInvited).toEqual([
-			"test+already_invited@permanent.org",
-		]);
-		expect((results.body as GiftStorageResponse).storageGifted).toEqual(2);
+		expect(results.body).toEqual({
+			giftDelivered: ["test+1@permanent.org"],
+			invitationSent: ["test+not_a_user_yet@permanent.org"],
+			alreadyInvited: ["test+already_invited@permanent.org"],
+			storageGifted: 2,
+		});
 	});
 
 	test("should log error and return 500 if check for existing emails fails", async () => {
 		const testError = new Error("test error");
-		jest.spyOn(db, "sql").mockImplementation(async () => {
+		jest.spyOn(db, "sql").mockImplementationOnce(async () => {
 			throw testError;
 		});
 
@@ -614,14 +563,12 @@ describe("/billing/gift", () => {
 
 	test("should log error and return 500 if check for invited emails fails", async () => {
 		const testError = new Error("test error");
-		jest
-			.spyOn(db, "sql")
-			.mockImplementationOnce((async () => ({
-				rows: [],
-			})) as unknown as typeof db.sql)
-			.mockImplementationOnce(async () => {
-				throw testError;
-			});
+		const spy = jest.spyOn(db, "sql");
+		when(spy)
+			.calledWith("billing.queries.get_invited_emails", {
+				emails: ["test+1@permanent.org"],
+			})
+			.mockRejectedValueOnce(testError);
 
 		await agent
 			.post("/api/v2/billing/gift")
@@ -633,17 +580,12 @@ describe("/billing/gift", () => {
 
 	test("should log error and return 500 if check for available space fails", async () => {
 		const testError = new Error("test error");
-		jest
-			.spyOn(db, "sql")
-			.mockImplementationOnce((async () => ({
-				rows: [],
-			})) as unknown as typeof db.sql)
-			.mockImplementationOnce((async () => ({
-				rows: [],
-			})) as unknown as typeof db.sql)
-			.mockImplementationOnce(async () => {
-				throw testError;
-			});
+		const spy = jest.spyOn(db, "sql");
+		when(spy)
+			.calledWith("billing.queries.get_account_space_for_update", {
+				email: "test@permanent.org",
+			})
+			.mockRejectedValueOnce(testError);
 
 		await agent
 			.post("/api/v2/billing/gift")
@@ -654,17 +596,12 @@ describe("/billing/gift", () => {
 	});
 
 	test("should log error and return 500 if check for available space finds nothing", async () => {
-		jest
-			.spyOn(db, "sql")
-			.mockImplementationOnce((async () => ({
-				rows: [],
-			})) as unknown as typeof db.sql)
-			.mockImplementationOnce((async () => ({
-				rows: [],
-			})) as unknown as typeof db.sql)
-			.mockImplementationOnce((async () => ({
-				rows: [],
-			})) as unknown as typeof db.sql);
+		const spy = jest.spyOn(db, "sql");
+		when(spy)
+			.calledWith("billing.queries.get_account_space_for_update", {
+				email: "test@permanent.org",
+			})
+			.mockImplementationOnce(jest.fn().mockResolvedValueOnce({ rows: [] }));
 
 		await agent
 			.post("/api/v2/billing/gift")
@@ -678,20 +615,31 @@ describe("/billing/gift", () => {
 
 	test("should log error and return 500 if recording gifts for existing accounts fails", async () => {
 		const testError = new Error("test error");
-		jest
-			.spyOn(db, "sql")
-			.mockImplementationOnce((async () => ({
-				rows: [],
-			})) as unknown as typeof db.sql)
-			.mockImplementationOnce((async () => ({
-				rows: [],
-			})) as unknown as typeof db.sql)
-			.mockImplementationOnce((async () => ({
-				rows: [{ spaceLeft: 2 * GB }],
-			})) as unknown as typeof db.sql)
-			.mockImplementationOnce(async () => {
-				throw testError;
-			});
+		const spy = jest.spyOn(db, "sql");
+		when(spy)
+			.calledWith("billing.queries.get_existing_account_emails", {
+				emails: ["test+1@permanent.org"],
+			})
+			.mockImplementationOnce(
+				jest
+					.fn()
+					.mockResolvedValueOnce({ rows: [{ email: "test+1@permanent.org" }] }),
+			);
+		when(spy)
+			.calledWith("billing.queries.get_account_space_for_update", {
+				email: "test@permanent.org",
+			})
+			.mockImplementationOnce(
+				jest.fn().mockResolvedValueOnce({ rows: [{ spaceLeft: 2 * GB }] }),
+			);
+		when(spy)
+			.calledWith("billing.queries.record_gift", {
+				fromEmail: "test@permanent.org",
+				toEmails: ["test+1@permanent.org"],
+				storageAmountInBytes: 1 * GB,
+				recipientCount: 1,
+			})
+			.mockRejectedValueOnce(testError);
 
 		await agent
 			.post("/api/v2/billing/gift")
@@ -703,21 +651,23 @@ describe("/billing/gift", () => {
 
 	test("should log error and return 500 if creating invites fails", async () => {
 		const testError = new Error("test error");
-		jest
-			.spyOn(db, "sql")
-			.mockImplementationOnce((async () => ({
-				rows: [],
-			})) as unknown as typeof db.sql)
-			.mockImplementationOnce((async () => ({
-				rows: [],
-			})) as unknown as typeof db.sql)
-			.mockImplementationOnce((async () => ({
-				rows: [{ spaceLeft: 2 * GB }],
-			})) as unknown as typeof db.sql)
-			.mockImplementationOnce((async () => null) as unknown as typeof db.sql)
-			.mockImplementationOnce(async () => {
-				throw testError;
-			});
+		const spy = jest.spyOn(db, "sql");
+		when(spy)
+			.calledWith("billing.queries.get_account_space_for_update", {
+				email: "test@permanent.org",
+			})
+			.mockImplementationOnce(
+				jest.fn().mockResolvedValueOnce({ rows: [{ spaceLeft: 2 * GB }] }),
+			);
+		when(spy)
+			.calledWith("billing.queries.create_invites", {
+				emails: ["test+1@permanent.org"],
+				storageAmountInBytes: 1 * GB,
+				tokens: [expect.any(String)],
+				byAccountEmail: "test@permanent.org",
+				recipientCount: 1,
+			})
+			.mockRejectedValueOnce(testError);
 
 		await agent
 			.post("/api/v2/billing/gift")

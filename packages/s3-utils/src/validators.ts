@@ -24,11 +24,11 @@ export interface S3Object {
 }
 
 export interface NewDisseminationPackageJpgEvent {
-	Records: {
+	Records: Array<{
 		s3: {
 			object: S3Object;
 		};
-	}[];
+	}>;
 }
 const newDisseminationPackageJpgEventSchema: JSONSchemaType<NewDisseminationPackageJpgEvent> =
 	{

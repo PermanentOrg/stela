@@ -1,5 +1,7 @@
 import Joi from "joi";
 
+const MINIMUM_PAGE_SIZE = 1;
+
 export const fieldsFromUserAuthentication = {
 	emailFromAuthToken: Joi.string().email().required(),
 	userSubjectFromAuthToken: Joi.string().uuid().required(),
@@ -22,48 +24,66 @@ export const fieldsFromUserOrAdminAuthentication = Joi.object()
 	.nand("userEmailFromAuthToken", "adminSubjectFromAuthToken")
 	.nand("adminEmailFromAuthToken", "userSubjectFromAuthToken");
 
-export function validateBodyFromAuthentication(data: unknown): asserts data is {
+export const validateBodyFromAuthentication: (
+	data: unknown,
+) => asserts data is {
 	emailFromAuthToken: string;
 	userSubjectFromAuthToken: string;
-} {
+} = (
+	data: unknown,
+): asserts data is {
+	emailFromAuthToken: string;
+	userSubjectFromAuthToken: string;
+} => {
 	const validation = Joi.object()
 		.keys(fieldsFromUserAuthentication)
 		.validate(data);
-	if (validation.error) {
+	if (validation.error !== undefined) {
 		throw validation.error;
 	}
-}
+};
 
-export function validateBodyFromAdminAuthentication(
+export const validateBodyFromAdminAuthentication: (
+	data: unknown,
+) => asserts data is {
+	emailFromAuthToken: string;
+	userSubjectFromAuthToken: string;
+} = (
 	data: unknown,
 ): asserts data is {
 	emailFromAuthToken: string;
 	userSubjectFromAuthToken: string;
-} {
+} => {
 	const validation = Joi.object()
 		.keys(fieldsFromAdminAuthentication)
 		.validate(data);
-	if (validation.error) {
+	if (validation.error !== undefined) {
 		throw validation.error;
 	}
-}
+};
 
-export function validateIsAdminFromAuthentication(
+export const validateIsAdminFromAuthentication: (
+	data: unknown,
+) => asserts data is {
+	admin: boolean;
+} = (
 	data: unknown,
 ): asserts data is {
 	admin: boolean;
-} {
+} => {
 	const validation = Joi.object()
 		.keys({ admin: Joi.boolean().required() })
 		.validate(data);
-	if (validation.error) {
+	if (validation.error !== undefined) {
 		throw validation.error;
 	}
-}
+};
 
-export function validateOptionalAuthenticationValues(
+export const validateOptionalAuthenticationValues: (
 	data: unknown,
-): asserts data is { emailFromAuthToken?: string; shareToken: string } {
+) => asserts data is { emailFromAuthToken?: string; shareToken: string } = (
+	data: unknown,
+): asserts data is { emailFromAuthToken?: string; shareToken: string } => {
 	const validation = Joi.object()
 		.keys({
 			emailFromAuthToken: Joi.string().email().optional(),
@@ -71,22 +91,24 @@ export function validateOptionalAuthenticationValues(
 		})
 		.validate(data);
 
-	if (validation.error) {
+	if (validation.error !== undefined) {
 		throw validation.error;
 	}
-}
+};
 
-export function validatePaginationParameters(
+export const validatePaginationParameters: (
 	data: unknown,
-): asserts data is { cursor?: string; pageSize: number } {
+) => asserts data is { cursor?: string; pageSize: number } = (
+	data: unknown,
+): asserts data is { cursor?: string; pageSize: number } => {
 	const validation = Joi.object()
 		.keys({
 			cursor: Joi.string(),
-			pageSize: Joi.number().integer().min(1).required(),
+			pageSize: Joi.number().integer().min(MINIMUM_PAGE_SIZE).required(),
 		})
 		.validate(data);
 
-	if (validation.error) {
+	if (validation.error !== undefined) {
 		throw validation.error;
 	}
-}
+};

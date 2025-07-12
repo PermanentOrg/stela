@@ -2,34 +2,40 @@ import Joi from "joi";
 import type { PatchRecordRequest } from "./models";
 import { fieldsFromUserAuthentication } from "../validators";
 
-export function validateGetRecordQuery(
+export const validateGetRecordQuery: (
 	data: unknown,
-): asserts data is { recordIds: string[] } {
+) => asserts data is { recordIds: string[] } = (
+	data: unknown,
+): asserts data is { recordIds: string[] } => {
 	const validation = Joi.object()
 		.keys({
 			recordIds: Joi.array().items(Joi.string().required()).required(),
 		})
 		.validate(data);
-	if (validation.error) {
+	if (validation.error !== undefined) {
 		throw validation.error;
 	}
-}
-export function validateRecordRequest(
+};
+export const validateRecordRequest: (
 	data: unknown,
-): asserts data is { recordId: string } {
+) => asserts data is { recordId: string } = (
+	data: unknown,
+): asserts data is { recordId: string } => {
 	const validation = Joi.object()
 		.keys({
 			recordId: Joi.string().required(),
 		})
 		.validate(data);
-	if (validation.error) {
+	if (validation.error !== undefined) {
 		throw validation.error;
 	}
-}
+};
 
-export function validatePatchRecordRequest(
+export const validatePatchRecordRequest: (
 	data: unknown,
-): asserts data is PatchRecordRequest {
+) => asserts data is PatchRecordRequest = (
+	data: unknown,
+): asserts data is PatchRecordRequest => {
 	const validation = Joi.object()
 		.keys({
 			...fieldsFromUserAuthentication,
@@ -38,7 +44,7 @@ export function validatePatchRecordRequest(
 		})
 		.validate(data);
 
-	if (validation.error) {
+	if (validation.error !== undefined) {
 		throw validation.error;
 	}
-}
+};

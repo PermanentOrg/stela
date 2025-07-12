@@ -33,7 +33,7 @@ const constructSignedCdnUrl = (key: string): string => {
 export const refreshThumbnails = async (): Promise<void> => {
 	const itemsToRefreshThumbnails = await db
 		.sql<ThumbnailData>("queries.get_items_where_thumbnails_expire_soon")
-		.catch((err) => {
+		.catch((err: unknown) => {
 			logger.error(err);
 			throw err;
 		});
@@ -79,7 +79,7 @@ export const refreshThumbnails = async (): Promise<void> => {
 						folderId: item.id,
 					});
 				}
-			} catch (err) {
+			} catch (err: unknown) {
 				logger.error(err);
 			}
 		}),

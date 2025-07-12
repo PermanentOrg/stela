@@ -12,13 +12,13 @@ export const getPayerAccountStorage = async (
 			archiveId,
 			accountEmail,
 		})
-		.catch((err) => {
+		.catch((err: unknown) => {
 			logger.error(err);
 			throw new createError.InternalServerError(
 				"failed to retrieve account storage",
 			);
 		});
-	if (!accountStoragesResult.rows[0]) {
+	if (accountStoragesResult.rows[0] === undefined) {
 		throw new createError.NotFound("payer account storage not found");
 	}
 	return accountStoragesResult.rows[0];

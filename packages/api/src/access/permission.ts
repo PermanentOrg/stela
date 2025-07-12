@@ -3,18 +3,26 @@ import { logger } from "@stela/logger";
 import { AccessRole } from "./models";
 import { db } from "../database";
 
+const VIEWER_ACCESS_ROLE_RANK = 1;
+const CONTRIBUTOR_ACCESS_ROLE_RANK = 2;
+const EDITOR_ACCESS_ROLE_RANK = 3;
+const CURATOR_ACCESS_ROLE_RANK = 4;
+const MANAGER_ACCESS_ROLE_RANK = 5;
+const OWNER_ACCESS_ROLE_RANK = 6;
+const ADMIN_ACCESS_ROLE_RANK = 7;
+
 export const accessRoleLessThan = (
 	roleOne: AccessRole,
 	roleTwo: AccessRole,
 ): boolean => {
 	const accessRoleRank = new Map();
-	accessRoleRank.set(AccessRole.Viewer, 1);
-	accessRoleRank.set(AccessRole.Contributor, 2);
-	accessRoleRank.set(AccessRole.Editor, 3);
-	accessRoleRank.set(AccessRole.Curator, 4);
-	accessRoleRank.set(AccessRole.Manager, 5);
-	accessRoleRank.set(AccessRole.Owner, 6);
-	accessRoleRank.set(AccessRole.Admin, 7);
+	accessRoleRank.set(AccessRole.Viewer, VIEWER_ACCESS_ROLE_RANK);
+	accessRoleRank.set(AccessRole.Contributor, CONTRIBUTOR_ACCESS_ROLE_RANK);
+	accessRoleRank.set(AccessRole.Editor, EDITOR_ACCESS_ROLE_RANK);
+	accessRoleRank.set(AccessRole.Curator, CURATOR_ACCESS_ROLE_RANK);
+	accessRoleRank.set(AccessRole.Manager, MANAGER_ACCESS_ROLE_RANK);
+	accessRoleRank.set(AccessRole.Owner, OWNER_ACCESS_ROLE_RANK);
+	accessRoleRank.set(AccessRole.Admin, ADMIN_ACCESS_ROLE_RANK);
 
 	return accessRoleRank.get(roleOne) < accessRoleRank.get(roleTwo);
 };
@@ -46,7 +54,7 @@ export const getItemAccessRole = async (
 			archiveAccessRole: AccessRole;
 			shareAccessRole: AccessRole;
 		}>(query, { itemId, email: callerEmail })
-		.catch((err) => {
+		.catch((err: unknown) => {
 			logger.error(err);
 			throw createError.InternalServerError("Failed to access database");
 		});
@@ -79,12 +87,14 @@ export const getItemAccessRole = async (
 export const getRecordAccessRole = async (
 	recordId: string,
 	callerEmail: string,
-): Promise<AccessRole> => getItemAccessRole(recordId, "record", callerEmail);
+): Promise<AccessRole> =>
+	await getItemAccessRole(recordId, "record", callerEmail);
 
 export const getFolderAccessRole = async (
 	folderId: string,
 	callerEmail: string,
-): Promise<AccessRole> => getItemAccessRole(folderId, "folder", callerEmail);
+): Promise<AccessRole> =>
+	await getItemAccessRole(folderId, "folder", callerEmail);
 
 export const isItemPublic = async (
 	itemId: string,
@@ -96,7 +106,7 @@ export const isItemPublic = async (
 			: "access.queries.is_folder_public";
 	const result = await db
 		.sql<{ isPublic: boolean }>(query, { itemId })
-		.catch((err) => {
+		.catch((err: unknown) => {
 			logger.error(err);
 			throw createError.InternalServerError("Failed to access database");
 		});

@@ -1,8 +1,4 @@
-import type {
-	MessagesSendSuccessResponse,
-	MessagesSendRejectResponse,
-} from "@mailchimp/mailchimp_transactional";
-import type { AxiosError } from "axios";
+import type { MessagesSendSuccessResponse } from "@mailchimp/mailchimp_transactional";
 import {
 	sendLegacyContactNotification,
 	sendArchiveStewardNotification,
@@ -52,19 +48,17 @@ describe("sendLegacyContactNotification", () => {
 	});
 
 	test("should send legacy contact notification successfully", async () => {
-		const mockResponse = [
+		const mockResponse: MessagesSendSuccessResponse[] = [
 			{
 				status: "sent",
 				_id: "test",
 				email: "contact@permanent.org",
 				reject_reason: null,
-			} as MessagesSendSuccessResponse,
+			},
 		];
-		(
-			MailchimpTransactional.messages.sendTemplate as jest.MockedFunction<
-				typeof MailchimpTransactional.messages.sendTemplate
-			>
-		).mockResolvedValueOnce(mockResponse);
+		jest
+			.mocked(MailchimpTransactional.messages.sendTemplate)
+			.mockResolvedValueOnce(mockResponse);
 
 		await sendLegacyContactNotification(testLegacyContactId);
 
@@ -115,19 +109,17 @@ describe("sendArchiveNotification", () => {
 	});
 
 	test("should send archive steward notification successfully", async () => {
-		const mockResponse = [
+		const mockResponse: MessagesSendSuccessResponse[] = [
 			{
 				status: "sent",
 				_id: "test",
 				email: "test+1@permanent.org",
 				reject_reason: null,
-			} as MessagesSendSuccessResponse,
+			},
 		];
-		(
-			MailchimpTransactional.messages.sendTemplate as jest.MockedFunction<
-				typeof MailchimpTransactional.messages.sendTemplate
-			>
-		).mockResolvedValueOnce(mockResponse);
+		jest
+			.mocked(MailchimpTransactional.messages.sendTemplate)
+			.mockResolvedValueOnce(mockResponse);
 
 		await sendArchiveStewardNotification(testDirectiveId);
 
@@ -173,30 +165,27 @@ describe("sendEmail", () => {
 	});
 
 	test("should successfully call Mailchimp", async () => {
-		const mockResponse = [
+		const mockResponse: MessagesSendSuccessResponse[] = [
 			{
 				status: "sent",
 				_id: "test",
 				email: "contact@permanent.org",
 				reject_reason: null,
-			} as MessagesSendSuccessResponse,
+			},
 		];
-		(
-			MailchimpTransactional.messages.sendTemplate as jest.MockedFunction<
-				typeof MailchimpTransactional.messages.sendTemplate
-			>
-		).mockResolvedValueOnce(mockResponse);
+		jest
+			.mocked(MailchimpTransactional.messages.sendTemplate)
+			.mockResolvedValueOnce(mockResponse);
 
-		await sendEmail(
-			"legacy-contact-added",
-			"Jack Rando",
-			[{ email: "contact@permanent.org", name: "John Rando" }],
-			"*|FROM_FULLNAME|* wants you to be their Legacy Contact",
-			[
+		await sendEmail("legacy-contact-added", {
+			fromName: "Jack Rando",
+			toData: [{ email: "contact@permanent.org", name: "John Rando" }],
+			subject: "*|FROM_FULLNAME|* wants you to be their Legacy Contact",
+			mergeVariables: [
 				{ name: "from_fullname", content: "Jack Rando" },
 				{ name: "to_fullname", content: "John Rando" },
 			],
-		);
+		});
 
 		expect(MailchimpTransactional.messages.sendTemplate).toHaveBeenCalledWith({
 			template_name: "legacy-contact-added",
@@ -221,81 +210,72 @@ describe("sendEmail", () => {
 
 	test("should throw an error if no email is sent", async () => {
 		const mockResponse: MessagesSendSuccessResponse[] = [];
-		(
-			MailchimpTransactional.messages.sendTemplate as jest.MockedFunction<
-				typeof MailchimpTransactional.messages.sendTemplate
-			>
-		).mockResolvedValueOnce(mockResponse);
+		jest
+			.mocked(MailchimpTransactional.messages.sendTemplate)
+			.mockResolvedValueOnce(mockResponse);
 
 		await expect(
-			sendEmail(
-				"legacy-contact-added",
-				"Jack Rando",
-				[{ email: "contact@permanent.org", name: "John Rando" }],
-				"*|FROM_FULLNAME|* wants you to be their Legacy Contact",
-				[
+			sendEmail("legacy-contact-added", {
+				fromName: "Jack Rando",
+				toData: [{ email: "contact@permanent.org", name: "John Rando" }],
+				subject: "*|FROM_FULLNAME|* wants you to be their Legacy Contact",
+				mergeVariables: [
 					{ name: "from_fullname", content: "Jack Rando" },
 					{ name: "to_fullname", content: "John Rando" },
 				],
-			),
+			}),
 		).rejects.toThrow("no email sent");
 	});
 
 	test("should throw an error if the Mailchimp API response indicates email not sent", async () => {
-		const mockResponse = [
+		const mockResponse: MessagesSendSuccessResponse[] = [
 			{
-				status: "rejected",
+				status: "invalid",
 				reject_reason: "invalid",
 				email: "contact@permanent.org",
 				_id: "test",
-			} as MessagesSendRejectResponse,
+			},
 		];
-		(
-			MailchimpTransactional.messages.sendTemplate as jest.MockedFunction<
-				typeof MailchimpTransactional.messages.sendTemplate
-			>
-		).mockResolvedValueOnce(mockResponse);
+		jest
+			.mocked(MailchimpTransactional.messages.sendTemplate)
+			.mockResolvedValueOnce(mockResponse);
 
 		await expect(
-			sendEmail(
-				"legacy-contact-added",
-				"Jack Rando",
-				[{ email: "contact@permanent.org", name: "John Rando" }],
-				"*|FROM_FULLNAME|* wants you to be their Legacy Contact",
-				[
+			sendEmail("legacy-contact-added", {
+				fromName: "Jack Rando",
+				toData: [{ email: "contact@permanent.org", name: "John Rando" }],
+				subject: "*|FROM_FULLNAME|* wants you to be their Legacy Contact",
+				mergeVariables: [
 					{ name: "from_fullname", content: "Jack Rando" },
 					{ name: "to_fullname", content: "John Rando" },
 				],
-			),
-		).rejects.toThrow("Email not sent. Status: rejected; Reason: invalid");
+			}),
+		).rejects.toThrow("Email not sent. Status: invalid; Reason: invalid");
 	});
 
 	test("should throw an error if the Mailchimp API response is an axios error", async () => {
 		const mockResponse = {
 			config: {},
 			isAxiosError: true,
-			toJSON: () => {},
+			toJSON: jest.fn(),
 			response: {
 				status: 500,
 			},
-		} as AxiosError;
-		(
-			MailchimpTransactional.messages.sendTemplate as jest.MockedFunction<
-				typeof MailchimpTransactional.messages.sendTemplate
-			>
-		).mockResolvedValueOnce(mockResponse);
+		};
+		jest
+			.mocked(MailchimpTransactional.messages.sendTemplate)
+			.mockImplementationOnce(jest.fn().mockResolvedValueOnce(mockResponse));
 
 		await expect(
-			sendEmail(
-				"legacy-contact-added",
-				"Jack Rando",
-				[{ email: "contact@permanent.org", name: "John Rando" }],
-				"*|FROM_FULLNAME|* wants you to be their Legacy Contact",
-				[
+			sendEmail("legacy-contact-added", {
+				fromName: "Jack Rando",
+				toData: [{ email: "contact@permanent.org", name: "John Rando" }],
+				subject: "*|FROM_FULLNAME|* wants you to be their Legacy Contact",
+				mergeVariables: [
 					{ name: "from_fullname", content: "Jack Rando" },
 					{ name: "to_fullname", content: "John Rando" },
 				],
-			),
+			}),
 		).rejects.toThrow("Error calling Mailchimp. Status: 500");
 	});
 });
@@ -317,27 +297,25 @@ describe("sendInvitationNotification", () => {
 	});
 
 	test("send invite email should call mailchimp successfully", async () => {
-		const mockResponse = [
+		const mockResponse: MessagesSendSuccessResponse[] = [
 			{
 				status: "sent",
 				_id: "test",
 				email: "contact@permanent.org",
 				reject_reason: null,
-			} as MessagesSendSuccessResponse,
+			},
 		];
-		(
-			MailchimpTransactional.messages.sendTemplate as jest.MockedFunction<
-				typeof MailchimpTransactional.messages.sendTemplate
-			>
-		).mockResolvedValueOnce(mockResponse);
+		jest
+			.mocked(MailchimpTransactional.messages.sendTemplate)
+			.mockResolvedValueOnce(mockResponse);
 
-		await sendInvitationNotification(
-			senderEmail,
-			recipientEmail,
-			testMessage,
-			1,
-			testToken,
-		);
+		await sendInvitationNotification({
+			fromEmail: senderEmail,
+			toEmail: recipientEmail,
+			message: testMessage,
+			giftAmount: 1,
+			token: testToken,
+		});
 
 		expect(MailchimpTransactional.messages.sendTemplate).toHaveBeenCalledWith({
 			template_name: "invitation-from-relationship",
@@ -372,13 +350,13 @@ describe("sendInvitationNotification", () => {
 		await db.query("TRUNCATE account CASCADE;");
 
 		await expect(
-			sendInvitationNotification(
-				senderEmail,
-				recipientEmail,
-				testMessage,
-				1,
-				testToken,
-			),
+			sendInvitationNotification({
+				fromEmail: senderEmail,
+				toEmail: recipientEmail,
+				message: testMessage,
+				giftAmount: 1,
+				token: testToken,
+			}),
 		).rejects.toThrow(`Account with primary email ${senderEmail} not found`);
 
 		expect(MailchimpTransactional.messages.sendTemplate).not.toHaveBeenCalled();
@@ -402,19 +380,17 @@ describe("sendGiftNotification", () => {
 	});
 
 	test("send gift email should call mailchimp successfully", async () => {
-		const mockResponse = [
+		const mockResponse: MessagesSendSuccessResponse[] = [
 			{
 				status: "sent",
 				_id: "test",
 				email: "contact@permanent.org",
 				reject_reason: null,
-			} as MessagesSendSuccessResponse,
+			},
 		];
-		(
-			MailchimpTransactional.messages.sendTemplate as jest.MockedFunction<
-				typeof MailchimpTransactional.messages.sendTemplate
-			>
-		).mockResolvedValueOnce(mockResponse);
+		jest
+			.mocked(MailchimpTransactional.messages.sendTemplate)
+			.mockResolvedValueOnce(mockResponse);
 
 		await sendGiftNotification(
 			senderEmail,
