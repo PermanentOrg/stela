@@ -30,7 +30,6 @@
 		"@sentry/profiling-node": "^9.34.0",
 		"@stela/logger": "^1.0.0",
 		"dotenv": "^17.2.0",
-		"node-fetch": "^2.6.9",
 		"require-env-variable": "^4.0.2"
 	}
 }
