@@ -25,7 +25,7 @@ describe("GET /folder/{id}/children", () => {
 				__,
 				next: NextFunction,
 			) => {
-				req.body.emailFromAuthToken = "test@permanent.org";
+				req.body = { emailFromAuthToken: "test@permanent.org" };
 				next();
 			},
 		);
@@ -72,7 +72,7 @@ describe("GET /folder/{id}/children", () => {
 				__,
 				next: NextFunction,
 			) => {
-				req.body.emailFromAuthToken = "not_an_email";
+				req.body = { emailFromAuthToken: "not_an_email" };
 				next();
 			},
 		);
@@ -348,7 +348,7 @@ describe("GET /folder/{id}/children", () => {
 				__,
 				next: NextFunction,
 			) => {
-				req.body.emailFromAuthToken = "test+5@permanent.org";
+				req.body = { emailFromAuthToken: "test+5@permanent.org" };
 				next();
 			},
 		);

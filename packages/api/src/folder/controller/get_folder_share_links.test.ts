@@ -26,10 +26,10 @@ describe("GET /folder/{id}/share_links", () => {
 				__,
 				next: NextFunction,
 			) => {
-				req.body.emailFromAuthToken = "test@permanent.org";
-				req.body.userSubjectFromAuthToken =
-					"b5461dc2-1eb0-450e-b710-fef7b2cafe1e";
-
+				req.body = {
+					emailFromAuthToken: "test@permanent.org",
+					userSubjectFromAuthToken: "b5461dc2-1eb0-450e-b710-fef7b2cafe1e",
+				};
 				next();
 			},
 		);
@@ -83,9 +83,10 @@ describe("GET /folder/{id}/share_links", () => {
 				__,
 				next: NextFunction,
 			) => {
-				req.body.emailFromAuthToken = "test+1@permanent.org";
-				req.body.userSubjectFromAuthToken =
-					"b5461dc2-1eb0-450e-b710-fef7b2cafe1e";
+				req.body = {
+					emailFromAuthToken: "test+1@permanent.org",
+					userSubjectFromAuthToken: "b5461dc2-1eb0-450e-b710-fef7b2cafe1e",
+				};
 
 				next();
 			},
@@ -119,7 +120,8 @@ describe("GET /folder/{id}/share_links", () => {
 
 	test("expect 400 if the header values are missing", async () => {
 		(verifyUserAuthentication as jest.Mock).mockImplementation(
-			(_, __, next: NextFunction) => {
+			(req: Request, __, next: NextFunction) => {
+				req.body = {};
 				next();
 			},
 		);

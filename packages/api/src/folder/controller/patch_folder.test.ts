@@ -61,7 +61,10 @@ describe("patch folder", () => {
 			},
 		);
 
-		await agent.patch("/api/v2/folder/1").expect(400);
+		await agent
+			.patch("/api/v2/folder/1")
+			.send({ displayDate: "2024-09-26T15:09:52.000Z" })
+			.expect(400);
 	});
 
 	test("expect displayDate is updated", async () => {

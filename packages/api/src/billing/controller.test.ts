@@ -149,7 +149,13 @@ describe("/billing/gift", () => {
 				next();
 			},
 		);
-		await agent.post("/api/v2/billing/gift").expect(400);
+		await agent
+			.post("/api/v2/billing/gift")
+			.send({
+				storageAmount: 1,
+				recipientEmails: ["test+1@permanent.org", "test+2@permanent.org"],
+			})
+			.expect(400);
 	});
 
 	test("should return invalid request status if email from auth token is wrong type", async () => {
@@ -162,7 +168,13 @@ describe("/billing/gift", () => {
 				next();
 			},
 		);
-		await agent.post("/api/v2/billing/gift").expect(400);
+		await agent
+			.post("/api/v2/billing/gift")
+			.send({
+				storageAmount: 1,
+				recipientEmails: ["test+1@permanent.org", "test+2@permanent.org"],
+			})
+			.expect(400);
 	});
 
 	test("should return invalid request status if email from auth token is not an email", async () => {
@@ -174,7 +186,13 @@ describe("/billing/gift", () => {
 				next();
 			},
 		);
-		await agent.post("/api/v2/billing/gift").expect(400);
+		await agent
+			.post("/api/v2/billing/gift")
+			.send({
+				storageAmount: 1,
+				recipientEmails: ["test+1@permanent.org", "test+2@permanent.org"],
+			})
+			.expect(400);
 	});
 
 	test("should return invalid request status if subject from auth token is missing", async () => {
@@ -185,7 +203,13 @@ describe("/billing/gift", () => {
 				next();
 			},
 		);
-		await agent.post("/api/v2/billing/gift").expect(400);
+		await agent
+			.post("/api/v2/billing/gift")
+			.send({
+				storageAmount: 1,
+				recipientEmails: ["test+1@permanent.org", "test+2@permanent.org"],
+			})
+			.expect(400);
 	});
 
 	test("should return invalid request status if subject from auth token is wrong type", async () => {
@@ -198,7 +222,13 @@ describe("/billing/gift", () => {
 				next();
 			},
 		);
-		await agent.post("/api/v2/billing/gift").expect(400);
+		await agent
+			.post("/api/v2/billing/gift")
+			.send({
+				storageAmount: 1,
+				recipientEmails: ["test+1@permanent.org", "test+2@permanent.org"],
+			})
+			.expect(400);
 	});
 
 	test("should return invalid request status if subject from auth token is not a uuid", async () => {
@@ -211,7 +241,13 @@ describe("/billing/gift", () => {
 				next();
 			},
 		);
-		await agent.post("/api/v2/billing/gift").expect(400);
+		await agent
+			.post("/api/v2/billing/gift")
+			.send({
+				storageAmount: 1,
+				recipientEmails: ["test+1@permanent.org", "test+2@permanent.org"],
+			})
+			.expect(400);
 	});
 
 	test("should return invalid request status if storage amount is missing", async () => {

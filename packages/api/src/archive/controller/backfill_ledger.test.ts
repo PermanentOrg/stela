@@ -27,11 +27,10 @@ describe("POST /:archiveId/backfill-ledger", () => {
 	beforeEach(async () => {
 		(verifyAdminAuthentication as jest.Mock).mockImplementation(
 			(req: Request, _: Response, next: NextFunction) => {
-				(req.body as { emailFromAuthToken: string }).emailFromAuthToken =
-					"test+1@permanent.org";
-				(
-					req.body as { adminSubjectFromAuthToken: string }
-				).adminSubjectFromAuthToken = "82bd483e-914b-4bfe-abf9-92ffe86d7803";
+				req.body = {
+					emailFromAuthToken: "test+1@permanent.org",
+					adminSubjectFromAuthToken: "82bd483e-914b-4bfe-abf9-92ffe86d7803",
+				};
 				next();
 			},
 		);

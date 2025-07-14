@@ -1,5 +1,5 @@
 import request from "supertest";
-import type { NextFunction } from "express";
+import type { Request, NextFunction } from "express";
 import createError from "http-errors";
 import { db } from "../database";
 import { mixpanelClient } from "../mixpanel";
@@ -124,7 +124,16 @@ describe("POST /event", () => {
 				next();
 			},
 		);
-		await agent.post("/api/v2/event").expect(400);
+		await agent
+			.post("/api/v2/event")
+			.send({
+				entity: "account",
+				action: "create",
+				version: 1,
+				entityId: "123",
+				body: {},
+			})
+			.expect(400);
 	});
 
 	test("should return 400 if entity is missing", async () => {
@@ -592,12 +601,10 @@ describe("GET /event/checklist", () => {
 	beforeEach(async () => {
 		(verifyUserAuthentication as jest.Mock).mockImplementation(
 			(req: Request, __, next: NextFunction) => {
-				(
-					req.body as unknown as { emailFromAuthToken: string }
-				).emailFromAuthToken = testEmail;
-				(
-					req.body as unknown as { userSubjectFromAuthToken: string }
-				).userSubjectFromAuthToken = testSubject;
+				req.body = {
+					emailFromAuthToken: testEmail,
+					userSubjectFromAuthToken: testSubject,
+				};
 				next();
 			},
 		);
@@ -627,9 +634,7 @@ describe("GET /event/checklist", () => {
 	test("should return 400 if emailFromAuthToken is not an email", async () => {
 		(verifyUserAuthentication as jest.Mock).mockImplementation(
 			(req: Request, _, next: NextFunction) => {
-				(
-					req.body as unknown as { emailFromAuthToken: string }
-				).emailFromAuthToken = "not_an_email";
+				req.body = { emailFromAuthToken: "not_an_email" };
 				next();
 			},
 		);
@@ -703,12 +708,10 @@ describe("GET /event/checklist", () => {
 	test("should communicate that a user without an archive has not created an archive", async () => {
 		(verifyUserAuthentication as jest.Mock).mockImplementation(
 			(req: Request, __, next: NextFunction) => {
-				(
-					req.body as unknown as { emailFromAuthToken: string }
-				).emailFromAuthToken = testNoProgressEmail;
-				(
-					req.body as unknown as { userSubjectFromAuthToken: string }
-				).userSubjectFromAuthToken = testSubject;
+				req.body = {
+					emailFromAuthToken: testNoProgressEmail,
+					userSubjectFromAuthToken: testSubject,
+				};
 				next();
 			},
 		);
@@ -736,12 +739,10 @@ describe("GET /event/checklist", () => {
 	test("should communicate that a user hasn't redeemed their welcome storage", async () => {
 		(verifyUserAuthentication as jest.Mock).mockImplementation(
 			(req: Request, __, next: NextFunction) => {
-				(
-					req.body as unknown as { emailFromAuthToken: string }
-				).emailFromAuthToken = testNoProgressEmail;
-				(
-					req.body as unknown as { userSubjectFromAuthToken: string }
-				).userSubjectFromAuthToken = testSubject;
+				req.body = {
+					emailFromAuthToken: testNoProgressEmail,
+					userSubjectFromAuthToken: testSubject,
+				};
 				next();
 			},
 		);
@@ -769,12 +770,10 @@ describe("GET /event/checklist", () => {
 	test("should communicate that a user hasn't assigned a legacy contact", async () => {
 		(verifyUserAuthentication as jest.Mock).mockImplementation(
 			(req: Request, __, next: NextFunction) => {
-				(
-					req.body as unknown as { emailFromAuthToken: string }
-				).emailFromAuthToken = testNoProgressEmail;
-				(
-					req.body as unknown as { userSubjectFromAuthToken: string }
-				).userSubjectFromAuthToken = testSubject;
+				req.body = {
+					emailFromAuthToken: testNoProgressEmail,
+					userSubjectFromAuthToken: testSubject,
+				};
 				next();
 			},
 		);
@@ -802,12 +801,10 @@ describe("GET /event/checklist", () => {
 	test("should communicate that a user hasn't assigned an archive steward", async () => {
 		(verifyUserAuthentication as jest.Mock).mockImplementation(
 			(req: Request, __, next: NextFunction) => {
-				(
-					req.body as unknown as { emailFromAuthToken: string }
-				).emailFromAuthToken = testNoProgressEmail;
-				(
-					req.body as unknown as { userSubjectFromAuthToken: string }
-				).userSubjectFromAuthToken = testSubject;
+				req.body = {
+					emailFromAuthToken: testNoProgressEmail,
+					userSubjectFromAuthToken: testSubject,
+				};
 				next();
 			},
 		);
@@ -835,12 +832,10 @@ describe("GET /event/checklist", () => {
 	test("should communicate that a user hasn't updated an archive profile", async () => {
 		(verifyUserAuthentication as jest.Mock).mockImplementation(
 			(req: Request, __, next: NextFunction) => {
-				(
-					req.body as unknown as { emailFromAuthToken: string }
-				).emailFromAuthToken = testNoProgressEmail;
-				(
-					req.body as unknown as { userSubjectFromAuthToken: string }
-				).userSubjectFromAuthToken = testSubject;
+				req.body = {
+					emailFromAuthToken: testNoProgressEmail,
+					userSubjectFromAuthToken: testSubject,
+				};
 				next();
 			},
 		);
@@ -867,12 +862,10 @@ describe("GET /event/checklist", () => {
 	test("should communicate that a user hasn't uploaded a file", async () => {
 		(verifyUserAuthentication as jest.Mock).mockImplementation(
 			(req: Request, __, next: NextFunction) => {
-				(
-					req.body as unknown as { emailFromAuthToken: string }
-				).emailFromAuthToken = testNoProgressEmail;
-				(
-					req.body as unknown as { userSubjectFromAuthToken: string }
-				).userSubjectFromAuthToken = testSubject;
+				req.body = {
+					emailFromAuthToken: testNoProgressEmail,
+					userSubjectFromAuthToken: testSubject,
+				};
 				next();
 			},
 		);
@@ -899,12 +892,10 @@ describe("GET /event/checklist", () => {
 	test("should communicate that a user hasn't published content", async () => {
 		(verifyUserAuthentication as jest.Mock).mockImplementation(
 			(req: Request, __, next: NextFunction) => {
-				(
-					req.body as unknown as { emailFromAuthToken: string }
-				).emailFromAuthToken = testNoProgressEmail;
-				(
-					req.body as unknown as { userSubjectFromAuthToken: string }
-				).userSubjectFromAuthToken = testSubject;
+				req.body = {
+					emailFromAuthToken: testNoProgressEmail,
+					userSubjectFromAuthToken: testSubject,
+				};
 				next();
 			},
 		);
