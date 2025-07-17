@@ -1,5 +1,4 @@
 import type { Context } from "aws-lambda";
-import type { Response } from "node-fetch";
 import { logger } from "@stela/logger";
 import { triggerArchivematicaProcessing } from "@stela/archivematica-utils";
 import { db } from "./database";
