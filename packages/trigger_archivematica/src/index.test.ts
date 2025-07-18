@@ -185,15 +185,17 @@ describe("handler", () => {
 				],
 			},
 			mock<Context>(),
-			() => {},
+			jest.fn(),
 		);
 
 		expect(triggerArchivematicaProcessing).toHaveBeenCalledWith(
 			"1",
 			"originals/1/1",
-			"https://example.com",
-			"test-api-key",
-			"a6962a82-5462-4d9c-9ea1-5b9982ed625a",
+			{
+				archivematicaHostUrl: "https://example.com",
+				archivematicaApiKey: "test-api-key",
+				archivematicaOriginalLocationId: "a6962a82-5462-4d9c-9ea1-5b9982ed625a",
+			},
 		);
 	});
 
@@ -226,7 +228,7 @@ describe("handler", () => {
 				],
 			},
 			mock<Context>(),
-			() => {},
+			jest.fn(),
 		);
 
 		expect(triggerArchivematicaProcessing).not.toHaveBeenCalled();
@@ -283,16 +285,18 @@ describe("handler", () => {
 				],
 			},
 			mock<Context>(),
-			() => {},
+			jest.fn(),
 		);
 
 		expect(triggerArchivematicaProcessing).toHaveBeenCalledTimes(1);
 		expect(triggerArchivematicaProcessing).toHaveBeenCalledWith(
 			"1",
 			"originals/1/1",
-			"https://example.com",
-			"test-api-key",
-			"a6962a82-5462-4d9c-9ea1-5b9982ed625a",
+			{
+				archivematicaHostUrl: "https://example.com",
+				archivematicaApiKey: "test-api-key",
+				archivematicaOriginalLocationId: "a6962a82-5462-4d9c-9ea1-5b9982ed625a",
+			},
 		);
 	});
 	test("should throw error when database query fails", async () => {
@@ -328,7 +332,7 @@ describe("handler", () => {
 					],
 				},
 				mock<Context>(),
-				() => {},
+				jest.fn(),
 			),
 		).rejects.toThrow("Database connection failed");
 
@@ -371,7 +375,7 @@ describe("handler", () => {
 					],
 				},
 				mock<Context>(),
-				() => {},
+				jest.fn(),
 			),
 		).rejects.toThrow("Failed to trigger Archivematica");
 
@@ -379,9 +383,11 @@ describe("handler", () => {
 		expect(triggerArchivematicaProcessing).toHaveBeenCalledWith(
 			"1",
 			"originals/1/1",
-			"https://example.com",
-			"test-api-key",
-			"a6962a82-5462-4d9c-9ea1-5b9982ed625a",
+			{
+				archivematicaHostUrl: "https://example.com",
+				archivematicaApiKey: "test-api-key",
+				archivematicaOriginalLocationId: "a6962a82-5462-4d9c-9ea1-5b9982ed625a",
+			},
 		);
 	});
 
@@ -421,7 +427,7 @@ describe("handler", () => {
 					],
 				},
 				mock<Context>(),
-				() => {},
+				jest.fn(),
 			),
 		).rejects.toThrow("Call to Archivematica failed with status 404");
 
@@ -429,9 +435,11 @@ describe("handler", () => {
 		expect(triggerArchivematicaProcessing).toHaveBeenCalledWith(
 			"1",
 			"originals/1/1",
-			"https://example.com",
-			"test-api-key",
-			"a6962a82-5462-4d9c-9ea1-5b9982ed625a",
+			{
+				archivematicaHostUrl: "https://example.com",
+				archivematicaApiKey: "test-api-key",
+				archivematicaOriginalLocationId: "a6962a82-5462-4d9c-9ea1-5b9982ed625a",
+			},
 		);
 	});
 });

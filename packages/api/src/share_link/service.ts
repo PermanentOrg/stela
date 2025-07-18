@@ -5,6 +5,9 @@ import type {
 	CreateShareLinkRequest,
 	UpdateShareLinkRequest,
 	ShareLink,
+	ShareLinkRow,
+	CreateShareLinkDatabaseParams,
+	UpdateShareLinkDatabaseParams,
 } from "./models";
 import { db } from "../database";
 import {
@@ -13,6 +16,54 @@ import {
 	isItemPublic,
 } from "../access/permission";
 import { AccessRole } from "../access/models";
+
+const APPROVAL_NOT_REQUIRED = 1;
+const APPROVAL_REQUIRED = 0;
+
+const createShareLinkRequestParamsToDatabaseParams = (
+	data: CreateShareLinkRequest,
+	itemIsPublic: boolean,
+	shareToken: string,
+): CreateShareLinkDatabaseParams => ({
+	itemId: data.itemId,
+	itemType: data.itemType,
+	permissionsLevel: `access.role.${data.permissionsLevel ?? "viewer"}`,
+	unlisted:
+		(data.accessRestrictions === "none" ||
+			data.accessRestrictions === undefined) &&
+		!itemIsPublic,
+	noApproval:
+		data.accessRestrictions !== "approval"
+			? APPROVAL_NOT_REQUIRED
+			: APPROVAL_REQUIRED,
+	maxUses: data.maxUses ?? 0,
+	expirationTimestamp: data.expirationTimestamp,
+	urlToken: shareToken,
+	shareUrl: `https://${process.env["SITE_URL"] ?? ""}/share/${shareToken}`,
+	email: data.emailFromAuthToken,
+});
+
+const updateShareLinkRequestParamsToDatabaseParams = (
+	data: UpdateShareLinkRequest,
+	noApproval: number | null,
+	shareLinkId: string,
+): UpdateShareLinkDatabaseParams => ({
+	permissionsLevel:
+		data.permissionsLevel !== undefined
+			? `access.role.${data.permissionsLevel}`
+			: null,
+	unlisted:
+		data.accessRestrictions !== undefined
+			? data.accessRestrictions === "none"
+			: null,
+	noApproval,
+	maxUses: data.maxUses,
+	setMaxUsesToNull: data.maxUses === null,
+	expirationTimestamp: data.expirationTimestamp,
+	setExpirationTimestampToNull: data.expirationTimestamp === null,
+	shareLinkId,
+	email: data.emailFromAuthToken,
+});
 
 const createShareLink = async (
 	data: CreateShareLinkRequest,
@@ -37,22 +88,15 @@ const createShareLink = async (
 
 	const shareToken = uuidv4();
 	const result = await db
-		.sql<ShareLink>("share_link.queries.create_share_link", {
-			itemId: data.itemId,
-			itemType: data.itemType,
-			permissionsLevel: `access.role.${data.permissionsLevel ?? "viewer"}`,
-			unlisted:
-				(data.accessRestrictions === "none" ||
-					data.accessRestrictions === undefined) &&
-				!itemIsPublic,
-			noApproval: data.accessRestrictions !== "approval" ? 1 : 0,
-			maxUses: data.maxUses ?? 0,
-			expirationTimestamp: data.expirationTimestamp,
-			urlToken: shareToken,
-			shareUrl: `https://${process.env["SITE_URL"] ?? ""}/share/${shareToken}`,
-			email: data.emailFromAuthToken,
-		})
-		.catch((err) => {
+		.sql<ShareLinkRow>(
+			"share_link.queries.create_share_link",
+			createShareLinkRequestParamsToDatabaseParams(
+				data,
+				itemIsPublic,
+				shareToken,
+			),
+		)
+		.catch((err: unknown) => {
 			logger.error(err);
 			throw new Error("Failed to create share link");
 		});
@@ -107,7 +151,7 @@ const updateShareLink = async (
 			shareTokens: [],
 			email: data.emailFromAuthToken,
 		})
-		.catch((err) => {
+		.catch((err: unknown) => {
 			logger.error(err);
 			throw new Error("Failed to get share link");
 		});
@@ -128,28 +172,22 @@ const updateShareLink = async (
 
 	let noApproval = null;
 	if (data.accessRestrictions !== undefined) {
-		noApproval = data.accessRestrictions === "approval" ? 0 : 1;
+		noApproval =
+			data.accessRestrictions === "approval"
+				? APPROVAL_REQUIRED
+				: APPROVAL_NOT_REQUIRED;
 	}
 
 	const updateResult = await db
-		.sql<ShareLink>("share_link.queries.update_share_link", {
-			permissionsLevel:
-				data.permissionsLevel !== undefined
-					? `access.role.${data.permissionsLevel}`
-					: null,
-			unlisted:
-				data.accessRestrictions !== undefined
-					? data.accessRestrictions === "none"
-					: null,
-			noApproval,
-			maxUses: data.maxUses,
-			setMaxUsesToNull: data.maxUses === null,
-			expirationTimestamp: data.expirationTimestamp,
-			setExpirationTimestampToNull: data.expirationTimestamp === null,
-			shareLinkId,
-			email: data.emailFromAuthToken,
-		})
-		.catch((err) => {
+		.sql<ShareLinkRow>(
+			"share_link.queries.update_share_link",
+			updateShareLinkRequestParamsToDatabaseParams(
+				data,
+				noApproval,
+				shareLinkId,
+			),
+		)
+		.catch((err: unknown) => {
 			logger.error(err);
 			throw new Error("Failed to update share link");
 		});
@@ -163,6 +201,10 @@ const updateShareLink = async (
 		maxUses:
 			updateResult.rows[0].maxUses !== null
 				? +updateResult.rows[0].maxUses
+				: null,
+		usesExpended:
+			updateResult.rows[0].usesExpended !== null
+				? +updateResult.rows[0].usesExpended
 				: null,
 	};
 };
@@ -178,7 +220,7 @@ const getShareLinks = async (
 			shareTokens,
 			shareLinkIds,
 		})
-		.catch((err) => {
+		.catch((err: unknown) => {
 			logger.error(err);
 			throw new Error("Failed to get share links");
 		});
@@ -194,7 +236,7 @@ const deleteShareLink = async (
 			email,
 			shareLinkId,
 		})
-		.catch((err) => {
+		.catch((err: unknown) => {
 			logger.error(err);
 			throw new Error("Failed to delete share link");
 		});

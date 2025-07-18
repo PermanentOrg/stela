@@ -1,6 +1,6 @@
 import type { SQSHandler, SQSEvent } from "aws-lambda";
 import { lookup as mimeLookup } from "mime-types";
-import * as path from "path";
+import * as path from "node:path";
 import { TinyPgError } from "tinypg";
 import * as Sentry from "@sentry/aws-serverless";
 import {
@@ -18,6 +18,11 @@ import { db } from "./database";
 
 const duplicateArchivematicaFileError =
 	'duplicate key value violates unique constraint "unique_parent_file_id_format"';
+
+const removeFirstCharacter = (str: string): string => {
+	const secondCharacterIndex = 1;
+	return str.slice(secondCharacterIndex);
+};
 
 export const handler: SQSHandler = Sentry.wrapHandler(
 	async (event: SQSEvent, _, __) => {
@@ -40,7 +45,7 @@ export const handler: SQSHandler = Sentry.wrapHandler(
 							fileId: parentFileId,
 						},
 					)
-					.catch((err) => {
+					.catch((err: unknown) => {
 						logger.error(err);
 						throw err;
 					});
@@ -55,7 +60,7 @@ export const handler: SQSHandler = Sentry.wrapHandler(
 
 				const type =
 					// slice the leading . off the file extension
-					PermanentTypeByFileExtension[fileExtension.slice(1)] ??
+					PermanentTypeByFileExtension[removeFirstCharacter(fileExtension)] ??
 					UnrecognizedExtensionPermanentType;
 
 				await db
@@ -86,7 +91,7 @@ export const handler: SQSHandler = Sentry.wrapHandler(
 						cloudPath: key,
 						recordId: parentFile.rows[0].recordId,
 					})
-					.catch((err) => {
+					.catch((err: unknown) => {
 						if (
 							!(
 								err instanceof TinyPgError &&

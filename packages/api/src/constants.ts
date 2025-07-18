@@ -1,4 +1,5 @@
-export const GB = 1024 * 1024 * 1024;
+export const KB = 1024;
+export const GB = KB * KB * KB;
 
 export const ACCESS_ROLE = {
 	Admin: "access.role.admin",

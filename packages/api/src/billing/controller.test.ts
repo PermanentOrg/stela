@@ -14,8 +14,8 @@ jest.mock("../email");
 jest.mock("@stela/logger");
 
 interface AccountSpace {
-	spaceLeft: number;
-	spaceTotal: number;
+	spaceLeft: string;
+	spaceTotal: string;
 }
 
 const senderAccountId = "2";
@@ -38,13 +38,13 @@ const getAccountSpace = async (
 	return result.rows[0];
 };
 
-const checkLedgerEntries = async (
-	gifterAccountId: string,
-	recipientAccountId: string,
-	giftAmountInGB: number,
-	initialSenderSpace: AccountSpace | undefined,
-	initialRecipientSpace: AccountSpace | undefined,
-): Promise<void> => {
+const checkLedgerEntries = async (giftData: {
+	gifterAccountId: string;
+	recipientAccountId: string;
+	amountInGB: number;
+	initialSenderSpace: AccountSpace | undefined;
+	initialRecipientSpace: AccountSpace | undefined;
+}): Promise<void> => {
 	const ledgerEntryResponse = await db.query<{
 		spaceDelta: string;
 		fromSpaceBefore: string;
@@ -67,15 +67,18 @@ const checkLedgerEntries = async (
     WHERE
       fromAccountId = :senderAccountId
       AND toAccountId = :recipientAccountId`,
-		{ senderAccountId: gifterAccountId, recipientAccountId },
+		{
+			senderAccountId: giftData.gifterAccountId,
+			recipientAccountId: giftData.recipientAccountId,
+		},
 	);
 
 	ledgerEntryResponse.rows.forEach((ledgerEntry) => {
-		expect(ledgerEntry.spaceDelta).toBe((giftAmountInGB * GB).toString());
+		expect(ledgerEntry.spaceDelta).toBe((giftData.amountInGB * GB).toString());
 
 		if (
-			initialSenderSpace?.spaceTotal === undefined ||
-			initialRecipientSpace?.spaceTotal === undefined
+			giftData.initialSenderSpace?.spaceTotal === undefined ||
+			giftData.initialRecipientSpace?.spaceTotal === undefined
 		) {
 			expect(true).toBe(false);
 		} else {
@@ -83,32 +86,33 @@ const checkLedgerEntries = async (
 			// so we check that it's less than or equal to the initial space total and that it's decreased in increments
 			// equal to the gift size
 			expect(+ledgerEntry.fromSpaceBefore).toBeLessThanOrEqual(
-				+initialSenderSpace.spaceTotal,
+				+giftData.initialSenderSpace.spaceTotal,
 			);
 			expect(
-				(+initialSenderSpace.spaceTotal - +ledgerEntry.fromSpaceBefore) %
-					(giftAmountInGB * GB),
+				(+giftData.initialSenderSpace.spaceTotal -
+					+ledgerEntry.fromSpaceBefore) %
+					(giftData.amountInGB * GB),
 			).toStrictEqual(0);
 			expect(+ledgerEntry.fromSpaceLeft).toBe(
-				+ledgerEntry.fromSpaceBefore - giftAmountInGB * GB,
+				+ledgerEntry.fromSpaceBefore - giftData.amountInGB * GB,
 			);
 			expect(+ledgerEntry.fromSpaceTotal).toBe(
-				+ledgerEntry.fromSpaceBefore - giftAmountInGB * GB,
+				+ledgerEntry.fromSpaceBefore - giftData.amountInGB * GB,
 			);
 
-			if (recipientAccountId === "0") {
+			if (giftData.recipientAccountId === "0") {
 				expect(+ledgerEntry.toSpaceBefore).toBe(0);
 				expect(+ledgerEntry.toSpaceLeft).toBe(0);
 				expect(+ledgerEntry.toSpaceTotal).toBe(0);
 			} else {
 				expect(ledgerEntry.toSpaceBefore).toBe(
-					initialRecipientSpace.spaceTotal,
+					giftData.initialRecipientSpace.spaceTotal,
 				);
 				expect(+ledgerEntry.toSpaceLeft).toBe(
-					+initialRecipientSpace.spaceTotal + giftAmountInGB * GB,
+					+giftData.initialRecipientSpace.spaceTotal + giftData.amountInGB * GB,
 				);
 				expect(+ledgerEntry.toSpaceTotal).toBe(
-					+initialRecipientSpace.spaceTotal + giftAmountInGB * GB,
+					+giftData.initialRecipientSpace.spaceTotal + giftData.amountInGB * GB,
 				);
 			}
 		}
@@ -270,13 +274,13 @@ describe("/billing/gift", () => {
 			.post("/api/v2/billing/gift")
 			.send({ storageAmount: 1, recipientEmails: ["test+1@permanent.org"] })
 			.expect(200);
-		await checkLedgerEntries(
-			senderAccountId,
-			recipientOneAccountId,
-			1,
+		await checkLedgerEntries({
+			gifterAccountId: senderAccountId,
+			recipientAccountId: recipientOneAccountId,
+			amountInGB: 1,
 			initialSenderSpace,
 			initialRecipientSpace,
-		);
+		});
 	});
 
 	test("successful gift should update account_space for sender", async () => {
@@ -297,7 +301,7 @@ describe("/billing/gift", () => {
 			expect(false).toBe(true);
 		} else {
 			expect(+updatedAccountSpace.spaceLeft).toBe(
-				initialAccountSpace.spaceLeft - GB,
+				+initialAccountSpace.spaceLeft - GB,
 			);
 		}
 		if (
@@ -307,7 +311,7 @@ describe("/billing/gift", () => {
 			expect(false).toBe(true);
 		} else {
 			expect(+updatedAccountSpace.spaceTotal).toBe(
-				initialAccountSpace.spaceTotal - GB,
+				+initialAccountSpace.spaceTotal - GB,
 			);
 		}
 	});
@@ -363,20 +367,20 @@ describe("/billing/gift", () => {
 				recipientEmails: ["test+1@permanent.org", "test+2@permanent.org"],
 			})
 			.expect(200);
-		await checkLedgerEntries(
-			senderAccountId,
-			recipientOneAccountId,
-			1,
+		await checkLedgerEntries({
+			gifterAccountId: senderAccountId,
+			recipientAccountId: recipientOneAccountId,
+			amountInGB: 1,
 			initialSenderSpace,
-			initialRecipientOneSpace,
-		);
-		await checkLedgerEntries(
-			senderAccountId,
-			recipientTwoAccountId,
-			1,
+			initialRecipientSpace: initialRecipientOneSpace,
+		});
+		await checkLedgerEntries({
+			gifterAccountId: senderAccountId,
+			recipientAccountId: recipientTwoAccountId,
+			amountInGB: 1,
 			initialSenderSpace,
-			initialRecipientTwoSpace,
-		);
+			initialRecipientSpace: initialRecipientTwoSpace,
+		});
 	});
 
 	test("should return an invalid request status if sender doesn't have enough storage", async () => {
@@ -464,9 +468,15 @@ describe("/billing/gift", () => {
 			})
 			.expect(200);
 
-		await checkLedgerEntries(senderAccountId, "0", 1, initialSenderSpace, {
-			spaceLeft: 0,
-			spaceTotal: 0,
+		await checkLedgerEntries({
+			gifterAccountId: senderAccountId,
+			recipientAccountId: "0",
+			amountInGB: 1,
+			initialSenderSpace,
+			initialRecipientSpace: {
+				spaceLeft: "0",
+				spaceTotal: "0",
+			},
 		});
 	});
 

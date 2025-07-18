@@ -10,6 +10,7 @@ import { validateCreateEventRequest } from "./validators";
 import { isValidationError } from "../validators/validator_util";
 import { validateBodyFromAuthentication } from "../validators/shared";
 import { createEvent, getChecklistEvents } from "./service";
+import { HTTP_STATUS } from "@pdc/http-status-codes";
 
 export const eventController = Router();
 
@@ -25,11 +26,13 @@ eventController.post(
 				req.body.userAgent = userAgent;
 			}
 			await createEvent(req.body);
-			res.status(200).json({});
+			res.status(HTTP_STATUS.SUCCESSFUL.OK).json({});
 		} catch (err) {
 			logger.error(err);
 			if (isValidationError(err)) {
-				res.status(400).json({ error: err.message });
+				res
+					.status(HTTP_STATUS.CLIENT_ERROR.BAD_REQUEST)
+					.json({ error: err.message });
 				return;
 			}
 			next(err);
@@ -44,10 +47,12 @@ eventController.get(
 		try {
 			validateBodyFromAuthentication(req.body);
 			const response = await getChecklistEvents(req.body.emailFromAuthToken);
-			res.status(200).json({ checklistItems: response });
+			res.status(HTTP_STATUS.SUCCESSFUL.OK).json({ checklistItems: response });
 		} catch (err) {
 			if (isValidationError(err)) {
-				res.status(400).json({ error: err.message });
+				res
+					.status(HTTP_STATUS.CLIENT_ERROR.BAD_REQUEST)
+					.json({ error: err.message });
 				return;
 			}
 			next(err);

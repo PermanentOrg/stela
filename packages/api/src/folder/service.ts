@@ -7,6 +7,7 @@ import type {
 	FolderColumnsForUpdate,
 	PatchFolderRequest,
 	GetFolderChildrenResponse,
+	FolderChildItem,
 } from "./models";
 import {
 	FolderType,
@@ -18,7 +19,6 @@ import {
 	PrettyFolderStatus,
 	PrettyFolderView,
 } from "./models";
-import type { ArchiveRecord } from "../record/models";
 import { requestFieldsToDatabaseFields } from "./helper";
 import { getFolderAccessRole, accessRoleLessThan } from "../access/permission";
 import { AccessRole } from "../access/models";
@@ -42,10 +42,6 @@ export const prettifyFolderSortType = (
 			return PrettyFolderSortOrder.AlphabeticalDescending;
 		case FolderSortOrder.AlphabeticalAscending:
 			return PrettyFolderSortOrder.AlphabeticalAscending;
-		default:
-			// This should never happen, because the cases above are
-			// exhaustive, but just in case
-			return PrettyFolderSortOrder.AlphabeticalDescending;
 	}
 };
 
@@ -84,10 +80,6 @@ export const prettifyFolderStatus = (
 			return PrettyFolderStatus.Moving;
 		case FolderStatus.Deleted:
 			return PrettyFolderStatus.Deleted;
-		default:
-			// This should never happen, because the cases above are
-			// exhaustive, but just in case
-			return PrettyFolderStatus.Ok;
 	}
 };
 
@@ -115,7 +107,7 @@ export const getFolders = async (
 			email,
 			shareToken,
 		})
-		.catch((err) => {
+		.catch((err: unknown) => {
 			logger.error(err);
 			throw new createError.InternalServerError("Failed to retrieve folders");
 		});
@@ -136,8 +128,10 @@ export const getFolders = async (
 
 export const getFolderChildren = async (
 	parentFolderId: string,
-	pageSize: number,
-	cursor?: string,
+	pagination: {
+		pageSize: number;
+		cursor: string | undefined;
+	},
 	email?: string,
 	shareToken?: string,
 ): Promise<GetFolderChildrenResponse> => {
@@ -146,13 +140,13 @@ export const getFolderChildren = async (
 			"folder.queries.get_folder_children",
 			{
 				parentFolderId,
-				pageSize,
-				cursor,
+				pageSize: pagination.pageSize,
+				cursor: pagination.cursor,
 				email,
 				shareToken,
 			},
 		)
-		.catch((err) => {
+		.catch((err: unknown) => {
 			logger.error(err);
 			throw new createError.InternalServerError(
 				"Failed to retrieve folder children",
@@ -175,8 +169,8 @@ export const getFolderChildren = async (
 		shareToken,
 	});
 
-	const children: (ArchiveRecord | Folder)[] = result.rows.reduce(
-		(accumulator: (ArchiveRecord | Folder)[], row) => {
+	const children: FolderChildItem[] = result.rows.reduce(
+		(accumulator: FolderChildItem[], row) => {
 			const child =
 				row.item_type === "folder"
 					? folders.find((folder) => folder.folderId === row.id)
@@ -198,7 +192,7 @@ export const getFolderChildren = async (
 				nextCursor !== undefined
 					? `https://${
 							process.env["SITE_URL"] ?? ""
-						}/api/v2/folder/${parentFolderId}/children?pageSize=${pageSize}&cursor=${nextCursor}`
+						}/api/v2/folder/${parentFolderId}/children?pageSize=${pagination.pageSize}&cursor=${nextCursor}`
 					: undefined,
 			totalPages: result.rows[0] !== undefined ? result.rows[0].totalPages : 0,
 		},
@@ -248,7 +242,7 @@ export const patchFolder = async (
 
 	const result = await db
 		.query<{ folderId: string }>(query, columnsForUpdate)
-		.catch((err) => {
+		.catch((err: unknown) => {
 			logger.error(err);
 			throw new createError.InternalServerError("Failed to update folder");
 		});
@@ -268,7 +262,7 @@ export const getFolderShareLinks = async (
 			email,
 			folderId,
 		})
-		.catch((err) => {
+		.catch((err: unknown) => {
 			logger.error(err);
 			throw new createError.InternalServerError(
 				"Failed to get folder share links",

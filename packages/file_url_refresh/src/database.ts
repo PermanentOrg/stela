@@ -1,4 +1,4 @@
-import * as path from "path";
+import * as path from "node:path";
 import { TinyPg } from "tinypg";
 
 export const db = new TinyPg({

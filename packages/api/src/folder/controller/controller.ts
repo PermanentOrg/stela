@@ -26,6 +26,7 @@ import {
 	validatePaginationParameters,
 	validateBodyFromAuthentication,
 } from "../../validators/shared";
+import { HTTP_STATUS } from "@pdc/http-status-codes";
 
 export const folderController = Router();
 
@@ -42,13 +43,17 @@ folderController.patch(
 				req.body.emailFromAuthToken,
 			);
 			if (folder === undefined) {
-				res.status(404).json({ error: "Folder not found" });
+				res
+					.status(HTTP_STATUS.CLIENT_ERROR.NOT_FOUND)
+					.json({ error: "Folder not found" });
 			}
 
-			res.status(200).send({ data: folder });
+			res.status(HTTP_STATUS.SUCCESSFUL.OK).send({ data: folder });
 		} catch (err) {
 			if (isValidationError(err)) {
-				res.status(400).json({ error: err.message });
+				res
+					.status(HTTP_STATUS.CLIENT_ERROR.BAD_REQUEST)
+					.json({ error: err.message });
 				return;
 			}
 			next(err);
@@ -69,10 +74,12 @@ folderController.get(
 				req.body.emailFromAuthToken,
 				req.body.shareToken,
 			);
-			res.status(200).send({ items: folders });
+			res.status(HTTP_STATUS.SUCCESSFUL.OK).send({ items: folders });
 		} catch (err) {
 			if (isValidationError(err)) {
-				res.status(400).json({ error: err.message });
+				res
+					.status(HTTP_STATUS.CLIENT_ERROR.BAD_REQUEST)
+					.json({ error: err.message });
 				return;
 			}
 			next(err);
@@ -91,15 +98,16 @@ folderController.get(
 			validateFolderRequest(req.params);
 			const response = await getFolderChildren(
 				req.params.folderId,
-				req.query.pageSize,
-				req.query.cursor,
+				{ pageSize: req.query.pageSize, cursor: req.query.cursor },
 				req.body.emailFromAuthToken,
 				req.body.shareToken,
 			);
-			res.status(200).send(response);
+			res.status(HTTP_STATUS.SUCCESSFUL.OK).send(response);
 		} catch (err) {
 			if (isValidationError(err)) {
-				res.status(400).json({ error: err.message });
+				res
+					.status(HTTP_STATUS.CLIENT_ERROR.BAD_REQUEST)
+					.json({ error: err.message });
 				return;
 			}
 			next(err);
@@ -118,10 +126,12 @@ folderController.get(
 				req.body.emailFromAuthToken,
 				req.params.folderId,
 			);
-			res.status(200).send({ items: shareLinks });
+			res.status(HTTP_STATUS.SUCCESSFUL.OK).send({ items: shareLinks });
 		} catch (err) {
 			if (isValidationError(err)) {
-				res.status(400).json({ error: err.message });
+				res
+					.status(HTTP_STATUS.CLIENT_ERROR.BAD_REQUEST)
+					.json({ error: err.message });
 				return;
 			}
 			next(err);

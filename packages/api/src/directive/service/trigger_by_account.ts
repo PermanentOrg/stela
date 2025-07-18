@@ -1,6 +1,7 @@
 import type { DirectiveExecutionResult } from "../model";
 import { db } from "../../database";
 import { legacyClient } from "../../legacy_client";
+import { HTTP_STATUS } from "@pdc/http-status-codes";
 
 const directiveExecutionOutcomeSuccess = "success";
 const directiveExecutionOutcomeError = "error";
@@ -23,13 +24,13 @@ export const triggerAccountAdminDirectives = async (
 		adminDirectives.rows.map(
 			async (directive): Promise<DirectiveExecutionResult> => {
 				if (directive.directiveType === "transfer") {
-					const response = await legacyClient.transferArchiveOwnership(
-						directive.stewardEmail,
-						directive.archiveSlug,
-						directive.note,
-						true,
-					);
-					if (response.status === 200) {
+					const response = await legacyClient.transferArchiveOwnership({
+						recipientEmail: directive.stewardEmail,
+						archiveSlug: directive.archiveSlug,
+						message: directive.note,
+						isLegacyAction: true,
+					});
+					if (response.status === (HTTP_STATUS.SUCCESSFUL.OK as number)) {
 						return {
 							archiveId: directive.archiveId,
 							directiveId: directive.directiveId,

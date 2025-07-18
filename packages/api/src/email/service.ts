@@ -13,20 +13,22 @@ const defaultMessage = {
 
 export const sendEmail = async (
 	templateName: string,
-	fromName: string,
-	toData: { email: string; name?: string }[],
-	subject: string,
-	mergeVariables: { name: string; content: string }[],
+	messageData: {
+		fromName: string;
+		toData: Array<{ email: string; name?: string }>;
+		subject: string;
+		mergeVariables: Array<{ name: string; content: string }>;
+	},
 ): Promise<void> => {
 	const response = await MailchimpTransactional.messages.sendTemplate({
 		template_name: templateName,
 		template_content: [],
 		message: {
 			...defaultMessage,
-			from_name: fromName,
-			to: toData,
-			subject,
-			global_merge_vars: mergeVariables,
+			from_name: messageData.fromName,
+			to: messageData.toData,
+			subject: messageData.subject,
+			global_merge_vars: messageData.mergeVariables,
 		},
 	});
 
@@ -60,16 +62,15 @@ export const sendLegacyContactNotification = async (
 		rows: [{ accountName, legacyContactName, legacyContactEmail }],
 	} = legacyContactDetailsResult;
 
-	await sendEmail(
-		"legacy-contact-added",
-		accountName,
-		[{ email: legacyContactEmail, name: legacyContactName }],
-		"*|FROM_FULLNAME|* wants you to be their Legacy Contact",
-		[
+	await sendEmail("legacy-contact-added", {
+		fromName: accountName,
+		toData: [{ email: legacyContactEmail, name: legacyContactName }],
+		subject: "*|FROM_FULLNAME|* wants you to be their Legacy Contact",
+		mergeVariables: [
 			{ name: "from_fullname", content: accountName },
 			{ name: "to_fullname", content: legacyContactName },
 		],
-	);
+	});
 };
 
 export const sendArchiveStewardNotification = async (
@@ -87,46 +88,44 @@ export const sendArchiveStewardNotification = async (
 	const {
 		rows: [{ stewardName, stewardEmail, ownerName, archiveName }],
 	} = archiveStewardshipDetailsResult;
-	await sendEmail(
-		"archive-steward-added",
-		ownerName,
-		[{ email: stewardEmail, name: stewardName }],
-		"*|FROM_FULLNAME|* wants you to be their Archive Steward",
-		[
+	await sendEmail("archive-steward-added", {
+		fromName: ownerName,
+		toData: [{ email: stewardEmail, name: stewardName }],
+		subject: "*|FROM_FULLNAME|* wants you to be their Archive Steward",
+		mergeVariables: [
 			{ name: "from_fullname", content: ownerName },
 			{ name: "to_fullname", content: stewardName },
 			{ name: "from_archive_name", content: archiveName },
 		],
-	);
+	});
 };
 
-export const sendInvitationNotification = async (
-	fromEmail: string,
-	toEmail: string,
-	message: string,
-	giftAmount: number,
-	token: string,
-): Promise<void> => {
+export const sendInvitationNotification = async (email: {
+	fromEmail: string;
+	toEmail: string;
+	message: string;
+	giftAmount: number;
+	token: string;
+}): Promise<void> => {
 	const fullNameResult = await db.sql<{ fullName: string }>(
 		"email.queries.get_full_name_by_account_email",
-		{ emails: [fromEmail] },
+		{ emails: [email.fromEmail] },
 	);
 	if (fullNameResult.rows[0] === undefined) {
-		throw new Error(`Account with primary email ${fromEmail} not found`);
+		throw new Error(`Account with primary email ${email.fromEmail} not found`);
 	}
 	const {
 		rows: [{ fullName }],
 	} = fullNameResult;
-	await sendEmail(
-		"invitation-from-relationship",
-		fullName,
-		[{ email: toEmail }],
-		"",
-		[
+	await sendEmail("invitation-from-relationship", {
+		fromName: fullName,
+		toData: [{ email: email.toEmail }],
+		subject: "",
+		mergeVariables: [
 			{ name: "from_fullname", content: fullName },
-			{ name: "space_amount_hr", content: `${giftAmount}GB` },
-			{ name: "token", content: token },
-			{ name: "message", content: message },
+			{ name: "space_amount_hr", content: `${email.giftAmount}GB` },
+			{ name: "token", content: email.token },
+			{ name: "message", content: email.message },
 			{
 				name: "click_url",
 				content: `https://${
@@ -134,11 +133,11 @@ export const sendInvitationNotification = async (
 						? ""
 						: `${process.env["ENV"] ?? ""}.`
 				}permanent.org/app/signup?primaryEmail=${btoa(
-					toEmail,
-				)}&inviteCode=${btoa(token)}`,
+					email.toEmail,
+				)}&inviteCode=${btoa(email.token)}`,
 			},
 		],
-	);
+	});
 };
 
 export const sendGiftNotification = async (
@@ -164,16 +163,16 @@ export const sendGiftNotification = async (
 	}
 	const { fullName: toFullName } = toResult;
 
-	await sendEmail(
-		"gift-notification",
-		fromFullName,
-		[{ email: toEmail }],
-		"*|FROM_FULLNAME|* is giving you *|SPACE_AMOUNT|* GB of Permanent storage",
-		[
+	await sendEmail("gift-notification", {
+		fromName: fromFullName,
+		toData: [{ email: toEmail }],
+		subject:
+			"*|FROM_FULLNAME|* is giving you *|SPACE_AMOUNT|* GB of Permanent storage",
+		mergeVariables: [
 			{ name: "from_fullname", content: fromFullName },
 			{ name: "to_fullname", content: toFullName },
 			{ name: "space_amount", content: giftAmount.toString() },
 			{ name: "note", content: note },
 		],
-	);
+	});
 };

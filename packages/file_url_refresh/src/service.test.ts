@@ -80,7 +80,7 @@ describe("refreshThumbnails", () => {
 		jest
 			.mocked(constructSignedCdnUrl)
 			.mockImplementation((_: string, fileName?: string) => {
-				if (fileName === null) {
+				if (fileName === undefined) {
 					return testDownloadUrl;
 				}
 				return testFileUrl;
@@ -185,7 +185,7 @@ describe("refreshThumbnails", () => {
 		expect.assertions(2);
 		const errorMessage = "out of cheese - redo from start";
 		jest.spyOn(db, "sql").mockRejectedValue(errorMessage);
-		await refreshFileUrls().catch((err) => {
+		await refreshFileUrls().catch((err: unknown) => {
 			expect(err).toEqual(errorMessage);
 		});
 		expect(logger.error).toHaveBeenCalled();

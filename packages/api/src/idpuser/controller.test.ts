@@ -21,12 +21,12 @@ jest.mock("../fusionauth", () => ({
 }));
 
 const mockRetrieveUserByEmail = (
-	methods: {
+	methods: Array<{
 		id: string;
 		method: string;
 		email: string;
 		mobilePhone: string;
-	}[],
+	}>,
 	successful: boolean,
 	exception?: { code: string; message: string },
 ): void => {
@@ -351,7 +351,7 @@ describe("POST /idpuser/enable-two-factor", () => {
 	test("should return a 401 status if the caller is not authenticated", async () => {
 		jest
 			.mocked(verifyUserAuthentication)
-			.mockImplementation((_, __, ___: NextFunction) => {
+			.mockImplementation((_req, _res, _next: NextFunction) => {
 				throw new createError.Unauthorized("Invalid token");
 			});
 		await agent

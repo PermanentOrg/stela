@@ -361,7 +361,7 @@ describe("refreshThumbnails", () => {
 		expect.assertions(2);
 		const errorMessage = "out of cheese - redo from start";
 		jest.spyOn(db, "sql").mockRejectedValue(errorMessage);
-		await refreshThumbnails().catch((err) => {
+		await refreshThumbnails().catch((err: unknown) => {
 			expect(err).toEqual(errorMessage);
 		});
 		expect(logger.error).toHaveBeenCalled();

@@ -37,13 +37,11 @@ describe("triggerArchivematicaProcessing", () => {
 		const testFileId = "1";
 		const testFilePath = "originals/1/1";
 
-		await triggerArchivematicaProcessing(
-			testFileId,
-			testFilePath,
-			"https://example.com",
-			"test-api-key",
-			"3f896582-06b5-4cfa-bb0b-f2c32879d615",
-		);
+		await triggerArchivematicaProcessing(testFileId, testFilePath, {
+			archivematicaHostUrl: "https://example.com",
+			archivematicaApiKey: "test-api-key",
+			archivematicaOriginalLocationId: "3f896582-06b5-4cfa-bb0b-f2c32879d615",
+		});
 
 		expect(fetch).toHaveBeenCalledWith(
 			"https://example.com/api/v2beta/package",
@@ -74,13 +72,11 @@ describe("triggerArchivematicaProcessing", () => {
 		const testFilePath = "1";
 
 		await expect(
-			triggerArchivematicaProcessing(
-				testFileId,
-				testFilePath,
-				"https://example.com",
-				"test-api-key",
-				"3f896582-06b5-4cfa-bb0b-f2c32879d615",
-			),
+			triggerArchivematicaProcessing(testFileId, testFilePath, {
+				archivematicaHostUrl: "https://example.com",
+				archivematicaApiKey: "test-api-key",
+				archivematicaOriginalLocationId: "3f896582-06b5-4cfa-bb0b-f2c32879d615",
+			}),
 		).rejects.toThrow(
 			new Error(
 				"Invalid cloud path: file must be located in a non-root directory",

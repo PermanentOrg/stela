@@ -26,20 +26,8 @@ export default defineConfig([
 		},
 
 		rules: {
-			"lines-between-class-members": "off",
-			"no-shadow": "off",
-			"no-undef": "off",
-			"no-unused-vars": "off",
-			"no-use-before-define": "off",
-			"require-await": "off",
 			"import/prefer-default-export": "off",
 			"import/no-default-export": "error",
-			"import/extensions": "off",
-			"import/no-unresolved": "off",
-			"import/no-extraneous-dependencies": "off",
-			"@typescript-eslint/require-await": "off",
-			"@typescript-eslint/prefer-readonly-parameter-types": "off",
-
 			"@typescript-eslint/no-unused-vars": [
 				"error",
 				{
@@ -48,27 +36,10 @@ export default defineConfig([
 					caughtErrorsIgnorePattern: "^_",
 				},
 			],
-
-			"@typescript-eslint/no-throw-literal": "off",
-
-			// These are `love` rules that we were violating.  We should review these one at a time.
-			"@typescript-eslint/no-magic-numbers": "off",
-			"@typescript-eslint/use-unknown-in-catch-callback-variable": "off",
-			"@typescript-eslint/return-await": "off",
-			"@typescript-eslint/no-empty-function": "off",
-			"@typescript-eslint/consistent-type-assertions": "off",
-			"@typescript-eslint/consistent-type-assertions": "off",
-			"@typescript-eslint/no-unnecessary-type-conversion": "off",
-			complexity: "off",
-			"@typescript-eslint/no-unnecessary-condition": "off",
-			"import/enforce-node-protocol-usage": "off",
-			"@typescript-eslint/array-type": "off",
-			"@typescript-eslint/max-params": "off",
-			"@typescript-eslint/naming-convention": "off",
-			"@typescript-eslint/prefer-nullish-coalescing": "off",
-			"@typescript-eslint/switch-exhaustiveness-check": "off",
-			"@typescript-eslint/prefer-optional-chain": "off",
-			"@typescript-eslint/no-unnecessary-template-expression": "off",
+			"@typescript-eslint/no-magic-numbers": [
+				"error",
+				{ ignore: [0, 1], ignoreEnums: true },
+			],
 		},
 	},
 	{
@@ -86,6 +57,9 @@ export default defineConfig([
 			// the relevant code, however many tests that takes. Their natural structure also makes
 			// them more navigable than other lengthy files might be.
 			"max-lines": "off",
+			"@typescript-eslint/no-magic-numbers": "off",
+			// async methods without awaits are sometimes needed for mocking
+			"@typescript-eslint/require-await": "off",
 		},
 	},
 ]);

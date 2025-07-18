@@ -14,6 +14,7 @@ import { isValidationError } from "../validators/validator_util";
 import { shareLinkService } from "./service";
 import { validateBodyFromAuthentication } from "../validators";
 import { validateOptionalAuthenticationValues } from "../validators/shared";
+import { HTTP_STATUS } from "@pdc/http-status-codes";
 
 export const shareLinkController = Router();
 
@@ -24,10 +25,10 @@ shareLinkController.post(
 		try {
 			validateCreateShareLinkRequest(req.body);
 			const response = await shareLinkService.createShareLink(req.body);
-			res.status(201).json({ data: response });
+			res.status(HTTP_STATUS.SUCCESSFUL.CREATED).json({ data: response });
 		} catch (err) {
 			if (isValidationError(err)) {
-				res.status(400).json({ error: err });
+				res.status(HTTP_STATUS.CLIENT_ERROR.BAD_REQUEST).json({ error: err });
 				return;
 			}
 			next(err);
@@ -45,10 +46,10 @@ shareLinkController.patch(
 				req.params["shareLinkId"] ?? "",
 				req.body,
 			);
-			res.status(200).json({ data: updatedShareLink });
+			res.status(HTTP_STATUS.SUCCESSFUL.OK).json({ data: updatedShareLink });
 		} catch (err) {
 			if (isValidationError(err)) {
-				res.status(400).json({ error: err });
+				res.status(HTTP_STATUS.CLIENT_ERROR.BAD_REQUEST).json({ error: err });
 				return;
 			}
 			next(err);
@@ -76,10 +77,10 @@ shareLinkController.get(
 				req.query.shareTokens,
 				req.query.shareLinkIds,
 			);
-			res.status(200).json({ items: shareLinks });
+			res.status(HTTP_STATUS.SUCCESSFUL.OK).json({ items: shareLinks });
 		} catch (err) {
 			if (isValidationError(err)) {
-				res.status(400).json({ error: err });
+				res.status(HTTP_STATUS.CLIENT_ERROR.BAD_REQUEST).json({ error: err });
 				return;
 			}
 			next(err);
@@ -97,10 +98,10 @@ shareLinkController.delete(
 				req.body.emailFromAuthToken,
 				req.params["shareLinkId"] ?? "",
 			);
-			res.sendStatus(204);
+			res.sendStatus(HTTP_STATUS.SUCCESSFUL.NO_CONTENT);
 		} catch (err) {
 			if (isValidationError(err)) {
-				res.status(400).json({ error: err });
+				res.status(HTTP_STATUS.CLIENT_ERROR.BAD_REQUEST).json({ error: err });
 				return;
 			}
 			next(err);

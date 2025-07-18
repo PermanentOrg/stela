@@ -38,7 +38,7 @@ export const createDirective = async (
 					throw new Error();
 				}
 				return directiveResult.rows[0];
-			} catch (err) {
+			} catch (err: unknown) {
 				if (isInvalidEnumError(err)) {
 					throw new createError.BadRequest(
 						`${getInvalidValueFromInvalidEnumMessage(
@@ -68,7 +68,7 @@ export const createDirective = async (
 					throw new Error();
 				}
 				return triggerResult.rows[0];
-			} catch (err) {
+			} catch (err: unknown) {
 				if (isInvalidEnumError(err)) {
 					throw new createError.BadRequest(
 						`${getInvalidValueFromInvalidEnumMessage(
@@ -85,7 +85,7 @@ export const createDirective = async (
 	});
 
 	await sendArchiveStewardNotification(directiveToReturn.directiveId).catch(
-		(err) => {
+		(err: unknown) => {
 			logger.error(err);
 		},
 	);

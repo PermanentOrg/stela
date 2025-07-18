@@ -5,7 +5,7 @@ describe("extractIp", () => {
 	test("should extract the IP from X-Forwarded-For header", () => {
 		const testIp = "192.168.0.1";
 		const request = createRequest({ headers: { "X-Forwarded-For": testIp } });
-		extractIp(request, createResponse(), () => {});
+		extractIp(request, createResponse(), jest.fn());
 
 		const {
 			body: { ip },
@@ -15,11 +15,11 @@ describe("extractIp", () => {
 	test("should extract IP from the remoteAddress if not forwarded", () => {
 		const testIp = "192.168.0.1";
 		const request = createRequest({
-			connection: {
+			socket: {
 				remoteAddress: testIp,
 			},
 		});
-		extractIp(request, createResponse(), () => {});
+		extractIp(request, createResponse(), jest.fn());
 
 		const {
 			body: { ip },
@@ -29,7 +29,7 @@ describe("extractIp", () => {
 	test("should extract the client IP from X-Forwarded-For header with multiple proxies", () => {
 		const testIp = "192.168.0.1";
 		const request = createRequest({ headers: { "X-Forwarded-For": testIp } });
-		extractIp(request, createResponse(), () => {});
+		extractIp(request, createResponse(), jest.fn());
 
 		const {
 			body: { ip },

@@ -376,33 +376,41 @@ describe("GET /promo", () => {
 		const { body: promos } = response as { body: Promo[] };
 		const promoOne = promos.find((promo: Promo) => promo.code === "PROMO1");
 		expect(promoOne).not.toBeUndefined();
-		expect(promoOne?.storageInMB).toEqual(1024);
-		expect(promoOne?.expirationTimestamp).toEqual("2030-12-31T00:00:00.000Z");
-		expect(promoOne?.remainingUses).toEqual(100);
-		expect(promoOne?.status).toEqual("status.promo.valid");
-		expect(promoOne?.type).toEqual("type.generic.ok");
-		expect(promoOne?.createdAt).toEqual("2020-01-01T00:00:00.000Z");
-		expect(promoOne?.updatedAt).toEqual("2020-01-01T00:00:00.000Z");
+		if (promoOne !== undefined) {
+			expect(promoOne.storageInMB).toEqual(1024);
+			expect(promoOne.expirationTimestamp).toEqual("2030-12-31T00:00:00.000Z");
+			expect(promoOne.remainingUses).toEqual(100);
+			expect(promoOne.status).toEqual("status.promo.valid");
+			expect(promoOne.type).toEqual("type.generic.ok");
+			expect(promoOne.createdAt).toEqual("2020-01-01T00:00:00.000Z");
+			expect(promoOne.updatedAt).toEqual("2020-01-01T00:00:00.000Z");
+		}
 
 		const promoTwo = promos.find((promo: Promo) => promo.code === "PROMO2");
 		expect(promoTwo).not.toBeUndefined();
-		expect(promoTwo?.storageInMB).toEqual(2048);
-		expect(promoTwo?.expirationTimestamp).toEqual("2031-12-31T00:00:00.000Z");
-		expect(promoTwo?.remainingUses).toEqual(200);
-		expect(promoTwo?.status).toEqual("status.promo.valid");
-		expect(promoTwo?.type).toEqual("type.generic.ok");
-		expect(promoTwo?.createdAt).toEqual("2020-01-02T00:00:00.000Z");
-		expect(promoTwo?.updatedAt).toEqual("2020-01-02T00:00:00.000Z");
+		if (promoTwo !== undefined) {
+			expect(promoTwo.storageInMB).toEqual(2048);
+			expect(promoTwo.expirationTimestamp).toEqual("2031-12-31T00:00:00.000Z");
+			expect(promoTwo.remainingUses).toEqual(200);
+			expect(promoTwo.status).toEqual("status.promo.valid");
+			expect(promoTwo.type).toEqual("type.generic.ok");
+			expect(promoTwo.createdAt).toEqual("2020-01-02T00:00:00.000Z");
+			expect(promoTwo.updatedAt).toEqual("2020-01-02T00:00:00.000Z");
+		}
 
 		const promoThree = promos.find((promo: Promo) => promo.code === "PROMO3");
 		expect(promoThree).not.toBeUndefined();
-		expect(promoThree?.storageInMB).toEqual(4096);
-		expect(promoThree?.expirationTimestamp).toEqual("2032-12-31T00:00:00.000Z");
-		expect(promoThree?.remainingUses).toEqual(300);
-		expect(promoThree?.status).toEqual("status.promo.valid");
-		expect(promoThree?.type).toEqual("type.generic.ok");
-		expect(promoThree?.createdAt).toEqual("2020-01-03T00:00:00.000Z");
-		expect(promoThree?.updatedAt).toEqual("2020-01-03T00:00:00.000Z");
+		if (promoThree !== undefined) {
+			expect(promoThree.storageInMB).toEqual(4096);
+			expect(promoThree.expirationTimestamp).toEqual(
+				"2032-12-31T00:00:00.000Z",
+			);
+			expect(promoThree.remainingUses).toEqual(300);
+			expect(promoThree.status).toEqual("status.promo.valid");
+			expect(promoThree.type).toEqual("type.generic.ok");
+			expect(promoThree.createdAt).toEqual("2020-01-03T00:00:00.000Z");
+			expect(promoThree.updatedAt).toEqual("2020-01-03T00:00:00.000Z");
+		}
 	});
 
 	test("should response with 500 status code if the database call fails", async () => {

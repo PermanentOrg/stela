@@ -9,7 +9,7 @@ export const deleteFeatureFlag = async (
 		.sql("feature_flag.queries.delete_feature_flag", {
 			featureFlagId,
 		})
-		.catch((err) => {
+		.catch((err: unknown) => {
 			logger.error(err);
 			throw new createError.InternalServerError(
 				"Failed to delete feature flag",

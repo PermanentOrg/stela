@@ -36,12 +36,12 @@ declare module "@fusionauth/typescript-client" {
 			response: {
 				user: {
 					twoFactor: {
-						methods: {
+						methods: Array<{
 							id: string;
 							method: string;
 							email: string;
 							mobilePhone: string;
-						}[];
+						}>;
 					};
 				};
 			};

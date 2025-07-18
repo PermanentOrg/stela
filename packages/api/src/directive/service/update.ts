@@ -24,7 +24,10 @@ export const updateDirective = async (
 			email: requestBody.emailFromAuthToken,
 		},
 	);
-	if (accessResult.rows[0] === undefined || !accessResult.rows[0].hasAccess) {
+	if (
+		accessResult.rows[0]?.hasAccess === undefined ||
+		!accessResult.rows[0].hasAccess
+	) {
 		throw new createError.NotFound("Directive not found");
 	}
 
@@ -47,7 +50,7 @@ export const updateDirective = async (
 					);
 				}
 				return directiveResult.rows[0];
-			} catch (err) {
+			} catch (err: unknown) {
 				if (isInvalidEnumError(err)) {
 					throw new createError.BadRequest(
 						`${getInvalidValueFromInvalidEnumMessage(
@@ -79,7 +82,7 @@ export const updateDirective = async (
 					throw new Error();
 				}
 				return triggerResult.rows[0];
-			} catch (err) {
+			} catch (err: unknown) {
 				if (isInvalidEnumError(err)) {
 					throw new createError.BadRequest(
 						`${getInvalidValueFromInvalidEnumMessage(
@@ -100,7 +103,7 @@ export const updateDirective = async (
 	const { stewardChanged, ...directiveToReturn } = directiveData;
 	if (stewardChanged) {
 		await sendArchiveStewardNotification(directiveToReturn.directiveId).catch(
-			(err) => {
+			(err: unknown) => {
 				logger.error(err);
 			},
 		);

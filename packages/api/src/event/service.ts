@@ -25,7 +25,7 @@ export const createEvent = async (data: CreateEventRequest): Promise<void> => {
 				data.userEmailFromAuthToken ?? data.adminEmailFromAuthToken;
 			({ ip: analyticsData["ip"] } = data);
 			mixpanelClient.track(data.body.analytics.event, analyticsData);
-		} catch (err) {
+		} catch (err: unknown) {
 			logger.error(err);
 			throw new createError.InternalServerError(
 				`Failed to track mixpanel event`,
@@ -49,7 +49,7 @@ export const createEvent = async (data: CreateEventRequest): Promise<void> => {
 
 	const result = await db
 		.sql<{ id: string }>("event.queries.create_event", event)
-		.catch((err) => {
+		.catch((err: unknown) => {
 			if (isInvalidEnumError(err)) {
 				const badValue = getInvalidValueFromInvalidEnumMessage(err.message);
 				const badKey = badValue === data.entity ? "entity" : "action";
@@ -71,7 +71,7 @@ export const createEvent = async (data: CreateEventRequest): Promise<void> => {
 			body: JSON.stringify(event),
 			attributes: { Entity: event.entity, Action: event.action },
 		});
-	} catch (err) {
+	} catch (err: unknown) {
 		logger.error(err);
 		throw new createError.InternalServerError(
 			`Failed to publish message to topic`,
@@ -96,7 +96,7 @@ export const getChecklistEvents = async (
 		.sql<Record<string, boolean>>("event.queries.get_checklist_events", {
 			email,
 		})
-		.catch((err) => {
+		.catch((err: unknown) => {
 			logger.error(err);
 			throw new createError.InternalServerError(
 				"Failed to retrieve checklist data",

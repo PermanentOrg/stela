@@ -241,115 +241,137 @@ describe("GET /record", () => {
 		const { body: records } = response as { body: ArchiveRecord[] };
 		const [record] = records;
 		expect(records.length).toEqual(1);
-		expect(record?.recordId).toEqual("8");
-		expect(record?.displayName).toEqual("Public File");
-		expect(record?.archiveId).toEqual("1");
-		expect(record?.archive.id).toEqual("1");
-		expect(record?.archive.name).toEqual("Jack Rando");
-		expect(record?.archiveNumber).toEqual("0000-0008");
-		expect(record?.publicAt).toEqual("2023-06-21T00:00:00.000Z");
-		expect(record?.description).toEqual("A description of the image");
-		expect(record?.downloadName).toEqual("public_file.jpg");
-		expect(record?.uploadFileName).toEqual("public_file.jpg");
-		expect(record?.uploadAccountId).toEqual("2");
-		expect(record?.uploadPayerAccountId).toEqual("2");
-		expect(record?.size).toEqual(1024);
-		expect(record?.displayDate).toEqual("2023-06-21T00:00:00.000Z");
-		expect(record?.fileCreatedAt).toEqual("2023-06-21T00:00:00.000Z");
-		expect(record?.imageRatio).toEqual(1);
-		expect(record?.thumbUrl200).toEqual(
-			"https://localcdn.permanent.org/8/thumb200.jpg",
-		);
-		expect(record?.thumbUrl500).toEqual(
-			"https://localcdn.permanent.org/8/thumb500.jpg",
-		);
-		expect(record?.thumbUrl1000).toEqual(
-			"https://localcdn.permanent.org/8/thumb1000.jpg",
-		);
-		expect(record?.thumbUrl2000).toEqual(
-			"https://localcdn.permanent.org/8/thumb2000.jpg",
-		);
-		expect(record?.status).toEqual("status.generic.ok");
-		expect(record?.type).toEqual("type.record.image");
-		expect(record?.createdAt).toEqual("2023-06-21T00:00:00.000Z");
-		expect(record?.updatedAt).toEqual("2023-06-21T00:00:00.000Z");
-		expect(record?.altText).toEqual("An image");
+		if (record !== undefined) {
+			expect(record.recordId).toEqual("8");
+			expect(record.displayName).toEqual("Public File");
+			expect(record.archiveId).toEqual("1");
+			expect(record.archive.id).toEqual("1");
+			expect(record.archive.name).toEqual("Jack Rando");
+			expect(record.archiveNumber).toEqual("0000-0008");
+			expect(record.publicAt).toEqual("2023-06-21T00:00:00.000Z");
+			expect(record.description).toEqual("A description of the image");
+			expect(record.downloadName).toEqual("public_file.jpg");
+			expect(record.uploadFileName).toEqual("public_file.jpg");
+			expect(record.uploadAccountId).toEqual("2");
+			expect(record.uploadPayerAccountId).toEqual("2");
+			expect(record.size).toEqual(1024);
+			expect(record.displayDate).toEqual("2023-06-21T00:00:00.000Z");
+			expect(record.fileCreatedAt).toEqual("2023-06-21T00:00:00.000Z");
+			expect(record.imageRatio).toEqual(1);
+			expect(record.thumbUrl200).toEqual(
+				"https://localcdn.permanent.org/8/thumb200.jpg",
+			);
+			expect(record.thumbUrl500).toEqual(
+				"https://localcdn.permanent.org/8/thumb500.jpg",
+			);
+			expect(record.thumbUrl1000).toEqual(
+				"https://localcdn.permanent.org/8/thumb1000.jpg",
+			);
+			expect(record.thumbUrl2000).toEqual(
+				"https://localcdn.permanent.org/8/thumb2000.jpg",
+			);
+			expect(record.status).toEqual("status.generic.ok");
+			expect(record.type).toEqual("type.record.image");
+			expect(record.createdAt).toEqual("2023-06-21T00:00:00.000Z");
+			expect(record.updatedAt).toEqual("2023-06-21T00:00:00.000Z");
+			expect(record.altText).toEqual("An image");
 
-		expect(record?.location?.id).toEqual("1");
-		expect(record?.location?.streetNumber).toEqual("55");
-		expect(record?.location?.streetName).toEqual("Rue Plumet");
-		expect(record?.location?.locality).toEqual("Paris");
-		expect(record?.location?.county).toEqual("Ile-de-France");
-		expect(record?.location?.state).toBeNull();
-		expect(record?.location?.latitude).toEqual(48.838608548520966);
-		expect(record?.location?.longitude).toEqual(2.3069214988665303);
-		expect(record?.location?.country).toEqual("France");
-		expect(record?.location?.countryCode).toEqual("FR");
-		expect(record?.location?.displayName).toEqual("Jean Valjean's House");
+			expect(record.location).toBeDefined();
+			expect(record.location.id).toEqual("1");
+			expect(record.location.streetNumber).toEqual("55");
+			expect(record.location.streetName).toEqual("Rue Plumet");
+			expect(record.location.locality).toEqual("Paris");
+			expect(record.location.county).toEqual("Ile-de-France");
+			expect(record.location.state).toBeNull();
+			expect(record.location.latitude).toEqual(48.838608548520966);
+			expect(record.location.longitude).toEqual(2.3069214988665303);
+			expect(record.location.country).toEqual("France");
+			expect(record.location.countryCode).toEqual("FR");
+			expect(record.location.displayName).toEqual("Jean Valjean's House");
 
-		expect(record?.files.length).toEqual(2);
-		const originalFile = record?.files.find(
-			(file: ArchiveFile) => file.fileId === "8",
-		);
-		const convertedFile = record?.files.find(
-			(file: ArchiveFile) => file.fileId === "9",
-		);
-		expect(originalFile).toBeTruthy();
-		expect(convertedFile).toBeTruthy();
-		expect(originalFile?.size).toEqual(1024);
-		expect(convertedFile?.size).toEqual(2056);
-		expect(originalFile?.format).toEqual("file.format.original");
-		expect(convertedFile?.format).toEqual("file.format.converted");
-		expect(originalFile?.type).toEqual("type.file.image.png");
-		expect(convertedFile?.type).toEqual("type.file.image.jpg");
-		expect(originalFile?.fileUrl).toEqual(
-			"https://localcdn.permanent.org/_Dev/8?t=1732914102&Expires=1732914102&Signature=AmCIgw__&Key-Pair-Id=APKA",
-		);
-		expect(originalFile?.downloadUrl).toEqual(
-			"https://localcdn.permanent.org/_Dev/8?t=1732914102&response-content-disposition=attachment%3B+filename%3D%22Robert+birthday+%281%29.jpg%22&Expires=1732914102&Signature=R25~ODA0uZ77J2rjQ__&Key-Pair-Id=APKA",
-		);
-		expect(originalFile?.createdAt).toEqual("2023-06-21T00:00:00+00:00");
-		expect(convertedFile?.createdAt).toEqual("2023-06-21T00:00:00+00:00");
-		expect(originalFile?.updatedAt).toEqual("2023-06-21T00:00:00+00:00");
-		expect(convertedFile?.updatedAt).toEqual("2023-06-21T00:00:00+00:00");
+			expect(record.files.length).toEqual(2);
+			const originalFile = record.files.find(
+				(file: ArchiveFile) => file.fileId === "8",
+			);
+			const convertedFile = record.files.find(
+				(file: ArchiveFile) => file.fileId === "9",
+			);
+			expect(originalFile).toBeDefined();
+			if (originalFile !== undefined) {
+				expect(originalFile.size).toEqual(1024);
+				expect(originalFile.format).toEqual("file.format.original");
+				expect(originalFile.type).toEqual("type.file.image.png");
+				expect(originalFile.fileUrl).toEqual(
+					"https://localcdn.permanent.org/_Dev/8?t=1732914102&Expires=1732914102&Signature=AmCIgw__&Key-Pair-Id=APKA",
+				);
+				expect(originalFile.downloadUrl).toEqual(
+					"https://localcdn.permanent.org/_Dev/8?t=1732914102&response-content-disposition=attachment%3B+filename%3D%22Robert+birthday+%281%29.jpg%22&Expires=1732914102&Signature=R25~ODA0uZ77J2rjQ__&Key-Pair-Id=APKA",
+				);
+				expect(originalFile.createdAt).toEqual("2023-06-21T00:00:00+00:00");
+				expect(originalFile.updatedAt).toEqual("2023-06-21T00:00:00+00:00");
+			}
+			expect(convertedFile).toBeDefined();
+			if (convertedFile !== undefined) {
+				expect(convertedFile.size).toEqual(2056);
+				expect(convertedFile.format).toEqual("file.format.converted");
+				expect(convertedFile.type).toEqual("type.file.image.jpg");
+				expect(convertedFile.createdAt).toEqual("2023-06-21T00:00:00+00:00");
+				expect(convertedFile.updatedAt).toEqual("2023-06-21T00:00:00+00:00");
+			}
 
-		expect(record?.folderLinkId).toEqual("8");
-		expect(record?.folderLinkType).toEqual("type.folder_link.public");
-		expect(record?.parentFolderId).toEqual("1");
-		expect(record?.parentFolderLinkId).toEqual("9");
-		expect(record?.parentFolderArchiveNumber).toEqual("0001-test");
-		expect(record?.tags.length).toEqual(3);
-		const firstTag = record?.tags.find((tag: Tag) => tag.id === "14");
-		const secondTag = record?.tags.find((tag: Tag) => tag.id === "15");
-		const thirdTag = record?.tags.find((tag: Tag) => tag.id === "16");
-		expect(firstTag?.name).toEqual("Generic Tag 1");
-		expect(secondTag?.name).toEqual("Generic Tag 2");
-		expect(thirdTag?.name).toEqual("Generic Tag 3");
-		expect(firstTag?.type).toEqual("type.generic.placeholder");
-		expect(secondTag?.type).toEqual("type.generic.placeholder");
-		expect(thirdTag?.type).toEqual("type.tag.metadata.CustomField");
+			expect(record.folderLinkId).toEqual("8");
+			expect(record.folderLinkType).toEqual("type.folder_link.public");
+			expect(record.parentFolderId).toEqual("1");
+			expect(record.parentFolderLinkId).toEqual("9");
+			expect(record.parentFolderArchiveNumber).toEqual("0001-test");
+			expect(record.tags.length).toEqual(3);
+			const firstTag = record.tags.find((tag: Tag) => tag.id === "14");
+			const secondTag = record.tags.find((tag: Tag) => tag.id === "15");
+			const thirdTag = record.tags.find((tag: Tag) => tag.id === "16");
+			expect(firstTag).toBeDefined();
+			if (firstTag !== undefined) {
+				expect(firstTag.name).toEqual("Generic Tag 1");
+				expect(firstTag.type).toEqual("type.generic.placeholder");
+			}
+			expect(secondTag).toBeDefined();
+			if (secondTag !== undefined) {
+				expect(secondTag.name).toEqual("Generic Tag 2");
+				expect(secondTag.type).toEqual("type.generic.placeholder");
+			}
+			expect(thirdTag).toBeDefined();
+			if (thirdTag !== undefined) {
+				expect(thirdTag.name).toEqual("Generic Tag 3");
+				expect(thirdTag.type).toEqual("type.tag.metadata.CustomField");
+			}
 
-		expect(record?.archiveArchiveNumber).toEqual("0001-0001");
+			expect(record.archiveArchiveNumber).toEqual("0001-0001");
 
-		expect(record?.shares.length).toEqual(2);
-		expect(record?.shares[0]?.id).toEqual("1");
-		const shareViewer = record?.shares.find((share: Share) => share.id === "1");
-		const shareContributor = record?.shares.find(
-			(share: Share) => share.id === "2",
-		);
-		expect(shareViewer?.accessRole).toEqual("access.role.viewer");
-		expect(shareViewer?.status).toEqual("status.generic.ok");
-		expect(shareViewer?.archive.id).toEqual("3");
-		expect(shareViewer?.archive.thumbUrl200).toEqual(
-			"https://test-archive-thumbnail",
-		);
-		expect(shareViewer?.archive.name).toEqual("Jay Rando");
-
-		expect(shareContributor?.accessRole).toEqual("access.role.contributor");
-		expect(shareContributor?.status).toEqual("status.generic.ok");
-		expect(shareContributor?.archive.id).toEqual("2");
-		expect(shareContributor?.archive.thumbUrl200).toBeFalsy();
-		expect(shareContributor?.archive.name).toEqual("Jane Rando");
+			expect(record.shares.length).toEqual(2);
+			const shareViewer = record.shares.find(
+				(share: Share) => share.id === "1",
+			);
+			const shareContributor = record.shares.find(
+				(share: Share) => share.id === "2",
+			);
+			expect(shareViewer).toBeDefined();
+			if (shareViewer !== undefined) {
+				expect(shareViewer.accessRole).toEqual("access.role.viewer");
+				expect(shareViewer.status).toEqual("status.generic.ok");
+				expect(shareViewer.archive.id).toEqual("3");
+				expect(shareViewer.archive.thumbUrl200).toEqual(
+					"https://test-archive-thumbnail",
+				);
+				expect(shareViewer.archive.name).toEqual("Jay Rando");
+			}
+			expect(shareContributor).toBeDefined();
+			if (shareContributor !== undefined) {
+				expect(shareContributor.accessRole).toEqual("access.role.contributor");
+				expect(shareContributor.status).toEqual("status.generic.ok");
+				expect(shareContributor.archive.id).toEqual("2");
+				expect(shareContributor.archive.thumbUrl200).toBeFalsy();
+				expect(shareContributor.archive.name).toEqual("Jane Rando");
+			}
+		}
 	});
 	test("expect to not return deleted files", async () => {
 		const response = await agent

@@ -8,13 +8,13 @@ describe("transferArchiveOwnership", () => {
 		const archiveSlug = "0001-0001";
 		const testMessage = "Please carry on the mission of this archive";
 
-		await legacyClient.transferArchiveOwnership(
-			testEmail,
+		await legacyClient.transferArchiveOwnership({
+			recipientEmail: testEmail,
 			archiveSlug,
-			testMessage,
-			true,
-			1024,
-		);
+			message: testMessage,
+			isLegacyAction: true,
+			storageGiftInMB: 1024,
+		});
 
 		expect(fetch).toHaveBeenCalledWith("/archive/transferOwnership", {
 			method: "POST",
@@ -36,7 +36,10 @@ describe("transferArchiveOwnership", () => {
 		const testEmail = "test@permanent.org";
 		const archiveSlug = "0001-0001";
 
-		await legacyClient.transferArchiveOwnership(testEmail, archiveSlug);
+		await legacyClient.transferArchiveOwnership({
+			recipientEmail: testEmail,
+			archiveSlug,
+		});
 
 		expect(fetch).toHaveBeenCalledWith("/archive/transferOwnership", {
 			method: "POST",

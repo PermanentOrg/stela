@@ -1,6 +1,6 @@
 import request from "supertest";
-import type { Folder } from "../models";
-import type { ArchiveRecord, ArchiveFile } from "../../record/models";
+import type { FolderChildItem } from "../models";
+import type { ArchiveFile } from "../../record/models";
 import type { Tag } from "../../tag/models";
 import type { Share } from "../../share/models";
 import { app } from "../../app";
@@ -61,7 +61,7 @@ describe("GET /folder/{id}/children", () => {
 			.expect(200);
 		const {
 			body: { items: children },
-		} = response as { body: { items: (ArchiveRecord | Folder)[] } };
+		} = response as { body: { items: FolderChildItem[] } };
 		expect(children.length).toEqual(2);
 		const [folder] = children;
 
@@ -70,34 +70,43 @@ describe("GET /folder/{id}/children", () => {
 			if ("folderId" in folder) {
 				expect(folder.folderId).toEqual("2");
 				expect(folder.size).toEqual(0);
-				expect(folder.location?.id).toEqual("1");
-				expect(folder.location?.streetNumber).toEqual("55");
-				expect(folder.location?.streetName).toEqual("Rue Plumet");
-				expect(folder.location?.locality).toEqual("Paris");
-				expect(folder.location?.county).toEqual("Ile-de-France");
-				expect(folder.location?.state).toBeNull();
-				expect(folder.location?.latitude).toEqual(48.838608548520966);
-				expect(folder.location?.longitude).toEqual(2.3069214988665303);
-				expect(folder.location?.country).toEqual("France");
-				expect(folder.location?.countryCode).toEqual("FR");
-				expect(folder.location?.displayName).toEqual("Jean Valjean's House");
-				expect(folder.parentFolder?.id).toEqual("10");
-				expect(folder.shares?.length).toEqual(1);
-				if (folder.shares?.length === 1) {
-					expect(folder.shares[0]?.id).toEqual("1");
-					expect(folder.shares[0]?.accessRole).toEqual("access.role.curator");
-					expect(folder.shares[0]?.status).toEqual("status.generic.ok");
-					expect(folder.shares[0]?.archive.id).toEqual("2");
-					expect(folder.shares[0]?.archive.thumbUrl200).toEqual(
-						"https://test-archive-thumbnail",
-					);
-					expect(folder.shares[0]?.archive.name).toEqual("Test Archive");
+				expect(folder.location).toBeDefined();
+				if (folder.location !== undefined) {
+					expect(folder.location.id).toEqual("1");
+					expect(folder.location.streetNumber).toEqual("55");
+					expect(folder.location.streetName).toEqual("Rue Plumet");
+					expect(folder.location.locality).toEqual("Paris");
+					expect(folder.location.county).toEqual("Ile-de-France");
+					expect(folder.location.state).toBeNull();
+					expect(folder.location.latitude).toEqual(48.838608548520966);
+					expect(folder.location.longitude).toEqual(2.3069214988665303);
+					expect(folder.location.country).toEqual("France");
+					expect(folder.location.countryCode).toEqual("FR");
+					expect(folder.location.displayName).toEqual("Jean Valjean's House");
 				}
-				expect(folder.tags?.length).toEqual(1);
-				if (folder.tags?.length === 1) {
-					expect(folder.tags[0]?.id).toEqual("1");
-					expect(folder.tags[0]?.name).toEqual("Test Tag One");
-					expect(folder.tags[0]?.type).toEqual("type.generic.placeholder");
+				expect(folder.parentFolder?.id).toEqual("10");
+				expect(folder.shares).toBeDefined();
+				if (folder.shares !== undefined) {
+					expect(folder.shares.length).toEqual(1);
+					if (folder.shares[0] !== undefined) {
+						expect(folder.shares[0].id).toEqual("1");
+						expect(folder.shares[0].accessRole).toEqual("access.role.curator");
+						expect(folder.shares[0].status).toEqual("status.generic.ok");
+						expect(folder.shares[0].archive.id).toEqual("2");
+						expect(folder.shares[0].archive.thumbUrl200).toEqual(
+							"https://test-archive-thumbnail",
+						);
+						expect(folder.shares[0].archive.name).toEqual("Test Archive");
+					}
+				}
+				expect(folder.tags).toBeDefined();
+				if (folder.tags !== undefined) {
+					expect(folder.tags.length).toEqual(1);
+					if (folder.tags[0] !== undefined) {
+						expect(folder.tags[0].id).toEqual("1");
+						expect(folder.tags[0].name).toEqual("Test Tag One");
+						expect(folder.tags[0].type).toEqual("type.generic.placeholder");
+					}
 				}
 				expect(folder.archive.id).toEqual("1");
 				expect(folder.createdAt).toEqual("2025-01-01T00:00:00.000Z");
@@ -144,7 +153,7 @@ describe("GET /folder/{id}/children", () => {
 			.expect(200);
 		const {
 			body: { items: children },
-		} = response as { body: { items: (ArchiveRecord | Folder)[] } };
+		} = response as { body: { items: FolderChildItem[] } };
 		expect(children.length).toEqual(2);
 		const [, record] = children;
 		if (record !== undefined) {
@@ -188,20 +197,24 @@ describe("GET /folder/{id}/children", () => {
 				const convertedFile = record.files.find(
 					(file: ArchiveFile) => file.fileId === "9",
 				);
-				expect(originalFile).toBeTruthy();
-				expect(convertedFile).toBeTruthy();
-				expect(originalFile?.size).toEqual(1024);
-				expect(convertedFile?.size).toEqual(2056);
-				expect(originalFile?.format).toEqual("file.format.original");
-				expect(convertedFile?.format).toEqual("file.format.converted");
-				expect(originalFile?.type).toEqual("type.file.image.png");
-				expect(convertedFile?.type).toEqual("type.file.image.jpg");
-				expect(originalFile?.fileUrl).toEqual(
-					"https://localcdn.permanent.org/_Dev/8?t=1732914102&Expires=1732914102&Signature=AmCIgw__&Key-Pair-Id=APKA",
-				);
-				expect(originalFile?.downloadUrl).toEqual(
-					"https://localcdn.permanent.org/_Dev/8?t=1732914102&response-content-disposition=attachment%3B+filename%3D%22Robert+birthday+%281%29.jpg%22&Expires=1732914102&Signature=R25~ODA0uZ77J2rjQ__&Key-Pair-Id=APKA",
-				);
+				expect(originalFile).toBeDefined();
+				expect(convertedFile).toBeDefined();
+				if (originalFile !== undefined) {
+					expect(originalFile.size).toEqual(1024);
+					expect(originalFile.format).toEqual("file.format.original");
+					expect(originalFile.type).toEqual("type.file.image.png");
+					expect(originalFile.fileUrl).toEqual(
+						"https://localcdn.permanent.org/_Dev/8?t=1732914102&Expires=1732914102&Signature=AmCIgw__&Key-Pair-Id=APKA",
+					);
+					expect(originalFile.downloadUrl).toEqual(
+						"https://localcdn.permanent.org/_Dev/8?t=1732914102&response-content-disposition=attachment%3B+filename%3D%22Robert+birthday+%281%29.jpg%22&Expires=1732914102&Signature=R25~ODA0uZ77J2rjQ__&Key-Pair-Id=APKA",
+					);
+				}
+				if (convertedFile !== undefined) {
+					expect(convertedFile.size).toEqual(2056);
+					expect(convertedFile.format).toEqual("file.format.converted");
+					expect(convertedFile.type).toEqual("type.file.image.jpg");
+				}
 
 				expect(record.folderLinkId).toEqual("11");
 				expect(record.folderLinkType).toEqual("type.folder_link.private");
@@ -212,12 +225,21 @@ describe("GET /folder/{id}/children", () => {
 				const firstTag = record.tags.find((tag: Tag) => tag.id === "14");
 				const secondTag = record.tags.find((tag: Tag) => tag.id === "15");
 				const thirdTag = record.tags.find((tag: Tag) => tag.id === "16");
-				expect(firstTag?.name).toEqual("Generic Tag 1");
-				expect(secondTag?.name).toEqual("Generic Tag 2");
-				expect(thirdTag?.name).toEqual("Generic Tag 3");
-				expect(firstTag?.type).toEqual("type.generic.placeholder");
-				expect(secondTag?.type).toEqual("type.generic.placeholder");
-				expect(thirdTag?.type).toEqual("type.tag.metadata.CustomField");
+				expect(firstTag).toBeDefined();
+				if (firstTag !== undefined) {
+					expect(firstTag.name).toEqual("Generic Tag 1");
+					expect(firstTag.type).toEqual("type.generic.placeholder");
+				}
+				expect(secondTag).toBeDefined();
+				if (secondTag !== undefined) {
+					expect(secondTag.name).toEqual("Generic Tag 2");
+					expect(secondTag.type).toEqual("type.generic.placeholder");
+				}
+				expect(thirdTag).toBeDefined();
+				if (thirdTag !== undefined) {
+					expect(thirdTag.name).toEqual("Generic Tag 3");
+					expect(thirdTag.type).toEqual("type.tag.metadata.CustomField");
+				}
 
 				expect(record.archiveArchiveNumber).toEqual("0001-0001");
 
@@ -228,21 +250,29 @@ describe("GET /folder/{id}/children", () => {
 				const shareContributor = record.shares.find(
 					(share: Share) => share.id === "4",
 				);
-				expect(shareViewer?.accessRole).toEqual("access.role.viewer");
-				expect(shareViewer?.status).toEqual("status.generic.ok");
-				expect(shareViewer?.archive.id).toEqual("3");
-				expect(shareViewer?.archive.thumbUrl200).toEqual(
-					"https://test-archive-thumbnail",
-				);
-				expect(shareViewer?.archive.name).toEqual("Test Archive");
+				expect(shareViewer).toBeDefined();
+				if (shareViewer !== undefined) {
+					expect(shareViewer.accessRole).toEqual("access.role.viewer");
+					expect(shareViewer.status).toEqual("status.generic.ok");
+					expect(shareViewer.archive.id).toEqual("3");
+					expect(shareViewer.archive.thumbUrl200).toEqual(
+						"https://test-archive-thumbnail",
+					);
+					expect(shareViewer.archive.name).toEqual("Test Archive");
+				}
 
-				expect(shareContributor?.accessRole).toEqual("access.role.contributor");
-				expect(shareContributor?.status).toEqual("status.generic.ok");
-				expect(shareContributor?.archive.id).toEqual("2");
-				expect(shareContributor?.archive.thumbUrl200).toEqual(
-					"https://test-archive-thumbnail",
-				);
-				expect(shareContributor?.archive.name).toEqual("Test Archive");
+				expect(shareContributor).toBeDefined();
+				if (shareContributor !== undefined) {
+					expect(shareContributor.accessRole).toEqual(
+						"access.role.contributor",
+					);
+					expect(shareContributor.status).toEqual("status.generic.ok");
+					expect(shareContributor.archive.id).toEqual("2");
+					expect(shareContributor.archive.thumbUrl200).toEqual(
+						"https://test-archive-thumbnail",
+					);
+					expect(shareContributor.archive.name).toEqual("Test Archive");
+				}
 			}
 		}
 	});
@@ -253,7 +283,7 @@ describe("GET /folder/{id}/children", () => {
 			.expect(200);
 		const {
 			body: { items: children },
-		} = response as { body: { items: (ArchiveRecord | Folder)[] } };
+		} = response as { body: { items: FolderChildItem[] } };
 		expect(children.length).toEqual(2);
 		expect(children[0]?.displayName).toEqual("Private Folder");
 		expect(children[1]?.displayName).toEqual("Public File");
@@ -268,7 +298,7 @@ describe("GET /folder/{id}/children", () => {
 			.expect(200);
 		const {
 			body: { items: children },
-		} = response as { body: { items: (ArchiveRecord | Folder)[] } };
+		} = response as { body: { items: FolderChildItem[] } };
 		expect(children.length).toEqual(2);
 		expect(children[0]?.displayName).toEqual("Public File");
 		expect(children[1]?.displayName).toEqual("Private Folder");
@@ -283,7 +313,7 @@ describe("GET /folder/{id}/children", () => {
 			.expect(200);
 		const {
 			body: { items: children },
-		} = response as { body: { items: (ArchiveRecord | Folder)[] } };
+		} = response as { body: { items: FolderChildItem[] } };
 		expect(children.length).toEqual(2);
 		expect(children[0]?.displayName).toEqual("Public File");
 		expect(children[1]?.displayName).toEqual("Private Folder");
@@ -298,7 +328,7 @@ describe("GET /folder/{id}/children", () => {
 			.expect(200);
 		const {
 			body: { items: children },
-		} = response as { body: { items: (ArchiveRecord | Folder)[] } };
+		} = response as { body: { items: FolderChildItem[] } };
 		expect(children.length).toEqual(2);
 		expect(children[0]?.displayName).toEqual("Private Folder");
 		expect(children[1]?.displayName).toEqual("Public File");
@@ -313,7 +343,7 @@ describe("GET /folder/{id}/children", () => {
 			.expect(200);
 		const {
 			body: { items: children },
-		} = response as { body: { items: (ArchiveRecord | Folder)[] } };
+		} = response as { body: { items: FolderChildItem[] } };
 		expect(children.length).toEqual(2);
 		expect(children[0]?.displayName).toEqual("Private Folder");
 		expect(children[1]?.displayName).toEqual("Public File");
@@ -328,7 +358,7 @@ describe("GET /folder/{id}/children", () => {
 			.expect(200);
 		const {
 			body: { items: children },
-		} = response as { body: { items: (ArchiveRecord | Folder)[] } };
+		} = response as { body: { items: FolderChildItem[] } };
 		expect(children.length).toEqual(2);
 		expect(children[0]?.displayName).toEqual("Public File");
 		expect(children[1]?.displayName).toEqual("Private Folder");
@@ -341,7 +371,7 @@ describe("GET /folder/{id}/children", () => {
 			.expect(200);
 		const {
 			body: { items: children },
-		} = response as { body: { items: (ArchiveRecord | Folder)[] } };
+		} = response as { body: { items: FolderChildItem[] } };
 		expect(children.length).toEqual(0);
 	});
 
@@ -351,7 +381,7 @@ describe("GET /folder/{id}/children", () => {
 			.expect(200);
 		const {
 			body: { items: children },
-		} = response as { body: { items: (ArchiveRecord | Folder)[] } };
+		} = response as { body: { items: FolderChildItem[] } };
 		expect(children.length).toEqual(1);
 	});
 
@@ -361,7 +391,7 @@ describe("GET /folder/{id}/children", () => {
 			.expect(200);
 		const {
 			body: { items: children },
-		} = response as { body: { items: (ArchiveRecord | Folder)[] } };
+		} = response as { body: { items: FolderChildItem[] } };
 		expect(children.length).toEqual(1);
 		expect(children[0]?.displayName).toEqual("Public File");
 	});

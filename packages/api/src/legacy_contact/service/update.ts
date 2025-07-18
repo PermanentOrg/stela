@@ -18,7 +18,7 @@ export const updateLegacyContact = async (
 				email: requestBody.email,
 			},
 		)
-		.catch((err) => {
+		.catch((err: unknown) => {
 			logger.error(err);
 			throw new createError.InternalServerError(
 				"Failed to update legacy contact",
@@ -34,9 +34,11 @@ export const updateLegacyContact = async (
 	} = legacyContactResult;
 
 	if (emailChanged) {
-		await sendLegacyContactNotification(legacyContactId).catch((err) => {
-			logger.error(err);
-		});
+		await sendLegacyContactNotification(legacyContactId).catch(
+			(err: unknown) => {
+				logger.error(err);
+			},
+		);
 	}
 
 	return legacyContact;

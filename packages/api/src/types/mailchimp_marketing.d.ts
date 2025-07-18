@@ -17,7 +17,7 @@ declare module "@mailchimp/mailchimp_marketing" {
 		export function updateListMemberTags(
 			listId: string,
 			subscriberHash: string,
-			body: { tags: { name: string; status: "active" | "inactive" }[] },
+			body: { tags: Array<{ name: string; status: "active" | "inactive" }> },
 		): Promise<ErrorResponse | null>;
 	}
 }

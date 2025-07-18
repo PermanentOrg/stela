@@ -194,73 +194,89 @@ describe("GET /folder", () => {
 			body: { items: folders },
 		} = response as { body: { items: Folder[] } };
 		expect(folders.length).toEqual(1);
-		expect(folders[0]?.folderId).toEqual("2");
-		expect(folders[0]?.size).toEqual(0);
-		expect(folders[0]?.location?.id).toEqual("1");
-		expect(folders[0]?.location?.streetNumber).toEqual("55");
-		expect(folders[0]?.location?.streetName).toEqual("Rue Plumet");
-		expect(folders[0]?.location?.locality).toEqual("Paris");
-		expect(folders[0]?.location?.county).toEqual("Ile-de-France");
-		expect(folders[0]?.location?.state).toBeNull();
-		expect(folders[0]?.location?.latitude).toEqual(48.838608548520966);
-		expect(folders[0]?.location?.longitude).toEqual(2.3069214988665303);
-		expect(folders[0]?.location?.country).toEqual("France");
-		expect(folders[0]?.location?.countryCode).toEqual("FR");
-		expect(folders[0]?.location?.displayName).toEqual("Jean Valjean's House");
-		expect(folders[0]?.parentFolder?.id).toEqual("10");
-		expect(folders[0]?.shares?.length).toEqual(1);
-		if (folders[0]?.shares?.length === 1) {
-			expect(folders[0]?.shares[0]?.id).toEqual("1");
-			expect(folders[0]?.shares[0]?.accessRole).toEqual("access.role.curator");
-			expect(folders[0]?.shares[0]?.status).toEqual("status.generic.ok");
-			expect(folders[0]?.shares[0]?.archive.id).toEqual("2");
-			expect(folders[0]?.shares[0]?.archive.thumbUrl200).toEqual(
-				"https://test-archive-thumbnail",
+		expect(folders[0]).toBeDefined();
+		if (folders[0] !== undefined) {
+			expect(folders[0].folderId).toEqual("2");
+			expect(folders[0].size).toEqual(0);
+			expect(folders[0].location).toBeDefined();
+			if (folders[0].location !== undefined) {
+				expect(folders[0].location.id).toEqual("1");
+				expect(folders[0].location.streetNumber).toEqual("55");
+				expect(folders[0].location.streetName).toEqual("Rue Plumet");
+				expect(folders[0].location.locality).toEqual("Paris");
+				expect(folders[0].location.county).toEqual("Ile-de-France");
+				expect(folders[0].location.state).toBeNull();
+				expect(folders[0].location.latitude).toEqual(48.838608548520966);
+				expect(folders[0].location.longitude).toEqual(2.3069214988665303);
+				expect(folders[0].location.country).toEqual("France");
+				expect(folders[0].location.countryCode).toEqual("FR");
+				expect(folders[0].location.displayName).toEqual("Jean Valjean's House");
+			}
+			expect(folders[0].parentFolder?.id).toEqual("10");
+			expect(folders[0].shares).toBeDefined();
+			if (folders[0].shares !== undefined) {
+				expect(folders[0].shares.length).toEqual(1);
+				if (folders[0].shares[0] !== undefined) {
+					expect(folders[0].shares[0].id).toEqual("1");
+					expect(folders[0].shares[0].accessRole).toEqual(
+						"access.role.curator",
+					);
+					expect(folders[0].shares[0].status).toEqual("status.generic.ok");
+					expect(folders[0].shares[0].archive.id).toEqual("2");
+					expect(folders[0].shares[0].archive.thumbUrl200).toEqual(
+						"https://test-archive-thumbnail",
+					);
+					expect(folders[0].shares[0].archive.name).toEqual("Test Archive");
+				}
+			}
+			expect(folders[0].tags).toBeDefined();
+			if (folders[0].tags !== undefined) {
+				expect(folders[0].tags.length).toEqual(1);
+				if (folders[0].tags[0] !== undefined) {
+					expect(folders[0].tags[0].id).toEqual("1");
+					expect(folders[0].tags[0].name).toEqual("Test Tag One");
+					expect(folders[0].tags[0].type).toEqual("type.generic.placeholder");
+				}
+			}
+			expect(folders[0].archive.id).toEqual("1");
+			expect(folders[0].archive.name).toEqual("First Archive");
+			expect(folders[0].createdAt).toEqual("2025-01-01T00:00:00.000Z");
+			expect(folders[0].updatedAt).toEqual("2025-01-01T00:00:00.000Z");
+			expect(folders[0].description).toEqual("A test folder");
+			expect(folders[0].displayTimestamp).toEqual("2025-01-01T00:00:00.000Z");
+			expect(folders[0].displayEndTimestamp).toEqual(
+				"2025-01-01T00:00:00.000Z",
 			);
-			expect(folders[0]?.shares[0]?.archive.name).toEqual("Test Archive");
+			expect(folders[0].displayName).toEqual("Private Folder");
+			expect(folders[0].downloadName).toEqual("Private Folder");
+			expect(folders[0].imageRatio).toEqual(1);
+			expect(folders[0].paths.names.length).toEqual(2);
+			expect(folders[0].paths.names[0]).toEqual("My Files");
+			expect(folders[0].paths.names[1]).toEqual("Private Folder");
+			expect(folders[0].publicAt).toBeNull();
+			expect(folders[0].sort).toEqual("alphabetical-ascending");
+			expect(folders[0].thumbnailUrls).toBeDefined();
+			if (folders[0].thumbnailUrls !== undefined) {
+				expect(folders[0].thumbnailUrls["200"]).toEqual(
+					"https://test-folder-thumbnail-200",
+				);
+				expect(folders[0].thumbnailUrls["256"]).toEqual(
+					"https://test-folder-thumbnail-256",
+				);
+				expect(folders[0].thumbnailUrls["500"]).toEqual(
+					"https://test-folder-thumbnail-500",
+				);
+				expect(folders[0].thumbnailUrls["1000"]).toEqual(
+					"https://test-folder-thumbnail-1000",
+				);
+				expect(folders[0].thumbnailUrls["2000"]).toEqual(
+					"https://test-folder-thumbnail-2000",
+				);
+			}
+			expect(folders[0].type).toEqual("private");
+			expect(folders[0].status).toEqual("ok");
+			expect(folders[0].view).toEqual("grid");
 		}
-		expect(folders[0]?.tags?.length).toEqual(1);
-		if (folders[0]?.tags?.length === 1) {
-			expect(folders[0]?.tags[0]?.id).toEqual("1");
-			expect(folders[0]?.tags[0]?.name).toEqual("Test Tag One");
-			expect(folders[0]?.tags[0]?.type).toEqual("type.generic.placeholder");
-		}
-		expect(folders[0]?.archive.id).toEqual("1");
-		expect(folders[0]?.archive.name).toEqual("First Archive");
-		expect(folders[0]?.createdAt).toEqual("2025-01-01T00:00:00.000Z");
-		expect(folders[0]?.updatedAt).toEqual("2025-01-01T00:00:00.000Z");
-		expect(folders[0]?.description).toEqual("A test folder");
-		expect(folders[0]?.displayTimestamp).toEqual("2025-01-01T00:00:00.000Z");
-		expect(folders[0]?.displayEndTimestamp).toEqual("2025-01-01T00:00:00.000Z");
-		expect(folders[0]?.displayName).toEqual("Private Folder");
-		expect(folders[0]?.downloadName).toEqual("Private Folder");
-		expect(folders[0]?.imageRatio).toEqual(1);
-		expect(folders[0]?.paths.names.length).toEqual(2);
-		expect(folders[0]?.paths.names[0]).toEqual("My Files");
-		expect(folders[0]?.paths.names[1]).toEqual("Private Folder");
-		expect(folders[0]?.publicAt).toBeNull();
-		expect(folders[0]?.sort).toEqual("alphabetical-ascending");
-		expect(folders[0]?.thumbnailUrls).toBeDefined();
-		if (folders[0]?.thumbnailUrls !== undefined) {
-			expect(folders[0]?.thumbnailUrls["200"]).toEqual(
-				"https://test-folder-thumbnail-200",
-			);
-			expect(folders[0].thumbnailUrls["256"]).toEqual(
-				"https://test-folder-thumbnail-256",
-			);
-			expect(folders[0].thumbnailUrls["500"]).toEqual(
-				"https://test-folder-thumbnail-500",
-			);
-			expect(folders[0].thumbnailUrls["1000"]).toEqual(
-				"https://test-folder-thumbnail-1000",
-			);
-			expect(folders[0].thumbnailUrls["2000"]).toEqual(
-				"https://test-folder-thumbnail-2000",
-			);
-		}
-		expect(folders[0]?.type).toEqual("private");
-		expect(folders[0]?.status).toEqual("ok");
-		expect(folders[0]?.view).toEqual("grid");
 	});
 
 	test("should retrieve multiple folders if requested", async () => {
