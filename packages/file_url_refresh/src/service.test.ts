@@ -38,7 +38,7 @@ const getUrlsFromFile = async (fileId: string): Promise<FileData> => {
 		},
 	);
 
-	if (!fileResult.rows[0]) {
+	if (fileResult.rows[0] === undefined) {
 		expect(false).toBe(true);
 		return {
 			accessUrl: "",
@@ -77,14 +77,14 @@ describe("refreshThumbnails", () => {
 		"https://testcdn.permanent.org/originals/1/1?Expires=2757200650&Policy=new-test-policy&Signature=new-test-signature&Key-Pair-Id=test-key-pair&response-content-disposition=attachment; filename=public_file.png";
 
 	beforeEach(async () => {
-		(constructSignedCdnUrl as jest.Mock).mockImplementation(
-			(_: string, filename: string) => {
-				if (filename === null) {
+		jest
+			.mocked(constructSignedCdnUrl)
+			.mockImplementation((_: string, fileName?: string) => {
+				if (fileName === null) {
 					return testDownloadUrl;
 				}
 				return testFileUrl;
-			},
-		);
+			});
 		await loadFixtures();
 	});
 
@@ -195,17 +195,19 @@ describe("refreshThumbnails", () => {
 		const errorMessage = "out of cheese - redo from start";
 		jest
 			.spyOn(db, "sql")
-			.mockImplementationOnce((async () => ({
-				rows: [
-					{
-						id: "1",
-						cloudPath: "originals/1/1",
-						uploadName: "public_file.jpg",
-						type: "type.file.image.jpg",
-						format: "file.format.original",
-					},
-				],
-			})) as unknown as typeof db.sql)
+			.mockImplementationOnce(
+				jest.fn().mockResolvedValue({
+					rows: [
+						{
+							id: "1",
+							cloudPath: "originals/1/1",
+							uploadName: "public_file.jpg",
+							type: "type.file.image.jpg",
+							format: "file.format.original",
+						},
+					],
+				}),
+			)
 			.mockRejectedValueOnce(errorMessage);
 
 		await refreshFileUrls();

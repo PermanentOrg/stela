@@ -1,9 +1,11 @@
 import Joi from "joi";
 import { fieldsFromAdminAuthentication } from "../validators";
 
-export function validateRecalculateFolderThumbnailsRequest(
+export const validateRecalculateFolderThumbnailsRequest: (
 	data: unknown,
-): asserts data is { beginTimestamp: Date; endTimestamp: Date } {
+) => asserts data is { beginTimestamp: Date; endTimestamp: Date } = (
+	data: unknown,
+): asserts data is { beginTimestamp: Date; endTimestamp: Date } => {
 	const validation = Joi.object()
 		.keys({
 			...fieldsFromAdminAuthentication,
@@ -11,14 +13,16 @@ export function validateRecalculateFolderThumbnailsRequest(
 			endTimestamp: Joi.date().iso().required(),
 		})
 		.validate(data);
-	if (validation.error) {
+	if (validation.error !== undefined) {
 		throw validation.error;
 	}
-}
+};
 
-export function validateAccountSetNullSubjectsRequest(
+export const validateAccountSetNullSubjectsRequest: (
 	data: unknown,
-): asserts data is { accounts: { email: string; subject: string }[] } {
+) => asserts data is { accounts: { email: string; subject: string }[] } = (
+	data: unknown,
+): asserts data is { accounts: { email: string; subject: string }[] } => {
 	const validation = Joi.object()
 		.keys({
 			...fieldsFromAdminAuthentication,
@@ -32,20 +36,22 @@ export function validateAccountSetNullSubjectsRequest(
 				.required(),
 		})
 		.validate(data);
-	if (validation.error) {
+	if (validation.error !== undefined) {
 		throw validation.error;
 	}
-}
+};
 
-export function validateRecalculateRecordThumbnailRequest(
+export const validateRecalculateRecordThumbnailRequest: (
 	data: unknown,
-): asserts data is { recordId: string } {
+) => asserts data is { recordId: string } = (
+	data: unknown,
+): asserts data is { recordId: string } => {
 	const validation = Joi.object()
 		.keys({
 			recordId: Joi.string().required(),
 		})
 		.validate(data);
-	if (validation.error) {
+	if (validation.error !== undefined) {
 		throw validation.error;
 	}
-}
+};

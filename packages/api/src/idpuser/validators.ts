@@ -7,9 +7,11 @@ import type {
 } from "./models";
 import { fieldsFromUserAuthentication } from "../validators";
 
-export function validateSendEnableCodeRequest(
+export const validateSendEnableCodeRequest: (
 	data: unknown,
-): asserts data is SendEnableCodeRequest {
+) => asserts data is SendEnableCodeRequest = (
+	data: unknown,
+): asserts data is SendEnableCodeRequest => {
 	const validation = Joi.object()
 		.keys({
 			...fieldsFromUserAuthentication,
@@ -20,14 +22,16 @@ export function validateSendEnableCodeRequest(
 			}),
 		})
 		.validate(data);
-	if (validation.error) {
+	if (validation.error !== undefined) {
 		throw validation.error;
 	}
-}
+};
 
-export function validateCreateTwoFactorMethodRequest(
+export const validateCreateTwoFactorMethodRequest: (
 	data: unknown,
-): asserts data is CreateTwoFactorMethodRequest {
+) => asserts data is CreateTwoFactorMethodRequest = (
+	data: unknown,
+): asserts data is CreateTwoFactorMethodRequest => {
 	const validation = Joi.object()
 		.keys({
 			...fieldsFromUserAuthentication,
@@ -39,28 +43,32 @@ export function validateCreateTwoFactorMethodRequest(
 			}),
 		})
 		.validate(data);
-	if (validation.error) {
+	if (validation.error !== undefined) {
 		throw validation.error;
 	}
-}
+};
 
-export function validateSendDisableCodeRequest(
+export const validateSendDisableCodeRequest: (
 	data: unknown,
-): asserts data is SendDisableCodeRequest {
+) => asserts data is SendDisableCodeRequest = (
+	data: unknown,
+): asserts data is SendDisableCodeRequest => {
 	const validation = Joi.object()
 		.keys({
 			...fieldsFromUserAuthentication,
 			methodId: Joi.string().required(),
 		})
 		.validate(data);
-	if (validation.error) {
+	if (validation.error !== undefined) {
 		throw validation.error;
 	}
-}
+};
 
-export function validateDisableTwoFactorRequest(
+export const validateDisableTwoFactorRequest: (
 	data: unknown,
-): asserts data is DisableTwoFactorRequest {
+) => asserts data is DisableTwoFactorRequest = (
+	data: unknown,
+): asserts data is DisableTwoFactorRequest => {
 	const validation = Joi.object()
 		.keys({
 			...fieldsFromUserAuthentication,
@@ -68,7 +76,7 @@ export function validateDisableTwoFactorRequest(
 			code: Joi.string().required(),
 		})
 		.validate(data);
-	if (validation.error) {
+	if (validation.error !== undefined) {
 		throw validation.error;
 	}
-}
+};

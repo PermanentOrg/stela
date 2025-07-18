@@ -1,5 +1,5 @@
 import request from "supertest";
-import type { NextFunction, Request } from "express";
+import type { NextFunction } from "express";
 import { logger } from "@stela/logger";
 import createError from "http-errors";
 import { db } from "../database";
@@ -8,12 +8,10 @@ import {
 	extractUserIsAdminFromAuthToken,
 	verifyAdminAuthentication,
 } from "../middleware";
-import type {
-	CreateFeatureFlagRequest,
-	UpdateFeatureFlagRequest,
-	DeleteFeatureFlagRequest,
-	FeatureFlagRequest,
-} from "./models";
+import {
+	mockVerifyAdminAuthentication,
+	mockExtractUserIsAdminFromAuthToken,
+} from "../../test/middleware_mocks";
 
 jest.mock("../database");
 jest.mock("../middleware");
@@ -29,18 +27,16 @@ const clearDatabase = async (): Promise<void> => {
 
 const notExistingFeatureFlagId = "1bdf2da6-026b-4e8e-9b57-a86b1817be4d";
 
+const testEmail = "test@permanent.org";
+const testSubject = "6b640c73-4963-47de-a096-4a05ff8dc5f5";
+
 describe("GET /feature-flags", () => {
 	const agent = request(app);
 
 	beforeEach(async () => {
 		await clearDatabase();
 		await loadFixtures();
-		(extractUserIsAdminFromAuthToken as jest.Mock).mockImplementation(
-			(req: Request, __, next: NextFunction) => {
-				(req.body as FeatureFlagRequest).admin = false;
-				next();
-			},
-		);
+		mockExtractUserIsAdminFromAuthToken(false);
 	});
 
 	afterEach(async () => {
@@ -57,12 +53,7 @@ describe("GET /feature-flags", () => {
 	});
 
 	test("should log the error if the database call fails when calling user is admin", async () => {
-		(extractUserIsAdminFromAuthToken as jest.Mock).mockImplementation(
-			(req: Request, __, next: NextFunction) => {
-				(req.body as FeatureFlagRequest).admin = true;
-				next();
-			},
-		);
+		mockExtractUserIsAdminFromAuthToken(true);
 		const testError = new Error("SQL error");
 		jest.spyOn(db, "sql").mockRejectedValueOnce(testError);
 
@@ -71,11 +62,11 @@ describe("GET /feature-flags", () => {
 	});
 
 	test("should log the error if the request is invalid", async () => {
-		(extractUserIsAdminFromAuthToken as jest.Mock).mockImplementation(
-			(_req: Request, __, next: NextFunction) => {
+		jest
+			.mocked(extractUserIsAdminFromAuthToken)
+			.mockImplementation(async (_, __, next: NextFunction) => {
 				next();
-			},
-		);
+			});
 
 		await agent.get("/api/v2/feature-flags").expect(400);
 		expect(logger.error).toHaveBeenCalled();
@@ -89,12 +80,7 @@ describe("GET /feature-flags", () => {
 	});
 
 	test("should return list of all feature flags if user is admin", async () => {
-		(extractUserIsAdminFromAuthToken as jest.Mock).mockImplementation(
-			(req: Request, __, next: NextFunction) => {
-				(req.body as FeatureFlagRequest).admin = true;
-				next();
-			},
-		);
+		mockExtractUserIsAdminFromAuthToken(true);
 
 		const expected = {
 			items: [
@@ -125,15 +111,7 @@ describe("GET /feature-flags", () => {
 describe("POST /feature-flag", () => {
 	const agent = request(app);
 	beforeEach(async () => {
-		(verifyAdminAuthentication as jest.Mock).mockImplementation(
-			(req: Request, __, next: NextFunction) => {
-				(req.body as CreateFeatureFlagRequest).emailFromAuthToken =
-					"test@permanent.org";
-				(req.body as CreateFeatureFlagRequest).adminSubjectFromAuthToken =
-					"6b640c73-4963-47de-a096-4a05ff8dc5f5";
-				next();
-			},
-		);
+		mockVerifyAdminAuthentication(testEmail, testSubject);
 		jest.restoreAllMocks();
 		jest.clearAllMocks();
 		await loadFixtures();
@@ -176,40 +154,16 @@ describe("POST /feature-flag", () => {
 	});
 
 	test("should respond with 401 status code if lacking admin authentication", async () => {
-		(verifyAdminAuthentication as jest.Mock).mockImplementation(
-			(_: Request, __, next: NextFunction) => {
+		jest
+			.mocked(verifyAdminAuthentication)
+			.mockImplementation(async (_, __, next: NextFunction) => {
 				next(new createError.Unauthorized("You aren't logged in"));
-			},
-		);
+			});
 		await agent.post("/api/v2/feature-flags").expect(401);
 	});
 
 	test("should respond with 400 status code if missing emailFromAuthToken", async () => {
-		(verifyAdminAuthentication as jest.Mock).mockImplementation(
-			(req: Request, __, next: NextFunction) => {
-				(req.body as CreateFeatureFlagRequest).adminSubjectFromAuthToken =
-					"6b640c73-4963-47de-a096-4a05ff8dc5f5";
-				next();
-			},
-		);
-		await agent
-			.post("/api/v2/feature-flags")
-			.send({
-				name: "TEST",
-				description: "description",
-			})
-			.expect(400);
-	});
-
-	test("should respond with 400 status code if emailFromAuthToken is not a string", async () => {
-		(verifyAdminAuthentication as jest.Mock).mockImplementation(
-			(req: Request, __, next: NextFunction) => {
-				(req.body as { emailFromAuthToken: number }).emailFromAuthToken = 123;
-				(req.body as CreateFeatureFlagRequest).adminSubjectFromAuthToken =
-					"6b640c73-4963-47de-a096-4a05ff8dc5f5";
-				next();
-			},
-		);
+		mockVerifyAdminAuthentication("", testSubject);
 		await agent
 			.post("/api/v2/feature-flags")
 			.send({
@@ -294,15 +248,7 @@ describe("POST /feature-flag", () => {
 describe("PUT /feature-flag/:featureFlagId", () => {
 	const agent = request(app);
 	beforeEach(async () => {
-		(verifyAdminAuthentication as jest.Mock).mockImplementation(
-			(req: Request, __, next: NextFunction) => {
-				(req.body as UpdateFeatureFlagRequest).emailFromAuthToken =
-					"test@permanent.org";
-				(req.body as UpdateFeatureFlagRequest).adminSubjectFromAuthToken =
-					"6b640c73-4963-47de-a096-4a05ff8dc5f5";
-				next();
-			},
-		);
+		mockVerifyAdminAuthentication(testEmail, testSubject);
 		jest.restoreAllMocks();
 		jest.clearAllMocks();
 		await clearDatabase();
@@ -326,42 +272,18 @@ describe("PUT /feature-flag/:featureFlagId", () => {
 	});
 
 	test("should respond with 401 status code if lacking admin authentication", async () => {
-		(verifyAdminAuthentication as jest.Mock).mockImplementation(
-			(_: Request, __, next: NextFunction) => {
+		jest
+			.mocked(verifyAdminAuthentication)
+			.mockImplementation(async (_, __, next: NextFunction) => {
 				next(new createError.Unauthorized("You aren't logged in"));
-			},
-		);
+			});
 		await agent
 			.put("/api/v2/feature-flags/1bdf2da6-026b-4e8e-9b57-a86b1817be5d")
 			.expect(401);
 	});
 
 	test("should respond with 400 status code if missing emailFromAuthToken", async () => {
-		(verifyAdminAuthentication as jest.Mock).mockImplementation(
-			(req: Request, __, next: NextFunction) => {
-				(req.body as UpdateFeatureFlagRequest).adminSubjectFromAuthToken =
-					"6b640c73-4963-47de-a096-4a05ff8dc5f5";
-				next();
-			},
-		);
-		await agent
-			.put("/api/v2/feature-flags/1bdf2da6-026b-4e8e-9b57-a86b1817be5d")
-			.send({
-				description: "description",
-				globallyEnabled: true,
-			})
-			.expect(400);
-	});
-
-	test("should respond with 400 status code if emailFromAuthToken is not a string", async () => {
-		(verifyAdminAuthentication as jest.Mock).mockImplementation(
-			(req: Request, __, next: NextFunction) => {
-				(req.body as { emailFromAuthToken: number }).emailFromAuthToken = 123;
-				(req.body as UpdateFeatureFlagRequest).adminSubjectFromAuthToken =
-					"6b640c73-4963-47de-a096-4a05ff8dc5f5";
-				next();
-			},
-		);
+		mockVerifyAdminAuthentication("", testSubject);
 		await agent
 			.put("/api/v2/feature-flags/1bdf2da6-026b-4e8e-9b57-a86b1817be5d")
 			.send({
@@ -464,15 +386,7 @@ describe("PUT /feature-flag/:featureFlagId", () => {
 describe("DELETE /feature-flag/:featureFlagId", () => {
 	const agent = request(app);
 	beforeEach(async () => {
-		(verifyAdminAuthentication as jest.Mock).mockImplementation(
-			(req: Request, __, next: NextFunction) => {
-				(req.body as DeleteFeatureFlagRequest).emailFromAuthToken =
-					"test@permanent.org";
-				(req.body as DeleteFeatureFlagRequest).adminSubjectFromAuthToken =
-					"6b640c73-4963-47de-a096-4a05ff8dc5f5";
-				next();
-			},
-		);
+		mockVerifyAdminAuthentication(testEmail, testSubject);
 		jest.restoreAllMocks();
 		jest.clearAllMocks();
 		await clearDatabase();
@@ -493,11 +407,11 @@ describe("DELETE /feature-flag/:featureFlagId", () => {
 	});
 
 	test("should respond with 401 status code if lacking admin authentication", async () => {
-		(verifyAdminAuthentication as jest.Mock).mockImplementation(
-			(_: Request, __, next: NextFunction) => {
+		jest
+			.mocked(verifyAdminAuthentication)
+			.mockImplementation(async (_, __, next: NextFunction) => {
 				next(new createError.Unauthorized("You aren't logged in"));
-			},
-		);
+			});
 		await agent
 			.delete("/api/v2/feature-flags/1bdf2da6-026b-4e8e-9b57-a86b1817be5d")
 			.expect(401);

@@ -8,9 +8,13 @@ import { app } from "../app";
 import {
 	verifyUserAuthentication,
 	verifyUserOrAdminAuthentication,
-	extractIp,
 } from "../middleware";
-import type { CreateEventRequest, ChecklistItem } from "./models";
+import type { ChecklistItem } from "./models";
+import {
+	mockVerifyUserOrAdminAuthentication,
+	mockVerifyUserAuthentication,
+	mockExtractIp,
+} from "../../test/middleware_mocks";
 
 jest.mock("../database");
 jest.mock("../middleware");
@@ -30,22 +34,13 @@ describe("POST /event", () => {
 	};
 
 	beforeEach(async () => {
-		(verifyUserOrAdminAuthentication as jest.Mock).mockImplementation(
-			(req: Request, __, next: NextFunction) => {
-				(req.body as unknown as CreateEventRequest).userSubjectFromAuthToken =
-					testSubject;
-				(req.body as unknown as CreateEventRequest).userEmailFromAuthToken =
-					testEmail;
-				next();
-			},
+		mockVerifyUserOrAdminAuthentication(
+			testEmail,
+			testSubject,
+			undefined,
+			undefined,
 		);
-		(extractIp as jest.Mock).mockImplementation(
-			(req: Request, __, next: NextFunction) => {
-				(req.body as unknown as CreateEventRequest).ip = testIp;
-				next();
-			},
-		);
-		await clearDatabase();
+		mockExtractIp(testIp);
 	});
 
 	afterEach(async () => {
@@ -55,11 +50,11 @@ describe("POST /event", () => {
 	});
 
 	test("should return 401 if unauthenticated", async () => {
-		(verifyUserOrAdminAuthentication as jest.Mock).mockImplementation(
-			(_: Request, __, next: NextFunction) => {
+		jest
+			.mocked(verifyUserOrAdminAuthentication)
+			.mockImplementation(async (_, __, next: NextFunction) => {
 				next(new createError.Unauthorized("You aren't logged in"));
-			},
-		);
+			});
 		await agent.post("/api/v2/event").expect(401);
 	});
 
@@ -87,14 +82,11 @@ describe("POST /event", () => {
 	});
 
 	test("should record actor type admin if authenticated as an admin", async () => {
-		(verifyUserOrAdminAuthentication as jest.Mock).mockImplementation(
-			(req: Request, __, next: NextFunction) => {
-				(req.body as unknown as CreateEventRequest).adminSubjectFromAuthToken =
-					testSubject;
-				(req.body as unknown as CreateEventRequest).adminEmailFromAuthToken =
-					testEmail;
-				next();
-			},
+		mockVerifyUserOrAdminAuthentication(
+			undefined,
+			undefined,
+			testEmail,
+			testSubject,
 		);
 		await agent
 			.post("/api/v2/event")
@@ -119,11 +111,11 @@ describe("POST /event", () => {
 	});
 
 	test("should return 400 if fields from auth token fail validation", async () => {
-		(verifyUserOrAdminAuthentication as jest.Mock).mockImplementation(
-			(_: Request, __, next: NextFunction) => {
+		jest
+			.mocked(verifyUserOrAdminAuthentication)
+			.mockImplementation(async (_, __, next: NextFunction) => {
 				next();
-			},
-		);
+			});
 		await agent.post("/api/v2/event").expect(400);
 	});
 
@@ -208,12 +200,7 @@ describe("POST /event", () => {
 	});
 
 	test("should return 400 if ip is not an ip", async () => {
-		(extractIp as jest.Mock).mockImplementation(
-			(req: Request, __, next: NextFunction) => {
-				(req.body as unknown as CreateEventRequest).ip = "not_an_ip;";
-				next();
-			},
-		);
+		mockExtractIp("not_an_ip");
 		await agent
 			.post("/api/v2/event")
 			.send({
@@ -434,14 +421,11 @@ describe("POST /event", () => {
 	});
 
 	test("should send pass the caller email to Mixpanel when the caller is an admin", async () => {
-		(verifyUserOrAdminAuthentication as jest.Mock).mockImplementation(
-			(req: Request, __, next: NextFunction) => {
-				(req.body as unknown as CreateEventRequest).adminSubjectFromAuthToken =
-					testSubject;
-				(req.body as unknown as CreateEventRequest).adminEmailFromAuthToken =
-					testEmail;
-				next();
-			},
+		mockVerifyUserOrAdminAuthentication(
+			undefined,
+			undefined,
+			testEmail,
+			testSubject,
 		);
 		await agent
 			.post("/api/v2/event")
@@ -478,7 +462,7 @@ describe("POST /event", () => {
 	});
 
 	test("should return 500 error if Mixpanel call fails", async () => {
-		(mixpanelClient.track as jest.Mock).mockImplementation(() => {
+		jest.mocked(mixpanelClient.track).mockImplementation(() => {
 			throw new Error("Mixpanel error");
 		});
 		await agent
@@ -519,9 +503,11 @@ describe("POST /event", () => {
 	});
 
 	test("should return 500 error if database call returns an empty result", async () => {
-		jest.spyOn(db, "sql").mockImplementation((() => ({
-			rows: [],
-		})) as unknown as typeof db.sql);
+		jest.spyOn(db, "sql").mockImplementation(
+			jest.fn().mockResolvedValue({
+				rows: [],
+			}),
+		);
 		await agent
 			.post("/api/v2/event")
 			.send({
@@ -580,6 +566,42 @@ describe("POST /event", () => {
 describe("GET /event/checklist", () => {
 	const agent = request(app);
 
+	const isChecklistItem = (value: object): value is ChecklistItem =>
+		"id" in value &&
+		"title" in value &&
+		"completed" in value &&
+		typeof value.id === "string" &&
+		typeof value.title === "string" &&
+		typeof value.completed === "boolean";
+
+	const getChecklistItem = (
+		responseBody: unknown,
+		itemId: string,
+	): ChecklistItem | undefined => {
+		if (
+			typeof responseBody !== "object" ||
+			responseBody === null ||
+			!("checklistItems" in responseBody) ||
+			!Array.isArray(responseBody.checklistItems)
+		) {
+			return undefined;
+		}
+
+		const item = responseBody.checklistItems.find(
+			(item: unknown) =>
+				typeof item === "object" &&
+				item !== null &&
+				"id" in item &&
+				item.id === itemId,
+		) as unknown;
+
+		if (typeof item !== "object" || item === null || !isChecklistItem(item)) {
+			return undefined;
+		}
+
+		return item;
+	};
+
 	const loadFixtures = async (): Promise<void> => {
 		await db.sql("event.fixtures.create_test_accounts");
 		await db.sql("event.fixtures.create_test_events");
@@ -590,23 +612,14 @@ describe("GET /event/checklist", () => {
 	};
 
 	beforeEach(async () => {
-		(verifyUserAuthentication as jest.Mock).mockImplementation(
-			(req: Request, __, next: NextFunction) => {
-				(
-					req.body as unknown as { emailFromAuthToken: string }
-				).emailFromAuthToken = testEmail;
-				(
-					req.body as unknown as { userSubjectFromAuthToken: string }
-				).userSubjectFromAuthToken = testSubject;
-				next();
-			},
-		);
+		mockVerifyUserAuthentication(testEmail, testSubject);
 		await clearDatabase();
 		await loadFixtures();
 	});
 
 	afterEach(async () => {
 		jest.restoreAllMocks();
+		jest.clearAllMocks();
 		await clearDatabase();
 	});
 
@@ -615,306 +628,139 @@ describe("GET /event/checklist", () => {
 	});
 
 	test("should return 401 if unauthenticated", async () => {
-		(verifyUserAuthentication as jest.Mock).mockImplementation(
-			(_: Request, __, next: NextFunction) => {
+		jest
+			.mocked(verifyUserAuthentication)
+			.mockImplementation(async (_, __, next: NextFunction) => {
 				next(new createError.Unauthorized("You aren't logged in"));
-			},
-		);
+			});
 
 		await agent.get("/api/v2/event/checklist").expect(401);
 	});
 
 	test("should return 400 if emailFromAuthToken is not an email", async () => {
-		(verifyUserAuthentication as jest.Mock).mockImplementation(
-			(req: Request, _, next: NextFunction) => {
-				(
-					req.body as unknown as { emailFromAuthToken: string }
-				).emailFromAuthToken = "not_an_email";
-				next();
-			},
-		);
+		mockVerifyUserAuthentication("not_an_email", testSubject);
 
 		await agent.get("/api/v2/event/checklist").expect(400);
 	});
 
 	test("should have the right title for each item", async () => {
 		const response = await agent.get("/api/v2/event/checklist").expect(200);
-		expect(
-			(
-				response.body as { checklistItems: ChecklistItem[] }
-			).checklistItems.find(
-				(item: ChecklistItem) => item.id === "archiveCreated",
-			)?.title,
-		).toEqual("Create your first archive");
-		expect(
-			(
-				response.body as { checklistItems: ChecklistItem[] }
-			).checklistItems.find(
-				(item: ChecklistItem) => item.id === "storageRedeemed",
-			)?.title,
-		).toEqual("Redeem free storage");
-		expect(
-			(
-				response.body as { checklistItems: ChecklistItem[] }
-			).checklistItems.find(
-				(item: ChecklistItem) => item.id === "legacyContact",
-			)?.title,
-		).toEqual("Assign a Legacy Contact");
-		expect(
-			(
-				response.body as { checklistItems: ChecklistItem[] }
-			).checklistItems.find(
-				(item: ChecklistItem) => item.id === "archiveSteward",
-			)?.title,
-		).toEqual("Assign an Archive Steward");
-		expect(
-			(
-				response.body as { checklistItems: ChecklistItem[] }
-			).checklistItems.find(
-				(item: ChecklistItem) => item.id === "archiveProfile",
-			)?.title,
-		).toEqual("Update Archive Profile");
-		expect(
-			(
-				response.body as { checklistItems: ChecklistItem[] }
-			).checklistItems.find((item: ChecklistItem) => item.id === "firstUpload")
-				?.title,
-		).toEqual("Upload first file");
-		expect(
-			(
-				response.body as { checklistItems: ChecklistItem[] }
-			).checklistItems.find(
-				(item: ChecklistItem) => item.id === "publishContent",
-			)?.title,
-		).toEqual("Publish your archive");
+		const responseBody = response.body as unknown;
+
+		const archiveCreatedItem = getChecklistItem(responseBody, "archiveCreated");
+		expect(archiveCreatedItem?.title).toEqual("Create your first archive");
+
+		const storageRedeemedItem = getChecklistItem(
+			responseBody,
+			"storageRedeemed",
+		);
+		expect(storageRedeemedItem?.title).toEqual("Redeem free storage");
+
+		const legacyContactItem = getChecklistItem(responseBody, "legacyContact");
+		expect(legacyContactItem?.title).toEqual("Assign a Legacy Contact");
+
+		const archiveStewardItem = getChecklistItem(responseBody, "archiveSteward");
+		expect(archiveStewardItem?.title).toEqual("Assign an Archive Steward");
+
+		const archiveProfileItem = getChecklistItem(responseBody, "archiveProfile");
+		expect(archiveProfileItem?.title).toEqual("Update Archive Profile");
+
+		const firstUploadItem = getChecklistItem(responseBody, "firstUpload");
+		expect(firstUploadItem?.title).toEqual("Upload first file");
+
+		const publishContentItem = getChecklistItem(responseBody, "publishContent");
+		expect(publishContentItem?.title).toEqual("Publish your archive");
 	});
 
 	test("should communicate that a user with an archive has created an archive", async () => {
 		const response = await agent.get("/api/v2/event/checklist").expect(200);
-		expect(
-			(
-				response.body as { checklistItems: ChecklistItem[] }
-			).checklistItems.find(
-				(item: ChecklistItem) => item.id === "archiveCreated",
-			)?.completed,
-		).toEqual(true);
+		const item = getChecklistItem(response.body as unknown, "archiveCreated");
+		expect(item?.completed).toBe(true);
 	});
 
 	test("should communicate that a user without an archive has not created an archive", async () => {
-		(verifyUserAuthentication as jest.Mock).mockImplementation(
-			(req: Request, __, next: NextFunction) => {
-				(
-					req.body as unknown as { emailFromAuthToken: string }
-				).emailFromAuthToken = testNoProgressEmail;
-				(
-					req.body as unknown as { userSubjectFromAuthToken: string }
-				).userSubjectFromAuthToken = testSubject;
-				next();
-			},
-		);
+		mockVerifyUserAuthentication(testNoProgressEmail, testSubject);
 		const response = await agent.get("/api/v2/event/checklist").expect(200);
-		expect(
-			(
-				response.body as { checklistItems: ChecklistItem[] }
-			).checklistItems.find(
-				(item: ChecklistItem) => item.id === "archiveCreated",
-			)?.completed,
-		).toEqual(false);
+		const item = getChecklistItem(response.body as unknown, "archiveCreated");
+		expect(item?.completed).toBe(false);
 	});
 
 	test("should communicate that a user has redeemed their welcome storage", async () => {
 		const response = await agent.get("/api/v2/event/checklist").expect(200);
-		expect(
-			(
-				response.body as { checklistItems: ChecklistItem[] }
-			).checklistItems.find(
-				(item: ChecklistItem) => item.id === "storageRedeemed",
-			)?.completed,
-		).toEqual(true);
+		const item = getChecklistItem(response.body as unknown, "storageRedeemed");
+		expect(item?.completed).toBe(true);
 	});
 
 	test("should communicate that a user hasn't redeemed their welcome storage", async () => {
-		(verifyUserAuthentication as jest.Mock).mockImplementation(
-			(req: Request, __, next: NextFunction) => {
-				(
-					req.body as unknown as { emailFromAuthToken: string }
-				).emailFromAuthToken = testNoProgressEmail;
-				(
-					req.body as unknown as { userSubjectFromAuthToken: string }
-				).userSubjectFromAuthToken = testSubject;
-				next();
-			},
-		);
+		mockVerifyUserAuthentication(testNoProgressEmail, testSubject);
 		const response = await agent.get("/api/v2/event/checklist").expect(200);
-		expect(
-			(
-				response.body as { checklistItems: ChecklistItem[] }
-			).checklistItems.find(
-				(item: ChecklistItem) => item.id === "storageRedeemed",
-			)?.completed,
-		).toEqual(false);
+		const item = getChecklistItem(response.body as unknown, "storageRedeemed");
+		expect(item?.completed).toBe(false);
 	});
 
 	test("should communicate that a user has assigned a legacy contact", async () => {
 		const response = await agent.get("/api/v2/event/checklist").expect(200);
-		expect(
-			(
-				response.body as { checklistItems: ChecklistItem[] }
-			).checklistItems.find(
-				(item: ChecklistItem) => item.id === "legacyContact",
-			)?.completed,
-		).toEqual(true);
+		const item = getChecklistItem(response.body as unknown, "legacyContact");
+		expect(item?.completed).toBe(true);
 	});
 
 	test("should communicate that a user hasn't assigned a legacy contact", async () => {
-		(verifyUserAuthentication as jest.Mock).mockImplementation(
-			(req: Request, __, next: NextFunction) => {
-				(
-					req.body as unknown as { emailFromAuthToken: string }
-				).emailFromAuthToken = testNoProgressEmail;
-				(
-					req.body as unknown as { userSubjectFromAuthToken: string }
-				).userSubjectFromAuthToken = testSubject;
-				next();
-			},
-		);
+		mockVerifyUserAuthentication(testNoProgressEmail, testSubject);
 		const response = await agent.get("/api/v2/event/checklist").expect(200);
-		expect(
-			(
-				response.body as { checklistItems: ChecklistItem[] }
-			).checklistItems.find(
-				(item: ChecklistItem) => item.id === "legacyContact",
-			)?.completed,
-		).toEqual(false);
+		const item = getChecklistItem(response.body as unknown, "legacyContact");
+		expect(item?.completed).toBe(false);
 	});
 
 	test("should communicate that a user has assigned an archive steward", async () => {
 		const response = await agent.get("/api/v2/event/checklist").expect(200);
-		expect(
-			(
-				response.body as { checklistItems: ChecklistItem[] }
-			).checklistItems.find(
-				(item: ChecklistItem) => item.id === "archiveSteward",
-			)?.completed,
-		).toEqual(true);
+		const item = getChecklistItem(response.body as unknown, "archiveSteward");
+		expect(item?.completed).toBe(true);
 	});
 
 	test("should communicate that a user hasn't assigned an archive steward", async () => {
-		(verifyUserAuthentication as jest.Mock).mockImplementation(
-			(req: Request, __, next: NextFunction) => {
-				(
-					req.body as unknown as { emailFromAuthToken: string }
-				).emailFromAuthToken = testNoProgressEmail;
-				(
-					req.body as unknown as { userSubjectFromAuthToken: string }
-				).userSubjectFromAuthToken = testSubject;
-				next();
-			},
-		);
+		mockVerifyUserAuthentication(testNoProgressEmail, testSubject);
 		const response = await agent.get("/api/v2/event/checklist").expect(200);
-		expect(
-			(
-				response.body as { checklistItems: ChecklistItem[] }
-			).checklistItems.find(
-				(item: ChecklistItem) => item.id === "archiveSteward",
-			)?.completed,
-		).toEqual(false);
+		const item = getChecklistItem(response.body as unknown, "archiveSteward");
+		expect(item?.completed).toBe(false);
 	});
 
 	test("should communicate that a user has updated an archive profile", async () => {
 		const response = await agent.get("/api/v2/event/checklist").expect(200);
-		expect(
-			(
-				response.body as { checklistItems: ChecklistItem[] }
-			).checklistItems.find(
-				(item: ChecklistItem) => item.id === "archiveProfile",
-			)?.completed,
-		).toEqual(true);
+		const item = getChecklistItem(response.body as unknown, "archiveProfile");
+		expect(item?.completed).toBe(true);
 	});
 
 	test("should communicate that a user hasn't updated an archive profile", async () => {
-		(verifyUserAuthentication as jest.Mock).mockImplementation(
-			(req: Request, __, next: NextFunction) => {
-				(
-					req.body as unknown as { emailFromAuthToken: string }
-				).emailFromAuthToken = testNoProgressEmail;
-				(
-					req.body as unknown as { userSubjectFromAuthToken: string }
-				).userSubjectFromAuthToken = testSubject;
-				next();
-			},
-		);
+		mockVerifyUserAuthentication(testNoProgressEmail, testSubject);
 		const response = await agent.get("/api/v2/event/checklist").expect(200);
-		expect(
-			(
-				response.body as { checklistItems: ChecklistItem[] }
-			).checklistItems.find(
-				(item: ChecklistItem) => item.id === "archiveProfile",
-			)?.completed,
-		).toEqual(false);
+		const item = getChecklistItem(response.body as unknown, "archiveProfile");
+		expect(item?.completed).toBe(false);
 	});
 
 	test("should communicate that a user has uploaded a file", async () => {
 		const response = await agent.get("/api/v2/event/checklist").expect(200);
-		expect(
-			(
-				response.body as { checklistItems: ChecklistItem[] }
-			).checklistItems.find((item: ChecklistItem) => item.id === "firstUpload")
-				?.completed,
-		).toEqual(true);
+		const item = getChecklistItem(response.body as unknown, "firstUpload");
+		expect(item?.completed).toBe(true);
 	});
 
 	test("should communicate that a user hasn't uploaded a file", async () => {
-		(verifyUserAuthentication as jest.Mock).mockImplementation(
-			(req: Request, __, next: NextFunction) => {
-				(
-					req.body as unknown as { emailFromAuthToken: string }
-				).emailFromAuthToken = testNoProgressEmail;
-				(
-					req.body as unknown as { userSubjectFromAuthToken: string }
-				).userSubjectFromAuthToken = testSubject;
-				next();
-			},
-		);
+		mockVerifyUserAuthentication(testNoProgressEmail, testSubject);
 		const response = await agent.get("/api/v2/event/checklist").expect(200);
-		expect(
-			(
-				response.body as { checklistItems: ChecklistItem[] }
-			).checklistItems.find((item: ChecklistItem) => item.id === "firstUpload")
-				?.completed,
-		).toEqual(false);
+		const item = getChecklistItem(response.body as unknown, "firstUpload");
+		expect(item?.completed).toBe(false);
 	});
 
 	test("should communicate that a user has published content", async () => {
 		const response = await agent.get("/api/v2/event/checklist").expect(200);
-		expect(
-			(
-				response.body as { checklistItems: ChecklistItem[] }
-			).checklistItems.find(
-				(item: ChecklistItem) => item.id === "publishContent",
-			)?.completed,
-		).toEqual(true);
+		const item = getChecklistItem(response.body as unknown, "publishContent");
+		expect(item?.completed).toBe(true);
 	});
 
 	test("should communicate that a user hasn't published content", async () => {
-		(verifyUserAuthentication as jest.Mock).mockImplementation(
-			(req: Request, __, next: NextFunction) => {
-				(
-					req.body as unknown as { emailFromAuthToken: string }
-				).emailFromAuthToken = testNoProgressEmail;
-				(
-					req.body as unknown as { userSubjectFromAuthToken: string }
-				).userSubjectFromAuthToken = testSubject;
-				next();
-			},
-		);
+		mockVerifyUserAuthentication(testNoProgressEmail, testSubject);
 		const response = await agent.get("/api/v2/event/checklist").expect(200);
-		expect(
-			(
-				response.body as { checklistItems: ChecklistItem[] }
-			).checklistItems.find((item: ChecklistItem) => item.id === "firstUpload")
-				?.completed,
-		).toEqual(false);
+		const item = getChecklistItem(response.body as unknown, "publishContent");
+		expect(item?.completed).toBe(false);
 	});
 
 	test("should return 500 error if database call fails", async () => {
@@ -926,10 +772,9 @@ describe("GET /event/checklist", () => {
 
 	test("should return 500 error if database response is empty", async () => {
 		jest.spyOn(db, "sql").mockImplementationOnce(
-			(async () =>
-				({
-					rows: [],
-				}) as object) as unknown as typeof db.sql,
+			jest.fn().mockResolvedValueOnce({
+				rows: [],
+			}),
 		);
 		await agent.get("/api/v2/event/checklist").expect(500);
 	});

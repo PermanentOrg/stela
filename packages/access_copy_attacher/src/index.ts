@@ -44,7 +44,7 @@ export const handler: SQSHandler = Sentry.wrapHandler(
 						logger.error(err);
 						throw err;
 					});
-				if (!parentFile.rows[0]) {
+				if (parentFile.rows[0] === undefined) {
 					const errorMessage = "Failed to look up parent file";
 					logger.error(errorMessage);
 					throw new Error(errorMessage);

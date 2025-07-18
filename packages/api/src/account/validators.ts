@@ -7,9 +7,11 @@ import {
 
 export { validateBodyFromAuthentication };
 
-export function validateUpdateTagsRequest(
+export const validateUpdateTagsRequest: (
 	data: unknown,
-): asserts data is UpdateTagsRequest {
+) => asserts data is UpdateTagsRequest = (
+	data: unknown,
+): asserts data is UpdateTagsRequest => {
 	const validation = Joi.object()
 		.keys({
 			...fieldsFromUserAuthentication,
@@ -18,14 +20,16 @@ export function validateUpdateTagsRequest(
 		})
 		.or("addTags", "removeTags")
 		.validate(data);
-	if (validation.error) {
+	if (validation.error !== undefined) {
 		throw validation.error;
 	}
-}
+};
 
-export function validateLeaveArchiveParams(
+export const validateLeaveArchiveParams: (
 	data: unknown,
-): asserts data is { archiveId: string } {
+) => asserts data is { archiveId: string } = (
+	data: unknown,
+): asserts data is { archiveId: string } => {
 	const validation = Joi.object()
 		.keys({
 			archiveId: Joi.alternatives()
@@ -38,23 +42,29 @@ export function validateLeaveArchiveParams(
 				.required(),
 		})
 		.validate(data);
-	if (validation.error) {
+	if (validation.error !== undefined) {
 		throw validation.error;
 	}
-}
+};
 
-export function validateLeaveArchiveRequest(data: unknown): asserts data is {
+export const validateLeaveArchiveRequest: (data: unknown) => asserts data is {
 	ip: string;
 	emailFromAuthToken: string;
 	userSubjectFromAuthToken: string;
-} {
+} = (
+	data: unknown,
+): asserts data is {
+	ip: string;
+	emailFromAuthToken: string;
+	userSubjectFromAuthToken: string;
+} => {
 	const validation = Joi.object()
 		.keys({
 			...fieldsFromUserAuthentication,
 			ip: Joi.string().ip().required(),
 		})
 		.validate(data);
-	if (validation.error) {
+	if (validation.error !== undefined) {
 		throw validation.error;
 	}
-}
+};

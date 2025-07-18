@@ -1,11 +1,12 @@
 import request from "supertest";
-import type { Request, NextFunction } from "express";
+import type { NextFunction } from "express";
 import createError from "http-errors";
 import { logger } from "@stela/logger";
 import { app } from "../../app";
 import { verifyAdminAuthentication } from "../../middleware";
 import { db } from "../../database";
 import { publisherClient } from "../../publisher_client";
+import { mockVerifyAdminAuthentication } from "../../../test/middleware_mocks";
 
 jest.mock("../../database");
 jest.mock("../../middleware");
@@ -25,15 +26,9 @@ const clearDatabase = async (): Promise<void> => {
 describe("POST /:archiveId/backfill-ledger", () => {
 	const agent = request(app);
 	beforeEach(async () => {
-		(verifyAdminAuthentication as jest.Mock).mockImplementation(
-			(req: Request, _: Response, next: NextFunction) => {
-				(req.body as { emailFromAuthToken: string }).emailFromAuthToken =
-					"test+1@permanent.org";
-				(
-					req.body as { adminSubjectFromAuthToken: string }
-				).adminSubjectFromAuthToken = "82bd483e-914b-4bfe-abf9-92ffe86d7803";
-				next();
-			},
+		mockVerifyAdminAuthentication(
+			"test+1@permanent.org",
+			"82bd483e-914b-4bfe-abf9-92ffe86d7803",
 		);
 		await loadFixtures();
 		jest.spyOn(publisherClient, "publishMessage").mockResolvedValue();
@@ -80,11 +75,11 @@ describe("POST /:archiveId/backfill-ledger", () => {
 	});
 
 	test("should require admin authentication", async () => {
-		(verifyAdminAuthentication as jest.Mock).mockImplementation(
-			(_: Request, __: Response, next: NextFunction) => {
+		jest
+			.mocked(verifyAdminAuthentication)
+			.mockImplementation(async (_, __, next: NextFunction) => {
 				next(createError.Unauthorized("Invalid token"));
-			},
-		);
+			});
 
 		await agent.post("/api/v2/archive/1/backfill-ledger").expect(401);
 		expect(publisherClient.publishMessage).not.toHaveBeenCalled();
@@ -106,9 +101,9 @@ describe("POST /:archiveId/backfill-ledger", () => {
 
 	test("should handle publisher client errors", async () => {
 		const testError = new Error("Publisher error");
-		(publisherClient.publishMessage as jest.Mock).mockRejectedValueOnce(
-			testError,
-		);
+		jest
+			.mocked(publisherClient.publishMessage)
+			.mockRejectedValueOnce(testError);
 
 		await agent.post("/api/v2/archive/1/backfill-ledger").expect(500);
 		expect(logger.error).toHaveBeenCalledWith(testError);

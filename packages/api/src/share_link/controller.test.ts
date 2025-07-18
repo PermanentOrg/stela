@@ -10,6 +10,10 @@ import {
 } from "../middleware";
 import { db } from "../database";
 import type { ShareLink } from "./models";
+import {
+	mockVerifyUserAuthentication,
+	mockExtractUserEmailFromAuthToken,
+} from "../../test/middleware_mocks";
 
 jest.mock("../database");
 jest.mock("../middleware");
@@ -76,25 +80,11 @@ describe("POST /share-links", () => {
 	const testUuid = "3afb2671-bc26-4928-9ea9-0ad4cb735f11";
 
 	beforeEach(async () => {
-		(uuidv4 as jest.Mock).mockReturnValue(testUuid);
-		(verifyUserAuthentication as jest.Mock).mockImplementation(
-			(req: Request, _, next: NextFunction) => {
-				(
-					req.body as {
-						emailFromAuthToken: string;
-						userSubjectFromAuthToken: string;
-					}
-				).emailFromAuthToken = "test@permanent.org";
-				(
-					req.body as {
-						emailFromAuthToken: string;
-						userSubjectFromAuthToken: string;
-					}
-				).userSubjectFromAuthToken = "315aedc2-67d5-4144-9f0d-ee547d98af9c";
-				next();
-			},
+		jest.mocked(uuidv4).mockImplementation(jest.fn().mockReturnValue(testUuid));
+		mockVerifyUserAuthentication(
+			"test@permanent.org",
+			"315aedc2-67d5-4144-9f0d-ee547d98af9c",
 		);
-
 		await loadFixtures();
 	});
 
@@ -125,11 +115,11 @@ describe("POST /share-links", () => {
 	});
 
 	test("should return 401 if the caller is not authenticated", async () => {
-		(verifyUserAuthentication as jest.Mock).mockImplementation(
-			(_: Request, __: Response, next: NextFunction) => {
+		jest
+			.mocked(verifyUserAuthentication)
+			.mockImplementation(async (_, __, next: NextFunction) => {
 				next(new createError.Unauthorized("Invalid token"));
-			},
-		);
+			});
 		await agent.post("/api/v2/share-links").expect(401);
 	});
 
@@ -219,7 +209,9 @@ describe("POST /share-links", () => {
 			})
 			.expect(201);
 
-		const shareLink = (response.body as { data: ShareLink }).data;
+		const {
+			body: { data: shareLink },
+		} = response as { body: { data: ShareLink } };
 		expect(shareLink.id).toBeDefined();
 		expect(shareLink.itemId).toEqual("2");
 		expect(shareLink.itemType).toEqual("record");
@@ -246,7 +238,9 @@ describe("POST /share-links", () => {
 			})
 			.expect(201);
 
-		const shareLink = (response.body as { data: ShareLink }).data;
+		const {
+			body: { data: shareLink },
+		} = response as { body: { data: ShareLink } };
 		expect(shareLink.maxUses).toEqual(5);
 	});
 
@@ -259,7 +253,9 @@ describe("POST /share-links", () => {
 			})
 			.expect(201);
 
-		const shareLink = (response.body as { data: ShareLink }).data;
+		const {
+			body: { data: shareLink },
+		} = response as { body: { data: ShareLink } };
 		expect(shareLink.accessRestrictions).toEqual("account");
 	});
 
@@ -304,9 +300,7 @@ describe("POST /share-links", () => {
 				shareUrl: `https://${process.env["SITE_URL"] ?? ""}/share/${testUuid}`,
 				email: "test@permanent.org",
 			})
-			.mockImplementation(
-				(async () => ({ rows: [] }) as object) as unknown as typeof db.sql,
-			);
+			.mockImplementation(jest.fn().mockResolvedValue({ rows: [] }));
 		await agent
 			.post("/api/v2/share-links")
 			.send({
@@ -342,24 +336,10 @@ describe("PATCH /share-links/{id}", () => {
 	const agent = request(app);
 
 	beforeEach(async () => {
-		(verifyUserAuthentication as jest.Mock).mockImplementation(
-			(req: Request, _, next: NextFunction) => {
-				(
-					req.body as {
-						emailFromAuthToken: string;
-						userSubjectFromAuthToken: string;
-					}
-				).emailFromAuthToken = "test@permanent.org";
-				(
-					req.body as {
-						emailFromAuthToken: string;
-						userSubjectFromAuthToken: string;
-					}
-				).userSubjectFromAuthToken = "315aedc2-67d5-4144-9f0d-ee547d98af9c";
-				next();
-			},
+		mockVerifyUserAuthentication(
+			"test@permanent.org",
+			"315aedc2-67d5-4144-9f0d-ee547d98af9c",
 		);
-
 		await loadFixtures();
 	});
 
@@ -377,31 +357,18 @@ describe("PATCH /share-links/{id}", () => {
 	});
 
 	test("should return 401 if the caller is unauthenticated", async () => {
-		(verifyUserAuthentication as jest.Mock).mockImplementation(
-			(_: Request, __: Response, next: NextFunction) => {
+		jest
+			.mocked(verifyUserAuthentication)
+			.mockImplementation(async (_, __, next: NextFunction) => {
 				next(new createError.Unauthorized("Invalid token"));
-			},
-		);
+			});
 		await agent.patch("/api/v2/share-links/1").send({}).expect(401);
 	});
 
 	test("should return 404 the caller is not the creator of the share link", async () => {
-		(verifyUserAuthentication as jest.Mock).mockImplementation(
-			(req: Request, _, next: NextFunction) => {
-				(
-					req.body as {
-						emailFromAuthToken: string;
-						userSubjectFromAuthToken: string;
-					}
-				).emailFromAuthToken = "test+1@permanent.org";
-				(
-					req.body as {
-						emailFromAuthToken: string;
-						userSubjectFromAuthToken: string;
-					}
-				).userSubjectFromAuthToken = "315aedc2-67d5-4144-9f0d-ee547d98af9c";
-				next();
-			},
+		mockVerifyUserAuthentication(
+			"test+1@permanent.org",
+			"315aedc2-67d5-4144-9f0d-ee547d98af9c",
 		);
 		await agent
 			.patch("/api/v2/share-links/1000")
@@ -485,20 +452,22 @@ describe("PATCH /share-links/{id}", () => {
 			})
 			.expect(200);
 
-		const shareLink = (response.body as { data: ShareLink }).data;
+		const {
+			body: { data: shareLink },
+		} = response as { body: { data: ShareLink } };
 		expect(shareLink).toEqual({
-			id: expect.anything() as string,
+			id: expect.any(String) as unknown,
 			itemId: "6",
 			itemType: "record",
-			token: expect.anything() as string,
+			token: expect.any(String) as unknown,
 			permissionsLevel: "editor",
 			accessRestrictions: "account",
 			maxUses: 500,
 			usesExpended: null,
-			expirationTimestamp: expect.anything() as Date,
+			expirationTimestamp: expect.any(String) as unknown,
 			creatorAccount: { id: "2", name: "Jack Rando" },
-			createdAt: expect.anything() as Date,
-			updatedAt: expect.anything() as Date,
+			createdAt: expect.any(String) as unknown,
+			updatedAt: expect.any(String) as unknown,
 		});
 	});
 
@@ -554,7 +523,9 @@ describe("PATCH /share-links/{id}", () => {
 			})
 			.expect(200);
 
-		const shareLink = (response.body as { data: ShareLink }).data;
+		const {
+			body: { data: shareLink },
+		} = response as { body: { data: ShareLink } };
 		expect(shareLink.accessRestrictions).toEqual("account");
 		expect(shareLink.permissionsLevel).toEqual("editor");
 		expect(shareLink.maxUses).toEqual(500);
@@ -604,24 +575,7 @@ describe("GET /share-links", () => {
 	const agent = request(app);
 
 	beforeEach(async () => {
-		jest
-			.mocked(extractUserEmailFromAuthToken)
-			.mockImplementation(
-				async (
-					req: Request<unknown, unknown, { emailFromAuthToken?: string }>,
-					_: Response,
-					next: NextFunction,
-				) => {
-					(
-						req.body as {
-							emailFromAuthToken: string;
-							userSubjectFromAuthToken: string;
-						}
-					).emailFromAuthToken = "test@permanent.org";
-					next();
-				},
-			);
-
+		mockExtractUserEmailFromAuthToken("test@permanent.org");
 		await loadFixtures();
 	});
 
@@ -650,48 +604,18 @@ describe("GET /share-links", () => {
 	});
 
 	test("should return 400 if the header values are invalid", async () => {
-		jest
-			.mocked(extractUserEmailFromAuthToken)
-			.mockImplementation(
-				async (
-					req: Request<unknown, unknown, { emailFromAuthToken?: string }>,
-					_: Response,
-					next: NextFunction,
-				) => {
-					(
-						req.body as {
-							emailFromAuthToken: string;
-							userSubjectFromAuthToken: string;
-						}
-					).emailFromAuthToken = "not_an_email";
-					next();
-				},
-			);
+		mockExtractUserEmailFromAuthToken("not_an_email");
 		await agent.get("/api/v2/share-links?shareLinkIds[]=1").expect(400);
 	});
 
 	test("should return an empty list if caller asks for share links they can't access", async () => {
-		jest
-			.mocked(extractUserEmailFromAuthToken)
-			.mockImplementation(
-				async (
-					req: Request<unknown, unknown, { emailFromAuthToken?: string }>,
-					_: Response,
-					next: NextFunction,
-				) => {
-					(
-						req.body as {
-							emailFromAuthToken: string;
-							userSubjectFromAuthToken: string;
-						}
-					).emailFromAuthToken = "test+1@permanent.org";
-					next();
-				},
-			);
+		mockExtractUserEmailFromAuthToken("test+1@permanent.org");
 		const response = await agent
 			.get("/api/v2/share-links?shareLinkIds[]=1000")
 			.expect(200);
-		const shareLinks = (response.body as { items: ShareLink[] }).items;
+		const {
+			body: { items: shareLinks },
+		} = response as { body: { items: ShareLink[] } };
 		expect(shareLinks.length).toEqual(0);
 	});
 
@@ -699,7 +623,9 @@ describe("GET /share-links", () => {
 		const response = await agent
 			.get("/api/v2/share-links?shareLinkIds[]=1000&shareLinkIds[]=1001")
 			.expect(200);
-		const shareLinks = (response.body as { items: ShareLink[] }).items;
+		const {
+			body: { items: shareLinks },
+		} = response as { body: { items: ShareLink[] } };
 		expect(shareLinks.length).toEqual(2);
 	});
 
@@ -709,7 +635,9 @@ describe("GET /share-links", () => {
 				"/api/v2/share-links?shareTokens[]=e969f9dc-42b5-45c0-a496-1dcff2ca11f5&shareTokens[]=0fcb840f-d22c-4a51-a358-2a61677e8fb2",
 			)
 			.expect(200);
-		const shareLinks = (response.body as { items: ShareLink[] }).items;
+		const {
+			body: { items: shareLinks },
+		} = response as { body: { items: ShareLink[] } };
 		expect(shareLinks.length).toEqual(2);
 	});
 
@@ -719,43 +647,27 @@ describe("GET /share-links", () => {
 				"/api/v2/share-links?shareLinkIds[]=e969f9dc-42b5-45c0-a496-1dcff2ca11f5",
 			)
 			.expect(200);
-		const shareLinks = (response.body as { items: ShareLink[] }).items;
+		const {
+			body: { items: shareLinks },
+		} = response as { body: { items: ShareLink[] } };
 		expect(shareLinks.length).toEqual(0);
 	});
 
 	test("should return share links requested by their tokens without a JWT", async () => {
-		jest
-			.mocked(verifyUserAuthentication)
-			.mockImplementation(
-				async (
-					_: Request<unknown, unknown, { emailFromAuthToken?: string }>,
-					__: Response,
-					next: NextFunction,
-				) => {
-					next();
-				},
-			);
+		mockVerifyUserAuthentication();
 		const response = await agent
 			.get(
 				"/api/v2/share-links?shareTokens[]=e969f9dc-42b5-45c0-a496-1dcff2ca11f5&shareTokens[]=0fcb840f-d22c-4a51-a358-2a61677e8fb2",
 			)
 			.expect(200);
-		const shareLinks = (response.body as { items: ShareLink[] }).items;
+		const {
+			body: { items: shareLinks },
+		} = response as { body: { items: ShareLink[] } };
 		expect(shareLinks.length).toEqual(2);
 	});
 
 	test("should not return share links requested by their ids without a JWT", async () => {
-		jest
-			.mocked(extractUserEmailFromAuthToken)
-			.mockImplementation(
-				async (
-					_: Request<unknown, unknown, { emailFromAuthToken?: string }>,
-					__: Response,
-					next: NextFunction,
-				) => {
-					next();
-				},
-			);
+		mockExtractUserEmailFromAuthToken();
 		await agent
 			.get("/api/v2/share-links?shareLinkIds[]=1000&shareLinkIds[]=1001")
 			.expect(401);
@@ -765,7 +677,9 @@ describe("GET /share-links", () => {
 		const response = await agent
 			.get("/api/v2/share-links?shareLinkIds[]=1000")
 			.expect(200);
-		const shareLinks = (response.body as { items: ShareLink[] }).items;
+		const {
+			body: { items: shareLinks },
+		} = response as { body: { items: ShareLink[] } };
 		expect(shareLinks.length).toEqual(1);
 		expect(shareLinks[0]).toEqual({
 			id: "1000",
@@ -778,8 +692,8 @@ describe("GET /share-links", () => {
 			usesExpended: null,
 			expirationTimestamp: null,
 			creatorAccount: { id: "2", name: "Jack Rando" },
-			createdAt: expect.anything() as Date,
-			updatedAt: expect.anything() as Date,
+			createdAt: expect.any(String) as unknown,
+			updatedAt: expect.any(String) as unknown,
 		});
 	});
 
@@ -795,24 +709,10 @@ describe("DELETE /share-links", () => {
 	const agent = request(app);
 
 	beforeEach(async () => {
-		(verifyUserAuthentication as jest.Mock).mockImplementation(
-			(req: Request, _, next: NextFunction) => {
-				(
-					req.body as {
-						emailFromAuthToken: string;
-						userSubjectFromAuthToken: string;
-					}
-				).emailFromAuthToken = "test@permanent.org";
-				(
-					req.body as {
-						emailFromAuthToken: string;
-						userSubjectFromAuthToken: string;
-					}
-				).userSubjectFromAuthToken = "ceca5477-3f9c-4d0a-a7b8-04d5e5adac32";
-				next();
-			},
+		mockVerifyUserAuthentication(
+			"test@permanent.org",
+			"ceca5477-3f9c-4d0a-a7b8-04d5e5adac32",
 		);
-
 		await loadFixtures();
 	});
 
@@ -825,29 +725,28 @@ describe("DELETE /share-links", () => {
 	});
 
 	test("should return 401 if the caller is unauthenticated", async () => {
-		(verifyUserAuthentication as jest.Mock).mockImplementation(
-			(__: Request, _, next: NextFunction) => {
+		jest
+			.mocked(verifyUserAuthentication)
+			.mockImplementation(async (__, _, next: NextFunction) => {
 				next(new createError.Unauthorized("Invalid token"));
-			},
-		);
+			});
 		await agent.delete("/api/v2/share-links/1000").expect(401);
 	});
 
 	test("should return 400 if header values are missing", async () => {
-		(verifyUserAuthentication as jest.Mock).mockImplementation(
-			(__: Request, _, next: NextFunction) => {
-				next();
-			},
-		);
+		mockVerifyUserAuthentication();
 		await agent.delete("/api/v2/share-links/1000").expect(400);
 	});
 
 	test("should delete the share link", async () => {
 		await agent.delete("/api/v2/share-links/1000").expect(204);
-		const shareLinks = await agent
+		const response = await agent
 			.get("/api/v2/share-links?shareLinkIds[]=1000")
 			.expect(200);
-		expect((shareLinks.body as { items: ShareLink[] }).items.length).toEqual(0);
+		const {
+			body: { items: shareLinks },
+		} = response as { body: { items: ShareLink[] } };
+		expect(shareLinks.length).toEqual(0);
 	});
 
 	test("should return 404 if the share link doesn't exist", async () => {
@@ -856,22 +755,9 @@ describe("DELETE /share-links", () => {
 	});
 
 	test("should return 404 if the caller doesn't have access to the share link", async () => {
-		(verifyUserAuthentication as jest.Mock).mockImplementation(
-			(req: Request, _, next: NextFunction) => {
-				(
-					req.body as {
-						emailFromAuthToken: string;
-						userSubjectFromAuthToken: string;
-					}
-				).emailFromAuthToken = "test+1@permanent.org";
-				(
-					req.body as {
-						emailFromAuthToken: string;
-						userSubjectFromAuthToken: string;
-					}
-				).userSubjectFromAuthToken = "ceca5477-3f9c-4d0a-a7b8-04d5e5adac32";
-				next();
-			},
+		mockVerifyUserAuthentication(
+			"test+1@permanent.org",
+			"ceca5477-3f9c-4d0a-a7b8-04d5e5adac32",
 		);
 		await agent.delete("/api/v2/share-links/1000").expect(404);
 	});

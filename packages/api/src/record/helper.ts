@@ -1,12 +1,10 @@
 import type { PatchRecordRequest, RecordColumnsForUpdate } from "./models";
 
-export function requestFieldsToDatabaseFields(
+export const requestFieldsToDatabaseFields = (
 	request: PatchRecordRequest,
 	recordId: string,
-): RecordColumnsForUpdate {
-	return {
-		locnid: request.locationId,
-		description: request.description,
-		recordId,
-	};
-}
+): RecordColumnsForUpdate => ({
+	locnid: request.locationId,
+	description: request.description,
+	recordId,
+});

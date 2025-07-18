@@ -2,7 +2,6 @@ import request from "supertest";
 import { logger } from "@stela/logger";
 import { app } from "../../app";
 import { db } from "../../database";
-import type { Tag } from "../models";
 
 jest.mock("../../database");
 jest.mock("@stela/logger");
@@ -37,22 +36,24 @@ describe("getPublicTags", () => {
 		const response = await agent
 			.get("/api/v2/archive/1/tags/public")
 			.expect(200);
-		const tags = response.body as Tag[];
-		expect(tags.length).toEqual(2);
-		expect(tags.map((tag: { name: string }) => tag.name)).toContain(
-			"test_public_file",
-		);
-		expect(tags.map((tag: { name: string }) => tag.name)).toContain(
-			"test_public_folder",
-		);
+		const tags: unknown = response.body;
+		expect(Array.isArray(tags)).toBe(true);
+		if (Array.isArray(tags)) {
+			expect(tags.length).toEqual(2);
+			expect(tags.map((tag: { name: string }) => tag.name)).toContain(
+				"test_public_file",
+			);
+			expect(tags.map((tag: { name: string }) => tag.name)).toContain(
+				"test_public_folder",
+			);
+		}
 	});
 
 	test("should return empty list for nonexistent archive", async () => {
 		const response = await agent
 			.get("/api/v2/archive/1000/tags/public")
 			.expect(200);
-		const tags = response.body as Tag[];
-		expect(tags.length).toEqual(0);
+		expect(response.body).toEqual([]);
 	});
 
 	test("should throw an internal server error if database query fails unexpectedly", async () => {

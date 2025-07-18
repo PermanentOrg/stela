@@ -1,4 +1,3 @@
-import type { NextFunction, Request } from "express";
 import request from "supertest";
 import { app } from "../../app";
 import { db } from "../../database";
@@ -7,39 +6,23 @@ import {
 	extractUserEmailFromAuthToken,
 } from "../../middleware";
 import type { Folder } from "../models";
+import {
+	mockExtractUserEmailFromAuthToken,
+	mockExtractShareTokenFromHeaders,
+} from "../../../test/middleware_mocks";
 import { loadFixtures, clearDatabase } from "./utils_test";
 
 jest.mock("../../database");
 jest.mock("../../middleware");
 jest.mock("@stela/logger");
 
+const testEmail = "test@permanent.org";
 describe("GET /folder", () => {
 	const agent = request(app);
 
 	beforeEach(async () => {
-		(extractUserEmailFromAuthToken as jest.Mock).mockImplementation(
-			async (
-				req: Request<unknown, unknown, { emailFromAuthToken?: string }>,
-				__,
-				next: NextFunction,
-			) => {
-				req.body.emailFromAuthToken = "test@permanent.org";
-				next();
-			},
-		);
-		(extractShareTokenFromHeaders as jest.Mock).mockImplementation(
-			async (
-				___: Request<
-					unknown,
-					unknown,
-					{ emailFromAuthToken?: string; shareToken?: string }
-				>,
-				__,
-				next: NextFunction,
-			) => {
-				next();
-			},
-		);
+		mockExtractUserEmailFromAuthToken(testEmail);
+		mockExtractShareTokenFromHeaders();
 
 		await loadFixtures();
 	});
@@ -65,51 +48,30 @@ describe("GET /folder", () => {
 	});
 
 	test("should return 400 code if the header values are improper", async () => {
-		(extractUserEmailFromAuthToken as jest.Mock).mockImplementation(
-			async (
-				req: Request<unknown, unknown, { emailFromAuthToken?: string }>,
-				__,
-				next: NextFunction,
-			) => {
-				req.body.emailFromAuthToken = "not_an_email";
-				next();
-			},
-		);
+		mockExtractUserEmailFromAuthToken("not_an_email");
 		await agent.get("/api/v2/folder?folderIds[]=1").expect(400);
 	});
 
 	test("should return a public folder if the user is not authenticated", async () => {
-		(extractUserEmailFromAuthToken as jest.Mock).mockImplementation(
-			async (
-				_: Request<unknown, unknown, { emailFromAuthToken?: string }>,
-				__,
-				next: NextFunction,
-			) => {
-				next();
-			},
-		);
+		mockExtractUserEmailFromAuthToken();
 		const response = await agent
 			.get("/api/v2/folder?folderIds[]=1")
 			.expect(200);
-		const folders = (response.body as { items: Folder[] }).items;
+		const {
+			body: { items: folders },
+		} = response as { body: { items: Folder[] } };
 		expect(folders.length).toEqual(1);
 		expect(folders[0]?.folderId).toEqual("1");
 	});
 
 	test("should not return a private folder if the user is not authenticated", async () => {
-		(extractUserEmailFromAuthToken as jest.Mock).mockImplementation(
-			async (
-				_: Request<unknown, unknown, { emailFromAuthToken?: string }>,
-				__,
-				next: NextFunction,
-			) => {
-				next();
-			},
-		);
+		mockExtractUserEmailFromAuthToken();
 		const response = await agent
 			.get("/api/v2/folder?folderIds[]=2")
 			.expect(200);
-		const folders = (response.body as { items: Folder[] }).items;
+		const {
+			body: { items: folders },
+		} = response as { body: { items: Folder[] } };
 		expect(folders.length).toEqual(0);
 	});
 
@@ -117,212 +79,110 @@ describe("GET /folder", () => {
 		const response = await agent
 			.get("/api/v2/folder?folderIds[]=2")
 			.expect(200);
-		const folders = (response.body as { items: Folder[] }).items;
+		const {
+			body: { items: folders },
+		} = response as { body: { items: Folder[] } };
 		expect(folders.length).toEqual(1);
 		expect(folders[0]?.folderId).toEqual("2");
 	});
 
 	test("should not return a private folder if the caller is no longer a member of its archive", async () => {
-		(extractUserEmailFromAuthToken as jest.Mock).mockImplementation(
-			async (
-				req: Request<unknown, unknown, { emailFromAuthToken?: string }>,
-				__,
-				next: NextFunction,
-			) => {
-				req.body.emailFromAuthToken = "test+3@permanent.org";
-				next();
-			},
-		);
+		mockExtractUserEmailFromAuthToken("test+3@permanent.org");
 
 		const response = await agent
 			.get("/api/v2/folder?folderIds[]=2")
 			.expect(200);
-		const folders = (response.body as { items: Folder[] }).items;
+		const {
+			body: { items: folders },
+		} = response as { body: { items: Folder[] } };
 		expect(folders.length).toEqual(0);
 	});
 
 	test("should return a private folder if the user has a share token", async () => {
-		(extractUserEmailFromAuthToken as jest.Mock).mockImplementation(
-			async (
-				_: Request<unknown, unknown, { emailFromAuthToken?: string }>,
-				__,
-				next: NextFunction,
-			) => {
-				next();
-			},
-		);
-		(extractShareTokenFromHeaders as jest.Mock).mockImplementation(
-			async (
-				req: Request<
-					unknown,
-					unknown,
-					{ emailFromAuthToken?: string; shareToken?: string }
-				>,
-				__,
-				next: NextFunction,
-			) => {
-				req.body.shareToken = "c0f523e4-48d8-4c39-8cda-5e95161532e4";
-				next();
-			},
-		);
+		mockExtractUserEmailFromAuthToken();
+		mockExtractShareTokenFromHeaders("c0f523e4-48d8-4c39-8cda-5e95161532e4");
 		const response = await agent
 			.get("/api/v2/folder?folderIds[]=2")
 			.set("X-Permanent-Share-Token", "c0f523e4-48d8-4c39-8cda-5e95161532e4")
 			.expect(200);
-		const folders = (response.body as { items: Folder[] }).items;
+		const {
+			body: { items: folders },
+		} = response as { body: { items: Folder[] } };
 		expect(folders.length).toEqual(1);
 		expect(folders[0]?.folderId).toEqual("2");
 	});
 
 	test("should return a private folder if the user has a share token for the parent folder", async () => {
-		(extractUserEmailFromAuthToken as jest.Mock).mockImplementation(
-			async (
-				_: Request<unknown, unknown, { emailFromAuthToken?: string }>,
-				__,
-				next: NextFunction,
-			) => {
-				next();
-			},
-		);
-		(extractShareTokenFromHeaders as jest.Mock).mockImplementation(
-			async (
-				req: Request<
-					unknown,
-					unknown,
-					{ emailFromAuthToken?: string; shareToken?: string }
-				>,
-				__,
-				next: NextFunction,
-			) => {
-				req.body.shareToken = "56f7c246-e4ec-41f3-b117-6df4c9377075";
-				next();
-			},
-		);
+		mockExtractUserEmailFromAuthToken();
+		mockExtractShareTokenFromHeaders("56f7c246-e4ec-41f3-b117-6df4c9377075");
 		const response = await agent
 			.get("/api/v2/folder?folderIds[]=2")
 			.set("X-Permanent-Share-Token", "56f7c246-e4ec-41f3-b117-6df4c9377075")
 			.expect(200);
-		const folders = (response.body as { items: Folder[] }).items;
+		const {
+			body: { items: folders },
+		} = response as { body: { items: Folder[] } };
 		expect(folders.length).toEqual(1);
 		expect(folders[0]?.folderId).toEqual("2");
 	});
 
 	test("should not return a private folder if the share token is not unlisted", async () => {
-		(extractUserEmailFromAuthToken as jest.Mock).mockImplementation(
-			async (
-				_: Request<unknown, unknown, { emailFromAuthToken?: string }>,
-				__,
-				next: NextFunction,
-			) => {
-				next();
-			},
-		);
-		(extractShareTokenFromHeaders as jest.Mock).mockImplementation(
-			async (
-				req: Request<
-					unknown,
-					unknown,
-					{ emailFromAuthToken?: string; shareToken?: string }
-				>,
-				__,
-				next: NextFunction,
-			) => {
-				req.body.shareToken = "7d6412af-5abe-4acb-808a-64e9ce3b7535";
-				next();
-			},
-		);
+		mockExtractUserEmailFromAuthToken();
+		mockExtractShareTokenFromHeaders("7d6412af-5abe-4acb-808a-64e9ce3b7535");
 		const response = await agent
 			.get("/api/v2/folder?folderIds[]=2")
 			.set("X-Permanent-Share-Token", "7d6412af-5abe-4acb-808a-64e9ce3b7535")
 			.expect(200);
-		const folders = (response.body as { items: Folder[] }).items;
+		const {
+			body: { items: folders },
+		} = response as { body: { items: Folder[] } };
 		expect(folders.length).toEqual(0);
 	});
 
 	test("should not return a private folder if the share token is expired", async () => {
-		(extractUserEmailFromAuthToken as jest.Mock).mockImplementation(
-			async (
-				_: Request<unknown, unknown, { emailFromAuthToken?: string }>,
-				__,
-				next: NextFunction,
-			) => {
-				next();
-			},
-		);
-		(extractShareTokenFromHeaders as jest.Mock).mockImplementation(
-			async (
-				req: Request<
-					unknown,
-					unknown,
-					{ emailFromAuthToken?: string; shareToken?: string }
-				>,
-				__,
-				next: NextFunction,
-			) => {
-				req.body.shareToken = "9cc057f0-d3e8-41df-94d6-9b315b4921af";
-				next();
-			},
-		);
+		mockExtractUserEmailFromAuthToken();
+		mockExtractShareTokenFromHeaders("9cc057f0-d3e8-41df-94d6-9b315b4921af");
 		const response = await agent
 			.get("/api/v2/folder?folderIds[]=2")
 			.set("X-Permanent-Share-Token", "9cc057f0-d3e8-41df-94d6-9b315b4921af")
 			.expect(200);
-		const folders = (response.body as { items: Folder[] }).items;
+		const {
+			body: { items: folders },
+		} = response as { body: { items: Folder[] } };
 		expect(folders.length).toEqual(0);
 	});
 
 	test("should return a private folder if the folder is shared with the caller", async () => {
-		(extractUserEmailFromAuthToken as jest.Mock).mockImplementation(
-			async (
-				req: Request<unknown, unknown, { emailFromAuthToken?: string }>,
-				__,
-				next: NextFunction,
-			) => {
-				req.body.emailFromAuthToken = "test+2@permanent.org";
-				next();
-			},
-		);
+		mockExtractUserEmailFromAuthToken("test+2@permanent.org");
 		const response = await agent
 			.get("/api/v2/folder?folderIds[]=2")
 			.expect(200);
-		const folders = (response.body as { items: Folder[] }).items;
+		const {
+			body: { items: folders },
+		} = response as { body: { items: Folder[] } };
 		expect(folders.length).toEqual(1);
 		expect(folders[0]?.folderId).toEqual("2");
 	});
 
 	test("should not return a private folder if caller access relies on a deleted share", async () => {
-		(extractUserEmailFromAuthToken as jest.Mock).mockImplementation(
-			async (
-				req: Request<unknown, unknown, { emailFromAuthToken?: string }>,
-				__,
-				next: NextFunction,
-			) => {
-				req.body.emailFromAuthToken = "test+3@permanent.org";
-				next();
-			},
-		);
+		mockExtractUserEmailFromAuthToken("test+3@permanent.org");
 		const response = await agent
 			.get("/api/v2/folder?folderIds[]=2")
 			.expect(200);
-		const folders = (response.body as { items: Folder[] }).items;
+		const {
+			body: { items: folders },
+		} = response as { body: { items: Folder[] } };
 		expect(folders.length).toEqual(0);
 	});
 
 	test("should not return a private folder if caller access relies on a share to an archive caller can no longer access", async () => {
-		(extractUserEmailFromAuthToken as jest.Mock).mockImplementation(
-			async (
-				req: Request<unknown, unknown, { emailFromAuthToken?: string }>,
-				__,
-				next: NextFunction,
-			) => {
-				req.body.emailFromAuthToken = "test+4@permanent.org";
-				next();
-			},
-		);
+		mockExtractUserEmailFromAuthToken("test+4@permanent.org");
 		const response = await agent
 			.get("/api/v2/folder?folderIds[]=2")
 			.expect(200);
-		const folders = (response.body as { items: Folder[] }).items;
+		const {
+			body: { items: folders },
+		} = response as { body: { items: Folder[] } };
 		expect(folders.length).toEqual(0);
 	});
 
@@ -330,7 +190,9 @@ describe("GET /folder", () => {
 		const response = await agent
 			.get("/api/v2/folder?folderIds[]=2")
 			.expect(200);
-		const folders = (response.body as { items: Folder[] }).items;
+		const {
+			body: { items: folders },
+		} = response as { body: { items: Folder[] } };
 		expect(folders.length).toEqual(1);
 		expect(folders[0]?.folderId).toEqual("2");
 		expect(folders[0]?.size).toEqual(0);
@@ -405,7 +267,9 @@ describe("GET /folder", () => {
 		const response = await agent
 			.get("/api/v2/folder?folderIds[]=2&folderIds[]=1")
 			.expect(200);
-		const folders = (response.body as { items: Folder[] }).items;
+		const {
+			body: { items: folders },
+		} = response as { body: { items: Folder[] } };
 		expect(folders.length).toEqual(2);
 	});
 
@@ -413,7 +277,9 @@ describe("GET /folder", () => {
 		const response = await agent
 			.get("/api/v2/folder?folderIds[]=4")
 			.expect(200);
-		const folders = (response.body as { items: Folder[] }).items;
+		const {
+			body: { items: folders },
+		} = response as { body: { items: Folder[] } };
 		expect(folders.length).toEqual(0);
 	});
 
@@ -421,7 +287,9 @@ describe("GET /folder", () => {
 		const response = await agent
 			.get("/api/v2/folder?folderIds[]=3")
 			.expect(200);
-		const folders = (response.body as { items: Folder[] }).items;
+		const {
+			body: { items: folders },
+		} = response as { body: { items: Folder[] } };
 		expect(folders.length).toEqual(0);
 	});
 
@@ -429,7 +297,9 @@ describe("GET /folder", () => {
 		const response = await agent
 			.get("/api/v2/folder?folderIds[]=7")
 			.expect(200);
-		const folders = (response.body as { items: Folder[] }).items;
+		const {
+			body: { items: folders },
+		} = response as { body: { items: Folder[] } };
 		expect(folders.length).toEqual(1);
 		expect(folders[0]?.size).toBeNull();
 	});

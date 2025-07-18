@@ -17,7 +17,7 @@ const recalculateFolderThumbnails = async (
 			logger.error(err);
 			throw new createError.InternalServerError("Failed to retrieve folders");
 		});
-	const folders = folderResult.rows;
+	const { rows: folders } = folderResult;
 
 	const publishResults = await publisherClient
 		.batchPublishMessages(
@@ -58,7 +58,7 @@ const recalculateRecordThumbnail = async (recordId: string): Promise<void> => {
 			throw new createError.InternalServerError("Failed to retrieve record");
 		});
 
-	if (!recordResult.rows[0]) {
+	if (recordResult.rows[0] === undefined) {
 		throw new createError.NotFound("Record not found");
 	}
 
@@ -107,7 +107,7 @@ const setNullAccountSubjects = async (
 					emailsWithErrors.push(account.email);
 					return null;
 				});
-			if (result?.rows[0]) {
+			if (result?.rows[0] !== undefined) {
 				updatedAccounts.push(result.rows[0].accountId);
 			}
 		}),
@@ -135,7 +135,7 @@ const triggerOrphanedFolderDeletion = async (): Promise<{
 			throw new createError.InternalServerError("Failed to retrieve folders");
 		});
 
-	const folders = folderResult.rows;
+	const { rows: folders } = folderResult;
 
 	const publishResults = await publisherClient
 		.batchPublishMessages(

@@ -2,9 +2,11 @@ import Joi from "joi";
 import type { GiftStorageRequest } from "./models";
 import { fieldsFromUserAuthentication } from "../validators";
 
-export function validateGiftStorageRequest(
+export const validateGiftStorageRequest: (
 	data: unknown,
-): asserts data is GiftStorageRequest {
+) => asserts data is GiftStorageRequest = (
+	data: unknown,
+): asserts data is GiftStorageRequest => {
 	const validation = Joi.object()
 		.keys({
 			...fieldsFromUserAuthentication,
@@ -16,7 +18,7 @@ export function validateGiftStorageRequest(
 			note: Joi.string().allow("").optional(),
 		})
 		.validate(data);
-	if (validation.error) {
+	if (validation.error !== undefined) {
 		throw validation.error;
 	}
-}
+};

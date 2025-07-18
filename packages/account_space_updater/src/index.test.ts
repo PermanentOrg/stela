@@ -1,4 +1,5 @@
 import type { Context } from "aws-lambda";
+import { mock } from "jest-mock-extended";
 import { db } from "./database";
 import { handler } from "./index";
 
@@ -153,13 +154,17 @@ describe("handler", () => {
 					},
 				],
 			},
-			{} as Context,
+			mock<Context>(),
 			() => {},
 		);
 		const updatedAccountSpace = await getUpdatedAccountSpace();
 		const ledgerEntry = await getLedgerEntry();
 
-		if (!initialAccountSpace || !updatedAccountSpace || !ledgerEntry) {
+		if (
+			initialAccountSpace === undefined ||
+			updatedAccountSpace === undefined ||
+			ledgerEntry === undefined
+		) {
 			expect(false).toBe(true);
 		} else {
 			expect(updatedAccountSpace).toEqual({
@@ -215,13 +220,17 @@ describe("handler", () => {
 					},
 				],
 			},
-			{} as Context,
+			mock<Context>(),
 			() => {},
 		);
 		const updatedAccountSpace = await getUpdatedAccountSpace();
 		const ledgerEntry = await getLedgerEntry();
 
-		if (!initialAccountSpace || !updatedAccountSpace || !ledgerEntry) {
+		if (
+			initialAccountSpace === undefined ||
+			updatedAccountSpace === undefined ||
+			ledgerEntry === undefined
+		) {
 			expect(false).toBe(true);
 		} else {
 			expect(updatedAccountSpace).toEqual({
@@ -276,7 +285,7 @@ describe("handler", () => {
 					},
 				],
 			},
-			{} as Context,
+			mock<Context>(),
 			() => {},
 		);
 		const ledgerEntry = await getLedgerEntry();
@@ -307,7 +316,7 @@ describe("handler", () => {
 						},
 					],
 				},
-				{} as Context,
+				mock<Context>(),
 				() => {},
 			);
 		} catch (err) {
@@ -342,7 +351,7 @@ describe("handler", () => {
 						},
 					],
 				},
-				{} as Context,
+				mock<Context>(),
 				() => {},
 			);
 		} catch (err) {
@@ -381,7 +390,7 @@ describe("handler", () => {
 						},
 					],
 				},
-				{} as Context,
+				mock<Context>(),
 				() => {},
 			);
 		} catch (err) {
@@ -424,7 +433,7 @@ describe("handler", () => {
 						},
 					],
 				},
-				{} as Context,
+				mock<Context>(),
 				() => {},
 			);
 		} catch (err) {
@@ -516,7 +525,7 @@ describe("handler", () => {
 						},
 					],
 				},
-				{} as Context,
+				mock<Context>(),
 				() => {},
 			);
 		} catch (err) {
