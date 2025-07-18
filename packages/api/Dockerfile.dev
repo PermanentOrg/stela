@@ -10,7 +10,6 @@ COPY tsconfig.build.json ./
 COPY packages ./packages
 COPY .env ./
 
-RUN npm install -g npm@9.5.0
 RUN npm cache clean --force
 RUN npm install \
     && npm install --dev \
