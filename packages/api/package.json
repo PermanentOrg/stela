@@ -24,7 +24,7 @@
 		"lint-docs": "redocly lint docs/src/api.yaml",
 		"lint": "npm run check-format && npm run check-types && npm run eslint && npm run lint-sql && npm run lint-docs",
 		"build": "rm -rf dist/* && tsc -p tsconfig.build.json && tscp -p tsconfig.tscp.json",
-		"start:watch": "rm -rf dist/* && tsc-watch --onSuccess \"npm run start\"",
+		"start:watch": "tsc-watch --onSuccess \"npm run start\"",
 		"start": "tscp -p tsconfig.tscp.json && node dist/index.js",
 		"start-containers": "(cd ../..; docker compose up -d --build stela)",
 		"clear-database": "psql postgresql://postgres:permanent@localhost:5432 -c 'DROP DATABASE IF EXISTS test_permanent;'",
