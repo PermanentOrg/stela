@@ -9,4 +9,6 @@ FROM
   record_file
 WHERE
   record.recordid = record_file.recordid
-  AND record_file.fileid = :fileId;
+  AND record_file.fileid = :fileId
+RETURNING
+record.recordid;

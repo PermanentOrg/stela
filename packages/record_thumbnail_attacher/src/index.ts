@@ -22,11 +22,14 @@ export const handler: SQSHandler = Sentry.wrapHandler(
 				const thumbnailUrl = constructSignedCdnUrl(key);
 
 				try {
-					await db.sql("queries.update_record_thumbnail_data", {
+					const result = await db.sql("queries.update_record_thumbnail_data", {
 						fileId,
 						thumbnailUrl,
 						thumbnail256CloudPath: key,
 					});
+					if (result.rows.length === 0) {
+						logger.error(`Failed to updated record for file: ${fileId}`);
+					}
 				} catch (error) {
 					logger.error(error);
 					throw error;
