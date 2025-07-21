@@ -70,4 +70,13 @@ VALUES (
   '553f3cb8-b753-43ce-83af-4443a404741b',
   1,
   '{"public": true, "hasRecords": true}'
+),
+(
+	'record',
+	'create',
+	1,
+	'user',
+	'5862a229-5ea0-4432-b29e-7f069e99558a',
+	1,
+	'{"record": {"publicDT": "2020-01-01"}}'
 );
