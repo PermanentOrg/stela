@@ -30,7 +30,7 @@
 	},
 	"dependencies": {
 		"@sentry/node": "^9.34.0",
-		"@sentry/profiling-node": "^9.34.0",
+		"@sentry/profiling-node": "^9.40.0",
 		"@stela/logger": "^1.0.0",
 		"aws-cloudfront-sign": "^3.0.2",
 		"dotenv": "^17.2.0",
