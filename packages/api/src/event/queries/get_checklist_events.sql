@@ -74,8 +74,8 @@ SELECT
       AND (
         (
           account_events.entity = 'record'
-          AND account_events.action = 'submit'
-          AND (account_events.body ->> 'public')::boolean
+          AND account_events.action = 'create'
+          AND (account_events.body ->> 'record')::jsonb ->> 'publicDT' IS NOT NULL
         )
         OR
         (

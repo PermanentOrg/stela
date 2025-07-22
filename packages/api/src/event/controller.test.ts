@@ -756,6 +756,16 @@ describe("GET /event/checklist", () => {
 		expect(item?.completed).toBe(true);
 	});
 
+	test("should communicate that a user has published content when they're uploaded directly to public workspace", async () => {
+		mockVerifyUserAuthentication(
+			"test@permanent.org",
+			"5862a229-5ea0-4432-b29e-7f069e99558a",
+		);
+		const response = await agent.get("/api/v2/event/checklist").expect(200);
+		const item = getChecklistItem(response.body as unknown, "publishContent");
+		expect(item?.completed).toBe(true);
+	});
+
 	test("should communicate that a user hasn't published content", async () => {
 		mockVerifyUserAuthentication(testNoProgressEmail, testSubject);
 		const response = await agent.get("/api/v2/event/checklist").expect(200);
