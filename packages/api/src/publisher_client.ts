@@ -23,7 +23,7 @@ const batchPublishMessages = async (
 	const chunksOfMessages = [
 		...Array(Math.ceil(messages.length / CHUNK_SIZE)).keys(),
 	].map((chunkIndex) =>
-		messages.slice(chunkIndex * CHUNK_SIZE, chunkIndex++ * CHUNK_SIZE),
+		messages.slice(chunkIndex * CHUNK_SIZE, (chunkIndex + 1) * CHUNK_SIZE),
 	);
 
 	const responses = await Promise.all(
