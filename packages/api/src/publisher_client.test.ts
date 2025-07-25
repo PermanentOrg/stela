@@ -1,4 +1,8 @@
-import { PublishBatchCommand, SNSClient } from "@aws-sdk/client-sns";
+import {
+	PublishBatchCommand,
+	SNSClient,
+	type PublishBatchInput,
+} from "@aws-sdk/client-sns";
 import { publisherClient } from "./publisher_client";
 
 const mockSend = jest.fn();
@@ -15,6 +19,13 @@ describe("batchPublishMessages", () => {
 				send: mockSend.mockResolvedValue({ Failed: [] }),
 			}),
 		);
+
+		jest.mocked(PublishBatchCommand).mockImplementation(
+			jest.fn().mockImplementation((input: PublishBatchInput) => ({
+				__input: input,
+			})),
+		);
+
 		const messages = [
 			{ id: "1", body: "message 1" },
 			{ id: "2", body: "message 2" },
@@ -27,6 +38,16 @@ describe("batchPublishMessages", () => {
 			{ id: "9", body: "message 9" },
 			{ id: "10", body: "message 10" },
 			{ id: "11", body: "message 11" },
+			{ id: "12", body: "message 12" },
+			{ id: "13", body: "message 13" },
+			{ id: "14", body: "message 14" },
+			{ id: "15", body: "message 15" },
+			{ id: "16", body: "message 16" },
+			{ id: "17", body: "message 17" },
+			{ id: "18", body: "message 18" },
+			{ id: "19", body: "message 19" },
+			{ id: "20", body: "message 20" },
+			{ id: "21", body: "message 21" },
 		];
 
 		const result = await publisherClient.batchPublishMessages(
@@ -34,9 +55,82 @@ describe("batchPublishMessages", () => {
 			messages,
 		);
 
-		expect(mockSend).toHaveBeenCalledTimes(2);
+		expect(mockSend).toHaveBeenCalledTimes(3);
+		const {
+			mock: {
+				calls: [firstCallArguments],
+			},
+		} = mockSend as {
+			mock: { calls: Array<Array<{ __input: PublishBatchInput }>> };
+		};
+		const {
+			mock: {
+				calls: [, secondCallArguments],
+			},
+		} = mockSend as {
+			mock: { calls: Array<Array<{ __input: PublishBatchInput }>> };
+		};
+		const {
+			mock: {
+				calls: [, , thirdCallArguments],
+			},
+		} = mockSend as {
+			mock: { calls: Array<Array<{ __input: PublishBatchInput }>> };
+		};
+		expect(firstCallArguments).toBeDefined();
+		if (firstCallArguments !== undefined) {
+			expect(firstCallArguments[0]).toBeDefined();
+			if (firstCallArguments[0] !== undefined) {
+				expect(firstCallArguments[0].__input).toEqual({
+					TopicArn: "topic",
+					PublishBatchRequestEntries: [
+						{ Id: "1", Message: "message 1" },
+						{ Id: "2", Message: "message 2" },
+						{ Id: "3", Message: "message 3" },
+						{ Id: "4", Message: "message 4" },
+						{ Id: "5", Message: "message 5" },
+						{ Id: "6", Message: "message 6" },
+						{ Id: "7", Message: "message 7" },
+						{ Id: "8", Message: "message 8" },
+						{ Id: "9", Message: "message 9" },
+						{ Id: "10", Message: "message 10" },
+					],
+				});
+			}
+		}
+		expect(secondCallArguments).toBeDefined();
+		if (secondCallArguments !== undefined) {
+			expect(secondCallArguments[0]).toBeDefined();
+			if (secondCallArguments[0] !== undefined) {
+				expect(secondCallArguments[0].__input).toEqual({
+					TopicArn: "topic",
+					PublishBatchRequestEntries: [
+						{ Id: "11", Message: "message 11" },
+						{ Id: "12", Message: "message 12" },
+						{ Id: "13", Message: "message 13" },
+						{ Id: "14", Message: "message 14" },
+						{ Id: "15", Message: "message 15" },
+						{ Id: "16", Message: "message 16" },
+						{ Id: "17", Message: "message 17" },
+						{ Id: "18", Message: "message 18" },
+						{ Id: "19", Message: "message 19" },
+						{ Id: "20", Message: "message 20" },
+					],
+				});
+			}
+		}
+		expect(thirdCallArguments).toBeDefined();
+		if (thirdCallArguments !== undefined) {
+			expect(thirdCallArguments[0]).toBeDefined();
+			if (thirdCallArguments[0] !== undefined) {
+				expect(thirdCallArguments[0].__input).toEqual({
+					TopicArn: "topic",
+					PublishBatchRequestEntries: [{ Id: "21", Message: "message 21" }],
+				});
+			}
+		}
 		expect(result.failedMessages.length).toBe(0);
-		expect(result.messagesSent).toBe(11);
+		expect(result.messagesSent).toBe(21);
 	});
 
 	test("should report failures", async () => {
