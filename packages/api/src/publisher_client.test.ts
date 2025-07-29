@@ -6,7 +6,7 @@ import {
 import { publisherClient } from "./publisher_client";
 
 const mockSend = jest.fn();
-jest.genMockFromModule("@aws-sdk/client-sns");
+jest.createMockFromModule("@aws-sdk/client-sns");
 jest.mock("@aws-sdk/client-sns");
 
 describe("batchPublishMessages", () => {
