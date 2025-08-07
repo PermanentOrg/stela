@@ -41,7 +41,7 @@
 		"@fusionauth/typescript-client": "^1.58.2",
 		"@mailchimp/mailchimp_marketing": "^3.0.80",
 		"@mailchimp/mailchimp_transactional": "1.0.59",
-		"@sentry/node": "^9.33.0",
+		"@sentry/node": "^10.2.0",
 		"@stela/logger": "^1.0.0",
 		"@stela/permanent_models": "^1.0.0",
 		"@pdc/http-status-codes": "^1.0.1",
