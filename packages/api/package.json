@@ -54,7 +54,7 @@
 		"joi": "^17.13.3",
 		"memoizee": "^0.4.17",
 		"mixpanel": "^0.18.0",
-		"newrelic": "^12.25.0",
+		"newrelic": "^13.0.0",
 		"pg": "^8.16.3",
 		"require-env-variable": "^4.0.2",
 		"tinypg": "^7.0.1",
