@@ -19,6 +19,9 @@ updates:
       eslint:
         patterns:
           - "*eslint*"
+      sentry:
+        patterns:
+          - "@sentry/*"
 
   - package-ecosystem: "npm"
     directory: "/packages/access_copy_attacher"
