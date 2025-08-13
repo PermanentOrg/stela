@@ -31,7 +31,7 @@ jobs:
       ACCOUNT_SPACE_UPDATER_IMAGE_TAG: ${{ steps.generate_account_space_updater_image_tag.outputs.ACCOUNT_SPACE_UPDATER_IMAGE_TAG }}
       TRIGGER_ARCHIVEMATICA_IMAGE_TAG: ${{ steps.generate_trigger_archivematica_image_tag.outputs.TRIGGER_ARCHIVEMATICA_IMAGE_TAG }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Set ECR domain env var
         id: set_ecr_domain
         run: echo "ECR_DOMAIN=364159549467.dkr.ecr.$AWS_REGION.amazonaws.com" >> "$GITHUB_ENV"
