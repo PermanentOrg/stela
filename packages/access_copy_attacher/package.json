@@ -40,7 +40,7 @@
 		"@stela/file-utils": "^1.0.0",
 		"ajv": "^8.17.1",
 		"aws-cloudfront-sign": "^3.0.2",
-		"dotenv": "^17.2.0",
+		"dotenv": "^17.2.1",
 		"mime-types": "^3.0.1",
 		"require-env-variable": "^4.0.2",
 		"tinypg": "^7.0.1"
