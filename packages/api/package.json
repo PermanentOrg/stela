@@ -38,7 +38,7 @@
 	},
 	"dependencies": {
 		"@aws-sdk/client-sns": "^3.848.0",
-		"@fusionauth/typescript-client": "^1.58.2",
+		"@fusionauth/typescript-client": "^1.59.0",
 		"@mailchimp/mailchimp_marketing": "^3.0.80",
 		"@mailchimp/mailchimp_transactional": "1.0.59",
 		"@sentry/node": "^10.5.0",
