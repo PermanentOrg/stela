@@ -14,7 +14,7 @@ To generate an HTML copy of the OpenAPI documentation, run
 redocly build-docs packages/api/docs/src/api.yaml
 ```
 
-Then open redoc-static.html to view the docs in browser.
+Then open redoc-static.html to view the docs in browser. Alternatively, see the [hosted version](https://permanentorg.github.io/stela/).
 
 ## Setup
 
