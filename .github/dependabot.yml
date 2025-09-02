@@ -22,6 +22,9 @@ updates:
       sentry:
         patterns:
           - "@sentry/*"
+      aws-sdk:
+        patterns:
+          - "@aws-sdk/*"
 
   - package-ecosystem: "npm"
     directory: "/packages/access_copy_attacher"
