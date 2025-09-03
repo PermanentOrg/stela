@@ -45,7 +45,6 @@
 		"@stela/logger": "^1.0.0",
 		"@stela/permanent_models": "^1.0.0",
 		"@pdc/http-status-codes": "^1.0.1",
-		"body-parser": "^1.20.3",
 		"cors": "^2.8.5",
 		"dotenv": "^17.2.1",
 		"express": "^5.1.0",
