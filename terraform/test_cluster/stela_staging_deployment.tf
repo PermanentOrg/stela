@@ -1,6 +1,6 @@
 data "kubernetes_resource" "stela_staging" {
-  kind = "Deployment"
-	api_version = "apps/v1"
+  kind        = "Deployment"
+  api_version = "apps/v1"
   metadata { name = "stela-staging" }
 }
 
