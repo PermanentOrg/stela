@@ -39,9 +39,9 @@ variable "subnet_ids" {
 }
 
 variable "image_overrides" {
-	description = "The set of images that should be updated in a deploy"
-	type = map(string)
-	default = {}
+  description = "The set of images that should be updated in a deploy"
+  type        = map(string)
+  default     = {}
 }
 
 variable "archivematica_cleanup_dev_image" {
