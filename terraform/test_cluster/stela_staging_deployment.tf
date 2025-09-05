@@ -28,7 +28,7 @@ resource "kubernetes_deployment" "stela_staging" {
       }
       spec {
         container {
-          image = local.desired_image["stela_staging_image"]
+          image = local.desired_images["stela_staging_image"]
           name  = "stela-staging"
 
           env {
