@@ -1,3 +1,9 @@
+data "kubernetes_resource" "stela_dev" {
+  kind        = "Deployment"
+  api_version = "apps/v1"
+  metadata { name = "stela-dev" }
+}
+
 resource "kubernetes_deployment" "stela_dev" {
   metadata {
     name = "stela-dev"
@@ -22,7 +28,7 @@ resource "kubernetes_deployment" "stela_dev" {
       }
       spec {
         container {
-          image = var.stela_dev_image
+          image = local.desired_images["stela-dev"]
           name  = "stela-dev"
 
           env {

@@ -28,7 +28,7 @@ jobs:
       THUMBNAIL_REFRESH_IMAGE_TAG: ${{ needs.generate_image_tags.outputs.THUMBNAIL_REFRESH_IMAGE_TAG }}
       FILE_URL_REFRESH_IMAGE_TAG: ${{ needs.generate_image_tags.outputs.FILE_URL_REFRESH_IMAGE_TAG }}
       ACCESS_COPY_LAMBDA_IMAGE_TAG: ${{ needs.generate_image_tags.outputs.ACCESS_COPY_LAMBDA_IMAGE_TAG }}
-      ACCOUNT_SPACE_UPDATER_IMAGE_TAG: ${{ needs.generate_image_tags.outputs.ACCOUNT_SPACE_UPDATER_IMAGE_TAG }}
+      ACCOUNT_SPACE_UPDATE_IMAGE_TAG: ${{ needs.generate_image_tags.outputs.ACCOUNT_SPACE_UPDATE_IMAGE_TAG }}
       TRIGGER_ARCHIVEMATICA_IMAGE_TAG: ${{ needs.generate_image_tags.outputs.TRIGGER_ARCHIVEMATICA_IMAGE_TAG }}
     defaults:
       run:
@@ -45,58 +45,30 @@ jobs:
       - name: Terraform Validate
         id: validate
         run: terraform validate -no-color
-      # Note that while Terraform requires us to pass a value of stela_dev_image below, it won't be used because the
-      # -target option restricts terraform to just updating the staging deployment
       - name: Terraform Plan
         id: plan
         run: |
           terraform plan -no-color -input=false \
-          -var="stela_dev_image=$API_IMAGE_TAG" \
-          -var="stela_staging_image=$API_IMAGE_TAG" \
-          -var="archivematica_cleanup_dev_image=$AM_CLEANUP_IMAGE_TAG" \
-          -var="archivematica_cleanup_staging_image=$AM_CLEANUP_IMAGE_TAG" \
-          -var="record_thumbnail_dev_lambda_image=$RECORD_THUMBNAIL_LAMBDA_IMAGE_TAG" \
-          -var="record_thumbnail_staging_lambda_image=$RECORD_THUMBNAIL_LAMBDA_IMAGE_TAG" \
-          -var="thumbnail_refresh_dev_image=$THUMBNAIL_REFRESH_IMAGE_TAG" \
-          -var="thumbnail_refresh_staging_image=$THUMBNAIL_REFRESH_IMAGE_TAG" \
-          -var="file_url_refresh_dev_image=$FILE_URL_REFRESH_IMAGE_TAG" \
-          -var="file_url_refresh_staging_image=$FILE_URL_REFRESH_IMAGE_TAG" \
-          -var="access_copy_dev_lambda_image=$ACCESS_COPY_LAMBDA_IMAGE_TAG" \
-          -var="access_copy_staging_lambda_image=$ACCESS_COPY_LAMBDA_IMAGE_TAG" \
-          -var="account_space_updater_dev_lambda_image=$ACCOUNT_SPACE_UPDATER_IMAGE_TAG" \
-          -var="account_space_updater_staging_lambda_image=$ACCOUNT_SPACE_UPDATER_IMAGE_TAG" \
-          -var="trigger_archivematica_dev_lambda_image=$TRIGGER_ARCHIVEMATICA_IMAGE_TAG" \
-          -var="trigger_archivematica_staging_lambda_image=$TRIGGER_ARCHIVEMATICA_IMAGE_TAG" \
-          -target=kubernetes_deployment.stela_staging \
-          -target=kubernetes_cron_job_v1.archivematica_cleanup_staging \
-          -target=aws_lambda_function.record_thumbnail_lambda_staging \
-          -target=kubernetes_cron_job_v1.thumbnail_refresh_staging \
-          -target=aws_lambda_function.access_copy_lambda_staging \
-          -target=aws_lambda_function.account_space_update_staging_lambda \
-          -target=aws_lambda_function.archviematica_triggerer_staging_lambda
+          -var="image_overrides={
+            \"access-copy-staging-lambda\"           = \"$ACCESS_COPY_LAMBDA_IMAGE_TAG\",
+            \"account-space-update-staging-lambda\"  = \"$ACCOUNT_SPACE_UPDATE_IMAGE_TAG\",
+            \"archivematica-cleanup-staging\"        = \"$AM_CLEANUP_IMAGE_TAG\",
+            \"file-url-refresh-staging\"             = \"$FILE_URL_REFRESH_IMAGE_TAG\",
+            \"record-thumbnail-staging-lambda\"      = \"$RECORD_THUMBNAIL_LAMBDA_IMAGE_TAG\",
+            \"stela-staging\"                        = \"$API_IMAGE_TAG\",
+            \"thumbnail-refresh-staging\"            = \"$THUMBNAIL_REFRESH_IMAGE_TAG\",
+            \"trigger-archivematica-staging-lambda\" = \"$TRIGGER_ARCHIVEMATICA_IMAGE_TAG\"
+          }"
       - name: Terraform Apply
         run: |
           terraform apply -auto-approve -input=false \
-          -var="stela_dev_image=$API_IMAGE_TAG" \
-          -var="stela_staging_image=$API_IMAGE_TAG" \
-          -var="archivematica_cleanup_dev_image=$AM_CLEANUP_IMAGE_TAG" \
-          -var="archivematica_cleanup_staging_image=$AM_CLEANUP_IMAGE_TAG" \
-          -var="record_thumbnail_dev_lambda_image=$RECORD_THUMBNAIL_LAMBDA_IMAGE_TAG" \
-          -var="record_thumbnail_staging_lambda_image=$RECORD_THUMBNAIL_LAMBDA_IMAGE_TAG" \
-          -var="thumbnail_refresh_dev_image=$THUMBNAIL_REFRESH_IMAGE_TAG" \
-          -var="thumbnail_refresh_staging_image=$THUMBNAIL_REFRESH_IMAGE_TAG" \
-          -var="file_url_refresh_dev_image=$FILE_URL_REFRESH_IMAGE_TAG" \
-          -var="file_url_refresh_staging_image=$FILE_URL_REFRESH_IMAGE_TAG" \
-          -var="access_copy_dev_lambda_image=$ACCESS_COPY_LAMBDA_IMAGE_TAG" \
-          -var="access_copy_staging_lambda_image=$ACCESS_COPY_LAMBDA_IMAGE_TAG" \
-          -var="account_space_updater_dev_lambda_image=$ACCOUNT_SPACE_UPDATER_IMAGE_TAG" \
-          -var="account_space_updater_staging_lambda_image=$ACCOUNT_SPACE_UPDATER_IMAGE_TAG" \
-          -var="trigger_archivematica_dev_lambda_image=$TRIGGER_ARCHIVEMATICA_IMAGE_TAG" \
-          -var="trigger_archivematica_staging_lambda_image=$TRIGGER_ARCHIVEMATICA_IMAGE_TAG" \
-          -target=kubernetes_deployment.stela_staging \
-          -target=kubernetes_cron_job_v1.archivematica_cleanup_staging \
-          -target=aws_lambda_function.record_thumbnail_lambda_staging \
-          -target=kubernetes_cron_job_v1.thumbnail_refresh_staging \
-          -target=aws_lambda_function.access_copy_lambda_staging \
-          -target=aws_lambda_function.account_space_update_staging_lambda \
-          -target=aws_lambda_function.archviematica_triggerer_staging_lambda
+          -var="image_overrides={
+            \"access-copy-staging-lambda\"           = \"$ACCESS_COPY_LAMBDA_IMAGE_TAG\",
+            \"account-space-update-staging-lambda\"  = \"$ACCOUNT_SPACE_UPDATE_IMAGE_TAG\",
+            \"archivematica-cleanup-staging\"        = \"$AM_CLEANUP_IMAGE_TAG\",
+            \"file-url-refresh-staging\"             = \"$FILE_URL_REFRESH_IMAGE_TAG\",
+            \"record-thumbnail-staging-lambda\"      = \"$RECORD_THUMBNAIL_LAMBDA_IMAGE_TAG\",
+            \"stela-staging\"                        = \"$API_IMAGE_TAG\",
+            \"thumbnail-refresh-staging\"            = \"$THUMBNAIL_REFRESH_IMAGE_TAG\",
+            \"trigger-archivematica-staging-lambda\" = \"$TRIGGER_ARCHIVEMATICA_IMAGE_TAG\"
+          }"

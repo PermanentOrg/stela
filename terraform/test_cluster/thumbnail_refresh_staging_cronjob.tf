@@ -1,3 +1,9 @@
+data "kubernetes_resource" "thumbnail_refresh_staging" {
+  kind        = "CronJob"
+  api_version = "batch/v1"
+  metadata { name = "thumbnail-refresh-staging" }
+}
+
 resource "kubernetes_cron_job_v1" "thumbnail_refresh_staging" {
   metadata {
     name = "thumbnail-refresh-staging"
@@ -20,7 +26,7 @@ resource "kubernetes_cron_job_v1" "thumbnail_refresh_staging" {
           spec {
             container {
               name  = "thumbnail-refresh-staging"
-              image = var.thumbnail_refresh_staging_image
+              image = local.desired_images["thumbnail-refresh-staging"]
 
               env {
                 name  = "ENV"

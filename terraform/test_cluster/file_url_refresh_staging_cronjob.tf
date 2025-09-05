@@ -1,3 +1,9 @@
+data "kubernetes_resource" "file_url_refresh_staging" {
+  kind        = "CronJob"
+  api_version = "batch/v1"
+  metadata { name = "file-url-refresh-staging" }
+}
+
 resource "kubernetes_cron_job_v1" "file_url_refresh_staging" {
   metadata {
     name = "file-url-refresh-staging"
@@ -20,7 +26,7 @@ resource "kubernetes_cron_job_v1" "file_url_refresh_staging" {
           spec {
             container {
               name  = "file-url-refresh-staging"
-              image = var.file_url_refresh_staging_image
+              image = local.desired_images["file-url-refresh-staging"]
 
               env {
                 name  = "ENV"

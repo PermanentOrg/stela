@@ -1,3 +1,7 @@
+data "aws_lambda_function" "trigger_archivematica_staging_lambda" {
+  function_name = "trigger-archivematica-staging-lambda"
+}
+
 resource "aws_sqs_queue" "trigger_archivematica_staging_deadletter_queue" {
   name = "trigger-archivematica-staging-deadletter-queue"
 }
@@ -88,7 +92,7 @@ resource "aws_iam_role_policy" "trigger_archivematica_staging_lambda_policy" {
 
 resource "aws_lambda_function" "trigger_archivematica_staging_lambda" {
   package_type  = "Image"
-  image_uri     = var.trigger_archivematica_staging_lambda_image
+  image_uri     = local.desired_images["trigger-archivematica-staging-lambda"]
   function_name = "trigger-archivematica-staging-lambda"
   role          = aws_iam_role.trigger_archivematica_staging_lambda_role.arn
   timeout       = 30
