@@ -1,4 +1,5 @@
-data "kubernetes_deployment" "stela_staging" {
+data "kubernetes_resource" "stela_staging" {
+  kind = "Deployment"
   metadata { name = "stela-staging" }
 }
 
