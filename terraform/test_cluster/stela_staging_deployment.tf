@@ -1,3 +1,12 @@
+data "kubernetes_deployment" "stela_staging" {
+	metadata { name = "stela-staging" }
+}
+
+locals {
+	current_image = { stela_staging_image = data.kubernetes_deployment.stela_staging.spec[0].template[0].spec[0].container[0].image }
+	desired_image = merge(local.current_image, var.image_overrides)
+}
+
 resource "kubernetes_deployment" "stela_staging" {
   metadata {
     name = "stela-staging"
@@ -22,7 +31,7 @@ resource "kubernetes_deployment" "stela_staging" {
       }
       spec {
         container {
-          image = var.stela_staging_image
+          image = local.desired_image["stela_staging_image"]
           name  = "stela-staging"
 
           env {

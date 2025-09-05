@@ -1,3 +1,12 @@
+data "kubernetes_deployment" "stela_dev" {
+	metadata { name = "stela-dev" }
+}
+
+locals {
+	current_image = { stela_dev_image = data.kubernetes_deployment.stela_dev.spec[0].template[0].spec[0].container[0].image }
+	desired_image = merge(local.current_image, var.image_overrides)
+}
+
 resource "kubernetes_deployment" "stela_dev" {
   metadata {
     name = "stela-dev"
@@ -22,7 +31,7 @@ resource "kubernetes_deployment" "stela_dev" {
       }
       spec {
         container {
-          image = var.stela_dev_image
+          image = local.desired_image["stela_dev_image"]
           name  = "stela-dev"
 
           env {

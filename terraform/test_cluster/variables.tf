@@ -38,14 +38,10 @@ variable "subnet_ids" {
   default     = ["subnet-a3f202fa", "subnet-fc843999", "subnet-0fc91a78"]
 }
 
-variable "stela_dev_image" {
-  description = "Tag of stela API image to deploy to dev"
-  type        = string
-}
-
-variable "stela_staging_image" {
-  description = "Tag of stela API image to deploy to staging"
-  type        = string
+variable "image_overrides" {
+	description = "The set of images that should be updated in a deploy"
+	type = map(string)
+	default = {}
 }
 
 variable "archivematica_cleanup_dev_image" {
