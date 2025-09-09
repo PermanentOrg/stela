@@ -35,7 +35,7 @@
 		"@stela/s3-utils": "^1.0.0",
 		"@stela/event_utils": "^1.0.0",
 		"ajv": "^8.16.0",
-		"dotenv": "^17.2.1",
+		"dotenv": "^17.2.2",
 		"require-env-variable": "^4.0.2",
 		"tinypg": "^7.0.1"
 	},
