@@ -1,3 +1,9 @@
+data "kubernetes_resource" "file_url_refresh_dev" {
+  kind        = "CronJob"
+  api_version = "batch/v1"
+  metadata { name = "file-url-refresh-dev" }
+}
+
 resource "kubernetes_cron_job_v1" "file_url_refresh_dev" {
   metadata {
     name = "file-url-refresh-dev"
@@ -20,7 +26,7 @@ resource "kubernetes_cron_job_v1" "file_url_refresh_dev" {
           spec {
             container {
               name  = "file-url-refresh-dev"
-              image = var.file_url_refresh_dev_image
+              image = local.desired_images["file-url-refresh-dev"]
 
               env {
                 name  = "ENV"

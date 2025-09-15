@@ -1,3 +1,7 @@
+data "aws_lambda_function" "record_thumbnail_staging_lambda" {
+  function_name = "record-thumbnail-staging-lambda"
+}
+
 resource "aws_sns_topic" "record_thumbnail_staging_topic" {
   name = "record-thumbnail-staging-topic"
   policy = jsonencode({
@@ -109,7 +113,7 @@ resource "aws_iam_role_policy" "record_thumbnail_lambda_staging_policy" {
 
 resource "aws_lambda_function" "record_thumbnail_lambda_staging" {
   package_type  = "Image"
-  image_uri     = var.record_thumbnail_staging_lambda_image
+  image_uri     = local.desired_images["record-thumbnail-staging-lambda"]
   function_name = "record-thumbnail-staging-lambda"
   role          = aws_iam_role.record_thumbnail_lambda_staging_role.arn
   timeout       = 30

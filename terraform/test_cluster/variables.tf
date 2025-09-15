@@ -38,84 +38,10 @@ variable "subnet_ids" {
   default     = ["subnet-a3f202fa", "subnet-fc843999", "subnet-0fc91a78"]
 }
 
-variable "stela_dev_image" {
-  description = "Tag of stela API image to deploy to dev"
-  type        = string
-}
-
-variable "stela_staging_image" {
-  description = "Tag of stela API image to deploy to staging"
-  type        = string
-}
-
-variable "archivematica_cleanup_dev_image" {
-  description = "Tag of archivematica cleanup image to deploy to dev"
-  type        = string
-}
-
-variable "archivematica_cleanup_staging_image" {
-  description = "Tag of archivematica cleanup image to deploy to staging"
-  type        = string
-}
-
-variable "record_thumbnail_dev_lambda_image" {
-  description = "Tag of record thumbnail lambda image to deploy to dev"
-  type        = string
-}
-
-variable "record_thumbnail_staging_lambda_image" {
-  description = "Tag of record thumbnail lambda image to deploy to staging"
-  type        = string
-}
-
-variable "thumbnail_refresh_dev_image" {
-  description = "Tag of thumbnail refresh image to deploy to dev"
-  type        = string
-}
-
-variable "thumbnail_refresh_staging_image" {
-  description = "Tag of thumbnail refresh image to deploy to staging"
-  type        = string
-}
-
-variable "file_url_refresh_dev_image" {
-  description = "Tag of file URL refresh image to deploy to dev"
-  type        = string
-}
-
-variable "file_url_refresh_staging_image" {
-  description = "Tag of file URL refresh image to deploy to staging"
-  type        = string
-}
-
-variable "access_copy_dev_lambda_image" {
-  description = "Tag of the access copy lambda image to deploy to dev"
-  type        = string
-}
-
-variable "access_copy_staging_lambda_image" {
-  description = "Tag of the access copy lambda image to deploy to staging"
-  type        = string
-}
-
-variable "account_space_updater_dev_lambda_image" {
-  description = "Tag of account space updater image to deploy to dev"
-  type        = string
-}
-
-variable "account_space_updater_staging_lambda_image" {
-  description = "Tag of account space updater image to deploy to staging"
-  type        = string
-}
-
-variable "trigger_archivematica_dev_lambda_image" {
-  description = "Tag of archivematica triggerer image to deploy to dev"
-  type        = string
-}
-
-variable "trigger_archivematica_staging_lambda_image" {
-  description = "Tag of archivematica triggerer image to deploy to staging"
-  type        = string
+variable "image_overrides" {
+  description = "The set of images that should be updated in a deploy"
+  type        = map(string)
+  default     = {}
 }
 
 variable "dev_security_group_id" {

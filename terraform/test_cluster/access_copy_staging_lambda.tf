@@ -1,3 +1,7 @@
+data "aws_lambda_function" "access_copy_staging_lambda" {
+  function_name = "access-copy-staging-lambda"
+}
+
 resource "aws_sqs_queue" "access_copy_staging_deadletter_queue" {
   name = "access-copy-staging-deadletter-queue"
 }
@@ -84,7 +88,7 @@ resource "aws_iam_role_policy" "access_copy_staging_lambda_policy" {
 
 resource "aws_lambda_function" "access_copy_staging_lambda" {
   package_type  = "Image"
-  image_uri     = var.access_copy_staging_lambda_image
+  image_uri     = local.desired_images["access-copy-staging-lambda"]
   function_name = "access-copy-staging-lambda"
   role          = aws_iam_role.access_copy_staging_lambda_role.arn
   timeout       = 30

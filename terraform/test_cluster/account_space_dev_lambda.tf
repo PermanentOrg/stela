@@ -1,3 +1,7 @@
+data "aws_lambda_function" "account_space_update_dev_lambda" {
+  function_name = "account-space-update-dev-lambda"
+}
+
 resource "aws_sqs_queue" "account_space_update_dev_deadletter_queue" {
   name = "account-space-update-dev-deadletter-queue"
 }
@@ -88,7 +92,7 @@ resource "aws_iam_role_policy" "account_space_update_dev_lambda_policy" {
 
 resource "aws_lambda_function" "account_space_update_dev_lambda" {
   package_type  = "Image"
-  image_uri     = var.account_space_updater_dev_lambda_image
+  image_uri     = local.desired_images["account-space-update-dev-lambda"]
   function_name = "account-space-update-dev-lambda"
   role          = aws_iam_role.account_space_update_dev_lambda_role.arn
   timeout       = 30

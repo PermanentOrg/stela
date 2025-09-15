@@ -1,3 +1,7 @@
+data "aws_lambda_function" "access_copy_dev_lambda" {
+  function_name = "access-copy-dev-lambda"
+}
+
 resource "aws_sqs_queue" "access_copy_dev_deadletter_queue" {
   name = "access-copy-dev-deadletter-queue"
 }
@@ -84,7 +88,7 @@ resource "aws_iam_role_policy" "access_copy_dev_lambda_policy" {
 
 resource "aws_lambda_function" "access_copy_dev_lambda" {
   package_type  = "Image"
-  image_uri     = var.access_copy_dev_lambda_image
+  image_uri     = local.desired_images["access-copy-dev-lambda"]
   function_name = "access-copy-dev-lambda"
   role          = aws_iam_role.access_copy_dev_lambda_role.arn
   timeout       = 30

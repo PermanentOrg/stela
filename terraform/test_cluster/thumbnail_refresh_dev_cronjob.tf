@@ -1,3 +1,9 @@
+data "kubernetes_resource" "thumbnail_refresh_dev" {
+  kind        = "CronJob"
+  api_version = "batch/v1"
+  metadata { name = "thumbnail-refresh-dev" }
+}
+
 resource "kubernetes_cron_job_v1" "thumbnail_refresh_dev" {
   metadata {
     name = "thumbnail-refresh-dev"
@@ -20,7 +26,7 @@ resource "kubernetes_cron_job_v1" "thumbnail_refresh_dev" {
           spec {
             container {
               name  = "thumbnail-refresh-dev"
-              image = var.thumbnail_refresh_dev_image
+              image = local.desired_images["thumbnail-refresh-dev"]
 
               env {
                 name  = "ENV"

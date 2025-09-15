@@ -1,3 +1,9 @@
+data "kubernetes_resource" "archivematica_cleanup_staging" {
+  kind        = "CronJob"
+  api_version = "batch/v1"
+  metadata { name = "archivematica-cleanup-staging" }
+}
+
 resource "kubernetes_cron_job_v1" "archivematica_cleanup_staging" {
   metadata {
     name = "archivematica-cleanup-staging"
@@ -20,7 +26,7 @@ resource "kubernetes_cron_job_v1" "archivematica_cleanup_staging" {
           spec {
             container {
               name  = "archivematica-cleanup-staging"
-              image = var.archivematica_cleanup_staging_image
+              image = local.desired_images["archivematica-cleanup-staging"]
 
               env {
                 name  = "ENV"

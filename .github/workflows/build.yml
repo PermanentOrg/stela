@@ -129,11 +129,11 @@ jobs:
       - generate_image_tags
     runs-on: ubuntu-24.04
     env:
-      ACCOUNT_SPACE_UPDATER_IMAGE_TAG: ${{ needs.generate_image_tags.outputs.ACCOUNT_SPACE_UPDATER_IMAGE_TAG }}
+      ACCOUNT_SPACE_UPDATE_IMAGE_TAG: ${{ needs.generate_image_tags.outputs.ACCOUNT_SPACE_UPDATE_IMAGE_TAG }}
     steps:
       - uses: actions/checkout@v5
       - name: Build Image
-        run: docker build -t $ACCOUNT_SPACE_UPDATER_IMAGE_TAG --build-arg="AWS_RDS_CERT_BUNDLE=$AWS_RDS_CERT_BUNDLE" -f Dockerfile.account_space_updater .
+        run: docker build -t $ACCOUNT_SPACE_UPDATE_IMAGE_TAG --build-arg="AWS_RDS_CERT_BUNDLE=$AWS_RDS_CERT_BUNDLE" -f Dockerfile.account_space_updater .
         env:
           AWS_RDS_CERT_BUNDLE: ${{ secrets.AWS_RDS_CERT_BUNDLE }}
       - name: AWS Login
@@ -143,7 +143,7 @@ jobs:
           AWS_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       - name: Publish Image to ECR
-        run: docker push $ACCOUNT_SPACE_UPDATER_IMAGE_TAG
+        run: docker push $ACCOUNT_SPACE_UPDATE_IMAGE_TAG
   build_trigger_archivematica:
     needs:
       - generate_image_tags
