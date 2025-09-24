@@ -107,9 +107,9 @@ resource "aws_lambda_function" "trigger_archivematica_staging_lambda" {
       ENV                                = var.staging_env
       SENTRY_DSN                         = var.sentry_dsn
       DATABASE_URL                       = var.staging_database_url
-      ARCHIVEMATICA_HOST_URL             = var.dev_archivematica_base_url
-      ARCHIVEMATICA_API_KEY              = var.dev_archivematica_api_key
-      ARCHIVEMATICA_ORIGINAL_LOCATION_ID = var.dev_archivematica_original_location_id
+      ARCHIVEMATICA_HOST_URL             = var.staging_archivematica_base_url
+      ARCHIVEMATICA_API_KEY              = var.staging_archivematica_api_key
+      ARCHIVEMATICA_ORIGINAL_LOCATION_ID = var.staging_archivematica_original_location_id
     }
   }
 }

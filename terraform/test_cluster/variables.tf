@@ -333,11 +333,11 @@ variable "staging_site_url" {
 variable "dev_archivematica_original_location_id" {
   description = "Location ID where original copies are stored for the dev instance of Archivematica"
   type        = string
-  default     = "59ca35b5-6cb2-47d2-ab1c-5912d3bb4ce2"
+  default     = "beea0208-8d17-4dbf-8c8d-e7c2b9beb82f"
 }
 
 variable "staging_archivematica_original_location_id" {
   description = "Location ID where original copies are stored for the staging instance of Archivematica"
   type        = string
-  default     = "b3a5a89f-34c0-4ebd-a037-e70140d49ff9"
+  default     = "e0aa5ff7-6295-4ffd-80b3-0615e38c9868"
 }
