@@ -237,5 +237,5 @@ variable "site_url" {
 variable "archivematica_original_location_id" {
   description = "Location ID where original copies are stored for the prod instance of Archivematica"
   type        = string
-  default     = "b1f64b1a-4f19-4885-8093-f6812e3f5810"
+  default     = "b725c4d9-2fb3-4978-91ef-a325c578ece1"
 }
