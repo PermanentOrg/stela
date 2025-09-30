@@ -46,7 +46,7 @@
 		"@stela/permanent_models": "^1.0.0",
 		"@pdc/http-status-codes": "^1.0.1",
 		"cors": "^2.8.5",
-		"dotenv": "^17.2.2",
+		"dotenv": "^17.2.3",
 		"express": "^5.1.0",
 		"express-winston": "^4.1.0",
 		"http-errors": "^2.0.0",
