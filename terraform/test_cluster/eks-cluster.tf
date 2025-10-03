@@ -38,6 +38,19 @@ module "eks" {
   }
 }
 
+resource "aws_eks_addon" "vpc_cni" {
+  cluster_name                = local.cluster_name
+  addon_name                  = "vpc-cni"
+  resolve_conflicts_on_create = "OVERWRITE"
+  resolve_conflicts_on_update = "OVERWRITE"
+
+  configuration_values = jsonencode({
+    env = {
+      AWS_VPC_ENI_MTU = "1500"
+    }
+  })
+}
+
 resource "kubernetes_cluster_role_binding" "eks_admins_cluster_admin" {
   metadata {
     name = "eks-admins-cluster-admin"
