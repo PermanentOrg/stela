@@ -7,6 +7,8 @@ COPY tsconfig.json ./
 COPY jest.config.js ./
 COPY packages ./packages
 
+RUN apk add dig
+
 RUN npm install
 RUN npm install -ws
 RUN npm run build -ws
