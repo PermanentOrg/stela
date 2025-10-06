@@ -115,7 +115,7 @@ export const getFolders = async (
 	const folders = result.rows.map<Folder>(
 		(row: FolderRow): Folder => ({
 			...row,
-			size: row.size !== null ? +row.size : null,
+			size: row.size === null ? null : +row.size,
 			imageRatio: +(row.imageRatio ?? 0),
 			sort: prettifyFolderSortType(row.sort),
 			type: prettifyFolderType(row.type),
@@ -189,12 +189,12 @@ export const getFolderChildren = async (
 		pagination: {
 			nextCursor,
 			nextPage:
-				nextCursor !== undefined
-					? `https://${
+				nextCursor === undefined
+					? undefined
+					: `https://${
 							process.env["SITE_URL"] ?? ""
-						}/api/v2/folder/${parentFolderId}/children?pageSize=${pagination.pageSize}&cursor=${nextCursor}`
-					: undefined,
-			totalPages: result.rows[0] !== undefined ? result.rows[0].totalPages : 0,
+						}/api/v2/folder/${parentFolderId}/children?pageSize=${pagination.pageSize}&cursor=${nextCursor}`,
+			totalPages: result.rows[0] === undefined ? 0 : result.rows[0].totalPages,
 		},
 	};
 };

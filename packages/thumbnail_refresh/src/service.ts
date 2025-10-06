@@ -44,21 +44,21 @@ export const refreshThumbnails = async (): Promise<void> => {
 					? constructSignedCdnUrl(item.thumbnail256CloudPath)
 					: null;
 			const newThumbnail200 =
-				item.thumbnail200 != null
-					? constructSignedCdnUrl(item.archiveNumber + thumbnail200Suffix)
-					: null;
+				item.thumbnail200 == null
+					? null
+					: constructSignedCdnUrl(item.archiveNumber + thumbnail200Suffix);
 			const newThumbnail500 =
-				item.thumbnail500 != null
-					? constructSignedCdnUrl(item.archiveNumber + thumbnail500Suffix)
-					: null;
+				item.thumbnail500 == null
+					? null
+					: constructSignedCdnUrl(item.archiveNumber + thumbnail500Suffix);
 			const newThumbnail1000 =
-				item.thumbnail1000 != null
-					? constructSignedCdnUrl(item.archiveNumber + thumbnail1000Suffix)
-					: null;
+				item.thumbnail1000 == null
+					? null
+					: constructSignedCdnUrl(item.archiveNumber + thumbnail1000Suffix);
 			const newThumbnail2000 =
-				item.thumbnail2000 != null
-					? constructSignedCdnUrl(item.archiveNumber + thumbnail2000Suffix)
-					: null;
+				item.thumbnail2000 == null
+					? null
+					: constructSignedCdnUrl(item.archiveNumber + thumbnail2000Suffix);
 			try {
 				if (item.itemType === "record") {
 					await db.sql("queries.update_record_thumbnails", {
