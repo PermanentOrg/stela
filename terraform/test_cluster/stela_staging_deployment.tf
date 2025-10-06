@@ -27,6 +27,24 @@ resource "kubernetes_deployment" "stela_staging" {
         }
       }
       spec {
+        dns_config {
+          option {
+            name  = "ndots"
+            value = "1"  # Reduce DNS query attempts
+          }
+          option {
+            name = "single-request-reopen"  # AL2023 compatibility
+          }
+          option {
+            name  = "timeout"
+            value = "2"
+          }
+          option {
+            name  = "attempts"
+            value = "3"
+          }
+        }
+
         container {
           image = local.desired_images["stela-staging"]
           name  = "stela-staging"
