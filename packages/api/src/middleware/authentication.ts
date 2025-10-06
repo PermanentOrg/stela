@@ -62,9 +62,9 @@ const getOptionalValueFromAuthToken = async (
 
 	const successfulIntrospectionResponse = introspectionResponses.find(
 		(introspectionResponse) =>
-			introspectionResponse !== null
-				? introspectionResponse.wasSuccessful()
-				: false,
+			introspectionResponse === null
+				? false
+				: introspectionResponse.wasSuccessful(),
 	);
 	if (
 		successfulIntrospectionResponse === undefined ||

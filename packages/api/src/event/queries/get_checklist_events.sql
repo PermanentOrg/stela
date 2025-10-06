@@ -75,7 +75,8 @@ SELECT
         (
           account_events.entity = 'record'
           AND account_events.action = 'create'
-          AND (account_events.body ->> 'record')::jsonb ->> 'publicDT' IS NOT NULL
+          AND (account_events.body ->> 'record')::jsonb ->> 'publicDT'
+          IS NOT NULL
         )
         OR
         (

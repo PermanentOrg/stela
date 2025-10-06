@@ -34,7 +34,7 @@ export const createEvent = async (data: CreateEventRequest): Promise<void> => {
 	}
 
 	const actorType =
-		data.userSubjectFromAuthToken !== undefined ? "user" : "admin";
+		data.userSubjectFromAuthToken === undefined ? "admin" : "user";
 	const event = {
 		entity: data.entity,
 		action: data.action,

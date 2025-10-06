@@ -33,9 +33,9 @@ const createShareLinkRequestParamsToDatabaseParams = (
 			data.accessRestrictions === undefined) &&
 		!itemIsPublic,
 	noApproval:
-		data.accessRestrictions !== "approval"
-			? APPROVAL_NOT_REQUIRED
-			: APPROVAL_REQUIRED,
+		data.accessRestrictions === "approval"
+			? APPROVAL_REQUIRED
+			: APPROVAL_NOT_REQUIRED,
 	maxUses: data.maxUses ?? 0,
 	expirationTimestamp: data.expirationTimestamp,
 	urlToken: shareToken,
@@ -49,13 +49,13 @@ const updateShareLinkRequestParamsToDatabaseParams = (
 	shareLinkId: string,
 ): UpdateShareLinkDatabaseParams => ({
 	permissionsLevel:
-		data.permissionsLevel !== undefined
-			? `access.role.${data.permissionsLevel}`
-			: null,
+		data.permissionsLevel === undefined
+			? null
+			: `access.role.${data.permissionsLevel}`,
 	unlisted:
-		data.accessRestrictions !== undefined
-			? data.accessRestrictions === "none"
-			: null,
+		data.accessRestrictions === undefined
+			? null
+			: data.accessRestrictions === "none",
 	noApproval,
 	maxUses: data.maxUses,
 	setMaxUsesToNull: data.maxUses === null,
@@ -109,11 +109,11 @@ const createShareLink = async (
 
 	return {
 		...result.rows[0],
-		maxUses: result.rows[0].maxUses !== null ? +result.rows[0].maxUses : null,
+		maxUses: result.rows[0].maxUses === null ? null : +result.rows[0].maxUses,
 		usesExpended:
-			result.rows[0].usesExpended !== null
-				? +result.rows[0].usesExpended
-				: null,
+			result.rows[0].usesExpended === null
+				? null
+				: +result.rows[0].usesExpended,
 	};
 };
 
@@ -135,10 +135,10 @@ const postUpdateMaxUses = (
 	updateRequest: UpdateShareLinkRequest,
 	currentShareLink: ShareLink,
 ): number | null => {
-	if (updateRequest.maxUses !== undefined) {
-		return updateRequest.maxUses;
+	if (updateRequest.maxUses === undefined) {
+		return currentShareLink.maxUses;
 	}
-	return currentShareLink.maxUses;
+	return updateRequest.maxUses;
 };
 
 const updateShareLink = async (
@@ -199,13 +199,13 @@ const updateShareLink = async (
 	return {
 		...updateResult.rows[0],
 		maxUses:
-			updateResult.rows[0].maxUses !== null
-				? +updateResult.rows[0].maxUses
-				: null,
+			updateResult.rows[0].maxUses === null
+				? null
+				: +updateResult.rows[0].maxUses,
 		usesExpended:
-			updateResult.rows[0].usesExpended !== null
-				? +updateResult.rows[0].usesExpended
-				: null,
+			updateResult.rows[0].usesExpended === null
+				? null
+				: +updateResult.rows[0].usesExpended,
 	};
 };
 

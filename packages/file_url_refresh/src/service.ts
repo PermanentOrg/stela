@@ -27,16 +27,16 @@ export const refreshFileUrls = async (): Promise<void> => {
 	await Promise.all(
 		filesToRefreshUrls.rows.map(async (file) => {
 			const newAccessUrl =
-				file.cloudPath !== null ? constructSignedCdnUrl(file.cloudPath) : null;
+				file.cloudPath === null ? null : constructSignedCdnUrl(file.cloudPath);
 			const newDownloadUrl =
-				file.cloudPath !== null
-					? constructSignedCdnUrl(
+				file.cloudPath === null
+					? null
+					: constructSignedCdnUrl(
 							file.cloudPath,
 							file.format === "file.format.original"
 								? file.uploadName
 								: `${parse(file.uploadName).name}.${getFileExtensionByFileType(file.type)}`,
-						)
-					: null;
+						);
 			try {
 				await db.sql("queries.update_file_url", {
 					url: newAccessUrl,
