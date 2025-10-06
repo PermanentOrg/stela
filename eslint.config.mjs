@@ -40,6 +40,7 @@ export default defineConfig([
 				"error",
 				{ ignore: [0, 1], ignoreEnums: true },
 			],
+			"no-param-reassign": ["error", { props: false }],
 		},
 	},
 	{
