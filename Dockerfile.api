@@ -7,7 +7,7 @@ COPY tsconfig.json ./
 COPY jest.config.js ./
 COPY packages ./packages
 
-RUN apk add postgresql-client
+RUN apk add --no-cache bind-tools
 
 RUN npm install
 RUN npm install -ws
