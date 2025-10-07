@@ -38,6 +38,7 @@ COPY --from=builder /usr/local/apps/stela/package-lock.json ./package-lock.json
 RUN npm install --workspace @stela/api
 
 ENV PORT=80
+ENV NODE_OPTIONS=--dns-result-order=ipv4first
 EXPOSE 80
 
 CMD node packages/api/dist/index.js
