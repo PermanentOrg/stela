@@ -7,9 +7,6 @@ COPY tsconfig.json ./
 COPY jest.config.js ./
 COPY packages ./packages
 
-RUN apk update
-RUN apk add --no-cache bind-tools netcat-openbsd
-
 RUN npm install
 RUN npm install -ws
 RUN npm run build -ws
@@ -23,6 +20,9 @@ WORKDIR /usr/local/apps/stela/
 ENV NEW_RELIC_NO_CONFIG_FILE=true
 ENV NEW_RELIC_DISTRIBUTED_TRACING_ENABLED=true
 ENV NEW_RELIC_LOG=stdout
+
+RUN apk update
+RUN apk add bind-utils netcat-openbsd
 
 RUN mkdir /etc/ca-certificates
 RUN echo -e $AWS_RDS_CERT_BUNDLE > /etc/ca-certificates/rds-us-west-2-ca-bundle.pem
