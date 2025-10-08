@@ -8,7 +8,7 @@ COPY jest.config.js ./
 COPY packages ./packages
 
 RUN apk update
-RUN apk add --no-cache bind-tools
+RUN apk add --no-cache bind-tools netcat-openbsd
 
 RUN npm install
 RUN npm install -ws
