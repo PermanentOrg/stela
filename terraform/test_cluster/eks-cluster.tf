@@ -22,6 +22,24 @@ module "eks" {
     }
   }
 
+  addons = {
+    coredns = {
+      most_recent                 = true
+      resolve_conflicts_on_create = "OVERWRITE"
+      resolve_conflicts           = "OVERWRITE"
+    }
+    kube-proxy = {
+      most_recent                 = true
+      resolve_conflicts_on_create = "OVERWRITE"
+      resolve_conflicts           = "OVERWRITE"
+    }
+    vpc-cni = {
+      most_recent                 = true
+      resolve_conflicts_on_create = "OVERWRITE"
+      resolve_conflicts           = "OVERWRITE"
+    }
+  }
+
   eks_managed_node_groups = {
     one = {
       ami_type = "AL2023_x86_64_STANDARD"
