@@ -15,8 +15,8 @@ const loadFixtures = async (): Promise<void> => {
 	await db.sql("access.fixtures.create_test_account_archives");
 	await db.sql("access.fixtures.create_test_records");
 	await db.sql("access.fixtures.create_test_folders");
-	await db.sql("access.fixtures.create_test_accesses");
 	await db.sql("access.fixtures.create_test_folder_links");
+	await db.sql("access.fixtures.create_test_accesses");
 };
 
 const clearDatabase = async (): Promise<void> => {
