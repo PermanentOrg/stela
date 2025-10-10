@@ -69,9 +69,9 @@ export const handler: SQSHandler = Sentry.wrapHandler(
 						format: "file.format.archivematica.access",
 						parentFileId,
 						contentType:
-							mimeLookup(fileExtension) !== false
-								? mimeLookup(fileExtension)
-								: UnrecognizedExtensionMIMEType,
+							mimeLookup(fileExtension) === false
+								? UnrecognizedExtensionMIMEType
+								: mimeLookup(fileExtension),
 						s3VersionId: s3Object.versionId,
 						cloud1: process.env["S3_BUCKET"],
 						cloud2: process.env["S3_BUCKET"],

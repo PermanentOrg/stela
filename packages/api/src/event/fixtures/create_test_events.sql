@@ -72,11 +72,11 @@ VALUES (
   '{"public": true, "hasRecords": true}'
 ),
 (
-	'record',
-	'create',
-	1,
-	'user',
-	'5862a229-5ea0-4432-b29e-7f069e99558a',
-	1,
-	'{"record": {"publicDT": "2020-01-01"}}'
+  'record',
+  'create',
+  1,
+  'user',
+  '5862a229-5ea0-4432-b29e-7f069e99558a',
+  1,
+  '{"record": {"publicDT": "2020-01-01"}}'
 );

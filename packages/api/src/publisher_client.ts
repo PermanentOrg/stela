@@ -54,11 +54,11 @@ const batchPublishMessages = async (
 
 	const failedMessageIds = responses
 		.map((response) =>
-			response.Failed !== undefined
-				? response.Failed.map(
+			response.Failed === undefined
+				? []
+				: response.Failed.map(
 						(failed: BatchResultErrorEntry) => failed.Id ?? "",
-					).filter((id: string) => id !== "")
-				: [],
+					).filter((id: string) => id !== ""),
 		)
 		.flat();
 

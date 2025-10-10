@@ -40,6 +40,9 @@ export default defineConfig([
 				"error",
 				{ ignore: [0, 1], ignoreEnums: true },
 			],
+			// Breaking the following rule is a key part of how our middleware works right now.
+			// We want to move away from that, but for the moment the rule must be disabled.
+			"no-param-reassign": ["error", { props: false }],
 		},
 	},
 	{
