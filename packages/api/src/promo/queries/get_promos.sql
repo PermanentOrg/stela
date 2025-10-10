@@ -1,5 +1,5 @@
 SELECT
-  promoid AS "id",
+  promoid AS id,
   code,
   sizeinmb AS "storageInMB",
   expiresdt AS "expirationTimestamp",

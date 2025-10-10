@@ -1,6 +1,6 @@
 SELECT
-  shareby_url.shareby_urlid AS "id",
-  shareby_url.urltoken AS "token",
+  shareby_url.shareby_urlid AS id,
+  shareby_url.urltoken AS token,
   shareby_url.uses AS "usesExpended",
   shareby_url.expiresdt AS "expirationTimestamp",
   shareby_url.createddt AS "createdAt",

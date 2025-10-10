@@ -1,5 +1,5 @@
 UPDATE
-record
+  record
 SET
   thumbnail256cloudpath = :thumbnail256CloudPath,
   thumbnail256 = :thumbnailUrl,
@@ -11,4 +11,4 @@ WHERE
   record.recordid = record_file.recordid
   AND record_file.fileid = :fileId
 RETURNING
-record.recordid;
+  record.recordid;

@@ -12,9 +12,9 @@ VALUES (
   :email
 )
 RETURNING
-legacy_contact_id AS "legacyContactId",
-account_id AS "accountId",
-name,
-email,
-created_dt AS "createdDt",
-updated_dt AS "updatedDt";
+  legacy_contact_id AS "legacyContactId",
+  account_id AS "accountId",
+  name,
+  email,
+  created_dt AS "createdDt",
+  updated_dt AS "updatedDt";

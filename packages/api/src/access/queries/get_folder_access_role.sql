@@ -20,16 +20,16 @@ FROM
   account_archive
 INNER JOIN
   account
-  ON account.accountid = account_archive.accountid
+  ON account_archive.accountid = account.accountid
 LEFT JOIN
   folder
   ON
-    folder.archiveid = account_archive.archiveid
+    account_archive.archiveid = folder.archiveid
     AND folder.folderid = :itemId
 LEFT JOIN
   folder_share
   ON
-    folder_share.archiveid = account_archive.archiveid
+    account_archive.archiveid = folder_share.archiveid
 WHERE
   (
     folder.folderid = :itemId
