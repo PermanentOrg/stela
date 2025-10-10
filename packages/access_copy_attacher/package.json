@@ -13,7 +13,7 @@
 	},
 	"homepage": "https://permanent.org",
 	"engines": {
-		"node": ">=22.0"
+		"node": ">=24.0"
 	},
 	"main": "dist/index.js",
 	"scripts": {

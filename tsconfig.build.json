@@ -1,6 +1,6 @@
 {
 	"extends": [
-		"@tsconfig/node22/tsconfig.json",
+		"@tsconfig/node24/tsconfig.json",
 		"@tsconfig/strictest/tsconfig.json"
 	],
 	"exclude": [
@@ -16,7 +16,7 @@
 		"forceConsistentCasingInFileNames": true,
 		"declaration": true,
 		"lib": [
-			"es2022",
+			"es2024",
 			"DOM"
 		],
 		"paths": {
