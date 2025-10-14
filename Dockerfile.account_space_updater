@@ -1,4 +1,4 @@
-FROM public.ecr.aws/lambda/nodejs:22 as builder
+FROM public.ecr.aws/lambda/nodejs:24 as builder
 WORKDIR /usr/local/apps/stela/
 
 COPY package.json ./
@@ -12,7 +12,7 @@ RUN npm install -ws
 RUN npm run build -ws
 
 
-FROM public.ecr.aws/lambda/nodejs:22 as final
+FROM public.ecr.aws/lambda/nodejs:24 as final
 
 ARG AWS_RDS_CERT_BUNDLE
 
