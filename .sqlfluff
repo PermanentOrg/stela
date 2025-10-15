@@ -11,3 +11,6 @@ param_style = colon
 
 [sqlfluff:layout:type:data_type]
 spacing_within = touch:inline
+
+[sqlfluff:rules:references.keywords]
+ignore_words = name, owner, type, trigger, shares, location

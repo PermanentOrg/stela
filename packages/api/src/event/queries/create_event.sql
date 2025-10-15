@@ -21,4 +21,4 @@ event (
   :body
 )
 RETURNING
-id;
+  id;

@@ -7,57 +7,57 @@ WITH all_children AS (
       ORDER BY
         (CASE
           WHEN (
-            SELECT sort
+            SELECT folder.sort
             FROM folder
-            WHERE folderid = :parentFolderId
+            WHERE folder.folderid = :parentFolderId
           ) = 'sort.alphabetical_asc'
             THEN displayname
         END) ASC,
         (CASE
           WHEN (
-            SELECT sort
+            SELECT folder.sort
             FROM folder
-            WHERE folderid = :parentFolderId
+            WHERE folder.folderid = :parentFolderId
           ) = 'sort.alphabetical_desc'
             THEN displayname
         END) DESC,
         (CASE
           WHEN (
-            SELECT sort
+            SELECT folder.sort
             FROM folder
-            WHERE folderid = :parentFolderId
+            WHERE folder.folderid = :parentFolderId
           ) = 'sort.display_date_asc'
             THEN displaydt
         END) ASC,
         (CASE
           WHEN (
-            SELECT sort
+            SELECT folder.sort
             FROM folder
-            WHERE folderid = :parentFolderId
+            WHERE folder.folderid = :parentFolderId
           ) = 'sort.display_date_desc'
             THEN displaydt
         END) DESC,
         (CASE
           WHEN (
-            SELECT sort
+            SELECT folder.sort
             FROM folder
-            WHERE folderid = :parentFolderId
+            WHERE folder.folderid = :parentFolderId
           ) = 'sort.type_asc'
             THEN type
         END) ASC,
         (CASE
           WHEN (
-            SELECT sort
+            SELECT folder.sort
             FROM folder
-            WHERE folderid = :parentFolderId
+            WHERE folder.folderid = :parentFolderId
           ) = 'sort.type_desc'
             THEN type
         END) DESC
-    ) AS "rank"
+    ) AS rank
   FROM (
     SELECT
-      folder_link.folderid AS "id",
-      'folder' AS "item_type",
+      folder_link.folderid AS id,
+      'folder' AS item_type,
       folder_link.folder_linkid,
       folder.displayname,
       folder.displaydt,
@@ -73,8 +73,8 @@ WITH all_children AS (
       AND folder.status != 'status.generic.deleted'
     UNION
     SELECT
-      folder_link.recordid AS "id",
-      'record' AS "item_type",
+      folder_link.recordid AS id,
+      'record' AS item_type,
       folder_link.folder_linkid,
       record.displayname,
       record.displaydt,
@@ -88,7 +88,7 @@ WITH all_children AS (
       folder_link.parentfolderid = :parentFolderId
       AND folder_link.status != 'status.generic.deleted'
       AND record.status != 'status.generic.deleted'
-  ) AS "children"
+  ) AS children
 ),
 
 cursor AS (
@@ -100,16 +100,16 @@ cursor AS (
 ),
 
 total_pages AS (
-  SELECT ceiling(count(*) / :pageSize) AS "total_pages"
+  SELECT ceiling(count(*) / :pageSize) AS total_pages
   FROM all_children
 )
 
 SELECT
   id,
   item_type,
-  (SELECT total_pages FROM total_pages) AS "totalPages"
+  (SELECT total_pages.total_pages FROM total_pages) AS "totalPages"
 FROM all_children
 WHERE
-  rank > coalesce((SELECT rank FROM cursor), 0)
+  rank > coalesce((SELECT cursor.rank FROM cursor), 0)
 ORDER BY rank ASC
 LIMIT :pageSize;

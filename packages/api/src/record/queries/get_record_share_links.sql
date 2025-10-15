@@ -1,4 +1,4 @@
-SELECT shareby_url.shareby_urlid AS "id"
+SELECT shareby_url.shareby_urlid AS id
 FROM
   shareby_url
 INNER JOIN

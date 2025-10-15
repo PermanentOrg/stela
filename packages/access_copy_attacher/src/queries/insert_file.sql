@@ -38,7 +38,7 @@ WITH file_insert AS (
     CURRENT_TIMESTAMP
   )
   RETURNING
-  fileid
+    fileid
 )
 INSERT INTO
 record_file (

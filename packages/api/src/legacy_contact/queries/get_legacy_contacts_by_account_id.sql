@@ -9,9 +9,9 @@ FROM
   legacy_contact
 WHERE
   account_id = (
-    SELECT accountid
+    SELECT account.accountid
     FROM
       account
     WHERE
-      primaryemail = :primaryEmail
+      account.primaryemail = :primaryEmail
   );

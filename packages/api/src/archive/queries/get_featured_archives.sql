@@ -3,7 +3,7 @@ SELECT
   archive.type,
   archive.archivenbr AS "archiveNbr",
   archive.thumburl200 AS "profileImage",
-  profile_item.string1 AS "name",
+  profile_item.string1 AS name,
   folder.thumburl500 AS "bannerImage"
 FROM
   archive

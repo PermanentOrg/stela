@@ -12,7 +12,7 @@ WITH RECURSIVE folder_path AS (
   UNION ALL
 
   SELECT
-    folder_path.original_folder_id AS original_folder_id,
+    folder_path.original_folder_id,
     folder.folderid,
     folder_link.parentfolderid,
     folder.displayname,
@@ -25,7 +25,7 @@ WITH RECURSIVE folder_path AS (
 
 aggregated_path AS (
   SELECT
-    original_folder_id AS "folderid",
+    original_folder_id AS folderid,
     ARRAY_AGG(displayname ORDER BY height DESC) AS name_path
   FROM folder_path
   GROUP BY
@@ -82,7 +82,7 @@ aggregated_tags AS (
       tag.name,
       'type',
       tag.type
-    )) AS "tags"
+    )) AS tags
   FROM
     tag_link
   INNER JOIN
@@ -141,7 +141,7 @@ ancestor_unrestricted_share_tokens (
 aggregated_ancestor_unrestricted_share_tokens AS (
   SELECT
     folderid,
-    ARRAY_AGG(urltoken) FILTER (WHERE urltoken IS NOT NULL) AS "tokens"
+    ARRAY_AGG(urltoken) FILTER (WHERE urltoken IS NOT NULL) AS tokens
   FROM
     ancestor_unrestricted_share_tokens
   GROUP BY folderid
@@ -186,22 +186,22 @@ account_by_share AS (
 
 SELECT
   folder.folderid AS "folderId",
-  folder_size.allfilesizedeep AS "size",
-  aggregated_shares.folder_shares AS "shares",
-  aggregated_tags.tags AS "tags",
+  folder_size.allfilesizedeep AS size,
+  aggregated_shares.folder_shares AS shares,
+  aggregated_tags.tags,
   folder.createddt AS "createdAt",
   folder.updateddt AS "updatedAt",
-  folder.description AS "description",
+  folder.description,
   folder.displaydt AS "displayTimestamp",
   folder.displayenddt AS "displayEndTimestamp",
   folder.displayname AS "displayName",
   folder.downloadname AS "downloadName",
   folder.imageratio AS "imageRatio",
   folder.publicdt AS "publicAt",
-  folder.sort AS "sort",
-  folder.type AS "type",
-  folder.status AS "status",
-  folder.view AS "view",
+  folder.sort,
+  folder.type,
+  folder.status,
+  folder.view,
   folder_link.folder_linkid AS "folderLinkId",
   JSON_BUILD_OBJECT(
     'id',
@@ -226,7 +226,7 @@ SELECT
     locn.countrycode,
     'displayName',
     locn.displayname
-  ) AS "location",
+  ) AS location,
   JSON_BUILD_OBJECT(
     'id',
     folder_link.parentfolderid::text
@@ -236,11 +236,11 @@ SELECT
     folder.archiveid::text,
     'name',
     profile_item.string1
-  ) AS "archive",
+  ) AS archive,
   JSONB_BUILD_OBJECT(
     'names',
     aggregated_path.name_path
-  ) AS "paths",
+  ) AS paths,
   JSON_BUILD_OBJECT(
     '200',
     folder.thumburl200,

@@ -6,9 +6,9 @@ SET
 WHERE (
   id = :id
 ) RETURNING
-id,
-name,
-description,
-globally_enabled AS "globallyEnabled",
-created_at AS "createdAt",
-updated_at AS "updatedAt";
+  id,
+  name,
+  description,
+  globally_enabled AS "globallyEnabled",
+  created_at AS "createdAt",
+  updated_at AS "updatedAt";

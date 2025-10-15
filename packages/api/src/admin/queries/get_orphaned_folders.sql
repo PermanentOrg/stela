@@ -11,19 +11,19 @@ INNER JOIN
     folder.folderid = folder_link.folderid
 WHERE
   folder.folderid IN (
-    SELECT folder.folderid
+    SELECT orphaned_folder.folderid
     FROM
-      folder
+      folder AS orphaned_folder
     INNER JOIN
-      folder_link
+      folder_link AS orphaned_folder_link
       ON
-        folder.folderid = folder_link.folderid
+        orphaned_folder.folderid = orphaned_folder_link.folderid
     WHERE
-      folder.status != 'status.generic.deleted'
-    GROUP BY folder.folderid
+      orphaned_folder.status != 'status.generic.deleted'
+    GROUP BY orphaned_folder.folderid
     HAVING
-      ARRAY['status.generic.deleted'] = array_agg(folder_link.status)
-      AND ARRAY[1]::int[] != array_agg(folder_link.linkcount)::int[]
+      ARRAY['status.generic.deleted'] = array_agg(orphaned_folder_link.status)
+      AND ARRAY[1]::int[] != array_agg(orphaned_folder_link.linkcount)::int[]
   )
 ORDER BY
   folder.folderid ASC;
