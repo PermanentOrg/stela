@@ -71,4 +71,22 @@ VALUES
   0,
   'type.account.standard',
   'status.generic.deleted'
+),
+(
+  36,
+  2,
+  3,
+  'access.role.owner',
+  0,
+  'type.account.standard',
+  'status.generic.ok'
+),
+(
+  37,
+  2,
+  5,
+  'access.role.owner',
+  0,
+  'type.account.standard',
+  'status.generic.ok'
 );

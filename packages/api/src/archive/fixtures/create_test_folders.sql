@@ -131,4 +131,59 @@ VALUES
   CURRENT_TIMESTAMP,
   'type.folder.root.private',
   'https://test-folder-thumbnail'
+),
+(
+  100,
+  1,
+  NULL,
+  'Root',
+  NULL,
+  'status.generic.ok',
+  CURRENT_TIMESTAMP,
+  'type.folder.root.root',
+  NULL
+),
+(
+  101,
+  2,
+  NULL,
+  'Root',
+  NULL,
+  'status.generic.ok',
+  CURRENT_TIMESTAMP,
+  'type.folder.root.root',
+  NULL
+),
+(
+  102,
+  3,
+  NULL,
+  'Root',
+  NULL,
+  'status.generic.ok',
+  CURRENT_TIMESTAMP,
+  'type.folder.root.root',
+  NULL
+),
+(
+  103,
+  4,
+  NULL,
+  'Root',
+  NULL,
+  'status.generic.ok',
+  CURRENT_TIMESTAMP,
+  'type.folder.root.root',
+  NULL
+),
+(
+  104,
+  5,
+  NULL,
+  'Root',
+  NULL,
+  'status.generic.ok',
+  CURRENT_TIMESTAMP,
+  'type.folder.root.root',
+  NULL
 );

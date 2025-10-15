@@ -15,3 +15,26 @@ export const validateArchiveIdFromParams: (
 		throw validation.error;
 	}
 };
+
+export const validateSearchQuery: (data: unknown) => asserts data is {
+	searchQuery: string;
+	pageSize: number;
+	cursor?: string;
+} = (
+	data: unknown,
+): asserts data is {
+	searchQuery: string;
+	pageSize: number;
+	cursor?: string;
+} => {
+	const validation = Joi.object()
+		.keys({
+			searchQuery: Joi.string().required(),
+			pageSize: Joi.number().integer().min(1).required(),
+			cursor: Joi.string().optional(),
+		})
+		.validate(data);
+	if (validation.error !== undefined) {
+		throw validation.error;
+	}
+};

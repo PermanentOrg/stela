@@ -3,16 +3,54 @@ import type { Request, Response, NextFunction } from "express";
 import {
 	verifyUserAuthentication,
 	verifyAdminAuthentication,
+	extractUserIsAdminFromAuthToken,
+	extractUserEmailFromAuthToken,
 } from "../../middleware";
 import {
 	validateArchiveIdFromParams,
 	validateBodyFromAuthentication,
+	validateSearchQuery,
 } from "../validators";
 import { isValidationError } from "../../validators/validator_util";
 import { archiveService } from "../service";
 import { HTTP_STATUS } from "@pdc/http-status-codes";
 
 export const archiveController = Router();
+
+archiveController.get(
+	"/",
+	extractUserIsAdminFromAuthToken,
+	extractUserEmailFromAuthToken,
+	async (
+		req: Request<
+			unknown,
+			unknown,
+			{ admin?: boolean; emailFromAuthToken?: string }
+		>,
+		res: Response,
+		next: NextFunction,
+	) => {
+		try {
+			validateSearchQuery(req.query);
+			const response = await archiveService.searchArchives(
+				req.query.searchQuery,
+				{
+					pageSize: req.query.pageSize,
+					cursor: req.query.cursor,
+				},
+				req.body.admin ?? false,
+				req.body.emailFromAuthToken,
+			);
+			res.json(response);
+		} catch (err) {
+			if (isValidationError(err)) {
+				res.status(HTTP_STATUS.CLIENT_ERROR.BAD_REQUEST).json({ error: err });
+				return;
+			}
+			next(err);
+		}
+	},
+);
 archiveController.get(
 	"/:archiveId/tags/public",
 	async (req: Request, res: Response, next: NextFunction) => {
