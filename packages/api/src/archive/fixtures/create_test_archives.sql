@@ -22,4 +22,13 @@ VALUES
   'type.archive.person',
   'https://test-archive-thumbnail',
   'status.generic.deleted'
+),
+(
+  5,
+  '0001-0005',
+  null,
+  true,
+  'type.archive.person',
+  'https://test-archive-thumbnail',
+  'status.generic.ok'
 );
