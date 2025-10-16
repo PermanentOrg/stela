@@ -1,0 +1,67 @@
+archive:
+  description: Archive object
+  type: object
+  required:
+    - archiveId
+    - rootFolderId
+    - name
+    - public
+    - allowPublicDownload
+    - thumbnailUrls
+    - status
+    - type
+    - createdAt
+    - updatedAt
+  properties:
+    archiveId:
+      type: string
+    rootFolderId:
+      type: string
+    description:
+      type: string
+    name:
+      type: string
+    payerAccountId:
+      type: string
+    public:
+      type: boolean
+    publicAt:
+      type: string
+      format: date-time
+    allowPublicDownload:
+      type: boolean
+    thumbnailUrls:
+      type: object
+      properties:
+        width200:
+          type: string
+        width500:
+          type: string
+        width1000:
+          type: string
+        width2000:
+          type: string
+    owner:
+      type: object
+      description: Owner information. Only returned for admin-authenticated requests.
+      required:
+        - name
+        - email
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+        phoneNumber:
+          type: string
+    status:
+      type: string
+    type:
+      type: string
+    createdAt:
+      type: string
+      format: date-time
+    updatedAt:
+      type: string
+      format: date-time
