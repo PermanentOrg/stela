@@ -12,7 +12,7 @@ jobs:
       - uses: actions/checkout@v5
         with:
           path: ./stela
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@v6
         with:
           node-version-file: stela/.node-version
       - name: Checkout back-end
