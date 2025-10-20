@@ -30,6 +30,6 @@
 		"@stela/logger": "^1.0.0"
 	},
 	"devDependencies": {
-		"@types/aws-lambda": "^8.10.149"
+		"@types/aws-lambda": "^8.10.156"
 	}
 }
