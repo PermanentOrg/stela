@@ -1,5 +1,5 @@
 UPDATE
-account
+  account
 SET
   subject = :subject
 WHERE
@@ -7,4 +7,4 @@ WHERE
   AND status = 'status.auth.ok'
   AND subject IS NULL
 RETURNING
-accountid AS "accountId";
+  accountid AS "accountId";

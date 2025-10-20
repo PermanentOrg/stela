@@ -16,7 +16,7 @@ to_account AS (
 
 from_account_space AS (
   UPDATE
-  account_space
+    account_space
   SET
     spaceleft = spaceleft - :storageAmountInBytes::bigint * :recipientCount,
     spacetotal = spacetotal - :storageAmountInBytes::bigint * :recipientCount,
@@ -24,13 +24,13 @@ from_account_space AS (
   WHERE
     accountid = (SELECT accountid FROM from_account)
   RETURNING
-  spacetotal,
-  filetotal
+    spacetotal,
+    filetotal
 ),
 
 to_account_space AS (
   UPDATE
-  account_space
+    account_space
   SET
     spaceleft = spaceleft + :storageAmountInBytes,
     spacetotal = spacetotal + :storageAmountInBytes,
@@ -40,9 +40,9 @@ to_account_space AS (
   WHERE
     account_space.accountid = to_account.accountid
   RETURNING
-  to_account.accountid,
-  spacetotal,
-  filetotal
+    to_account.accountid,
+    spacetotal,
+    filetotal
 )
 INSERT INTO
 ledger_financial (
@@ -68,12 +68,12 @@ ledger_financial (
   updateddt
 )
 SELECT
-  'type.billing.gift.account_to_account' AS "type",
+  'type.billing.gift.account_to_account' AS type,
   :storageAmountInBytes,
   0 AS filedelta,
-  (SELECT accountid FROM from_account),
+  (SELECT from_account.accountid FROM from_account) AS fromaccountid,
   (
-    SELECT spacetotal
+    SELECT from_account_space.spacetotal
     FROM from_account_space
   ) + ROW_NUMBER() OVER () * :storageAmountInBytes::bigint,
   -- the following two fields get the same value for backward
@@ -81,18 +81,19 @@ SELECT
   -- (or potentially we should start tacking old and new values of
   -- spaceLeft here)
   (
-    SELECT spacetotal
+    SELECT from_account_space.spacetotal
     FROM from_account_space
   ) + (ROW_NUMBER() OVER () - 1) * :storageAmountInBytes::bigint,
   (
-    SELECT spacetotal
+    SELECT from_account_space.spacetotal
     FROM from_account_space
   ) + (ROW_NUMBER() OVER () - 1) * :storageAmountInBytes::bigint,
   -- fileTotal wasn't changed, see above commment on backward
   -- compatibility for why fromFileTotal = fromFileLeft
-  (SELECT filetotal FROM from_account_space),
-  (SELECT filetotal FROM from_account_space),
-  (SELECT filetotal FROM from_account_space),
+  (SELECT from_account_space.filetotal FROM from_account_space)
+    AS fromfilebefore,
+  (SELECT from_account_space.filetotal FROM from_account_space) AS fromfileleft,
+  (SELECT from_account_space.filetotal FROM from_account_space) AS filetotal,
   accountid,
   spacetotal - :storageAmountInBytes,
   -- same backward compatibility reasoning as above applies here

@@ -23,4 +23,4 @@ INNER JOIN
 WHERE
   record.recordid = missing_ledger_records.recordid
 RETURNING
-record.recordid AS "recordId";
+  record.recordid AS "recordId";

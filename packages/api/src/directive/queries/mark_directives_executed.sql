@@ -1,5 +1,5 @@
 UPDATE
-directive
+  directive
 SET
   execution_dt = CURRENT_TIMESTAMP,
   updated_dt = CURRENT_TIMESTAMP

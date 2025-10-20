@@ -20,15 +20,15 @@ FROM
   account_archive
 INNER JOIN
   account
-  ON account.accountid = account_archive.accountid
+  ON account_archive.accountid = account.accountid
 LEFT JOIN
   record
   ON
-    record.archiveid = account_archive.archiveid
+    account_archive.archiveid = record.archiveid
     AND record.recordid = :itemId
 LEFT JOIN
   record_share
-  ON record_share.archiveid = account_archive.archiveid
+  ON account_archive.archiveid = record_share.archiveid
 WHERE
   (
     record.recordid = :itemId

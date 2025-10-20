@@ -135,7 +135,7 @@ ancestor_unrestricted_share_tokens (
 aggregated_ancestor_unrestricted_share_tokens AS (
   SELECT
     recordid,
-    array_agg(urltoken) FILTER (WHERE urltoken IS NOT NULL) AS "tokens"
+    array_agg(urltoken) FILTER (WHERE urltoken IS NOT NULL) AS tokens
   FROM
     ancestor_unrestricted_share_tokens
   GROUP BY recordid
@@ -173,7 +173,7 @@ SELECT DISTINCT ON (record.recordid)
   parent_folder.archivenbr AS "parentFolderArchiveNumber",
   aggregated_tags.tags,
   archive.archivenbr AS "archiveArchiveNumber",
-  aggregated_shares.shares_as_json AS "shares",
+  aggregated_shares.shares_as_json AS shares,
   json_build_object(
     'id',
     locn.locnid::TEXT,
@@ -197,7 +197,7 @@ SELECT DISTINCT ON (record.recordid)
     locn.countrycode,
     'displayName',
     locn.displayname
-  ) AS "location",
+  ) AS location,
   json_build_object(
     'id',
     archive.archiveid::TEXT,
@@ -205,7 +205,7 @@ SELECT DISTINCT ON (record.recordid)
     archive.archivenbr,
     'name',
     profile_item.string1
-  ) AS "archive"
+  ) AS archive
 FROM
   record
 INNER JOIN

@@ -11,7 +11,7 @@ SELECT
     account.primaryemail,
     'name',
     account.fullname
-  ) AS "steward",
+  ) AS steward,
   jsonb_build_object(
     'directiveTriggerId',
     directive_trigger.directive_trigger_id,
@@ -23,7 +23,7 @@ SELECT
     directive_trigger.created_dt,
     'updatedDt',
     directive_trigger.updated_dt
-  ) AS "trigger"
+  ) AS trigger
 FROM
   directive
 INNER JOIN

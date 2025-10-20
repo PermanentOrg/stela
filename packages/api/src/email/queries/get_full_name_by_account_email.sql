@@ -1,6 +1,6 @@
 SELECT
   fullname AS "fullName",
-  primaryemail AS "email"
+  primaryemail AS email
 FROM
   account
 WHERE

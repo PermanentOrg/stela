@@ -19,7 +19,7 @@ WITH upload_data AS (
 
 updated_account_space AS (
   UPDATE
-  account_space
+    account_space
   SET
     spaceleft = spaceleft - (SELECT size FROM upload_data),
     fileleft = fileleft - 1,
@@ -27,10 +27,10 @@ updated_account_space AS (
   WHERE
     accountid IN (SELECT uploadpayeraccountid FROM upload_data)
   RETURNING
-  spaceleft,
-  spacetotal,
-  fileleft,
-  filetotal
+    spaceleft,
+    spacetotal,
+    fileleft,
+    filetotal
 )
 
 INSERT INTO
@@ -63,7 +63,7 @@ ledger_nonfinancial (
   1,
   (SELECT uploadpayeraccountid FROM upload_data),
   (
-    SELECT spaceleft + (SELECT size FROM upload_data)
+    SELECT spaceleft + (SELECT upload_data.size FROM upload_data)
     FROM
       updated_account_space
   ),
