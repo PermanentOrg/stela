@@ -122,6 +122,15 @@ describe("GET /record", () => {
 		const { body: records } = response as { body: ArchiveRecord[] };
 		expect(records.length).toEqual(2);
 	});
+	test("expect to return multiple records in the order of the request", async () => {
+		const response = await agent
+			.get("/api/v2/record?recordIds[]=2&recordIds[]=1")
+			.expect(200);
+		const { body: records } = response as { body: ArchiveRecord[] };
+		expect(records.length).toEqual(2);
+		expect(records[0]?.recordId).toEqual("2");
+		expect(records[1]?.recordId).toEqual("1");
+	});
 	test("expect an empty response if the logged-in user does not own the record", async () => {
 		const response = await agent
 			.get("/api/v2/record?recordIds[]=7")

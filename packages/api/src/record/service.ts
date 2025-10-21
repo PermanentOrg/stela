@@ -33,7 +33,19 @@ export const getRecordById = async (requestQuery: {
 		size: +(row.size ?? 0),
 		imageRatio: +(row.imageRatio ?? 0),
 	}));
-	return records;
+
+	// Our API contract remains that the order in which this endpoint returns
+	// records is undefined. This ordering logic is implemented as a hotfix, and
+	// should be removed when our clients no longer rely on this endpoint returning
+	// records in a particular order.
+	const recordsById = new Map();
+	records.forEach((record: ArchiveRecord) =>
+		recordsById.set(record.recordId, record),
+	);
+	const recordsInOrder = requestQuery.recordIds
+		.map((recordId: string) => recordsById.get(recordId))
+		.filter((record: ArchiveRecord | undefined) => record !== undefined);
+	return recordsInOrder;
 };
 
 const validateCanPatchRecord = async (
