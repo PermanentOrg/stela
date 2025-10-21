@@ -29,3 +29,42 @@ export interface FeaturedArchive {
 	profileImage: string;
 	bannerImage: string;
 }
+
+export interface ThumbnailUrls {
+	width200: string | null;
+	width500: string | null;
+	width1000: string | null;
+	width2000: string | null;
+}
+
+export interface ArchiveOwner {
+	name: string;
+	email: string;
+	phoneNumber?: string | null;
+}
+
+export interface Archive {
+	archiveId: string;
+	rootFolderId: string;
+	description?: string | null;
+	name: string;
+	payerAccountId?: string | null;
+	public: boolean;
+	publicAt?: string | null;
+	allowPublicDownload: boolean;
+	thumbnailUrls: ThumbnailUrls;
+	owner?: ArchiveOwner | null;
+	status: string;
+	type: string;
+	createdAt: string;
+	updatedAt: string;
+}
+
+export interface GetArchivesResponse {
+	items: Archive[];
+	pagination: {
+		nextCursor: string | undefined;
+		nextPage: string | undefined;
+		totalPages: number;
+	};
+}

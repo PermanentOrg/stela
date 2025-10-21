@@ -1,3 +1,38 @@
+archives:
+  parameters:
+    - name: searchQuery
+      in: query
+      required: true
+      schema:
+        type: string
+  get:
+    summary: Get archives whose names match the search query
+    description: |
+      Unauthenticated requests return only public archives.
+      Admin-authenticated requests return public archives with owner contact information.
+      User-authenticated requests return public archives and archives of which the caller is a member.
+    security:
+      - {}
+      - bearerHttpAuthentication: []
+    tags:
+      - archives
+    operationId: get-archives
+    responses:
+      "200":
+        description: A list of archives.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                items:
+                  type: array
+                  items:
+                    $ref: "../models/archive.yaml#/archive"
+      "400":
+        $ref: "../errors.yaml#/400"
+      "500":
+        $ref: "../errors.yaml#/500"
 archive-id-folders-shared:
   parameters:
     - name: id
