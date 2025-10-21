@@ -33,7 +33,7 @@
 		"node": ">=24.0"
 	},
 	"devDependencies": {
-		"@redocly/cli": "^2.5.1",
+		"@redocly/cli": "^2.7.0",
 		"@tsconfig/node24": "^24.0.1",
 		"@tsconfig/strictest": "^2.0.5",
 		"@types/cors": "^2.8.17",
