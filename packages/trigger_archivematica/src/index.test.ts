@@ -266,7 +266,7 @@ describe("handler", () => {
 						body: JSON.stringify({
 							Message: JSON.stringify({
 								entity: "record",
-								action: "create",
+								action: "copy",
 								body: { record: { recordId: "2" } },
 							}),
 						}),

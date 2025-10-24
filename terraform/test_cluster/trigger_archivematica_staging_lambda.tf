@@ -43,7 +43,7 @@ resource "aws_sns_topic_subscription" "trigger_archivematica_staging_subscriptio
   endpoint  = aws_sqs_queue.trigger_archivematica_staging_queue.arn
   filter_policy = jsonencode({
     Entity = ["record"],
-    Action = ["create"]
+    Action = ["create", "copy"]
   })
 }
 
