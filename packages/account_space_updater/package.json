@@ -30,7 +30,7 @@
 		"test": "npm run clear-database && npm run create-database && npm run set-up-database && node --experimental-vm-modules ../../node_modules/jest/bin/jest.js -i --silent=false"
 	},
 	"dependencies": {
-		"@sentry/node": "^10.19.0",
+		"@sentry/node": "^10.21.0",
 		"@stela/logger": "^1.0.0",
 		"@stela/s3-utils": "^1.0.0",
 		"@stela/event_utils": "^1.0.0",
