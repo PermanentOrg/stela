@@ -8,7 +8,6 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           node-version-file: .node-version
-      - run: npm install -g npm@9.5.0
       - run: npm install --include dev
       - run: npm install -ws
       - run: npm run build -ws

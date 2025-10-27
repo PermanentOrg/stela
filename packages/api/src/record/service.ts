@@ -38,7 +38,7 @@ export const getRecordById = async (requestQuery: {
 	// records is undefined. This ordering logic is implemented as a hotfix, and
 	// should be removed when our clients no longer rely on this endpoint returning
 	// records in a particular order.
-	const recordsById = new Map();
+	const recordsById = new Map<string, ArchiveRecord>();
 	records.forEach((record: ArchiveRecord) =>
 		recordsById.set(record.recordId, record),
 	);
