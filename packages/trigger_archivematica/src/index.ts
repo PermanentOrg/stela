@@ -26,7 +26,7 @@ export const extractRecordIdFromRecordCreateMessage = (
 	}
 	const { action } = parsedMessage;
 
-	if (action === "create") {
+	if (action === "create" || action === "copy") {
 		if (parsedMessage.body.record === undefined) {
 			logger.error(
 				`record.create event missing record: ${JSON.stringify(
