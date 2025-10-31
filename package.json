@@ -17,7 +17,8 @@
 		"./packages/thumbnail_refresh",
 		"./packages/file_url_refresh",
 		"./packages/access_copy_attacher",
-		"./packages/trigger_archivematica"
+		"./packages/trigger_archivematica",
+		"./packages/metadata_attacher"
 	],
 	"repository": {
 		"type": "git",
