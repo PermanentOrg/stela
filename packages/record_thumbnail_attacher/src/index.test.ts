@@ -57,6 +57,9 @@ describe("handler", () => {
 										object: {
 											key: "_Liam/access_copies/b38e/8582/b417/430c/953d/5c7e/8040/1ae2/2_upload-cb45fa84-f0ea-4a9e-b1da-309e485a4f4a/object/710a1def-caf8-48f2-8eee-0848b4cfda10.jpg",
 										},
+										bucket: {
+											name: "test-bucket",
+										},
 									},
 								},
 							],
@@ -138,6 +141,9 @@ describe("handler", () => {
 										object: {
 											key: "_Liam/access_copies/e38e/8582/b417/430c/953d/5c7e/8040/1ae2/2_upload-cb45fa84-f0ea-4a9e-b1da-309e485a4f4a/object/710a1def-caf8-48f2-8eee-0848b4cfda10.jpg",
 										},
+										bucket: {
+											name: "test-bucket",
+										},
 									},
 								},
 							],
@@ -196,6 +202,9 @@ describe("handler", () => {
 										object: {
 											key: "_Liam/access_copies/e38e/8582/b417/430c/953d/5c7e/8040/1ae2/thumbnails/2_load-cb45fa84-f0ea-4a9e-b1da-309e485a4f4a/object/710a1def-caf8-48f2-8eee-0848b4cfda10.jpg",
 										},
+										bucket: {
+											name: "test-bucket",
+										},
 									},
 								},
 							],
@@ -244,6 +253,9 @@ describe("handler", () => {
 									s3: {
 										object: {
 											key: testKey,
+										},
+										bucket: {
+											name: "test-bucket",
 										},
 									},
 								},
@@ -342,6 +354,9 @@ describe("handler", () => {
 										object: {
 											key: testKey,
 										},
+										bucket: {
+											name: "test-bucket",
+										},
 									},
 								},
 							],
@@ -409,6 +424,9 @@ describe("handler", () => {
 									s3: {
 										object: {
 											key: testKey,
+										},
+										bucket: {
+											name: "test-bucket",
 										},
 									},
 								},

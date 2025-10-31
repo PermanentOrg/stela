@@ -1,0 +1,2238 @@
+<mets:mets xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:mets="http://www.loc.gov/METS/" xsi:schemaLocation="http://www.loc.gov/METS/ http://www.loc.gov/standards/mets/version1121/mets.xsd">
+<mets:metsHdr CREATEDATE="2025-10-28T19:07:44"/>
+<mets:dmdSec ID="dmdSec_1" CREATED="2025-10-28T19:07:44" STATUS="original">
+<mets:mdWrap MDTYPE="PREMIS:OBJECT">
+<mets:xmlData>
+<premis:object xmlns:premis="http://www.loc.gov/premis/v3" xsi:type="premis:intellectualEntity" xsi:schemaLocation="http://www.loc.gov/premis/v3 http://www.loc.gov/standards/premis/v3/premis.xsd" version="3.0">
+<premis:objectIdentifier>
+<premis:objectIdentifierType>UUID</premis:objectIdentifierType>
+<premis:objectIdentifierValue>4a64ba7c-ceac-4547-ac13-c487b2711d5a</premis:objectIdentifierValue>
+</premis:objectIdentifier>
+<premis:originalName>7058361_upload-4a64ba7c-ceac-4547-ac13-c487b2711d5a</premis:originalName>
+</premis:object>
+</mets:xmlData>
+</mets:mdWrap>
+</mets:dmdSec>
+<mets:amdSec ID="amdSec_1">
+<mets:techMD ID="techMD_1">
+<mets:mdWrap MDTYPE="PREMIS:OBJECT">
+<mets:xmlData>
+<premis:object xmlns:premis="http://www.loc.gov/premis/v3" xsi:type="premis:file" xsi:schemaLocation="http://www.loc.gov/premis/v3 http://www.loc.gov/standards/premis/v3/premis.xsd" version="3.0">
+<premis:objectIdentifier>
+<premis:objectIdentifierType>UUID</premis:objectIdentifierType>
+<premis:objectIdentifierValue>b3c97850-9697-451a-8ad5-9f085188e890</premis:objectIdentifierValue>
+</premis:objectIdentifier>
+<premis:objectCharacteristics>
+<premis:compositionLevel>0</premis:compositionLevel>
+<premis:fixity>
+<premis:messageDigestAlgorithm>sha256</premis:messageDigestAlgorithm>
+<premis:messageDigest>c578389d83d513de2afbd5834bf96590c6fa0bbf894c318b2f89d9a4946cfe99</premis:messageDigest>
+</premis:fixity>
+<premis:size>134078</premis:size>
+<premis:format>
+<premis:formatDesignation>
+<premis:formatName>Exchangeable Image File Format (Compressed)</premis:formatName>
+<premis:formatVersion>2.3.x</premis:formatVersion>
+</premis:formatDesignation>
+<premis:formatRegistry>
+<premis:formatRegistryName>PRONOM</premis:formatRegistryName>
+<premis:formatRegistryKey>fmt/1507</premis:formatRegistryKey>
+</premis:formatRegistry>
+</premis:format>
+<premis:creatingApplication>
+<premis:dateCreatedByApplication>2025-10-28T19:07:28Z</premis:dateCreatedByApplication>
+</premis:creatingApplication>
+<premis:objectCharacteristicsExtension>
+<MediaInfo xmlns="https://mediaarea.net/mediainfo" xsi:schemaLocation="https://mediaarea.net/mediainfo https://mediaarea.net/mediainfo/mediainfo_2_0.xsd" version="2.0">
+<creatingLibrary version="25.09" url="https://mediaarea.net/MediaInfo">MediaInfoLib</creatingLibrary>
+<media ref="/var/archivematica/sharedDirectory/watchedDirectories/workFlowDecisions/extractPackagesChoice/7058361_upload-6ff77ccb-f4d2-4aeb-84a0-e462ca4138a5/objects/7058361">
+<track type="General">
+<Count>364</Count>
+<StreamCount>1</StreamCount>
+<StreamKind>General</StreamKind>
+<StreamKind_String>General</StreamKind_String>
+<StreamKindID>0</StreamKindID>
+<ImageCount>1</ImageCount>
+<Image_Format_List>JPEG</Image_Format_List>
+<Image_Format_WithHint_List>JPEG</Image_Format_WithHint_List>
+<Image_Codec_List>JPEG</Image_Codec_List>
+<CompleteName>/var/archivematica/sharedDirectory/watchedDirectories/workFlowDecisions/extractPackagesChoice/7058361_upload-6ff77ccb-f4d2-4aeb-84a0-e462ca4138a5/objects/7058361</CompleteName>
+<FolderName>/var/archivematica/sharedDirectory/watchedDirectories/workFlowDecisions/extractPackagesChoice/7058361_upload-6ff77ccb-f4d2-4aeb-84a0-e462ca4138a5/objects</FolderName>
+<FileNameExtension>7058361</FileNameExtension>
+<FileName>7058361</FileName>
+<Format>JPEG</Format>
+<Format_String>JPEG</Format_String>
+<Format_Extensions>h3d jpeg jpg jpe jps mpo</Format_Extensions>
+<Format_Commercial>JPEG</Format_Commercial>
+<InternetMediaType>image/jpeg</InternetMediaType>
+<FileSize>134078</FileSize>
+<FileSize_String>131 KiB</FileSize_String>
+<FileSize_String1>131 KiB</FileSize_String1>
+<FileSize_String2>131 KiB</FileSize_String2>
+<FileSize_String3>131 KiB</FileSize_String3>
+<FileSize_String4>130.9 KiB</FileSize_String4>
+<StreamSize>32478</StreamSize>
+<StreamSize_String>31.7 KiB (24%)</StreamSize_String>
+<StreamSize_String1>32 KiB</StreamSize_String1>
+<StreamSize_String2>32 KiB</StreamSize_String2>
+<StreamSize_String3>31.7 KiB</StreamSize_String3>
+<StreamSize_String4>31.72 KiB</StreamSize_String4>
+<StreamSize_String5>31.7 KiB (24%)</StreamSize_String5>
+<StreamSize_Proportion>0.24223</StreamSize_Proportion>
+<Title>The Title (ref2021.1)</Title>
+<Producer>Creator1 (ref2021.1)</Producer>
+<Subject>Keyword1ref2021.1 / Keyword2ref2021.1 / Keyword3ref2021.1</Subject>
+<Description>The description aka caption (ref2021.1)</Description>
+<Recorded_Date>2021-10-20 21:01:01 UTC</Recorded_Date>
+<Encoded_Date>2021-10-20 21:01:01 UTC</Encoded_Date>
+<File_Modified_Date>2025-10-28 19:07:28 UTC</File_Modified_Date>
+<File_Modified_Date_Local>2025-10-28 19:07:28</File_Modified_Date_Local>
+<Copyright>Copyright (Notice) 2021.1 IPTC - www.iptc.org (ref2021.1) / Credit Line (ref2021.1)</Copyright>
+<Comment>IPTC Photo Metadata Standard 2021.1 reference image file - release 2b, as of 2022-07-12</Comment>
+<extra>
+<DigitalSourceType>http://cv.iptc.org/newscodes/digitalsourcetype/softwareImage</DigitalSourceType>
+<DigitalSourceType_String>http://cv.iptc.org/newscodes/digitalsourcetype/softwareImage</DigitalSourceType_String>
+<ExifVersion>2.32</ExifVersion>
+<FlashpixVersion>1.00</FlashpixVersion>
+<FileExtension_Invalid>h3d jpeg jpg jpe jps mpo</FileExtension_Invalid>
+</extra>
+</track>
+<track type="Image">
+<Count>177</Count>
+<StreamCount>1</StreamCount>
+<StreamKind>Image</StreamKind>
+<StreamKind_String>Image</StreamKind_String>
+<StreamKindID>0</StreamKindID>
+<Format>JPEG</Format>
+<Format_String>JPEG</Format_String>
+<Format_Commercial>JPEG</Format_Commercial>
+<InternetMediaType>image/jpeg</InternetMediaType>
+<Width>2000</Width>
+<Width_String>2 000 pixels</Width_String>
+<Height>1000</Height>
+<Height_String>1 000 pixels</Height_String>
+<ColorSpace>YUV</ColorSpace>
+<ChromaSubsampling>4:2:0</ChromaSubsampling>
+<BitDepth>8</BitDepth>
+<BitDepth_String>8 bits</BitDepth_String>
+<Compression_Mode>Lossy</Compression_Mode>
+<Compression_Mode_String>Lossy</Compression_Mode_String>
+<StreamSize>101600</StreamSize>
+<StreamSize_String>99.2 KiB (76%)</StreamSize_String>
+<StreamSize_String1>99 KiB</StreamSize_String1>
+<StreamSize_String2>99 KiB</StreamSize_String2>
+<StreamSize_String3>99.2 KiB</StreamSize_String3>
+<StreamSize_String4>99.22 KiB</StreamSize_String4>
+<StreamSize_String5>99.2 KiB (76%)</StreamSize_String5>
+<StreamSize_Proportion>0.75777</StreamSize_Proportion>
+</track>
+</media>
+</MediaInfo>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+<rdf:Description xmlns:et="http://ns.exiftool.org/1.0/" xmlns:ExifTool="http://ns.exiftool.org/ExifTool/1.0/" xmlns:System="http://ns.exiftool.org/File/System/1.0/" xmlns:File="http://ns.exiftool.org/File/1.0/" xmlns:IFD0="http://ns.exiftool.org/EXIF/IFD0/1.0/" xmlns:ExifIFD="http://ns.exiftool.org/EXIF/ExifIFD/1.0/" xmlns:IPTC="http://ns.exiftool.org/IPTC/IPTC/1.0/" xmlns:XMP-x="http://ns.exiftool.org/XMP/XMP-x/1.0/" xmlns:XMP-iptcCore="http://ns.exiftool.org/XMP/XMP-iptcCore/1.0/" xmlns:XMP-iptcExt="http://ns.exiftool.org/XMP/XMP-iptcExt/1.0/" xmlns:XMP-dc="http://ns.exiftool.org/XMP/XMP-dc/1.0/" xmlns:XMP-photoshop="http://ns.exiftool.org/XMP/XMP-photoshop/1.0/" xmlns:XMP-plus="http://ns.exiftool.org/XMP/XMP-plus/1.0/" xmlns:XMP-xmp="http://ns.exiftool.org/XMP/XMP-xmp/1.0/" xmlns:XMP-xmpRights="http://ns.exiftool.org/XMP/XMP-xmpRights/1.0/" xmlns:Adobe="http://ns.exiftool.org/APP14/Adobe/1.0/" xmlns:Composite="http://ns.exiftool.org/Composite/1.0/" rdf:about="/var/archivematica/sharedDirectory/watchedDirectories/workFlowDecisions/extractPackagesChoice/7058361_upload-6ff77ccb-f4d2-4aeb-84a0-e462ca4138a5/objects/7058361" et:toolkit="Image::ExifTool 12.40">
+<ExifTool:ExifToolVersion>12.40</ExifTool:ExifToolVersion>
+<System:FileName>7058361</System:FileName>
+<System:Directory>/var/archivematica/sharedDirectory/watchedDirectories/workFlowDecisions/extractPackagesChoice/7058361_upload-6ff77ccb-f4d2-4aeb-84a0-e462ca4138a5/objects</System:Directory>
+<System:FileSize>131 KiB</System:FileSize>
+<System:FileModifyDate>2025:10:28 19:07:28+00:00</System:FileModifyDate>
+<System:FileAccessDate>2025:10:28 19:07:29+00:00</System:FileAccessDate>
+<System:FileInodeChangeDate>2025:10:28 19:07:28+00:00</System:FileInodeChangeDate>
+<System:FilePermissions>-rw-r-----</System:FilePermissions>
+<File:FileType>JPEG</File:FileType>
+<File:FileTypeExtension>jpg</File:FileTypeExtension>
+<File:MIMEType>image/jpeg</File:MIMEType>
+<File:ExifByteOrder>Big-endian (Motorola, MM)</File:ExifByteOrder>
+<File:CurrentIPTCDigest>ed3d9bf1276b54654a9169c8c1e2c081</File:CurrentIPTCDigest>
+<File:Comment>IPTC Photo Metadata Standard 2021.1 reference image file - release 2b, as of 2022-07-12</File:Comment>
+<File:ImageWidth>2000</File:ImageWidth>
+<File:ImageHeight>1000</File:ImageHeight>
+<File:EncodingProcess>Progressive DCT, Huffman coding</File:EncodingProcess>
+<File:BitsPerSample>8</File:BitsPerSample>
+<File:ColorComponents>3</File:ColorComponents>
+<File:YCbCrSubSampling>YCbCr4:2:0 (2 2)</File:YCbCrSubSampling>
+<IFD0:ImageDescription>The description aka caption (ref2021.1)</IFD0:ImageDescription>
+<IFD0:XResolution>72</IFD0:XResolution>
+<IFD0:YResolution>72</IFD0:YResolution>
+<IFD0:ResolutionUnit>inches</IFD0:ResolutionUnit>
+<IFD0:Artist>Creator1 (ref2021.1)</IFD0:Artist>
+<IFD0:YCbCrPositioning>Centered</IFD0:YCbCrPositioning>
+<IFD0:Copyright>Copyright (Notice) 2021.1 IPTC - www.iptc.org (ref2021.1)</IFD0:Copyright>
+<ExifIFD:ExifVersion>0232</ExifIFD:ExifVersion>
+<ExifIFD:DateTimeOriginal>2021:10:20 21:01:01</ExifIFD:DateTimeOriginal>
+<ExifIFD:OffsetTimeOriginal>+00:00</ExifIFD:OffsetTimeOriginal>
+<ExifIFD:ComponentsConfiguration>Y, Cb, Cr, -</ExifIFD:ComponentsConfiguration>
+<ExifIFD:FlashpixVersion>0100</ExifIFD:FlashpixVersion>
+<ExifIFD:ColorSpace>Uncalibrated</ExifIFD:ColorSpace>
+<IPTC:ObjectAttributeReference>000:Actuality</IPTC:ObjectAttributeReference>
+<IPTC:ObjectName>The Title (ref2021.1)</IPTC:ObjectName>
+<IPTC:SubjectReference>
+<rdf:Bag>
+<rdf:li>IPTC:10020211</rdf:li>
+<rdf:li>IPTC:20020211</rdf:li>
+<rdf:li>IPTC:30020211</rdf:li>
+</rdf:Bag>
+</IPTC:SubjectReference>
+<IPTC:Keywords>
+<rdf:Bag>
+<rdf:li>Keyword1ref2021.1</rdf:li>
+<rdf:li>Keyword2ref2021.1</rdf:li>
+<rdf:li>Keyword3ref2021.1</rdf:li>
+</rdf:Bag>
+</IPTC:Keywords>
+<IPTC:SpecialInstructions>An Instruction (ref2021.1)</IPTC:SpecialInstructions>
+<IPTC:DateCreated>2021:10:20</IPTC:DateCreated>
+<IPTC:TimeCreated>21:01:01+00:00</IPTC:TimeCreated>
+<IPTC:By-line>Creator1 (ref2021.1)</IPTC:By-line>
+<IPTC:By-lineTitle>Creator's Job Title (ref2021.1)</IPTC:By-lineTitle>
+<IPTC:City>City (Core) (ref2021.1)</IPTC:City>
+<IPTC:Sub-location>Sublocation (Core) (ref2021.1)</IPTC:Sub-location>
+<IPTC:Province-State>Province/State(Core)(ref2021.1)</IPTC:Province-State>
+<IPTC:Country-PrimaryLocationCode>R21</IPTC:Country-PrimaryLocationCode>
+<IPTC:Country-PrimaryLocationName>Country (Core) (ref2021.1)</IPTC:Country-PrimaryLocationName>
+<IPTC:OriginalTransmissionReference>Job Id (ref2021.1)</IPTC:OriginalTransmissionReference>
+<IPTC:Headline>The Headline (ref2021.1)</IPTC:Headline>
+<IPTC:Credit>Credit Line (ref2021.1)</IPTC:Credit>
+<IPTC:Source>Source (ref2021.1)</IPTC:Source>
+<IPTC:CopyrightNotice>Copyright (Notice) 2021.1 IPTC - www.iptc.org (ref2021.1)</IPTC:CopyrightNotice>
+<IPTC:Caption-Abstract>The description aka caption (ref2021.1)</IPTC:Caption-Abstract>
+<IPTC:Writer-Editor>Description Writer (ref2021.1)</IPTC:Writer-Editor>
+<IPTC:ApplicationRecordVersion>4</IPTC:ApplicationRecordVersion>
+<XMP-x:XMPToolkit>Image::ExifTool 12.41</XMP-x:XMPToolkit>
+<XMP-iptcCore:AltTextAccessibility>This is the Alt Text description to support accessibility in 2021.1</XMP-iptcCore:AltTextAccessibility>
+<XMP-iptcCore:AltTextAccessibility-en>This is the Alt Text description to support accessibility in 2021.1</XMP-iptcCore:AltTextAccessibility-en>
+<XMP-iptcCore:CountryCode>R21</XMP-iptcCore:CountryCode>
+<XMP-iptcCore:CreatorCity>Creator's CI: City (ref2021.1)</XMP-iptcCore:CreatorCity>
+<XMP-iptcCore:CreatorCountry>Creator's CI: Country (ref2021.1)</XMP-iptcCore:CreatorCountry>
+<XMP-iptcCore:CreatorAddress>Creator's CI: Address, line 1 (ref2021.1)</XMP-iptcCore:CreatorAddress>
+<XMP-iptcCore:CreatorPostalCode>Creator's CI: Postcode (ref2021.1)</XMP-iptcCore:CreatorPostalCode>
+<XMP-iptcCore:CreatorRegion>Creator's CI: State/Province (ref2021.1)</XMP-iptcCore:CreatorRegion>
+<XMP-iptcCore:CreatorWorkEmail>Creator's CI: Email@1, Email@2 (ref2021.1)</XMP-iptcCore:CreatorWorkEmail>
+<XMP-iptcCore:CreatorWorkTelephone>Creator's CI: Phone # 1, Phone # 2 (ref2021.1)</XMP-iptcCore:CreatorWorkTelephone>
+<XMP-iptcCore:CreatorWorkURL>http://www.Creators.CI/WebAddress/ref2021.1</XMP-iptcCore:CreatorWorkURL>
+<XMP-iptcCore:ExtDescrAccessibility>This is the Extended Description to support accessibility in 2021.1</XMP-iptcCore:ExtDescrAccessibility>
+<XMP-iptcCore:ExtDescrAccessibility-en>This is the Extended Description to support accessibility in 2021.1</XMP-iptcCore:ExtDescrAccessibility-en>
+<XMP-iptcCore:IntellectualGenre>Actuality</XMP-iptcCore:IntellectualGenre>
+<XMP-iptcCore:Location>Sublocation (Core) (ref2021.1)</XMP-iptcCore:Location>
+<XMP-iptcCore:Scene>
+<rdf:Bag>
+<rdf:li>010100</rdf:li>
+<rdf:li>010400</rdf:li>
+</rdf:Bag>
+</XMP-iptcCore:Scene>
+<XMP-iptcCore:SubjectCode>
+<rdf:Bag>
+<rdf:li>10020211</rdf:li>
+<rdf:li>20020211</rdf:li>
+<rdf:li>30020211</rdf:li>
+</rdf:Bag>
+</XMP-iptcCore:SubjectCode>
+<XMP-iptcExt:AboutCvTermCvId>http://example.com/cv/about/ref2021.1</XMP-iptcExt:AboutCvTermCvId>
+<XMP-iptcExt:AboutCvTermId>http://example.com/cv/about/ref2021.1/code987</XMP-iptcExt:AboutCvTermId>
+<XMP-iptcExt:AboutCvTermName>CV-Term Name 1 (ref2021.1)</XMP-iptcExt:AboutCvTermName>
+<XMP-iptcExt:AboutCvTermRefinedAbout>http://example.com/cv/refinements2/ref2021.1/codeX145</XMP-iptcExt:AboutCvTermRefinedAbout>
+<XMP-iptcExt:AdditionalModelInformation>Additional Model Info (ref2021.1)</XMP-iptcExt:AdditionalModelInformation>
+<XMP-iptcExt:ArtworkCircaDateCreated>AO Circa Date: between 1550 and 1600 (ref2021.1)</XMP-iptcExt:ArtworkCircaDateCreated>
+<XMP-iptcExt:ArtworkContentDescription>AO Content Description 1 (ref2021.1)</XMP-iptcExt:ArtworkContentDescription>
+<XMP-iptcExt:ArtworkContributionDescription>AO Contribution Description 1 (ref2021.1)</XMP-iptcExt:ArtworkContributionDescription>
+<XMP-iptcExt:ArtworkCopyrightNotice>AO Copyright Notice 1 (ref2021.1)</XMP-iptcExt:ArtworkCopyrightNotice>
+<XMP-iptcExt:ArtworkCreator>
+<rdf:Bag>
+<rdf:li>AO Creator Name 1a (ref2021.1)</rdf:li>
+<rdf:li>AO Creator Name 1b (ref2021.1)</rdf:li>
+</rdf:Bag>
+</XMP-iptcExt:ArtworkCreator>
+<XMP-iptcExt:ArtworkCreatorID>
+<rdf:Bag>
+<rdf:li>AO Creator Id 1a (ref2021.1)</rdf:li>
+<rdf:li>AO Creator Id 1b (ref2021.1)</rdf:li>
+</rdf:Bag>
+</XMP-iptcExt:ArtworkCreatorID>
+<XMP-iptcExt:ArtworkCopyrightOwnerID>AO Current Copyright Owner ID 1 (ref2021.1)</XMP-iptcExt:ArtworkCopyrightOwnerID>
+<XMP-iptcExt:ArtworkCopyrightOwnerName>AO Current Copyright Owner Name 1 (ref2021.1)</XMP-iptcExt:ArtworkCopyrightOwnerName>
+<XMP-iptcExt:ArtworkLicensorID>AO Current Licensor ID 1 (ref2021.1)</XMP-iptcExt:ArtworkLicensorID>
+<XMP-iptcExt:ArtworkLicensorName>AO Current Licensor Name 1 (ref2021.1)</XMP-iptcExt:ArtworkLicensorName>
+<XMP-iptcExt:ArtworkDateCreated>1921:10:20 21:01:00+00:00</XMP-iptcExt:ArtworkDateCreated>
+<XMP-iptcExt:ArtworkPhysicalDescription>AO Physical Description 1 (ref2021.1)</XMP-iptcExt:ArtworkPhysicalDescription>
+<XMP-iptcExt:ArtworkSource>AO Source 1 (ref2021.1)</XMP-iptcExt:ArtworkSource>
+<XMP-iptcExt:ArtworkSourceInventoryNo>AO Source Inventory No 1 (ref2021.1)</XMP-iptcExt:ArtworkSourceInventoryNo>
+<XMP-iptcExt:ArtworkSourceInvURL>AO Source Inventory URL (ref2021.1)</XMP-iptcExt:ArtworkSourceInvURL>
+<XMP-iptcExt:ArtworkStylePeriod>
+<rdf:Bag>
+<rdf:li>AO Style Baroque (ref2021.1)</rdf:li>
+<rdf:li>AO Style Italian Baroque (ref2021.1)</rdf:li>
+</rdf:Bag>
+</XMP-iptcExt:ArtworkStylePeriod>
+<XMP-iptcExt:ArtworkTitle>AO Title 1 (ref2021.1)</XMP-iptcExt:ArtworkTitle>
+<XMP-iptcExt:DigitalImageGUID>http://example.com/imageGUIDs/TestGUID12345/ref2021.1</XMP-iptcExt:DigitalImageGUID>
+<XMP-iptcExt:DigitalSourceType>http://cv.iptc.org/newscodes/digitalsourcetype/softwareImage</XMP-iptcExt:DigitalSourceType>
+<XMP-iptcExt:EmbeddedEncodedRightsExpr>The Encoded Rights Expression (ref2021.1)</XMP-iptcExt:EmbeddedEncodedRightsExpr>
+<XMP-iptcExt:EmbeddedEncodedRightsExprType>IANA Media Type of ERE (ref2021.1)</XMP-iptcExt:EmbeddedEncodedRightsExprType>
+<XMP-iptcExt:EmbeddedEncodedRightsExprLangID>http://example.org/RELids/id4711/ref2021.1</XMP-iptcExt:EmbeddedEncodedRightsExprLangID>
+<XMP-iptcExt:Event>Event Name (ref2021.1)</XMP-iptcExt:Event>
+<XMP-iptcExt:EventID>
+<rdf:Bag>
+<rdf:li>https://example.com/events/id2021.1a</rdf:li>
+<rdf:li>https://example.com/events/id2021.1b</rdf:li>
+</rdf:Bag>
+</XMP-iptcExt:EventID>
+<XMP-iptcExt:GenreCvId>http://example.com/cv/genre/ref2021.1</XMP-iptcExt:GenreCvId>
+<XMP-iptcExt:GenreCvTermId>http://example.com/cv/genre/ref2021.1/code1369</XMP-iptcExt:GenreCvTermId>
+<XMP-iptcExt:GenreCvTermName>Genre CV-Term Name 1 (ref2021.1)</XMP-iptcExt:GenreCvTermName>
+<XMP-iptcExt:GenreCvTermRefinedAbout>http://example.com/cv/genrerefinements2/ref2021.1/codeY864</XMP-iptcExt:GenreCvTermRefinedAbout>
+<XMP-iptcExt:ImageRegionName>
+<rdf:Bag>
+<rdf:li>Listener 1</rdf:li>
+<rdf:li>Listener 2</rdf:li>
+<rdf:li>Speaker 1</rdf:li>
+</rdf:Bag>
+</XMP-iptcExt:ImageRegionName>
+<XMP-iptcExt:ImageRegionOrganisationInImageName>
+<rdf:Bag>
+<rdf:li>Organisation name no 1 in region persltr2 (ref2021.1)</rdf:li>
+<rdf:li>Organisation name no 1 in region persltr2 (ref2021.1)</rdf:li>
+<rdf:li>Organisation name no 1 in region persltr3 (ref2021.1)</rdf:li>
+</rdf:Bag>
+</XMP-iptcExt:ImageRegionOrganisationInImageName>
+<XMP-iptcExt:ImageRegionPersonInImage>
+<rdf:Bag>
+<rdf:li>Person name no 1 in region persltr2 (ref2021.1)</rdf:li>
+<rdf:li>Person name no 1 in region persltr3 (ref2021.1)</rdf:li>
+<rdf:li>Person name no 1 in region persltr1 (ref2021.1)</rdf:li>
+</rdf:Bag>
+</XMP-iptcExt:ImageRegionPersonInImage>
+<XMP-iptcExt:ImageRegionBoundaryH>0.385</XMP-iptcExt:ImageRegionBoundaryH>
+<XMP-iptcExt:ImageRegionBoundaryShape>
+<rdf:Bag>
+<rdf:li>Rectangle</rdf:li>
+<rdf:li>Circle</rdf:li>
+<rdf:li>Polygon</rdf:li>
+</rdf:Bag>
+</XMP-iptcExt:ImageRegionBoundaryShape>
+<XMP-iptcExt:ImageRegionBoundaryUnit>
+<rdf:Bag>
+<rdf:li>Relative</rdf:li>
+<rdf:li>Relative</rdf:li>
+<rdf:li>Relative</rdf:li>
+</rdf:Bag>
+</XMP-iptcExt:ImageRegionBoundaryUnit>
+<XMP-iptcExt:ImageRegionBoundaryW>0.127</XMP-iptcExt:ImageRegionBoundaryW>
+<XMP-iptcExt:ImageRegionBoundaryX>
+<rdf:Bag>
+<rdf:li>0.31</rdf:li>
+<rdf:li>0.59</rdf:li>
+</rdf:Bag>
+</XMP-iptcExt:ImageRegionBoundaryX>
+<XMP-iptcExt:ImageRegionBoundaryY>
+<rdf:Bag>
+<rdf:li>0.18</rdf:li>
+<rdf:li>0.426</rdf:li>
+</rdf:Bag>
+</XMP-iptcExt:ImageRegionBoundaryY>
+<XMP-iptcExt:ImageRegionCtypeName>
+<rdf:Bag>
+<rdf:li>Region Boundary Content Type Name (ref2021.1)</rdf:li>
+<rdf:li>Region Boundary Content Type Name (ref2021.1)</rdf:li>
+<rdf:li>Region Boundary Content Type Name (ref2021.1)</rdf:li>
+</rdf:Bag>
+</XMP-iptcExt:ImageRegionCtypeName>
+<XMP-iptcExt:ImageRegionCtypeIdentifier>
+<rdf:Bag>
+<rdf:li>https://example.org/rctype/type2021.1a</rdf:li>
+<rdf:li>https://example.org/rctype/type2021.1b</rdf:li>
+<rdf:li>https://example.org/rctype/type2021.1a</rdf:li>
+<rdf:li>https://example.org/rctype/type2021.1b</rdf:li>
+<rdf:li>https://example.org/rctype/type2021.1a</rdf:li>
+<rdf:li>https://example.org/rctype/type2021.1b</rdf:li>
+</rdf:Bag>
+</XMP-iptcExt:ImageRegionCtypeIdentifier>
+<XMP-iptcExt:ImageRegionID>
+<rdf:Bag>
+<rdf:li>persltr2</rdf:li>
+<rdf:li>persltr3</rdf:li>
+<rdf:li>persltr1</rdf:li>
+</rdf:Bag>
+</XMP-iptcExt:ImageRegionID>
+<XMP-iptcExt:ImageRegionRoleName>
+<rdf:Bag>
+<rdf:li>Region Boundary Content Role Name (ref2021.1)</rdf:li>
+<rdf:li>Region Boundary Content Role Name (ref2021.1)</rdf:li>
+<rdf:li>Region Boundary Content Role Name (ref2021.1)</rdf:li>
+</rdf:Bag>
+</XMP-iptcExt:ImageRegionRoleName>
+<XMP-iptcExt:ImageRegionRoleIdentifier>
+<rdf:Bag>
+<rdf:li>https://example.org/rrole/role2021.1a</rdf:li>
+<rdf:li>https://example.org/rrole/role2021.1b</rdf:li>
+<rdf:li>https://example.org/rrole/role2021.1a</rdf:li>
+<rdf:li>https://example.org/rrole/role2021.1b</rdf:li>
+<rdf:li>https://example.org/rrole/role2021.1a</rdf:li>
+<rdf:li>https://example.org/rrole/role2021.1b</rdf:li>
+</rdf:Bag>
+</XMP-iptcExt:ImageRegionRoleIdentifier>
+<XMP-iptcExt:ImageRegionBoundaryRx>0.068</XMP-iptcExt:ImageRegionBoundaryRx>
+<XMP-iptcExt:ImageRegionBoundaryVerticesX>
+<rdf:Bag>
+<rdf:li>0.05</rdf:li>
+<rdf:li>0.148</rdf:li>
+<rdf:li>0.375</rdf:li>
+</rdf:Bag>
+</XMP-iptcExt:ImageRegionBoundaryVerticesX>
+<XMP-iptcExt:ImageRegionBoundaryVerticesY>
+<rdf:Bag>
+<rdf:li>0.713</rdf:li>
+<rdf:li>0.041</rdf:li>
+<rdf:li>0.863</rdf:li>
+</rdf:Bag>
+</XMP-iptcExt:ImageRegionBoundaryVerticesY>
+<XMP-iptcExt:LinkedEncodedRightsExpr>http://example.org/linkedrightsexpression/id986/ref2021.1</XMP-iptcExt:LinkedEncodedRightsExpr>
+<XMP-iptcExt:LinkedEncodedRightsExprType>IANA Media Type of ERE (ref2021.1)</XMP-iptcExt:LinkedEncodedRightsExprType>
+<XMP-iptcExt:LinkedEncodedRightsExprLangID>http://example.org/RELids/id4712/ref2021.1</XMP-iptcExt:LinkedEncodedRightsExprLangID>
+<XMP-iptcExt:LocationCreatedCity>City (Location created1) (ref2021.1)</XMP-iptcExt:LocationCreatedCity>
+<XMP-iptcExt:LocationCreatedCountryCode>R17</XMP-iptcExt:LocationCreatedCountryCode>
+<XMP-iptcExt:LocationCreatedCountryName>CountryName (Location created1) (ref2021.1)</XMP-iptcExt:LocationCreatedCountryName>
+<XMP-iptcExt:LocationCreatedLocationId>Location Id (Location created1) (ref2021.1)</XMP-iptcExt:LocationCreatedLocationId>
+<XMP-iptcExt:LocationCreatedLocationName>Location Name (Location created1) (ref2021.1)</XMP-iptcExt:LocationCreatedLocationName>
+<XMP-iptcExt:LocationCreatedProvinceState>Province/State (Location created1) (ref2021.1)</XMP-iptcExt:LocationCreatedProvinceState>
+<XMP-iptcExt:LocationCreatedSublocation>Sublocation (Location created1) (ref2021.1)</XMP-iptcExt:LocationCreatedSublocation>
+<XMP-iptcExt:LocationCreatedWorldRegion>Worldregion (Location created1) (ref2021.1)</XMP-iptcExt:LocationCreatedWorldRegion>
+<XMP-iptcExt:LocationCreatedGPSAltitude>480 m</XMP-iptcExt:LocationCreatedGPSAltitude>
+<XMP-iptcExt:LocationCreatedGPSLatitude>48 deg 16' 30.00" N</XMP-iptcExt:LocationCreatedGPSLatitude>
+<XMP-iptcExt:LocationCreatedGPSLongitude>16 deg 20' 16.80" E</XMP-iptcExt:LocationCreatedGPSLongitude>
+<XMP-iptcExt:LocationShownCity>
+<rdf:Bag>
+<rdf:li>City (Location shown1) (ref2021.1)</rdf:li>
+<rdf:li>City (Location shown2) (ref2021.1)</rdf:li>
+</rdf:Bag>
+</XMP-iptcExt:LocationShownCity>
+<XMP-iptcExt:LocationShownCountryCode>
+<rdf:Bag>
+<rdf:li>R17</rdf:li>
+<rdf:li>R17</rdf:li>
+</rdf:Bag>
+</XMP-iptcExt:LocationShownCountryCode>
+<XMP-iptcExt:LocationShownCountryName>
+<rdf:Bag>
+<rdf:li>CountryName (Location shown1) (ref2021.1)</rdf:li>
+<rdf:li>CountryName (Location shown2) (ref2021.1)</rdf:li>
+</rdf:Bag>
+</XMP-iptcExt:LocationShownCountryName>
+<XMP-iptcExt:LocationShownLocationId>
+<rdf:Bag>
+<rdf:li>Location Id 1a(Location shown1) (ref2021.1)</rdf:li>
+<rdf:li>Location Id 1b(Location shown1) (ref2021.1)</rdf:li>
+<rdf:li>Location Id 2a(Location shown2) (ref2021.1)</rdf:li>
+<rdf:li>Location Id 2b(Location shown2) (ref2021.1)</rdf:li>
+</rdf:Bag>
+</XMP-iptcExt:LocationShownLocationId>
+<XMP-iptcExt:LocationShownLocationName>
+<rdf:Bag>
+<rdf:li>Location Name (Location shown1) (ref2021.1)</rdf:li>
+<rdf:li>Location Name (Location shown2) (ref2021.1)</rdf:li>
+</rdf:Bag>
+</XMP-iptcExt:LocationShownLocationName>
+<XMP-iptcExt:LocationShownProvinceState>
+<rdf:Bag>
+<rdf:li>Province/State (Location shown1) (ref2021.1)</rdf:li>
+<rdf:li>Province/State (Location shown2) (ref2021.1)</rdf:li>
+</rdf:Bag>
+</XMP-iptcExt:LocationShownProvinceState>
+<XMP-iptcExt:LocationShownSublocation>
+<rdf:Bag>
+<rdf:li>Sublocation (Location shown1) (ref2021.1)</rdf:li>
+<rdf:li>Sublocation (Location shown2) (ref2021.1)</rdf:li>
+</rdf:Bag>
+</XMP-iptcExt:LocationShownSublocation>
+<XMP-iptcExt:LocationShownWorldRegion>
+<rdf:Bag>
+<rdf:li>Worldregion (Location shown1) (ref2021.1)</rdf:li>
+<rdf:li>Worldregion (Location shown2) (ref2021.1)</rdf:li>
+</rdf:Bag>
+</XMP-iptcExt:LocationShownWorldRegion>
+<XMP-iptcExt:LocationShownGPSAltitude>
+<rdf:Bag>
+<rdf:li>140 m</rdf:li>
+<rdf:li>120 m</rdf:li>
+</rdf:Bag>
+</XMP-iptcExt:LocationShownGPSAltitude>
+<XMP-iptcExt:LocationShownGPSLatitude>
+<rdf:Bag>
+<rdf:li>48 deg 8' 49.20" N</rdf:li>
+<rdf:li>47 deg 57' 7.20" N</rdf:li>
+</rdf:Bag>
+</XMP-iptcExt:LocationShownGPSLatitude>
+<XMP-iptcExt:LocationShownGPSLongitude>
+<rdf:Bag>
+<rdf:li>17 deg 5' 52.80" E</rdf:li>
+<rdf:li>16 deg 49' 48.00" E</rdf:li>
+</rdf:Bag>
+</XMP-iptcExt:LocationShownGPSLongitude>
+<XMP-iptcExt:MaxAvailHeight>20</XMP-iptcExt:MaxAvailHeight>
+<XMP-iptcExt:MaxAvailWidth>21</XMP-iptcExt:MaxAvailWidth>
+<XMP-iptcExt:ModelAge>
+<rdf:Bag>
+<rdf:li>25</rdf:li>
+<rdf:li>27</rdf:li>
+<rdf:li>30</rdf:li>
+</rdf:Bag>
+</XMP-iptcExt:ModelAge>
+<XMP-iptcExt:OrganisationInImageCode>
+<rdf:Bag>
+<rdf:li>Organisation Code 1 (ref2021.1)</rdf:li>
+<rdf:li>Organisation Code 2 (ref2021.1)</rdf:li>
+<rdf:li>Organisation Code 3 (ref2021.1)</rdf:li>
+</rdf:Bag>
+</XMP-iptcExt:OrganisationInImageCode>
+<XMP-iptcExt:OrganisationInImageName>
+<rdf:Bag>
+<rdf:li>Organisation Name 1 (ref2021.1)</rdf:li>
+<rdf:li>Organisation Name 2 (ref2021.1)</rdf:li>
+<rdf:li>Organisation Name 3 (ref2021.1)</rdf:li>
+</rdf:Bag>
+</XMP-iptcExt:OrganisationInImageName>
+<XMP-iptcExt:PersonInImage>
+<rdf:Bag>
+<rdf:li>Person Shown 1 (ref2021.1)</rdf:li>
+<rdf:li>Person Shown 2 (ref2021.1)</rdf:li>
+</rdf:Bag>
+</XMP-iptcExt:PersonInImage>
+<XMP-iptcExt:PersonInImageCvTermCvId>http://example.com/cv/test99/ref2021.1</XMP-iptcExt:PersonInImageCvTermCvId>
+<XMP-iptcExt:PersonInImageCvTermId>http://example.com/cv/test99/code987/ref2021.1</XMP-iptcExt:PersonInImageCvTermId>
+<XMP-iptcExt:PersonInImageCvTermName>Person Characteristic Name 1 (ref2021.1)</XMP-iptcExt:PersonInImageCvTermName>
+<XMP-iptcExt:PersonInImageCvTermRefinedAbout>http://example.com/cv/refinements987/codeY765/ref2021.1</XMP-iptcExt:PersonInImageCvTermRefinedAbout>
+<XMP-iptcExt:PersonInImageDescription>Person Description 1 (ref2021.1)</XMP-iptcExt:PersonInImageDescription>
+<XMP-iptcExt:PersonInImageId>
+<rdf:Bag>
+<rdf:li>http://wikidata.org/item/Q123456789/ref2021.1</rdf:li>
+<rdf:li>http://freebase.com/m/987654321/ref2021.1</rdf:li>
+</rdf:Bag>
+</XMP-iptcExt:PersonInImageId>
+<XMP-iptcExt:PersonInImageName>Person Name 1 (ref2021.1)</XMP-iptcExt:PersonInImageName>
+<XMP-iptcExt:ProductInImageDescription>Product Description 1 (ref2021.1)</XMP-iptcExt:ProductInImageDescription>
+<XMP-iptcExt:ProductInImageGTIN>123456782021.1</XMP-iptcExt:ProductInImageGTIN>
+<XMP-iptcExt:ProductInImageName>Product Name 1 (ref2021.1)</XMP-iptcExt:ProductInImageName>
+<XMP-iptcExt:RegistryEntryRole>
+<rdf:Bag>
+<rdf:li>Registry Entry Role ID 1 (ref2021.1)</rdf:li>
+<rdf:li>Registry Entry Role ID 2 (ref2021.1)</rdf:li>
+</rdf:Bag>
+</XMP-iptcExt:RegistryEntryRole>
+<XMP-iptcExt:RegistryItemID>
+<rdf:Bag>
+<rdf:li>Registry Image ID 1 (ref2021.1)</rdf:li>
+<rdf:li>Registry Image ID 2 (ref2021.1)</rdf:li>
+</rdf:Bag>
+</XMP-iptcExt:RegistryItemID>
+<XMP-iptcExt:RegistryOrganisationID>
+<rdf:Bag>
+<rdf:li>Registry Organisation ID 1 (ref2021.1)</rdf:li>
+<rdf:li>Registry Organisation ID 2 (ref2021.1)</rdf:li>
+</rdf:Bag>
+</XMP-iptcExt:RegistryOrganisationID>
+<XMP-dc:Creator>Creator1 (ref2021.1)</XMP-dc:Creator>
+<XMP-dc:Description>The description aka caption (ref2021.1)</XMP-dc:Description>
+<XMP-dc:Rights>Copyright (Notice) 2021.1 IPTC - www.iptc.org (ref2021.1)</XMP-dc:Rights>
+<XMP-dc:Subject>
+<rdf:Bag>
+<rdf:li>Keyword1ref2021.1</rdf:li>
+<rdf:li>Keyword2ref2021.1</rdf:li>
+<rdf:li>Keyword3ref2021.1</rdf:li>
+</rdf:Bag>
+</XMP-dc:Subject>
+<XMP-dc:Title>The Title (ref2021.1)</XMP-dc:Title>
+<XMP-photoshop:AuthorsPosition>Creator's Job Title (ref2021.1)</XMP-photoshop:AuthorsPosition>
+<XMP-photoshop:CaptionWriter>Description Writer (ref2021.1)</XMP-photoshop:CaptionWriter>
+<XMP-photoshop:City>City (Core) (ref2021.1)</XMP-photoshop:City>
+<XMP-photoshop:Country>Country (Core) (ref2021.1)</XMP-photoshop:Country>
+<XMP-photoshop:Credit>Credit Line (ref2021.1)</XMP-photoshop:Credit>
+<XMP-photoshop:DateCreated>2021:10:20 21:01:01+00:00</XMP-photoshop:DateCreated>
+<XMP-photoshop:Headline>The Headline (ref2021.1)</XMP-photoshop:Headline>
+<XMP-photoshop:Instructions>An Instruction (ref2021.1)</XMP-photoshop:Instructions>
+<XMP-photoshop:Source>Source (ref2021.1)</XMP-photoshop:Source>
+<XMP-photoshop:State>Province/State(Core)(ref2021.1)</XMP-photoshop:State>
+<XMP-photoshop:TransmissionReference>Job Id (ref2021.1)</XMP-photoshop:TransmissionReference>
+<XMP-plus:CopyrightOwnerID>
+<rdf:Bag>
+<rdf:li>Copyright Owner Id 1 (ref2021.1)</rdf:li>
+<rdf:li>Copyright Owner Id 2 (ref2021.1)</rdf:li>
+</rdf:Bag>
+</XMP-plus:CopyrightOwnerID>
+<XMP-plus:CopyrightOwnerName>
+<rdf:Bag>
+<rdf:li>Copyright Owner Name 1 (ref2021.1)</rdf:li>
+<rdf:li>Copyright Owner Name 2 (ref2021.1)</rdf:li>
+</rdf:Bag>
+</XMP-plus:CopyrightOwnerName>
+<XMP-plus:ImageCreatorID>Image Creator Id 1 (ref2021.1)</XMP-plus:ImageCreatorID>
+<XMP-plus:ImageCreatorName>Image Creator Name 1 (ref2021.1)</XMP-plus:ImageCreatorName>
+<XMP-plus:ImageCreatorImageID>Image Creator Image ID (ref2021.1)</XMP-plus:ImageCreatorImageID>
+<XMP-plus:ImageSupplierID>Image Supplier Id (ref2021.1)</XMP-plus:ImageSupplierID>
+<XMP-plus:ImageSupplierName>Image Supplier Name (ref2021.1)</XMP-plus:ImageSupplierName>
+<XMP-plus:ImageSupplierImageID>Image Supplier Image ID (ref2021.1)</XMP-plus:ImageSupplierImageID>
+<XMP-plus:LicensorCity>
+<rdf:Bag>
+<rdf:li>Licensor City 1 (ref2021.1)</rdf:li>
+<rdf:li>Licensor City 2 (ref2021.1)</rdf:li>
+</rdf:Bag>
+</XMP-plus:LicensorCity>
+<XMP-plus:LicensorCountry>
+<rdf:Bag>
+<rdf:li>Licensor Country 1 (ref2021.1)</rdf:li>
+<rdf:li>Licensor Country 2 (ref2021.1)</rdf:li>
+</rdf:Bag>
+</XMP-plus:LicensorCountry>
+<XMP-plus:LicensorEmail>
+<rdf:Bag>
+<rdf:li>Licensor Email 1 (ref2021.1)</rdf:li>
+<rdf:li>Licensor Email 2 (ref2021.1)</rdf:li>
+</rdf:Bag>
+</XMP-plus:LicensorEmail>
+<XMP-plus:LicensorExtendedAddress>
+<rdf:Bag>
+<rdf:li>Licensor Ext Addr 1 (ref2021.1)</rdf:li>
+<rdf:li>Licensor Ext Addr 2 (ref2021.1)</rdf:li>
+</rdf:Bag>
+</XMP-plus:LicensorExtendedAddress>
+<XMP-plus:LicensorID>
+<rdf:Bag>
+<rdf:li>Licensor ID 1 (ref2021.1)</rdf:li>
+<rdf:li>Licensor ID 2 (ref2021.1)</rdf:li>
+</rdf:Bag>
+</XMP-plus:LicensorID>
+<XMP-plus:LicensorName>
+<rdf:Bag>
+<rdf:li>Licensor Name 1 (ref2021.1)</rdf:li>
+<rdf:li>Licensor Name 2 (ref2021.1)</rdf:li>
+</rdf:Bag>
+</XMP-plus:LicensorName>
+<XMP-plus:LicensorPostalCode>
+<rdf:Bag>
+<rdf:li>Licensor Postcode 1 (ref2021.1)</rdf:li>
+<rdf:li>Licensor Postcode 2 (ref2021.1)</rdf:li>
+</rdf:Bag>
+</XMP-plus:LicensorPostalCode>
+<XMP-plus:LicensorRegion>
+<rdf:Bag>
+<rdf:li>Licensor Region 1 (ref2021.1)</rdf:li>
+<rdf:li>Licensor Region 2 (ref2021.1)</rdf:li>
+</rdf:Bag>
+</XMP-plus:LicensorRegion>
+<XMP-plus:LicensorStreetAddress>
+<rdf:Bag>
+<rdf:li>Licensor Street Addr 1 (ref2021.1)</rdf:li>
+<rdf:li>Licensor Street Addr 2 (ref2021.1)</rdf:li>
+</rdf:Bag>
+</XMP-plus:LicensorStreetAddress>
+<XMP-plus:LicensorTelephone1>
+<rdf:Bag>
+<rdf:li>Licensor Phone1 1 (ref2021.1)</rdf:li>
+<rdf:li>Licensor Phone1 2 (ref2021.1)</rdf:li>
+</rdf:Bag>
+</XMP-plus:LicensorTelephone1>
+<XMP-plus:LicensorTelephone2>
+<rdf:Bag>
+<rdf:li>Licensor Phone2 1 (ref2021.1)</rdf:li>
+<rdf:li>Licensor Phone2 2 (ref2021.1)</rdf:li>
+</rdf:Bag>
+</XMP-plus:LicensorTelephone2>
+<XMP-plus:LicensorTelephoneType1>
+<rdf:Bag>
+<rdf:li>Work</rdf:li>
+<rdf:li>Work</rdf:li>
+</rdf:Bag>
+</XMP-plus:LicensorTelephoneType1>
+<XMP-plus:LicensorTelephoneType2>
+<rdf:Bag>
+<rdf:li>Cell</rdf:li>
+<rdf:li>Cell</rdf:li>
+</rdf:Bag>
+</XMP-plus:LicensorTelephoneType2>
+<XMP-plus:LicensorURL>
+<rdf:Bag>
+<rdf:li>https://example.com/LicensorURL_1_ref2021.1</rdf:li>
+<rdf:li>https://example.com/LicensorURL_2_ref2021.1</rdf:li>
+</rdf:Bag>
+</XMP-plus:LicensorURL>
+<XMP-plus:MinorModelAgeDisclosure>Age 25 or Over</XMP-plus:MinorModelAgeDisclosure>
+<XMP-plus:ModelReleaseID>
+<rdf:Bag>
+<rdf:li>Model Release ID 1 (ref2021.1)</rdf:li>
+<rdf:li>Model Release ID 2 (ref2021.1)</rdf:li>
+</rdf:Bag>
+</XMP-plus:ModelReleaseID>
+<XMP-plus:ModelReleaseStatus>Not Applicable</XMP-plus:ModelReleaseStatus>
+<XMP-plus:PropertyReleaseID>
+<rdf:Bag>
+<rdf:li>Property Release ID 1 (ref2021.1)</rdf:li>
+<rdf:li>Property Release ID 2 (ref2021.1)</rdf:li>
+</rdf:Bag>
+</XMP-plus:PropertyReleaseID>
+<XMP-plus:PropertyReleaseStatus>Not Applicable</XMP-plus:PropertyReleaseStatus>
+<XMP-xmp:Rating>1.0</XMP-xmp:Rating>
+<XMP-xmpRights:UsageTerms>Rights Usage Terms (ref2021.1)</XMP-xmpRights:UsageTerms>
+<XMP-xmpRights:WebStatement>https://example.com/WebStatementOfRights/2021.1</XMP-xmpRights:WebStatement>
+<Adobe:DCTEncodeVersion>100</Adobe:DCTEncodeVersion>
+<Adobe:APP14Flags0>Encoded with Blend=1 downsampling</Adobe:APP14Flags0>
+<Adobe:APP14Flags1>(none)</Adobe:APP14Flags1>
+<Adobe:ColorTransform>YCbCr</Adobe:ColorTransform>
+<Composite:ImageSize>2000x1000</Composite:ImageSize>
+<Composite:Megapixels>2.0</Composite:Megapixels>
+<Composite:SubSecDateTimeOriginal>2021:10:20 21:01:01+00:00</Composite:SubSecDateTimeOriginal>
+<Composite:DateTimeCreated>2021:10:20 21:01:01+00:00</Composite:DateTimeCreated>
+</rdf:Description>
+</rdf:RDF>
+<ffprobe>
+<program_version version="4.4.2-0ubuntu0.22.04.1" copyright="Copyright (c) 2007-2021 the FFmpeg developers" compiler_ident="gcc 11 (Ubuntu 11.2.0-19ubuntu1)" configuration="--prefix=/usr --extra-version=0ubuntu0.22.04.1 --toolchain=hardened --libdir=/usr/lib/x86_64-linux-gnu --incdir=/usr/include/x86_64-linux-gnu --arch=amd64 --enable-gpl --disable-stripping --enable-gnutls --enable-ladspa --enable-libaom --enable-libass --enable-libbluray --enable-libbs2b --enable-libcaca --enable-libcdio --enable-libcodec2 --enable-libdav1d --enable-libflite --enable-libfontconfig --enable-libfreetype --enable-libfribidi --enable-libgme --enable-libgsm --enable-libjack --enable-libmp3lame --enable-libmysofa --enable-libopenjpeg --enable-libopenmpt --enable-libopus --enable-libpulse --enable-librabbitmq --enable-librubberband --enable-libshine --enable-libsnappy --enable-libsoxr --enable-libspeex --enable-libsrt --enable-libssh --enable-libtheora --enable-libtwolame --enable-libvidstab --enable-libvorbis --enable-libvpx --enable-libwebp --enable-libx265 --enable-libxml2 --enable-libxvid --enable-libzimg --enable-libzmq --enable-libzvbi --enable-lv2 --enable-omx --enable-openal --enable-opencl --enable-opengl --enable-sdl2 --enable-pocketsphinx --enable-librsvg --enable-libmfx --enable-libdc1394 --enable-libdrm --enable-libiec61883 --enable-chromaprint --enable-frei0r --enable-libx264 --enable-shared"/>
+<library_versions>
+<library_version name="libavutil" major="56" minor="70" micro="100" version="3688036" ident="Lavu56.70.100"/>
+<library_version name="libavcodec" major="58" minor="134" micro="100" version="3835492" ident="Lavc58.134.100"/>
+<library_version name="libavformat" major="58" minor="76" micro="100" version="3820644" ident="Lavf58.76.100"/>
+<library_version name="libavdevice" major="58" minor="13" micro="100" version="3804516" ident="Lavd58.13.100"/>
+<library_version name="libavfilter" major="7" minor="110" micro="100" version="487012" ident="Lavfi7.110.100"/>
+<library_version name="libswscale" major="5" minor="9" micro="100" version="330084" ident="SwS5.9.100"/>
+<library_version name="libswresample" major="3" minor="9" micro="100" version="199012" ident="SwR3.9.100"/>
+<library_version name="libpostproc" major="55" minor="9" micro="100" version="3606884" ident="postproc55.9.100"/>
+</library_versions>
+<streams>
+<stream index="0" codec_name="mjpeg" codec_long_name="Motion JPEG" profile="Progressive" codec_type="video" codec_tag_string="[0][0][0][0]" codec_tag="0x0000" width="2000" height="1000" coded_width="2000" coded_height="1000" closed_captions="0" has_b_frames="0" pix_fmt="yuvj420p" level="-99" color_range="pc" color_space="bt470bg" chroma_location="center" refs="1" r_frame_rate="25/1" avg_frame_rate="25/1" time_base="1/25" bits_per_raw_sample="8" extradata=" ">
+<disposition default="0" dub="0" original="0" comment="0" lyrics="0" karaoke="0" forced="0" hearing_impaired="0" visual_impaired="0" clean_effects="0" attached_pic="0" timed_thumbnails="0"/>
+</stream>
+</streams>
+<chapters> </chapters>
+<format filename="/var/archivematica/sharedDirectory/watchedDirectories/workFlowDecisions/extractPackagesChoice/7058361_upload-6ff77ccb-f4d2-4aeb-84a0-e462ca4138a5/objects/7058361" nb_streams="1" nb_programs="0" format_name="jpeg_pipe" format_long_name="piped jpeg sequence" size="134078" probe_score="51"/>
+</ffprobe>
+</premis:objectCharacteristicsExtension>
+</premis:objectCharacteristics>
+<premis:originalName>%transferDirectory%objects/1</premis:originalName>
+<premis:relationship>
+<premis:relationshipType>derivation</premis:relationshipType>
+<premis:relationshipSubType>is source of</premis:relationshipSubType>
+<premis:relatedObjectIdentifier>
+<premis:relatedObjectIdentifierType>UUID</premis:relatedObjectIdentifierType>
+<premis:relatedObjectIdentifierValue>b9c295ea-d201-4216-a9f7-ba65228f297a</premis:relatedObjectIdentifierValue>
+</premis:relatedObjectIdentifier>
+<premis:relatedEventIdentifier>
+<premis:relatedEventIdentifierType>UUID</premis:relatedEventIdentifierType>
+<premis:relatedEventIdentifierValue>bfb2f80e-210b-4f6f-8ca7-7cb9a5bea559</premis:relatedEventIdentifierValue>
+</premis:relatedEventIdentifier>
+</premis:relationship>
+</premis:object>
+</mets:xmlData>
+</mets:mdWrap>
+</mets:techMD>
+<mets:digiprovMD ID="digiprovMD_1">
+<mets:mdWrap MDTYPE="PREMIS:EVENT">
+<mets:xmlData>
+<premis:event xmlns:premis="http://www.loc.gov/premis/v3" xsi:schemaLocation="http://www.loc.gov/premis/v3 http://www.loc.gov/standards/premis/v3/premis.xsd" version="3.0">
+<premis:eventIdentifier>
+<premis:eventIdentifierType>UUID</premis:eventIdentifierType>
+<premis:eventIdentifierValue>7e003231-4b7a-4a30-a413-41c5c64297f3</premis:eventIdentifierValue>
+</premis:eventIdentifier>
+<premis:eventType>ingestion</premis:eventType>
+<premis:eventDateTime>2025-10-28T19:07:29.075654+00:00</premis:eventDateTime>
+<premis:eventDetailInformation>
+<premis:eventDetail/>
+</premis:eventDetailInformation>
+<premis:eventOutcomeInformation>
+<premis:eventOutcome/>
+<premis:eventOutcomeDetail>
+<premis:eventOutcomeDetailNote/>
+</premis:eventOutcomeDetail>
+</premis:eventOutcomeInformation>
+<premis:linkingAgentIdentifier>
+<premis:linkingAgentIdentifierType>preservation system</premis:linkingAgentIdentifierType>
+<premis:linkingAgentIdentifierValue>Archivematica-1.17.1</premis:linkingAgentIdentifierValue>
+</premis:linkingAgentIdentifier>
+<premis:linkingAgentIdentifier>
+<premis:linkingAgentIdentifierType>repository code</premis:linkingAgentIdentifierType>
+<premis:linkingAgentIdentifierValue/>
+</premis:linkingAgentIdentifier>
+<premis:linkingAgentIdentifier>
+<premis:linkingAgentIdentifierType>Archivematica user pk</premis:linkingAgentIdentifierType>
+<premis:linkingAgentIdentifierValue>1</premis:linkingAgentIdentifierValue>
+</premis:linkingAgentIdentifier>
+</premis:event>
+</mets:xmlData>
+</mets:mdWrap>
+</mets:digiprovMD>
+<mets:digiprovMD ID="digiprovMD_2">
+<mets:mdWrap MDTYPE="PREMIS:EVENT">
+<mets:xmlData>
+<premis:event xmlns:premis="http://www.loc.gov/premis/v3" xsi:schemaLocation="http://www.loc.gov/premis/v3 http://www.loc.gov/standards/premis/v3/premis.xsd" version="3.0">
+<premis:eventIdentifier>
+<premis:eventIdentifierType>UUID</premis:eventIdentifierType>
+<premis:eventIdentifierValue>9e53844a-4314-4c3c-81e6-05e7a526c859</premis:eventIdentifierValue>
+</premis:eventIdentifier>
+<premis:eventType>message digest calculation</premis:eventType>
+<premis:eventDateTime>2025-10-28T19:07:29.159299+00:00</premis:eventDateTime>
+<premis:eventDetailInformation>
+<premis:eventDetail>program="python"; module="hashlib.sha256()"</premis:eventDetail>
+</premis:eventDetailInformation>
+<premis:eventOutcomeInformation>
+<premis:eventOutcome/>
+<premis:eventOutcomeDetail>
+<premis:eventOutcomeDetailNote>c578389d83d513de2afbd5834bf96590c6fa0bbf894c318b2f89d9a4946cfe99</premis:eventOutcomeDetailNote>
+</premis:eventOutcomeDetail>
+</premis:eventOutcomeInformation>
+<premis:linkingAgentIdentifier>
+<premis:linkingAgentIdentifierType>preservation system</premis:linkingAgentIdentifierType>
+<premis:linkingAgentIdentifierValue>Archivematica-1.17.1</premis:linkingAgentIdentifierValue>
+</premis:linkingAgentIdentifier>
+<premis:linkingAgentIdentifier>
+<premis:linkingAgentIdentifierType>repository code</premis:linkingAgentIdentifierType>
+<premis:linkingAgentIdentifierValue/>
+</premis:linkingAgentIdentifier>
+<premis:linkingAgentIdentifier>
+<premis:linkingAgentIdentifierType>Archivematica user pk</premis:linkingAgentIdentifierType>
+<premis:linkingAgentIdentifierValue>1</premis:linkingAgentIdentifierValue>
+</premis:linkingAgentIdentifier>
+</premis:event>
+</mets:xmlData>
+</mets:mdWrap>
+</mets:digiprovMD>
+<mets:digiprovMD ID="digiprovMD_3">
+<mets:mdWrap MDTYPE="PREMIS:EVENT">
+<mets:xmlData>
+<premis:event xmlns:premis="http://www.loc.gov/premis/v3" xsi:schemaLocation="http://www.loc.gov/premis/v3 http://www.loc.gov/standards/premis/v3/premis.xsd" version="3.0">
+<premis:eventIdentifier>
+<premis:eventIdentifierType>UUID</premis:eventIdentifierType>
+<premis:eventIdentifierValue>59631995-1def-4e57-8774-2aeb11999b79</premis:eventIdentifierValue>
+</premis:eventIdentifier>
+<premis:eventType>format identification</premis:eventType>
+<premis:eventDateTime>2025-10-28T19:07:31.440328+00:00</premis:eventDateTime>
+<premis:eventDetailInformation>
+<premis:eventDetail>program="Siegfried"; version="1.11.0"</premis:eventDetail>
+</premis:eventDetailInformation>
+<premis:eventOutcomeInformation>
+<premis:eventOutcome>Positive</premis:eventOutcome>
+<premis:eventOutcomeDetail>
+<premis:eventOutcomeDetailNote>fmt/1507</premis:eventOutcomeDetailNote>
+</premis:eventOutcomeDetail>
+</premis:eventOutcomeInformation>
+<premis:linkingAgentIdentifier>
+<premis:linkingAgentIdentifierType>preservation system</premis:linkingAgentIdentifierType>
+<premis:linkingAgentIdentifierValue>Archivematica-1.17.1</premis:linkingAgentIdentifierValue>
+</premis:linkingAgentIdentifier>
+<premis:linkingAgentIdentifier>
+<premis:linkingAgentIdentifierType>repository code</premis:linkingAgentIdentifierType>
+<premis:linkingAgentIdentifierValue/>
+</premis:linkingAgentIdentifier>
+<premis:linkingAgentIdentifier>
+<premis:linkingAgentIdentifierType>Archivematica user pk</premis:linkingAgentIdentifierType>
+<premis:linkingAgentIdentifierValue>1</premis:linkingAgentIdentifierValue>
+</premis:linkingAgentIdentifier>
+</premis:event>
+</mets:xmlData>
+</mets:mdWrap>
+</mets:digiprovMD>
+<mets:digiprovMD ID="digiprovMD_4">
+<mets:mdWrap MDTYPE="PREMIS:EVENT">
+<mets:xmlData>
+<premis:event xmlns:premis="http://www.loc.gov/premis/v3" xsi:schemaLocation="http://www.loc.gov/premis/v3 http://www.loc.gov/standards/premis/v3/premis.xsd" version="3.0">
+<premis:eventIdentifier>
+<premis:eventIdentifierType>UUID</premis:eventIdentifierType>
+<premis:eventIdentifierValue>899282cc-f6c9-40cc-a122-f2941eb64759</premis:eventIdentifierValue>
+</premis:eventIdentifier>
+<premis:eventType>validation</premis:eventType>
+<premis:eventDateTime>2025-10-28T19:07:34.236820+00:00</premis:eventDateTime>
+<premis:eventDetailInformation>
+<premis:eventDetail>program="JHOVE"; version="1.26"</premis:eventDetail>
+</premis:eventDetailInformation>
+<premis:eventOutcomeInformation>
+<premis:eventOutcome>pass</premis:eventOutcome>
+<premis:eventOutcomeDetail>
+<premis:eventOutcomeDetailNote>format="JPEG"; result="Well-Formed and valid"</premis:eventOutcomeDetailNote>
+</premis:eventOutcomeDetail>
+</premis:eventOutcomeInformation>
+<premis:linkingAgentIdentifier>
+<premis:linkingAgentIdentifierType>preservation system</premis:linkingAgentIdentifierType>
+<premis:linkingAgentIdentifierValue>Archivematica-1.17.1</premis:linkingAgentIdentifierValue>
+</premis:linkingAgentIdentifier>
+<premis:linkingAgentIdentifier>
+<premis:linkingAgentIdentifierType>repository code</premis:linkingAgentIdentifierType>
+<premis:linkingAgentIdentifierValue/>
+</premis:linkingAgentIdentifier>
+<premis:linkingAgentIdentifier>
+<premis:linkingAgentIdentifierType>Archivematica user pk</premis:linkingAgentIdentifierType>
+<premis:linkingAgentIdentifierValue>1</premis:linkingAgentIdentifierValue>
+</premis:linkingAgentIdentifier>
+</premis:event>
+</mets:xmlData>
+</mets:mdWrap>
+</mets:digiprovMD>
+<mets:digiprovMD ID="digiprovMD_5">
+<mets:mdWrap MDTYPE="PREMIS:EVENT">
+<mets:xmlData>
+<premis:event xmlns:premis="http://www.loc.gov/premis/v3" xsi:schemaLocation="http://www.loc.gov/premis/v3 http://www.loc.gov/standards/premis/v3/premis.xsd" version="3.0">
+<premis:eventIdentifier>
+<premis:eventIdentifierType>UUID</premis:eventIdentifierType>
+<premis:eventIdentifierValue>bfb2f80e-210b-4f6f-8ca7-7cb9a5bea559</premis:eventIdentifierValue>
+</premis:eventIdentifier>
+<premis:eventType>normalization</premis:eventType>
+<premis:eventDateTime>2025-10-28T19:07:40.653592+00:00</premis:eventDateTime>
+<premis:eventDetailInformation>
+<premis:eventDetail>ArchivematicaFPRCommandID="a34ddc9b-c922-4bb6-8037-bbe713332175"; program="convert"; version="Version: ImageMagick 6.9.11-60 Q16 x86_64 2021-01-25 https://imagemagick.org" </premis:eventDetail>
+</premis:eventDetailInformation>
+<premis:eventOutcomeInformation>
+<premis:eventOutcome/>
+<premis:eventOutcomeDetail>
+<premis:eventOutcomeDetailNote>%SIPDirectory%objects/7058361-b9c295ea-d201-4216-a9f7-ba65228f297a.tif</premis:eventOutcomeDetailNote>
+</premis:eventOutcomeDetail>
+</premis:eventOutcomeInformation>
+<premis:linkingAgentIdentifier>
+<premis:linkingAgentIdentifierType>preservation system</premis:linkingAgentIdentifierType>
+<premis:linkingAgentIdentifierValue>Archivematica-1.17.1</premis:linkingAgentIdentifierValue>
+</premis:linkingAgentIdentifier>
+<premis:linkingAgentIdentifier>
+<premis:linkingAgentIdentifierType>repository code</premis:linkingAgentIdentifierType>
+<premis:linkingAgentIdentifierValue/>
+</premis:linkingAgentIdentifier>
+<premis:linkingAgentIdentifier>
+<premis:linkingAgentIdentifierType>Archivematica user pk</premis:linkingAgentIdentifierType>
+<premis:linkingAgentIdentifierValue>1</premis:linkingAgentIdentifierValue>
+</premis:linkingAgentIdentifier>
+</premis:event>
+</mets:xmlData>
+</mets:mdWrap>
+</mets:digiprovMD>
+<mets:digiprovMD ID="digiprovMD_6">
+<mets:mdWrap MDTYPE="PREMIS:AGENT">
+<mets:xmlData>
+<premis:agent xmlns:premis="http://www.loc.gov/premis/v3" xsi:schemaLocation="http://www.loc.gov/premis/v3 http://www.loc.gov/standards/premis/v3/premis.xsd" version="3.0">
+<premis:agentIdentifier>
+<premis:agentIdentifierType>preservation system</premis:agentIdentifierType>
+<premis:agentIdentifierValue>Archivematica-1.17.1</premis:agentIdentifierValue>
+</premis:agentIdentifier>
+<premis:agentName>Archivematica</premis:agentName>
+<premis:agentType>software</premis:agentType>
+</premis:agent>
+</mets:xmlData>
+</mets:mdWrap>
+</mets:digiprovMD>
+<mets:digiprovMD ID="digiprovMD_7">
+<mets:mdWrap MDTYPE="PREMIS:AGENT">
+<mets:xmlData>
+<premis:agent xmlns:premis="http://www.loc.gov/premis/v3" xsi:schemaLocation="http://www.loc.gov/premis/v3 http://www.loc.gov/standards/premis/v3/premis.xsd" version="3.0">
+<premis:agentIdentifier>
+<premis:agentIdentifierType>repository code</premis:agentIdentifierType>
+<premis:agentIdentifierValue/>
+</premis:agentIdentifier>
+<premis:agentName>The Permanent Legacy Foundation</premis:agentName>
+<premis:agentType>organization</premis:agentType>
+</premis:agent>
+</mets:xmlData>
+</mets:mdWrap>
+</mets:digiprovMD>
+<mets:digiprovMD ID="digiprovMD_8">
+<mets:mdWrap MDTYPE="PREMIS:AGENT">
+<mets:xmlData>
+<premis:agent xmlns:premis="http://www.loc.gov/premis/v3" xsi:schemaLocation="http://www.loc.gov/premis/v3 http://www.loc.gov/standards/premis/v3/premis.xsd" version="3.0">
+<premis:agentIdentifier>
+<premis:agentIdentifierType>Archivematica user pk</premis:agentIdentifierType>
+<premis:agentIdentifierValue>1</premis:agentIdentifierValue>
+</premis:agentIdentifier>
+<premis:agentName>username="admin", first_name="", last_name=""</premis:agentName>
+<premis:agentType>Archivematica user</premis:agentType>
+</premis:agent>
+</mets:xmlData>
+</mets:mdWrap>
+</mets:digiprovMD>
+</mets:amdSec>
+<mets:amdSec ID="amdSec_1">
+<mets:techMD ID="techMD_1">
+<mets:mdWrap MDTYPE="PREMIS:OBJECT">
+<mets:xmlData>
+<premis:object xmlns:premis="http://www.loc.gov/premis/v3" xsi:type="premis:file" xsi:schemaLocation="http://www.loc.gov/premis/v3 http://www.loc.gov/standards/premis/v3/premis.xsd" version="3.0">
+<premis:objectIdentifier>
+<premis:objectIdentifierType>UUID</premis:objectIdentifierType>
+<premis:objectIdentifierValue>b3c97850-9697-451a-8ad5-9f085188e890</premis:objectIdentifierValue>
+</premis:objectIdentifier>
+<premis:objectCharacteristics>
+<premis:compositionLevel>0</premis:compositionLevel>
+<premis:fixity>
+<premis:messageDigestAlgorithm>sha256</premis:messageDigestAlgorithm>
+<premis:messageDigest>c578389d83d513de2afbd5834bf96590c6fa0bbf894c318b2f89d9a4946cfe99</premis:messageDigest>
+</premis:fixity>
+<premis:size>134078</premis:size>
+<premis:format>
+<premis:formatDesignation>
+<premis:formatName>Exchangeable Image File Format (Compressed)</premis:formatName>
+<premis:formatVersion>2.3.x</premis:formatVersion>
+</premis:formatDesignation>
+<premis:formatRegistry>
+<premis:formatRegistryName>PRONOM</premis:formatRegistryName>
+<premis:formatRegistryKey>fmt/1507</premis:formatRegistryKey>
+</premis:formatRegistry>
+</premis:format>
+<premis:creatingApplication>
+<premis:dateCreatedByApplication>2025-10-28T19:07:28Z</premis:dateCreatedByApplication>
+</premis:creatingApplication>
+<premis:objectCharacteristicsExtension>
+<MediaInfo xmlns="https://mediaarea.net/mediainfo" xsi:schemaLocation="https://mediaarea.net/mediainfo https://mediaarea.net/mediainfo/mediainfo_2_0.xsd" version="2.0">
+<creatingLibrary version="25.09" url="https://mediaarea.net/MediaInfo">MediaInfoLib</creatingLibrary>
+<media ref="/var/archivematica/sharedDirectory/watchedDirectories/workFlowDecisions/extractPackagesChoice/7058361_upload-6ff77ccb-f4d2-4aeb-84a0-e462ca4138a5/objects/7058361">
+<track type="General">
+<Count>364</Count>
+<StreamCount>1</StreamCount>
+<StreamKind>General</StreamKind>
+<StreamKind_String>General</StreamKind_String>
+<StreamKindID>0</StreamKindID>
+<ImageCount>1</ImageCount>
+<Image_Format_List>JPEG</Image_Format_List>
+<Image_Format_WithHint_List>JPEG</Image_Format_WithHint_List>
+<Image_Codec_List>JPEG</Image_Codec_List>
+<CompleteName>/var/archivematica/sharedDirectory/watchedDirectories/workFlowDecisions/extractPackagesChoice/7058361_upload-6ff77ccb-f4d2-4aeb-84a0-e462ca4138a5/objects/7058361</CompleteName>
+<FolderName>/var/archivematica/sharedDirectory/watchedDirectories/workFlowDecisions/extractPackagesChoice/7058361_upload-6ff77ccb-f4d2-4aeb-84a0-e462ca4138a5/objects</FolderName>
+<FileNameExtension>7058361</FileNameExtension>
+<FileName>7058361</FileName>
+<Format>JPEG</Format>
+<Format_String>JPEG</Format_String>
+<Format_Extensions>h3d jpeg jpg jpe jps mpo</Format_Extensions>
+<Format_Commercial>JPEG</Format_Commercial>
+<InternetMediaType>image/jpeg</InternetMediaType>
+<FileSize>134078</FileSize>
+<FileSize_String>131 KiB</FileSize_String>
+<FileSize_String1>131 KiB</FileSize_String1>
+<FileSize_String2>131 KiB</FileSize_String2>
+<FileSize_String3>131 KiB</FileSize_String3>
+<FileSize_String4>130.9 KiB</FileSize_String4>
+<StreamSize>32478</StreamSize>
+<StreamSize_String>31.7 KiB (24%)</StreamSize_String>
+<StreamSize_String1>32 KiB</StreamSize_String1>
+<StreamSize_String2>32 KiB</StreamSize_String2>
+<StreamSize_String3>31.7 KiB</StreamSize_String3>
+<StreamSize_String4>31.72 KiB</StreamSize_String4>
+<StreamSize_String5>31.7 KiB (24%)</StreamSize_String5>
+<StreamSize_Proportion>0.24223</StreamSize_Proportion>
+<Title>The Title (ref2021.1)</Title>
+<Producer>Creator1 (ref2021.1)</Producer>
+<Subject>Keyword1ref2021.1 / Keyword2ref2021.1 / Keyword3ref2021.1</Subject>
+<Description>The description aka caption (ref2021.1)</Description>
+<Recorded_Date>2021-10-20 21:01:01 UTC</Recorded_Date>
+<Encoded_Date>2021-10-20 21:01:01 UTC</Encoded_Date>
+<File_Modified_Date>2025-10-28 19:07:28 UTC</File_Modified_Date>
+<File_Modified_Date_Local>2025-10-28 19:07:28</File_Modified_Date_Local>
+<Copyright>Copyright (Notice) 2021.1 IPTC - www.iptc.org (ref2021.1) / Credit Line (ref2021.1)</Copyright>
+<Comment>IPTC Photo Metadata Standard 2021.1 reference image file - release 2b, as of 2022-07-12</Comment>
+<extra>
+<DigitalSourceType>http://cv.iptc.org/newscodes/digitalsourcetype/softwareImage</DigitalSourceType>
+<DigitalSourceType_String>http://cv.iptc.org/newscodes/digitalsourcetype/softwareImage</DigitalSourceType_String>
+<ExifVersion>2.32</ExifVersion>
+<FlashpixVersion>1.00</FlashpixVersion>
+<FileExtension_Invalid>h3d jpeg jpg jpe jps mpo</FileExtension_Invalid>
+</extra>
+</track>
+<track type="Image">
+<Count>177</Count>
+<StreamCount>1</StreamCount>
+<StreamKind>Image</StreamKind>
+<StreamKind_String>Image</StreamKind_String>
+<StreamKindID>0</StreamKindID>
+<Format>JPEG</Format>
+<Format_String>JPEG</Format_String>
+<Format_Commercial>JPEG</Format_Commercial>
+<InternetMediaType>image/jpeg</InternetMediaType>
+<Width>2000</Width>
+<Width_String>2 000 pixels</Width_String>
+<Height>1000</Height>
+<Height_String>1 000 pixels</Height_String>
+<ColorSpace>YUV</ColorSpace>
+<ChromaSubsampling>4:2:0</ChromaSubsampling>
+<BitDepth>8</BitDepth>
+<BitDepth_String>8 bits</BitDepth_String>
+<Compression_Mode>Lossy</Compression_Mode>
+<Compression_Mode_String>Lossy</Compression_Mode_String>
+<StreamSize>101600</StreamSize>
+<StreamSize_String>99.2 KiB (76%)</StreamSize_String>
+<StreamSize_String1>99 KiB</StreamSize_String1>
+<StreamSize_String2>99 KiB</StreamSize_String2>
+<StreamSize_String3>99.2 KiB</StreamSize_String3>
+<StreamSize_String4>99.22 KiB</StreamSize_String4>
+<StreamSize_String5>99.2 KiB (76%)</StreamSize_String5>
+<StreamSize_Proportion>0.75777</StreamSize_Proportion>
+</track>
+</media>
+</MediaInfo>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+<rdf:Description xmlns:et="http://ns.exiftool.org/1.0/" xmlns:ExifTool="http://ns.exiftool.org/ExifTool/1.0/" xmlns:System="http://ns.exiftool.org/File/System/1.0/" xmlns:File="http://ns.exiftool.org/File/1.0/" xmlns:IFD0="http://ns.exiftool.org/EXIF/IFD0/1.0/" xmlns:ExifIFD="http://ns.exiftool.org/EXIF/ExifIFD/1.0/" xmlns:IPTC="http://ns.exiftool.org/IPTC/IPTC/1.0/" xmlns:XMP-x="http://ns.exiftool.org/XMP/XMP-x/1.0/" xmlns:XMP-iptcCore="http://ns.exiftool.org/XMP/XMP-iptcCore/1.0/" xmlns:XMP-iptcExt="http://ns.exiftool.org/XMP/XMP-iptcExt/1.0/" xmlns:XMP-dc="http://ns.exiftool.org/XMP/XMP-dc/1.0/" xmlns:XMP-photoshop="http://ns.exiftool.org/XMP/XMP-photoshop/1.0/" xmlns:XMP-plus="http://ns.exiftool.org/XMP/XMP-plus/1.0/" xmlns:XMP-xmp="http://ns.exiftool.org/XMP/XMP-xmp/1.0/" xmlns:XMP-xmpRights="http://ns.exiftool.org/XMP/XMP-xmpRights/1.0/" xmlns:Adobe="http://ns.exiftool.org/APP14/Adobe/1.0/" xmlns:Composite="http://ns.exiftool.org/Composite/1.0/" rdf:about="/var/archivematica/sharedDirectory/watchedDirectories/workFlowDecisions/extractPackagesChoice/7058361_upload-6ff77ccb-f4d2-4aeb-84a0-e462ca4138a5/objects/7058361" et:toolkit="Image::ExifTool 12.40">
+<ExifTool:ExifToolVersion>12.40</ExifTool:ExifToolVersion>
+<System:FileName>7058361</System:FileName>
+<System:Directory>/var/archivematica/sharedDirectory/watchedDirectories/workFlowDecisions/extractPackagesChoice/7058361_upload-6ff77ccb-f4d2-4aeb-84a0-e462ca4138a5/objects</System:Directory>
+<System:FileSize>131 KiB</System:FileSize>
+<System:FileModifyDate>2025:10:28 19:07:28+00:00</System:FileModifyDate>
+<System:FileAccessDate>2025:10:28 19:07:29+00:00</System:FileAccessDate>
+<System:FileInodeChangeDate>2025:10:28 19:07:28+00:00</System:FileInodeChangeDate>
+<System:FilePermissions>-rw-r-----</System:FilePermissions>
+<File:FileType>JPEG</File:FileType>
+<File:FileTypeExtension>jpg</File:FileTypeExtension>
+<File:MIMEType>image/jpeg</File:MIMEType>
+<File:ExifByteOrder>Big-endian (Motorola, MM)</File:ExifByteOrder>
+<File:CurrentIPTCDigest>ed3d9bf1276b54654a9169c8c1e2c081</File:CurrentIPTCDigest>
+<File:Comment>IPTC Photo Metadata Standard 2021.1 reference image file - release 2b, as of 2022-07-12</File:Comment>
+<File:ImageWidth>2000</File:ImageWidth>
+<File:ImageHeight>1000</File:ImageHeight>
+<File:EncodingProcess>Progressive DCT, Huffman coding</File:EncodingProcess>
+<File:BitsPerSample>8</File:BitsPerSample>
+<File:ColorComponents>3</File:ColorComponents>
+<File:YCbCrSubSampling>YCbCr4:2:0 (2 2)</File:YCbCrSubSampling>
+<IFD0:ImageDescription>The description aka caption (ref2021.1)</IFD0:ImageDescription>
+<IFD0:XResolution>72</IFD0:XResolution>
+<IFD0:YResolution>72</IFD0:YResolution>
+<IFD0:ResolutionUnit>inches</IFD0:ResolutionUnit>
+<IFD0:Artist>Creator1 (ref2021.1)</IFD0:Artist>
+<IFD0:YCbCrPositioning>Centered</IFD0:YCbCrPositioning>
+<IFD0:Copyright>Copyright (Notice) 2021.1 IPTC - www.iptc.org (ref2021.1)</IFD0:Copyright>
+<ExifIFD:ExifVersion>0232</ExifIFD:ExifVersion>
+<ExifIFD:DateTimeOriginal>2021:10:20 21:01:01</ExifIFD:DateTimeOriginal>
+<ExifIFD:OffsetTimeOriginal>+00:00</ExifIFD:OffsetTimeOriginal>
+<ExifIFD:ComponentsConfiguration>Y, Cb, Cr, -</ExifIFD:ComponentsConfiguration>
+<ExifIFD:FlashpixVersion>0100</ExifIFD:FlashpixVersion>
+<ExifIFD:ColorSpace>Uncalibrated</ExifIFD:ColorSpace>
+<IPTC:ObjectAttributeReference>000:Actuality</IPTC:ObjectAttributeReference>
+<IPTC:ObjectName>The Title (ref2021.1)</IPTC:ObjectName>
+<IPTC:SubjectReference>
+<rdf:Bag>
+<rdf:li>IPTC:10020211</rdf:li>
+<rdf:li>IPTC:20020211</rdf:li>
+<rdf:li>IPTC:30020211</rdf:li>
+</rdf:Bag>
+</IPTC:SubjectReference>
+<IPTC:Keywords>
+<rdf:Bag>
+<rdf:li>Keyword1ref2021.1</rdf:li>
+<rdf:li>Keyword2ref2021.1</rdf:li>
+<rdf:li>Keyword3ref2021.1</rdf:li>
+</rdf:Bag>
+</IPTC:Keywords>
+<IPTC:SpecialInstructions>An Instruction (ref2021.1)</IPTC:SpecialInstructions>
+<IPTC:DateCreated>2021:10:20</IPTC:DateCreated>
+<IPTC:TimeCreated>21:01:01+00:00</IPTC:TimeCreated>
+<IPTC:By-line>Creator1 (ref2021.1)</IPTC:By-line>
+<IPTC:By-lineTitle>Creator's Job Title (ref2021.1)</IPTC:By-lineTitle>
+<IPTC:City>City (Core) (ref2021.1)</IPTC:City>
+<IPTC:Sub-location>Sublocation (Core) (ref2021.1)</IPTC:Sub-location>
+<IPTC:Province-State>Province/State(Core)(ref2021.1)</IPTC:Province-State>
+<IPTC:Country-PrimaryLocationCode>R21</IPTC:Country-PrimaryLocationCode>
+<IPTC:Country-PrimaryLocationName>Country (Core) (ref2021.1)</IPTC:Country-PrimaryLocationName>
+<IPTC:OriginalTransmissionReference>Job Id (ref2021.1)</IPTC:OriginalTransmissionReference>
+<IPTC:Headline>The Headline (ref2021.1)</IPTC:Headline>
+<IPTC:Credit>Credit Line (ref2021.1)</IPTC:Credit>
+<IPTC:Source>Source (ref2021.1)</IPTC:Source>
+<IPTC:CopyrightNotice>Copyright (Notice) 2021.1 IPTC - www.iptc.org (ref2021.1)</IPTC:CopyrightNotice>
+<IPTC:Caption-Abstract>The description aka caption (ref2021.1)</IPTC:Caption-Abstract>
+<IPTC:Writer-Editor>Description Writer (ref2021.1)</IPTC:Writer-Editor>
+<IPTC:ApplicationRecordVersion>4</IPTC:ApplicationRecordVersion>
+<XMP-x:XMPToolkit>Image::ExifTool 12.41</XMP-x:XMPToolkit>
+<XMP-iptcCore:AltTextAccessibility>This is the Alt Text description to support accessibility in 2021.1</XMP-iptcCore:AltTextAccessibility>
+<XMP-iptcCore:AltTextAccessibility-en>This is the Alt Text description to support accessibility in 2021.1</XMP-iptcCore:AltTextAccessibility-en>
+<XMP-iptcCore:CountryCode>R21</XMP-iptcCore:CountryCode>
+<XMP-iptcCore:CreatorCity>Creator's CI: City (ref2021.1)</XMP-iptcCore:CreatorCity>
+<XMP-iptcCore:CreatorCountry>Creator's CI: Country (ref2021.1)</XMP-iptcCore:CreatorCountry>
+<XMP-iptcCore:CreatorAddress>Creator's CI: Address, line 1 (ref2021.1)</XMP-iptcCore:CreatorAddress>
+<XMP-iptcCore:CreatorPostalCode>Creator's CI: Postcode (ref2021.1)</XMP-iptcCore:CreatorPostalCode>
+<XMP-iptcCore:CreatorRegion>Creator's CI: State/Province (ref2021.1)</XMP-iptcCore:CreatorRegion>
+<XMP-iptcCore:CreatorWorkEmail>Creator's CI: Email@1, Email@2 (ref2021.1)</XMP-iptcCore:CreatorWorkEmail>
+<XMP-iptcCore:CreatorWorkTelephone>Creator's CI: Phone # 1, Phone # 2 (ref2021.1)</XMP-iptcCore:CreatorWorkTelephone>
+<XMP-iptcCore:CreatorWorkURL>http://www.Creators.CI/WebAddress/ref2021.1</XMP-iptcCore:CreatorWorkURL>
+<XMP-iptcCore:ExtDescrAccessibility>This is the Extended Description to support accessibility in 2021.1</XMP-iptcCore:ExtDescrAccessibility>
+<XMP-iptcCore:ExtDescrAccessibility-en>This is the Extended Description to support accessibility in 2021.1</XMP-iptcCore:ExtDescrAccessibility-en>
+<XMP-iptcCore:IntellectualGenre>Actuality</XMP-iptcCore:IntellectualGenre>
+<XMP-iptcCore:Location>Sublocation (Core) (ref2021.1)</XMP-iptcCore:Location>
+<XMP-iptcCore:Scene>
+<rdf:Bag>
+<rdf:li>010100</rdf:li>
+<rdf:li>010400</rdf:li>
+</rdf:Bag>
+</XMP-iptcCore:Scene>
+<XMP-iptcCore:SubjectCode>
+<rdf:Bag>
+<rdf:li>10020211</rdf:li>
+<rdf:li>20020211</rdf:li>
+<rdf:li>30020211</rdf:li>
+</rdf:Bag>
+</XMP-iptcCore:SubjectCode>
+<XMP-iptcExt:AboutCvTermCvId>http://example.com/cv/about/ref2021.1</XMP-iptcExt:AboutCvTermCvId>
+<XMP-iptcExt:AboutCvTermId>http://example.com/cv/about/ref2021.1/code987</XMP-iptcExt:AboutCvTermId>
+<XMP-iptcExt:AboutCvTermName>CV-Term Name 1 (ref2021.1)</XMP-iptcExt:AboutCvTermName>
+<XMP-iptcExt:AboutCvTermRefinedAbout>http://example.com/cv/refinements2/ref2021.1/codeX145</XMP-iptcExt:AboutCvTermRefinedAbout>
+<XMP-iptcExt:AdditionalModelInformation>Additional Model Info (ref2021.1)</XMP-iptcExt:AdditionalModelInformation>
+<XMP-iptcExt:ArtworkCircaDateCreated>AO Circa Date: between 1550 and 1600 (ref2021.1)</XMP-iptcExt:ArtworkCircaDateCreated>
+<XMP-iptcExt:ArtworkContentDescription>AO Content Description 1 (ref2021.1)</XMP-iptcExt:ArtworkContentDescription>
+<XMP-iptcExt:ArtworkContributionDescription>AO Contribution Description 1 (ref2021.1)</XMP-iptcExt:ArtworkContributionDescription>
+<XMP-iptcExt:ArtworkCopyrightNotice>AO Copyright Notice 1 (ref2021.1)</XMP-iptcExt:ArtworkCopyrightNotice>
+<XMP-iptcExt:ArtworkCreator>
+<rdf:Bag>
+<rdf:li>AO Creator Name 1a (ref2021.1)</rdf:li>
+<rdf:li>AO Creator Name 1b (ref2021.1)</rdf:li>
+</rdf:Bag>
+</XMP-iptcExt:ArtworkCreator>
+<XMP-iptcExt:ArtworkCreatorID>
+<rdf:Bag>
+<rdf:li>AO Creator Id 1a (ref2021.1)</rdf:li>
+<rdf:li>AO Creator Id 1b (ref2021.1)</rdf:li>
+</rdf:Bag>
+</XMP-iptcExt:ArtworkCreatorID>
+<XMP-iptcExt:ArtworkCopyrightOwnerID>AO Current Copyright Owner ID 1 (ref2021.1)</XMP-iptcExt:ArtworkCopyrightOwnerID>
+<XMP-iptcExt:ArtworkCopyrightOwnerName>AO Current Copyright Owner Name 1 (ref2021.1)</XMP-iptcExt:ArtworkCopyrightOwnerName>
+<XMP-iptcExt:ArtworkLicensorID>AO Current Licensor ID 1 (ref2021.1)</XMP-iptcExt:ArtworkLicensorID>
+<XMP-iptcExt:ArtworkLicensorName>AO Current Licensor Name 1 (ref2021.1)</XMP-iptcExt:ArtworkLicensorName>
+<XMP-iptcExt:ArtworkDateCreated>1921:10:20 21:01:00+00:00</XMP-iptcExt:ArtworkDateCreated>
+<XMP-iptcExt:ArtworkPhysicalDescription>AO Physical Description 1 (ref2021.1)</XMP-iptcExt:ArtworkPhysicalDescription>
+<XMP-iptcExt:ArtworkSource>AO Source 1 (ref2021.1)</XMP-iptcExt:ArtworkSource>
+<XMP-iptcExt:ArtworkSourceInventoryNo>AO Source Inventory No 1 (ref2021.1)</XMP-iptcExt:ArtworkSourceInventoryNo>
+<XMP-iptcExt:ArtworkSourceInvURL>AO Source Inventory URL (ref2021.1)</XMP-iptcExt:ArtworkSourceInvURL>
+<XMP-iptcExt:ArtworkStylePeriod>
+<rdf:Bag>
+<rdf:li>AO Style Baroque (ref2021.1)</rdf:li>
+<rdf:li>AO Style Italian Baroque (ref2021.1)</rdf:li>
+</rdf:Bag>
+</XMP-iptcExt:ArtworkStylePeriod>
+<XMP-iptcExt:ArtworkTitle>AO Title 1 (ref2021.1)</XMP-iptcExt:ArtworkTitle>
+<XMP-iptcExt:DigitalImageGUID>http://example.com/imageGUIDs/TestGUID12345/ref2021.1</XMP-iptcExt:DigitalImageGUID>
+<XMP-iptcExt:DigitalSourceType>http://cv.iptc.org/newscodes/digitalsourcetype/softwareImage</XMP-iptcExt:DigitalSourceType>
+<XMP-iptcExt:EmbeddedEncodedRightsExpr>The Encoded Rights Expression (ref2021.1)</XMP-iptcExt:EmbeddedEncodedRightsExpr>
+<XMP-iptcExt:EmbeddedEncodedRightsExprType>IANA Media Type of ERE (ref2021.1)</XMP-iptcExt:EmbeddedEncodedRightsExprType>
+<XMP-iptcExt:EmbeddedEncodedRightsExprLangID>http://example.org/RELids/id4711/ref2021.1</XMP-iptcExt:EmbeddedEncodedRightsExprLangID>
+<XMP-iptcExt:Event>Event Name (ref2021.1)</XMP-iptcExt:Event>
+<XMP-iptcExt:EventID>
+<rdf:Bag>
+<rdf:li>https://example.com/events/id2021.1a</rdf:li>
+<rdf:li>https://example.com/events/id2021.1b</rdf:li>
+</rdf:Bag>
+</XMP-iptcExt:EventID>
+<XMP-iptcExt:GenreCvId>http://example.com/cv/genre/ref2021.1</XMP-iptcExt:GenreCvId>
+<XMP-iptcExt:GenreCvTermId>http://example.com/cv/genre/ref2021.1/code1369</XMP-iptcExt:GenreCvTermId>
+<XMP-iptcExt:GenreCvTermName>Genre CV-Term Name 1 (ref2021.1)</XMP-iptcExt:GenreCvTermName>
+<XMP-iptcExt:GenreCvTermRefinedAbout>http://example.com/cv/genrerefinements2/ref2021.1/codeY864</XMP-iptcExt:GenreCvTermRefinedAbout>
+<XMP-iptcExt:ImageRegionName>
+<rdf:Bag>
+<rdf:li>Listener 1</rdf:li>
+<rdf:li>Listener 2</rdf:li>
+<rdf:li>Speaker 1</rdf:li>
+</rdf:Bag>
+</XMP-iptcExt:ImageRegionName>
+<XMP-iptcExt:ImageRegionOrganisationInImageName>
+<rdf:Bag>
+<rdf:li>Organisation name no 1 in region persltr2 (ref2021.1)</rdf:li>
+<rdf:li>Organisation name no 1 in region persltr2 (ref2021.1)</rdf:li>
+<rdf:li>Organisation name no 1 in region persltr3 (ref2021.1)</rdf:li>
+</rdf:Bag>
+</XMP-iptcExt:ImageRegionOrganisationInImageName>
+<XMP-iptcExt:ImageRegionPersonInImage>
+<rdf:Bag>
+<rdf:li>Person name no 1 in region persltr2 (ref2021.1)</rdf:li>
+<rdf:li>Person name no 1 in region persltr3 (ref2021.1)</rdf:li>
+<rdf:li>Person name no 1 in region persltr1 (ref2021.1)</rdf:li>
+</rdf:Bag>
+</XMP-iptcExt:ImageRegionPersonInImage>
+<XMP-iptcExt:ImageRegionBoundaryH>0.385</XMP-iptcExt:ImageRegionBoundaryH>
+<XMP-iptcExt:ImageRegionBoundaryShape>
+<rdf:Bag>
+<rdf:li>Rectangle</rdf:li>
+<rdf:li>Circle</rdf:li>
+<rdf:li>Polygon</rdf:li>
+</rdf:Bag>
+</XMP-iptcExt:ImageRegionBoundaryShape>
+<XMP-iptcExt:ImageRegionBoundaryUnit>
+<rdf:Bag>
+<rdf:li>Relative</rdf:li>
+<rdf:li>Relative</rdf:li>
+<rdf:li>Relative</rdf:li>
+</rdf:Bag>
+</XMP-iptcExt:ImageRegionBoundaryUnit>
+<XMP-iptcExt:ImageRegionBoundaryW>0.127</XMP-iptcExt:ImageRegionBoundaryW>
+<XMP-iptcExt:ImageRegionBoundaryX>
+<rdf:Bag>
+<rdf:li>0.31</rdf:li>
+<rdf:li>0.59</rdf:li>
+</rdf:Bag>
+</XMP-iptcExt:ImageRegionBoundaryX>
+<XMP-iptcExt:ImageRegionBoundaryY>
+<rdf:Bag>
+<rdf:li>0.18</rdf:li>
+<rdf:li>0.426</rdf:li>
+</rdf:Bag>
+</XMP-iptcExt:ImageRegionBoundaryY>
+<XMP-iptcExt:ImageRegionCtypeName>
+<rdf:Bag>
+<rdf:li>Region Boundary Content Type Name (ref2021.1)</rdf:li>
+<rdf:li>Region Boundary Content Type Name (ref2021.1)</rdf:li>
+<rdf:li>Region Boundary Content Type Name (ref2021.1)</rdf:li>
+</rdf:Bag>
+</XMP-iptcExt:ImageRegionCtypeName>
+<XMP-iptcExt:ImageRegionCtypeIdentifier>
+<rdf:Bag>
+<rdf:li>https://example.org/rctype/type2021.1a</rdf:li>
+<rdf:li>https://example.org/rctype/type2021.1b</rdf:li>
+<rdf:li>https://example.org/rctype/type2021.1a</rdf:li>
+<rdf:li>https://example.org/rctype/type2021.1b</rdf:li>
+<rdf:li>https://example.org/rctype/type2021.1a</rdf:li>
+<rdf:li>https://example.org/rctype/type2021.1b</rdf:li>
+</rdf:Bag>
+</XMP-iptcExt:ImageRegionCtypeIdentifier>
+<XMP-iptcExt:ImageRegionID>
+<rdf:Bag>
+<rdf:li>persltr2</rdf:li>
+<rdf:li>persltr3</rdf:li>
+<rdf:li>persltr1</rdf:li>
+</rdf:Bag>
+</XMP-iptcExt:ImageRegionID>
+<XMP-iptcExt:ImageRegionRoleName>
+<rdf:Bag>
+<rdf:li>Region Boundary Content Role Name (ref2021.1)</rdf:li>
+<rdf:li>Region Boundary Content Role Name (ref2021.1)</rdf:li>
+<rdf:li>Region Boundary Content Role Name (ref2021.1)</rdf:li>
+</rdf:Bag>
+</XMP-iptcExt:ImageRegionRoleName>
+<XMP-iptcExt:ImageRegionRoleIdentifier>
+<rdf:Bag>
+<rdf:li>https://example.org/rrole/role2021.1a</rdf:li>
+<rdf:li>https://example.org/rrole/role2021.1b</rdf:li>
+<rdf:li>https://example.org/rrole/role2021.1a</rdf:li>
+<rdf:li>https://example.org/rrole/role2021.1b</rdf:li>
+<rdf:li>https://example.org/rrole/role2021.1a</rdf:li>
+<rdf:li>https://example.org/rrole/role2021.1b</rdf:li>
+</rdf:Bag>
+</XMP-iptcExt:ImageRegionRoleIdentifier>
+<XMP-iptcExt:ImageRegionBoundaryRx>0.068</XMP-iptcExt:ImageRegionBoundaryRx>
+<XMP-iptcExt:ImageRegionBoundaryVerticesX>
+<rdf:Bag>
+<rdf:li>0.05</rdf:li>
+<rdf:li>0.148</rdf:li>
+<rdf:li>0.375</rdf:li>
+</rdf:Bag>
+</XMP-iptcExt:ImageRegionBoundaryVerticesX>
+<XMP-iptcExt:ImageRegionBoundaryVerticesY>
+<rdf:Bag>
+<rdf:li>0.713</rdf:li>
+<rdf:li>0.041</rdf:li>
+<rdf:li>0.863</rdf:li>
+</rdf:Bag>
+</XMP-iptcExt:ImageRegionBoundaryVerticesY>
+<XMP-iptcExt:LinkedEncodedRightsExpr>http://example.org/linkedrightsexpression/id986/ref2021.1</XMP-iptcExt:LinkedEncodedRightsExpr>
+<XMP-iptcExt:LinkedEncodedRightsExprType>IANA Media Type of ERE (ref2021.1)</XMP-iptcExt:LinkedEncodedRightsExprType>
+<XMP-iptcExt:LinkedEncodedRightsExprLangID>http://example.org/RELids/id4712/ref2021.1</XMP-iptcExt:LinkedEncodedRightsExprLangID>
+<XMP-iptcExt:LocationCreatedCity>City (Location created1) (ref2021.1)</XMP-iptcExt:LocationCreatedCity>
+<XMP-iptcExt:LocationCreatedCountryCode>R17</XMP-iptcExt:LocationCreatedCountryCode>
+<XMP-iptcExt:LocationCreatedCountryName>CountryName (Location created1) (ref2021.1)</XMP-iptcExt:LocationCreatedCountryName>
+<XMP-iptcExt:LocationCreatedLocationId>Location Id (Location created1) (ref2021.1)</XMP-iptcExt:LocationCreatedLocationId>
+<XMP-iptcExt:LocationCreatedLocationName>Location Name (Location created1) (ref2021.1)</XMP-iptcExt:LocationCreatedLocationName>
+<XMP-iptcExt:LocationCreatedProvinceState>Province/State (Location created1) (ref2021.1)</XMP-iptcExt:LocationCreatedProvinceState>
+<XMP-iptcExt:LocationCreatedSublocation>Sublocation (Location created1) (ref2021.1)</XMP-iptcExt:LocationCreatedSublocation>
+<XMP-iptcExt:LocationCreatedWorldRegion>Worldregion (Location created1) (ref2021.1)</XMP-iptcExt:LocationCreatedWorldRegion>
+<XMP-iptcExt:LocationCreatedGPSAltitude>480 m</XMP-iptcExt:LocationCreatedGPSAltitude>
+<XMP-iptcExt:LocationCreatedGPSLatitude>48 deg 16' 30.00" N</XMP-iptcExt:LocationCreatedGPSLatitude>
+<XMP-iptcExt:LocationCreatedGPSLongitude>16 deg 20' 16.80" E</XMP-iptcExt:LocationCreatedGPSLongitude>
+<XMP-iptcExt:LocationShownCity>
+<rdf:Bag>
+<rdf:li>City (Location shown1) (ref2021.1)</rdf:li>
+<rdf:li>City (Location shown2) (ref2021.1)</rdf:li>
+</rdf:Bag>
+</XMP-iptcExt:LocationShownCity>
+<XMP-iptcExt:LocationShownCountryCode>
+<rdf:Bag>
+<rdf:li>R17</rdf:li>
+<rdf:li>R17</rdf:li>
+</rdf:Bag>
+</XMP-iptcExt:LocationShownCountryCode>
+<XMP-iptcExt:LocationShownCountryName>
+<rdf:Bag>
+<rdf:li>CountryName (Location shown1) (ref2021.1)</rdf:li>
+<rdf:li>CountryName (Location shown2) (ref2021.1)</rdf:li>
+</rdf:Bag>
+</XMP-iptcExt:LocationShownCountryName>
+<XMP-iptcExt:LocationShownLocationId>
+<rdf:Bag>
+<rdf:li>Location Id 1a(Location shown1) (ref2021.1)</rdf:li>
+<rdf:li>Location Id 1b(Location shown1) (ref2021.1)</rdf:li>
+<rdf:li>Location Id 2a(Location shown2) (ref2021.1)</rdf:li>
+<rdf:li>Location Id 2b(Location shown2) (ref2021.1)</rdf:li>
+</rdf:Bag>
+</XMP-iptcExt:LocationShownLocationId>
+<XMP-iptcExt:LocationShownLocationName>
+<rdf:Bag>
+<rdf:li>Location Name (Location shown1) (ref2021.1)</rdf:li>
+<rdf:li>Location Name (Location shown2) (ref2021.1)</rdf:li>
+</rdf:Bag>
+</XMP-iptcExt:LocationShownLocationName>
+<XMP-iptcExt:LocationShownProvinceState>
+<rdf:Bag>
+<rdf:li>Province/State (Location shown1) (ref2021.1)</rdf:li>
+<rdf:li>Province/State (Location shown2) (ref2021.1)</rdf:li>
+</rdf:Bag>
+</XMP-iptcExt:LocationShownProvinceState>
+<XMP-iptcExt:LocationShownSublocation>
+<rdf:Bag>
+<rdf:li>Sublocation (Location shown1) (ref2021.1)</rdf:li>
+<rdf:li>Sublocation (Location shown2) (ref2021.1)</rdf:li>
+</rdf:Bag>
+</XMP-iptcExt:LocationShownSublocation>
+<XMP-iptcExt:LocationShownWorldRegion>
+<rdf:Bag>
+<rdf:li>Worldregion (Location shown1) (ref2021.1)</rdf:li>
+<rdf:li>Worldregion (Location shown2) (ref2021.1)</rdf:li>
+</rdf:Bag>
+</XMP-iptcExt:LocationShownWorldRegion>
+<XMP-iptcExt:LocationShownGPSAltitude>
+<rdf:Bag>
+<rdf:li>140 m</rdf:li>
+<rdf:li>120 m</rdf:li>
+</rdf:Bag>
+</XMP-iptcExt:LocationShownGPSAltitude>
+<XMP-iptcExt:LocationShownGPSLatitude>
+<rdf:Bag>
+<rdf:li>48 deg 8' 49.20" N</rdf:li>
+<rdf:li>47 deg 57' 7.20" N</rdf:li>
+</rdf:Bag>
+</XMP-iptcExt:LocationShownGPSLatitude>
+<XMP-iptcExt:LocationShownGPSLongitude>
+<rdf:Bag>
+<rdf:li>17 deg 5' 52.80" E</rdf:li>
+<rdf:li>16 deg 49' 48.00" E</rdf:li>
+</rdf:Bag>
+</XMP-iptcExt:LocationShownGPSLongitude>
+<XMP-iptcExt:MaxAvailHeight>20</XMP-iptcExt:MaxAvailHeight>
+<XMP-iptcExt:MaxAvailWidth>21</XMP-iptcExt:MaxAvailWidth>
+<XMP-iptcExt:ModelAge>
+<rdf:Bag>
+<rdf:li>25</rdf:li>
+<rdf:li>27</rdf:li>
+<rdf:li>30</rdf:li>
+</rdf:Bag>
+</XMP-iptcExt:ModelAge>
+<XMP-iptcExt:OrganisationInImageCode>
+<rdf:Bag>
+<rdf:li>Organisation Code 1 (ref2021.1)</rdf:li>
+<rdf:li>Organisation Code 2 (ref2021.1)</rdf:li>
+<rdf:li>Organisation Code 3 (ref2021.1)</rdf:li>
+</rdf:Bag>
+</XMP-iptcExt:OrganisationInImageCode>
+<XMP-iptcExt:OrganisationInImageName>
+<rdf:Bag>
+<rdf:li>Organisation Name 1 (ref2021.1)</rdf:li>
+<rdf:li>Organisation Name 2 (ref2021.1)</rdf:li>
+<rdf:li>Organisation Name 3 (ref2021.1)</rdf:li>
+</rdf:Bag>
+</XMP-iptcExt:OrganisationInImageName>
+<XMP-iptcExt:PersonInImage>
+<rdf:Bag>
+<rdf:li>Person Shown 1 (ref2021.1)</rdf:li>
+<rdf:li>Person Shown 2 (ref2021.1)</rdf:li>
+</rdf:Bag>
+</XMP-iptcExt:PersonInImage>
+<XMP-iptcExt:PersonInImageCvTermCvId>http://example.com/cv/test99/ref2021.1</XMP-iptcExt:PersonInImageCvTermCvId>
+<XMP-iptcExt:PersonInImageCvTermId>http://example.com/cv/test99/code987/ref2021.1</XMP-iptcExt:PersonInImageCvTermId>
+<XMP-iptcExt:PersonInImageCvTermName>Person Characteristic Name 1 (ref2021.1)</XMP-iptcExt:PersonInImageCvTermName>
+<XMP-iptcExt:PersonInImageCvTermRefinedAbout>http://example.com/cv/refinements987/codeY765/ref2021.1</XMP-iptcExt:PersonInImageCvTermRefinedAbout>
+<XMP-iptcExt:PersonInImageDescription>Person Description 1 (ref2021.1)</XMP-iptcExt:PersonInImageDescription>
+<XMP-iptcExt:PersonInImageId>
+<rdf:Bag>
+<rdf:li>http://wikidata.org/item/Q123456789/ref2021.1</rdf:li>
+<rdf:li>http://freebase.com/m/987654321/ref2021.1</rdf:li>
+</rdf:Bag>
+</XMP-iptcExt:PersonInImageId>
+<XMP-iptcExt:PersonInImageName>Person Name 1 (ref2021.1)</XMP-iptcExt:PersonInImageName>
+<XMP-iptcExt:ProductInImageDescription>Product Description 1 (ref2021.1)</XMP-iptcExt:ProductInImageDescription>
+<XMP-iptcExt:ProductInImageGTIN>123456782021.1</XMP-iptcExt:ProductInImageGTIN>
+<XMP-iptcExt:ProductInImageName>Product Name 1 (ref2021.1)</XMP-iptcExt:ProductInImageName>
+<XMP-iptcExt:RegistryEntryRole>
+<rdf:Bag>
+<rdf:li>Registry Entry Role ID 1 (ref2021.1)</rdf:li>
+<rdf:li>Registry Entry Role ID 2 (ref2021.1)</rdf:li>
+</rdf:Bag>
+</XMP-iptcExt:RegistryEntryRole>
+<XMP-iptcExt:RegistryItemID>
+<rdf:Bag>
+<rdf:li>Registry Image ID 1 (ref2021.1)</rdf:li>
+<rdf:li>Registry Image ID 2 (ref2021.1)</rdf:li>
+</rdf:Bag>
+</XMP-iptcExt:RegistryItemID>
+<XMP-iptcExt:RegistryOrganisationID>
+<rdf:Bag>
+<rdf:li>Registry Organisation ID 1 (ref2021.1)</rdf:li>
+<rdf:li>Registry Organisation ID 2 (ref2021.1)</rdf:li>
+</rdf:Bag>
+</XMP-iptcExt:RegistryOrganisationID>
+<XMP-dc:Creator>Creator1 (ref2021.1)</XMP-dc:Creator>
+<XMP-dc:Description>The description aka caption (ref2021.1)</XMP-dc:Description>
+<XMP-dc:Rights>Copyright (Notice) 2021.1 IPTC - www.iptc.org (ref2021.1)</XMP-dc:Rights>
+<XMP-dc:Subject>
+<rdf:Bag>
+<rdf:li>Keyword1ref2021.1</rdf:li>
+<rdf:li>Keyword2ref2021.1</rdf:li>
+<rdf:li>Keyword3ref2021.1</rdf:li>
+</rdf:Bag>
+</XMP-dc:Subject>
+<XMP-dc:Title>The Title (ref2021.1)</XMP-dc:Title>
+<XMP-photoshop:AuthorsPosition>Creator's Job Title (ref2021.1)</XMP-photoshop:AuthorsPosition>
+<XMP-photoshop:CaptionWriter>Description Writer (ref2021.1)</XMP-photoshop:CaptionWriter>
+<XMP-photoshop:City>City (Core) (ref2021.1)</XMP-photoshop:City>
+<XMP-photoshop:Country>Country (Core) (ref2021.1)</XMP-photoshop:Country>
+<XMP-photoshop:Credit>Credit Line (ref2021.1)</XMP-photoshop:Credit>
+<XMP-photoshop:DateCreated>2021:10:20 21:01:01+00:00</XMP-photoshop:DateCreated>
+<XMP-photoshop:Headline>The Headline (ref2021.1)</XMP-photoshop:Headline>
+<XMP-photoshop:Instructions>An Instruction (ref2021.1)</XMP-photoshop:Instructions>
+<XMP-photoshop:Source>Source (ref2021.1)</XMP-photoshop:Source>
+<XMP-photoshop:State>Province/State(Core)(ref2021.1)</XMP-photoshop:State>
+<XMP-photoshop:TransmissionReference>Job Id (ref2021.1)</XMP-photoshop:TransmissionReference>
+<XMP-plus:CopyrightOwnerID>
+<rdf:Bag>
+<rdf:li>Copyright Owner Id 1 (ref2021.1)</rdf:li>
+<rdf:li>Copyright Owner Id 2 (ref2021.1)</rdf:li>
+</rdf:Bag>
+</XMP-plus:CopyrightOwnerID>
+<XMP-plus:CopyrightOwnerName>
+<rdf:Bag>
+<rdf:li>Copyright Owner Name 1 (ref2021.1)</rdf:li>
+<rdf:li>Copyright Owner Name 2 (ref2021.1)</rdf:li>
+</rdf:Bag>
+</XMP-plus:CopyrightOwnerName>
+<XMP-plus:ImageCreatorID>Image Creator Id 1 (ref2021.1)</XMP-plus:ImageCreatorID>
+<XMP-plus:ImageCreatorName>Image Creator Name 1 (ref2021.1)</XMP-plus:ImageCreatorName>
+<XMP-plus:ImageCreatorImageID>Image Creator Image ID (ref2021.1)</XMP-plus:ImageCreatorImageID>
+<XMP-plus:ImageSupplierID>Image Supplier Id (ref2021.1)</XMP-plus:ImageSupplierID>
+<XMP-plus:ImageSupplierName>Image Supplier Name (ref2021.1)</XMP-plus:ImageSupplierName>
+<XMP-plus:ImageSupplierImageID>Image Supplier Image ID (ref2021.1)</XMP-plus:ImageSupplierImageID>
+<XMP-plus:LicensorCity>
+<rdf:Bag>
+<rdf:li>Licensor City 1 (ref2021.1)</rdf:li>
+<rdf:li>Licensor City 2 (ref2021.1)</rdf:li>
+</rdf:Bag>
+</XMP-plus:LicensorCity>
+<XMP-plus:LicensorCountry>
+<rdf:Bag>
+<rdf:li>Licensor Country 1 (ref2021.1)</rdf:li>
+<rdf:li>Licensor Country 2 (ref2021.1)</rdf:li>
+</rdf:Bag>
+</XMP-plus:LicensorCountry>
+<XMP-plus:LicensorEmail>
+<rdf:Bag>
+<rdf:li>Licensor Email 1 (ref2021.1)</rdf:li>
+<rdf:li>Licensor Email 2 (ref2021.1)</rdf:li>
+</rdf:Bag>
+</XMP-plus:LicensorEmail>
+<XMP-plus:LicensorExtendedAddress>
+<rdf:Bag>
+<rdf:li>Licensor Ext Addr 1 (ref2021.1)</rdf:li>
+<rdf:li>Licensor Ext Addr 2 (ref2021.1)</rdf:li>
+</rdf:Bag>
+</XMP-plus:LicensorExtendedAddress>
+<XMP-plus:LicensorID>
+<rdf:Bag>
+<rdf:li>Licensor ID 1 (ref2021.1)</rdf:li>
+<rdf:li>Licensor ID 2 (ref2021.1)</rdf:li>
+</rdf:Bag>
+</XMP-plus:LicensorID>
+<XMP-plus:LicensorName>
+<rdf:Bag>
+<rdf:li>Licensor Name 1 (ref2021.1)</rdf:li>
+<rdf:li>Licensor Name 2 (ref2021.1)</rdf:li>
+</rdf:Bag>
+</XMP-plus:LicensorName>
+<XMP-plus:LicensorPostalCode>
+<rdf:Bag>
+<rdf:li>Licensor Postcode 1 (ref2021.1)</rdf:li>
+<rdf:li>Licensor Postcode 2 (ref2021.1)</rdf:li>
+</rdf:Bag>
+</XMP-plus:LicensorPostalCode>
+<XMP-plus:LicensorRegion>
+<rdf:Bag>
+<rdf:li>Licensor Region 1 (ref2021.1)</rdf:li>
+<rdf:li>Licensor Region 2 (ref2021.1)</rdf:li>
+</rdf:Bag>
+</XMP-plus:LicensorRegion>
+<XMP-plus:LicensorStreetAddress>
+<rdf:Bag>
+<rdf:li>Licensor Street Addr 1 (ref2021.1)</rdf:li>
+<rdf:li>Licensor Street Addr 2 (ref2021.1)</rdf:li>
+</rdf:Bag>
+</XMP-plus:LicensorStreetAddress>
+<XMP-plus:LicensorTelephone1>
+<rdf:Bag>
+<rdf:li>Licensor Phone1 1 (ref2021.1)</rdf:li>
+<rdf:li>Licensor Phone1 2 (ref2021.1)</rdf:li>
+</rdf:Bag>
+</XMP-plus:LicensorTelephone1>
+<XMP-plus:LicensorTelephone2>
+<rdf:Bag>
+<rdf:li>Licensor Phone2 1 (ref2021.1)</rdf:li>
+<rdf:li>Licensor Phone2 2 (ref2021.1)</rdf:li>
+</rdf:Bag>
+</XMP-plus:LicensorTelephone2>
+<XMP-plus:LicensorTelephoneType1>
+<rdf:Bag>
+<rdf:li>Work</rdf:li>
+<rdf:li>Work</rdf:li>
+</rdf:Bag>
+</XMP-plus:LicensorTelephoneType1>
+<XMP-plus:LicensorTelephoneType2>
+<rdf:Bag>
+<rdf:li>Cell</rdf:li>
+<rdf:li>Cell</rdf:li>
+</rdf:Bag>
+</XMP-plus:LicensorTelephoneType2>
+<XMP-plus:LicensorURL>
+<rdf:Bag>
+<rdf:li>https://example.com/LicensorURL_1_ref2021.1</rdf:li>
+<rdf:li>https://example.com/LicensorURL_2_ref2021.1</rdf:li>
+</rdf:Bag>
+</XMP-plus:LicensorURL>
+<XMP-plus:MinorModelAgeDisclosure>Age 25 or Over</XMP-plus:MinorModelAgeDisclosure>
+<XMP-plus:ModelReleaseID>
+<rdf:Bag>
+<rdf:li>Model Release ID 1 (ref2021.1)</rdf:li>
+<rdf:li>Model Release ID 2 (ref2021.1)</rdf:li>
+</rdf:Bag>
+</XMP-plus:ModelReleaseID>
+<XMP-plus:ModelReleaseStatus>Not Applicable</XMP-plus:ModelReleaseStatus>
+<XMP-plus:PropertyReleaseID>
+<rdf:Bag>
+<rdf:li>Property Release ID 1 (ref2021.1)</rdf:li>
+<rdf:li>Property Release ID 2 (ref2021.1)</rdf:li>
+</rdf:Bag>
+</XMP-plus:PropertyReleaseID>
+<XMP-plus:PropertyReleaseStatus>Not Applicable</XMP-plus:PropertyReleaseStatus>
+<XMP-xmp:Rating>1.0</XMP-xmp:Rating>
+<XMP-xmpRights:UsageTerms>Rights Usage Terms (ref2021.1)</XMP-xmpRights:UsageTerms>
+<XMP-xmpRights:WebStatement>https://example.com/WebStatementOfRights/2021.1</XMP-xmpRights:WebStatement>
+<Adobe:DCTEncodeVersion>100</Adobe:DCTEncodeVersion>
+<Adobe:APP14Flags0>Encoded with Blend=1 downsampling</Adobe:APP14Flags0>
+<Adobe:APP14Flags1>(none)</Adobe:APP14Flags1>
+<Adobe:ColorTransform>YCbCr</Adobe:ColorTransform>
+<Composite:ImageSize>2000x1000</Composite:ImageSize>
+<Composite:Megapixels>2.0</Composite:Megapixels>
+<Composite:SubSecDateTimeOriginal>2021:10:20 21:01:01+00:00</Composite:SubSecDateTimeOriginal>
+<Composite:DateTimeCreated>2021:10:20 21:01:01+00:00</Composite:DateTimeCreated>
+</rdf:Description>
+</rdf:RDF>
+<ffprobe>
+<program_version version="4.4.2-0ubuntu0.22.04.1" copyright="Copyright (c) 2007-2021 the FFmpeg developers" compiler_ident="gcc 11 (Ubuntu 11.2.0-19ubuntu1)" configuration="--prefix=/usr --extra-version=0ubuntu0.22.04.1 --toolchain=hardened --libdir=/usr/lib/x86_64-linux-gnu --incdir=/usr/include/x86_64-linux-gnu --arch=amd64 --enable-gpl --disable-stripping --enable-gnutls --enable-ladspa --enable-libaom --enable-libass --enable-libbluray --enable-libbs2b --enable-libcaca --enable-libcdio --enable-libcodec2 --enable-libdav1d --enable-libflite --enable-libfontconfig --enable-libfreetype --enable-libfribidi --enable-libgme --enable-libgsm --enable-libjack --enable-libmp3lame --enable-libmysofa --enable-libopenjpeg --enable-libopenmpt --enable-libopus --enable-libpulse --enable-librabbitmq --enable-librubberband --enable-libshine --enable-libsnappy --enable-libsoxr --enable-libspeex --enable-libsrt --enable-libssh --enable-libtheora --enable-libtwolame --enable-libvidstab --enable-libvorbis --enable-libvpx --enable-libwebp --enable-libx265 --enable-libxml2 --enable-libxvid --enable-libzimg --enable-libzmq --enable-libzvbi --enable-lv2 --enable-omx --enable-openal --enable-opencl --enable-opengl --enable-sdl2 --enable-pocketsphinx --enable-librsvg --enable-libmfx --enable-libdc1394 --enable-libdrm --enable-libiec61883 --enable-chromaprint --enable-frei0r --enable-libx264 --enable-shared"/>
+<library_versions>
+<library_version name="libavutil" major="56" minor="70" micro="100" version="3688036" ident="Lavu56.70.100"/>
+<library_version name="libavcodec" major="58" minor="134" micro="100" version="3835492" ident="Lavc58.134.100"/>
+<library_version name="libavformat" major="58" minor="76" micro="100" version="3820644" ident="Lavf58.76.100"/>
+<library_version name="libavdevice" major="58" minor="13" micro="100" version="3804516" ident="Lavd58.13.100"/>
+<library_version name="libavfilter" major="7" minor="110" micro="100" version="487012" ident="Lavfi7.110.100"/>
+<library_version name="libswscale" major="5" minor="9" micro="100" version="330084" ident="SwS5.9.100"/>
+<library_version name="libswresample" major="3" minor="9" micro="100" version="199012" ident="SwR3.9.100"/>
+<library_version name="libpostproc" major="55" minor="9" micro="100" version="3606884" ident="postproc55.9.100"/>
+</library_versions>
+<streams>
+<stream index="0" codec_name="mjpeg" codec_long_name="Motion JPEG" profile="Progressive" codec_type="video" codec_tag_string="[0][0][0][0]" codec_tag="0x0000" width="2000" height="1000" coded_width="2000" coded_height="1000" closed_captions="0" has_b_frames="0" pix_fmt="yuvj420p" level="-99" color_range="pc" color_space="bt470bg" chroma_location="center" refs="1" r_frame_rate="25/1" avg_frame_rate="25/1" time_base="1/25" bits_per_raw_sample="8" extradata=" ">
+<disposition default="0" dub="0" original="0" comment="0" lyrics="0" karaoke="0" forced="0" hearing_impaired="0" visual_impaired="0" clean_effects="0" attached_pic="0" timed_thumbnails="0"/>
+</stream>
+</streams>
+<chapters> </chapters>
+<format filename="/var/archivematica/sharedDirectory/watchedDirectories/workFlowDecisions/extractPackagesChoice/7058361_upload-6ff77ccb-f4d2-4aeb-84a0-e462ca4138a5/objects/7058361" nb_streams="1" nb_programs="0" format_name="jpeg_pipe" format_long_name="piped jpeg sequence" size="134078" probe_score="51"/>
+</ffprobe>
+</premis:objectCharacteristicsExtension>
+</premis:objectCharacteristics>
+<premis:originalName>%transferDirectory%objects/1</premis:originalName>
+<premis:relationship>
+<premis:relationshipType>derivation</premis:relationshipType>
+<premis:relationshipSubType>is source of</premis:relationshipSubType>
+<premis:relatedObjectIdentifier>
+<premis:relatedObjectIdentifierType>UUID</premis:relatedObjectIdentifierType>
+<premis:relatedObjectIdentifierValue>b9c295ea-d201-4216-a9f7-ba65228f297a</premis:relatedObjectIdentifierValue>
+</premis:relatedObjectIdentifier>
+<premis:relatedEventIdentifier>
+<premis:relatedEventIdentifierType>UUID</premis:relatedEventIdentifierType>
+<premis:relatedEventIdentifierValue>bfb2f80e-210b-4f6f-8ca7-7cb9a5bea559</premis:relatedEventIdentifierValue>
+</premis:relatedEventIdentifier>
+</premis:relationship>
+</premis:object>
+</mets:xmlData>
+</mets:mdWrap>
+</mets:techMD>
+<mets:digiprovMD ID="digiprovMD_1">
+<mets:mdWrap MDTYPE="PREMIS:EVENT">
+<mets:xmlData>
+<premis:event xmlns:premis="http://www.loc.gov/premis/v3" xsi:schemaLocation="http://www.loc.gov/premis/v3 http://www.loc.gov/standards/premis/v3/premis.xsd" version="3.0">
+<premis:eventIdentifier>
+<premis:eventIdentifierType>UUID</premis:eventIdentifierType>
+<premis:eventIdentifierValue>7e003231-4b7a-4a30-a413-41c5c64297f3</premis:eventIdentifierValue>
+</premis:eventIdentifier>
+<premis:eventType>ingestion</premis:eventType>
+<premis:eventDateTime>2025-10-28T19:07:29.075654+00:00</premis:eventDateTime>
+<premis:eventDetailInformation>
+<premis:eventDetail/>
+</premis:eventDetailInformation>
+<premis:eventOutcomeInformation>
+<premis:eventOutcome/>
+<premis:eventOutcomeDetail>
+<premis:eventOutcomeDetailNote/>
+</premis:eventOutcomeDetail>
+</premis:eventOutcomeInformation>
+<premis:linkingAgentIdentifier>
+<premis:linkingAgentIdentifierType>preservation system</premis:linkingAgentIdentifierType>
+<premis:linkingAgentIdentifierValue>Archivematica-1.17.1</premis:linkingAgentIdentifierValue>
+</premis:linkingAgentIdentifier>
+<premis:linkingAgentIdentifier>
+<premis:linkingAgentIdentifierType>repository code</premis:linkingAgentIdentifierType>
+<premis:linkingAgentIdentifierValue/>
+</premis:linkingAgentIdentifier>
+<premis:linkingAgentIdentifier>
+<premis:linkingAgentIdentifierType>Archivematica user pk</premis:linkingAgentIdentifierType>
+<premis:linkingAgentIdentifierValue>1</premis:linkingAgentIdentifierValue>
+</premis:linkingAgentIdentifier>
+</premis:event>
+</mets:xmlData>
+</mets:mdWrap>
+</mets:digiprovMD>
+<mets:digiprovMD ID="digiprovMD_2">
+<mets:mdWrap MDTYPE="PREMIS:EVENT">
+<mets:xmlData>
+<premis:event xmlns:premis="http://www.loc.gov/premis/v3" xsi:schemaLocation="http://www.loc.gov/premis/v3 http://www.loc.gov/standards/premis/v3/premis.xsd" version="3.0">
+<premis:eventIdentifier>
+<premis:eventIdentifierType>UUID</premis:eventIdentifierType>
+<premis:eventIdentifierValue>9e53844a-4314-4c3c-81e6-05e7a526c859</premis:eventIdentifierValue>
+</premis:eventIdentifier>
+<premis:eventType>message digest calculation</premis:eventType>
+<premis:eventDateTime>2025-10-28T19:07:29.159299+00:00</premis:eventDateTime>
+<premis:eventDetailInformation>
+<premis:eventDetail>program="python"; module="hashlib.sha256()"</premis:eventDetail>
+</premis:eventDetailInformation>
+<premis:eventOutcomeInformation>
+<premis:eventOutcome/>
+<premis:eventOutcomeDetail>
+<premis:eventOutcomeDetailNote>c578389d83d513de2afbd5834bf96590c6fa0bbf894c318b2f89d9a4946cfe99</premis:eventOutcomeDetailNote>
+</premis:eventOutcomeDetail>
+</premis:eventOutcomeInformation>
+<premis:linkingAgentIdentifier>
+<premis:linkingAgentIdentifierType>preservation system</premis:linkingAgentIdentifierType>
+<premis:linkingAgentIdentifierValue>Archivematica-1.17.1</premis:linkingAgentIdentifierValue>
+</premis:linkingAgentIdentifier>
+<premis:linkingAgentIdentifier>
+<premis:linkingAgentIdentifierType>repository code</premis:linkingAgentIdentifierType>
+<premis:linkingAgentIdentifierValue/>
+</premis:linkingAgentIdentifier>
+<premis:linkingAgentIdentifier>
+<premis:linkingAgentIdentifierType>Archivematica user pk</premis:linkingAgentIdentifierType>
+<premis:linkingAgentIdentifierValue>1</premis:linkingAgentIdentifierValue>
+</premis:linkingAgentIdentifier>
+</premis:event>
+</mets:xmlData>
+</mets:mdWrap>
+</mets:digiprovMD>
+<mets:digiprovMD ID="digiprovMD_3">
+<mets:mdWrap MDTYPE="PREMIS:EVENT">
+<mets:xmlData>
+<premis:event xmlns:premis="http://www.loc.gov/premis/v3" xsi:schemaLocation="http://www.loc.gov/premis/v3 http://www.loc.gov/standards/premis/v3/premis.xsd" version="3.0">
+<premis:eventIdentifier>
+<premis:eventIdentifierType>UUID</premis:eventIdentifierType>
+<premis:eventIdentifierValue>59631995-1def-4e57-8774-2aeb11999b79</premis:eventIdentifierValue>
+</premis:eventIdentifier>
+<premis:eventType>format identification</premis:eventType>
+<premis:eventDateTime>2025-10-28T19:07:31.440328+00:00</premis:eventDateTime>
+<premis:eventDetailInformation>
+<premis:eventDetail>program="Siegfried"; version="1.11.0"</premis:eventDetail>
+</premis:eventDetailInformation>
+<premis:eventOutcomeInformation>
+<premis:eventOutcome>Positive</premis:eventOutcome>
+<premis:eventOutcomeDetail>
+<premis:eventOutcomeDetailNote>fmt/1507</premis:eventOutcomeDetailNote>
+</premis:eventOutcomeDetail>
+</premis:eventOutcomeInformation>
+<premis:linkingAgentIdentifier>
+<premis:linkingAgentIdentifierType>preservation system</premis:linkingAgentIdentifierType>
+<premis:linkingAgentIdentifierValue>Archivematica-1.17.1</premis:linkingAgentIdentifierValue>
+</premis:linkingAgentIdentifier>
+<premis:linkingAgentIdentifier>
+<premis:linkingAgentIdentifierType>repository code</premis:linkingAgentIdentifierType>
+<premis:linkingAgentIdentifierValue/>
+</premis:linkingAgentIdentifier>
+<premis:linkingAgentIdentifier>
+<premis:linkingAgentIdentifierType>Archivematica user pk</premis:linkingAgentIdentifierType>
+<premis:linkingAgentIdentifierValue>1</premis:linkingAgentIdentifierValue>
+</premis:linkingAgentIdentifier>
+</premis:event>
+</mets:xmlData>
+</mets:mdWrap>
+</mets:digiprovMD>
+<mets:digiprovMD ID="digiprovMD_4">
+<mets:mdWrap MDTYPE="PREMIS:EVENT">
+<mets:xmlData>
+<premis:event xmlns:premis="http://www.loc.gov/premis/v3" xsi:schemaLocation="http://www.loc.gov/premis/v3 http://www.loc.gov/standards/premis/v3/premis.xsd" version="3.0">
+<premis:eventIdentifier>
+<premis:eventIdentifierType>UUID</premis:eventIdentifierType>
+<premis:eventIdentifierValue>899282cc-f6c9-40cc-a122-f2941eb64759</premis:eventIdentifierValue>
+</premis:eventIdentifier>
+<premis:eventType>validation</premis:eventType>
+<premis:eventDateTime>2025-10-28T19:07:34.236820+00:00</premis:eventDateTime>
+<premis:eventDetailInformation>
+<premis:eventDetail>program="JHOVE"; version="1.26"</premis:eventDetail>
+</premis:eventDetailInformation>
+<premis:eventOutcomeInformation>
+<premis:eventOutcome>pass</premis:eventOutcome>
+<premis:eventOutcomeDetail>
+<premis:eventOutcomeDetailNote>format="JPEG"; result="Well-Formed and valid"</premis:eventOutcomeDetailNote>
+</premis:eventOutcomeDetail>
+</premis:eventOutcomeInformation>
+<premis:linkingAgentIdentifier>
+<premis:linkingAgentIdentifierType>preservation system</premis:linkingAgentIdentifierType>
+<premis:linkingAgentIdentifierValue>Archivematica-1.17.1</premis:linkingAgentIdentifierValue>
+</premis:linkingAgentIdentifier>
+<premis:linkingAgentIdentifier>
+<premis:linkingAgentIdentifierType>repository code</premis:linkingAgentIdentifierType>
+<premis:linkingAgentIdentifierValue/>
+</premis:linkingAgentIdentifier>
+<premis:linkingAgentIdentifier>
+<premis:linkingAgentIdentifierType>Archivematica user pk</premis:linkingAgentIdentifierType>
+<premis:linkingAgentIdentifierValue>1</premis:linkingAgentIdentifierValue>
+</premis:linkingAgentIdentifier>
+</premis:event>
+</mets:xmlData>
+</mets:mdWrap>
+</mets:digiprovMD>
+<mets:digiprovMD ID="digiprovMD_5">
+<mets:mdWrap MDTYPE="PREMIS:EVENT">
+<mets:xmlData>
+<premis:event xmlns:premis="http://www.loc.gov/premis/v3" xsi:schemaLocation="http://www.loc.gov/premis/v3 http://www.loc.gov/standards/premis/v3/premis.xsd" version="3.0">
+<premis:eventIdentifier>
+<premis:eventIdentifierType>UUID</premis:eventIdentifierType>
+<premis:eventIdentifierValue>bfb2f80e-210b-4f6f-8ca7-7cb9a5bea559</premis:eventIdentifierValue>
+</premis:eventIdentifier>
+<premis:eventType>normalization</premis:eventType>
+<premis:eventDateTime>2025-10-28T19:07:40.653592+00:00</premis:eventDateTime>
+<premis:eventDetailInformation>
+<premis:eventDetail>ArchivematicaFPRCommandID="a34ddc9b-c922-4bb6-8037-bbe713332175"; program="convert"; version="Version: ImageMagick 6.9.11-60 Q16 x86_64 2021-01-25 https://imagemagick.org" </premis:eventDetail>
+</premis:eventDetailInformation>
+<premis:eventOutcomeInformation>
+<premis:eventOutcome/>
+<premis:eventOutcomeDetail>
+<premis:eventOutcomeDetailNote>%SIPDirectory%objects/7058361-b9c295ea-d201-4216-a9f7-ba65228f297a.tif</premis:eventOutcomeDetailNote>
+</premis:eventOutcomeDetail>
+</premis:eventOutcomeInformation>
+<premis:linkingAgentIdentifier>
+<premis:linkingAgentIdentifierType>preservation system</premis:linkingAgentIdentifierType>
+<premis:linkingAgentIdentifierValue>Archivematica-1.17.1</premis:linkingAgentIdentifierValue>
+</premis:linkingAgentIdentifier>
+<premis:linkingAgentIdentifier>
+<premis:linkingAgentIdentifierType>repository code</premis:linkingAgentIdentifierType>
+<premis:linkingAgentIdentifierValue/>
+</premis:linkingAgentIdentifier>
+<premis:linkingAgentIdentifier>
+<premis:linkingAgentIdentifierType>Archivematica user pk</premis:linkingAgentIdentifierType>
+<premis:linkingAgentIdentifierValue>1</premis:linkingAgentIdentifierValue>
+</premis:linkingAgentIdentifier>
+</premis:event>
+</mets:xmlData>
+</mets:mdWrap>
+</mets:digiprovMD>
+<mets:digiprovMD ID="digiprovMD_6">
+<mets:mdWrap MDTYPE="PREMIS:AGENT">
+<mets:xmlData>
+<premis:agent xmlns:premis="http://www.loc.gov/premis/v3" xsi:schemaLocation="http://www.loc.gov/premis/v3 http://www.loc.gov/standards/premis/v3/premis.xsd" version="3.0">
+<premis:agentIdentifier>
+<premis:agentIdentifierType>preservation system</premis:agentIdentifierType>
+<premis:agentIdentifierValue>Archivematica-1.17.1</premis:agentIdentifierValue>
+</premis:agentIdentifier>
+<premis:agentName>Archivematica</premis:agentName>
+<premis:agentType>software</premis:agentType>
+</premis:agent>
+</mets:xmlData>
+</mets:mdWrap>
+</mets:digiprovMD>
+<mets:digiprovMD ID="digiprovMD_7">
+<mets:mdWrap MDTYPE="PREMIS:AGENT">
+<mets:xmlData>
+<premis:agent xmlns:premis="http://www.loc.gov/premis/v3" xsi:schemaLocation="http://www.loc.gov/premis/v3 http://www.loc.gov/standards/premis/v3/premis.xsd" version="3.0">
+<premis:agentIdentifier>
+<premis:agentIdentifierType>repository code</premis:agentIdentifierType>
+<premis:agentIdentifierValue/>
+</premis:agentIdentifier>
+<premis:agentName>The Permanent Legacy Foundation</premis:agentName>
+<premis:agentType>organization</premis:agentType>
+</premis:agent>
+</mets:xmlData>
+</mets:mdWrap>
+</mets:digiprovMD>
+<mets:digiprovMD ID="digiprovMD_8">
+<mets:mdWrap MDTYPE="PREMIS:AGENT">
+<mets:xmlData>
+<premis:agent xmlns:premis="http://www.loc.gov/premis/v3" xsi:schemaLocation="http://www.loc.gov/premis/v3 http://www.loc.gov/standards/premis/v3/premis.xsd" version="3.0">
+<premis:agentIdentifier>
+<premis:agentIdentifierType>Archivematica user pk</premis:agentIdentifierType>
+<premis:agentIdentifierValue>1</premis:agentIdentifierValue>
+</premis:agentIdentifier>
+<premis:agentName>username="admin", first_name="", last_name=""</premis:agentName>
+<premis:agentType>Archivematica user</premis:agentType>
+</premis:agent>
+</mets:xmlData>
+</mets:mdWrap>
+</mets:digiprovMD>
+</mets:amdSec>
+<mets:amdSec ID="amdSec_2">
+<mets:techMD ID="techMD_2">
+<mets:mdWrap MDTYPE="PREMIS:OBJECT">
+<mets:xmlData>
+<premis:object xmlns:premis="http://www.loc.gov/premis/v3" xsi:type="premis:file" xsi:schemaLocation="http://www.loc.gov/premis/v3 http://www.loc.gov/standards/premis/v3/premis.xsd" version="3.0">
+<premis:objectIdentifier>
+<premis:objectIdentifierType>UUID</premis:objectIdentifierType>
+<premis:objectIdentifierValue>b9c295ea-d201-4216-a9f7-ba65228f297a</premis:objectIdentifierValue>
+</premis:objectIdentifier>
+<premis:objectCharacteristics>
+<premis:compositionLevel>0</premis:compositionLevel>
+<premis:fixity>
+<premis:messageDigestAlgorithm>sha256</premis:messageDigestAlgorithm>
+<premis:messageDigest>055e5a9c6590f520ea732391236d122148155258a629178c515d9cb14ddb14c2</premis:messageDigest>
+</premis:fixity>
+<premis:size>6032616</premis:size>
+<premis:format>
+<premis:formatDesignation>
+<premis:formatName>Tagged Image File Format</premis:formatName>
+<premis:formatVersion/>
+</premis:formatDesignation>
+<premis:formatRegistry>
+<premis:formatRegistryName/>
+<premis:formatRegistryKey/>
+</premis:formatRegistry>
+</premis:format>
+<premis:creatingApplication>
+<premis:dateCreatedByApplication>2025-10-28T19:07:40Z</premis:dateCreatedByApplication>
+</premis:creatingApplication>
+</premis:objectCharacteristics>
+<premis:originalName>%SIPDirectory%objects/7058361-b9c295ea-d201-4216-a9f7-ba65228f297a.tif</premis:originalName>
+<premis:relationship>
+<premis:relationshipType>derivation</premis:relationshipType>
+<premis:relationshipSubType>has source</premis:relationshipSubType>
+<premis:relatedObjectIdentifier>
+<premis:relatedObjectIdentifierType>UUID</premis:relatedObjectIdentifierType>
+<premis:relatedObjectIdentifierValue>b3c97850-9697-451a-8ad5-9f085188e890</premis:relatedObjectIdentifierValue>
+</premis:relatedObjectIdentifier>
+<premis:relatedEventIdentifier>
+<premis:relatedEventIdentifierType>UUID</premis:relatedEventIdentifierType>
+<premis:relatedEventIdentifierValue>bfb2f80e-210b-4f6f-8ca7-7cb9a5bea559</premis:relatedEventIdentifierValue>
+</premis:relatedEventIdentifier>
+</premis:relationship>
+</premis:object>
+</mets:xmlData>
+</mets:mdWrap>
+</mets:techMD>
+<mets:digiprovMD ID="digiprovMD_9">
+<mets:mdWrap MDTYPE="PREMIS:EVENT">
+<mets:xmlData>
+<premis:event xmlns:premis="http://www.loc.gov/premis/v3" xsi:schemaLocation="http://www.loc.gov/premis/v3 http://www.loc.gov/standards/premis/v3/premis.xsd" version="3.0">
+<premis:eventIdentifier>
+<premis:eventIdentifierType>UUID</premis:eventIdentifierType>
+<premis:eventIdentifierValue>9c4e571d-7920-435c-84b7-88319303ba54</premis:eventIdentifierValue>
+</premis:eventIdentifier>
+<premis:eventType>creation</premis:eventType>
+<premis:eventDateTime>2025-10-28T19:07:40.600368+00:00</premis:eventDateTime>
+<premis:eventDetailInformation>
+<premis:eventDetail/>
+</premis:eventDetailInformation>
+<premis:eventOutcomeInformation>
+<premis:eventOutcome/>
+<premis:eventOutcomeDetail>
+<premis:eventOutcomeDetailNote/>
+</premis:eventOutcomeDetail>
+</premis:eventOutcomeInformation>
+<premis:linkingAgentIdentifier>
+<premis:linkingAgentIdentifierType>preservation system</premis:linkingAgentIdentifierType>
+<premis:linkingAgentIdentifierValue>Archivematica-1.17.1</premis:linkingAgentIdentifierValue>
+</premis:linkingAgentIdentifier>
+<premis:linkingAgentIdentifier>
+<premis:linkingAgentIdentifierType>repository code</premis:linkingAgentIdentifierType>
+<premis:linkingAgentIdentifierValue/>
+</premis:linkingAgentIdentifier>
+<premis:linkingAgentIdentifier>
+<premis:linkingAgentIdentifierType>Archivematica user pk</premis:linkingAgentIdentifierType>
+<premis:linkingAgentIdentifierValue>1</premis:linkingAgentIdentifierValue>
+</premis:linkingAgentIdentifier>
+</premis:event>
+</mets:xmlData>
+</mets:mdWrap>
+</mets:digiprovMD>
+<mets:digiprovMD ID="digiprovMD_10">
+<mets:mdWrap MDTYPE="PREMIS:EVENT">
+<mets:xmlData>
+<premis:event xmlns:premis="http://www.loc.gov/premis/v3" xsi:schemaLocation="http://www.loc.gov/premis/v3 http://www.loc.gov/standards/premis/v3/premis.xsd" version="3.0">
+<premis:eventIdentifier>
+<premis:eventIdentifierType>UUID</premis:eventIdentifierType>
+<premis:eventIdentifierValue>bf99e3d5-3d74-460d-85c3-26a09fdc3212</premis:eventIdentifierValue>
+</premis:eventIdentifier>
+<premis:eventType>message digest calculation</premis:eventType>
+<premis:eventDateTime>2025-10-28T19:07:40.641689+00:00</premis:eventDateTime>
+<premis:eventDetailInformation>
+<premis:eventDetail>program="python"; module="hashlib.sha256()"</premis:eventDetail>
+</premis:eventDetailInformation>
+<premis:eventOutcomeInformation>
+<premis:eventOutcome/>
+<premis:eventOutcomeDetail>
+<premis:eventOutcomeDetailNote>055e5a9c6590f520ea732391236d122148155258a629178c515d9cb14ddb14c2</premis:eventOutcomeDetailNote>
+</premis:eventOutcomeDetail>
+</premis:eventOutcomeInformation>
+<premis:linkingAgentIdentifier>
+<premis:linkingAgentIdentifierType>preservation system</premis:linkingAgentIdentifierType>
+<premis:linkingAgentIdentifierValue>Archivematica-1.17.1</premis:linkingAgentIdentifierValue>
+</premis:linkingAgentIdentifier>
+<premis:linkingAgentIdentifier>
+<premis:linkingAgentIdentifierType>repository code</premis:linkingAgentIdentifierType>
+<premis:linkingAgentIdentifierValue/>
+</premis:linkingAgentIdentifier>
+<premis:linkingAgentIdentifier>
+<premis:linkingAgentIdentifierType>Archivematica user pk</premis:linkingAgentIdentifierType>
+<premis:linkingAgentIdentifierValue>1</premis:linkingAgentIdentifierValue>
+</premis:linkingAgentIdentifier>
+</premis:event>
+</mets:xmlData>
+</mets:mdWrap>
+</mets:digiprovMD>
+<mets:digiprovMD ID="digiprovMD_11">
+<mets:mdWrap MDTYPE="PREMIS:EVENT">
+<mets:xmlData>
+<premis:event xmlns:premis="http://www.loc.gov/premis/v3" xsi:schemaLocation="http://www.loc.gov/premis/v3 http://www.loc.gov/standards/premis/v3/premis.xsd" version="3.0">
+<premis:eventIdentifier>
+<premis:eventIdentifierType>UUID</premis:eventIdentifierType>
+<premis:eventIdentifierValue>5123685c-feac-4a91-8e4a-38909d529c5f</premis:eventIdentifierValue>
+</premis:eventIdentifier>
+<premis:eventType>validation</premis:eventType>
+<premis:eventDateTime>2025-10-28T19:07:41.753673+00:00</premis:eventDateTime>
+<premis:eventDetailInformation>
+<premis:eventDetail>program="JHOVE"; version="1.26"</premis:eventDetail>
+</premis:eventDetailInformation>
+<premis:eventOutcomeInformation>
+<premis:eventOutcome>pass</premis:eventOutcome>
+<premis:eventOutcomeDetail>
+<premis:eventOutcomeDetailNote>format="TIFF"; version="6.0"; result="Well-Formed and valid"</premis:eventOutcomeDetailNote>
+</premis:eventOutcomeDetail>
+</premis:eventOutcomeInformation>
+<premis:linkingAgentIdentifier>
+<premis:linkingAgentIdentifierType>preservation system</premis:linkingAgentIdentifierType>
+<premis:linkingAgentIdentifierValue>Archivematica-1.17.1</premis:linkingAgentIdentifierValue>
+</premis:linkingAgentIdentifier>
+<premis:linkingAgentIdentifier>
+<premis:linkingAgentIdentifierType>repository code</premis:linkingAgentIdentifierType>
+<premis:linkingAgentIdentifierValue/>
+</premis:linkingAgentIdentifier>
+<premis:linkingAgentIdentifier>
+<premis:linkingAgentIdentifierType>Archivematica user pk</premis:linkingAgentIdentifierType>
+<premis:linkingAgentIdentifierValue>1</premis:linkingAgentIdentifierValue>
+</premis:linkingAgentIdentifier>
+</premis:event>
+</mets:xmlData>
+</mets:mdWrap>
+</mets:digiprovMD>
+<mets:digiprovMD ID="digiprovMD_12">
+<mets:mdWrap MDTYPE="PREMIS:AGENT">
+<mets:xmlData>
+<premis:agent xmlns:premis="http://www.loc.gov/premis/v3" xsi:schemaLocation="http://www.loc.gov/premis/v3 http://www.loc.gov/standards/premis/v3/premis.xsd" version="3.0">
+<premis:agentIdentifier>
+<premis:agentIdentifierType>preservation system</premis:agentIdentifierType>
+<premis:agentIdentifierValue>Archivematica-1.17.1</premis:agentIdentifierValue>
+</premis:agentIdentifier>
+<premis:agentName>Archivematica</premis:agentName>
+<premis:agentType>software</premis:agentType>
+</premis:agent>
+</mets:xmlData>
+</mets:mdWrap>
+</mets:digiprovMD>
+<mets:digiprovMD ID="digiprovMD_13">
+<mets:mdWrap MDTYPE="PREMIS:AGENT">
+<mets:xmlData>
+<premis:agent xmlns:premis="http://www.loc.gov/premis/v3" xsi:schemaLocation="http://www.loc.gov/premis/v3 http://www.loc.gov/standards/premis/v3/premis.xsd" version="3.0">
+<premis:agentIdentifier>
+<premis:agentIdentifierType>repository code</premis:agentIdentifierType>
+<premis:agentIdentifierValue/>
+</premis:agentIdentifier>
+<premis:agentName>The Permanent Legacy Foundation</premis:agentName>
+<premis:agentType>organization</premis:agentType>
+</premis:agent>
+</mets:xmlData>
+</mets:mdWrap>
+</mets:digiprovMD>
+<mets:digiprovMD ID="digiprovMD_14">
+<mets:mdWrap MDTYPE="PREMIS:AGENT">
+<mets:xmlData>
+<premis:agent xmlns:premis="http://www.loc.gov/premis/v3" xsi:schemaLocation="http://www.loc.gov/premis/v3 http://www.loc.gov/standards/premis/v3/premis.xsd" version="3.0">
+<premis:agentIdentifier>
+<premis:agentIdentifierType>Archivematica user pk</premis:agentIdentifierType>
+<premis:agentIdentifierValue>1</premis:agentIdentifierValue>
+</premis:agentIdentifier>
+<premis:agentName>username="admin", first_name="", last_name=""</premis:agentName>
+<premis:agentType>Archivematica user</premis:agentType>
+</premis:agent>
+</mets:xmlData>
+</mets:mdWrap>
+</mets:digiprovMD>
+</mets:amdSec>
+<mets:amdSec ID="amdSec_3">
+<mets:techMD ID="techMD_3">
+<mets:mdWrap MDTYPE="PREMIS:OBJECT">
+<mets:xmlData>
+<premis:object xmlns:premis="http://www.loc.gov/premis/v3" xsi:type="premis:file" xsi:schemaLocation="http://www.loc.gov/premis/v3 http://www.loc.gov/standards/premis/v3/premis.xsd" version="3.0">
+<premis:objectIdentifier>
+<premis:objectIdentifierType>UUID</premis:objectIdentifierType>
+<premis:objectIdentifierValue>ab1aac28-52f2-4dee-9d19-f472a027db34</premis:objectIdentifierValue>
+</premis:objectIdentifier>
+<premis:objectCharacteristics>
+<premis:compositionLevel>0</premis:compositionLevel>
+<premis:fixity>
+<premis:messageDigestAlgorithm>sha256</premis:messageDigestAlgorithm>
+<premis:messageDigest>6a29ffcd6c8ab6cff2e5d7b7e144e752cfb894500a78aec151857a3f2ceefbb1</premis:messageDigest>
+</premis:fixity>
+<premis:size>53855</premis:size>
+<premis:format>
+<premis:formatDesignation>
+<premis:formatName>Unknown</premis:formatName>
+</premis:formatDesignation>
+</premis:format>
+<premis:creatingApplication>
+<premis:dateCreatedByApplication>2025-10-28T19:07:43Z</premis:dateCreatedByApplication>
+</premis:creatingApplication>
+</premis:objectCharacteristics>
+<premis:originalName>%SIPDirectory%objects/submissionDocumentation/transfer-7058361_upload-6ff77ccb-f4d2-4aeb-84a0-e462ca4138a5/METS.xml</premis:originalName>
+</premis:object>
+</mets:xmlData>
+</mets:mdWrap>
+</mets:techMD>
+<mets:digiprovMD ID="digiprovMD_15">
+<mets:mdWrap MDTYPE="PREMIS:EVENT">
+<mets:xmlData>
+<premis:event xmlns:premis="http://www.loc.gov/premis/v3" xsi:schemaLocation="http://www.loc.gov/premis/v3 http://www.loc.gov/standards/premis/v3/premis.xsd" version="3.0">
+<premis:eventIdentifier>
+<premis:eventIdentifierType>UUID</premis:eventIdentifierType>
+<premis:eventIdentifierValue>1f5b05c8-def9-4b38-aa31-8b67ada57467</premis:eventIdentifierValue>
+</premis:eventIdentifier>
+<premis:eventType>ingestion</premis:eventType>
+<premis:eventDateTime>2025-10-28T19:07:43.366496+00:00</premis:eventDateTime>
+<premis:eventDetailInformation>
+<premis:eventDetail/>
+</premis:eventDetailInformation>
+<premis:eventOutcomeInformation>
+<premis:eventOutcome/>
+<premis:eventOutcomeDetail>
+<premis:eventOutcomeDetailNote/>
+</premis:eventOutcomeDetail>
+</premis:eventOutcomeInformation>
+<premis:linkingAgentIdentifier>
+<premis:linkingAgentIdentifierType>preservation system</premis:linkingAgentIdentifierType>
+<premis:linkingAgentIdentifierValue>Archivematica-1.17.1</premis:linkingAgentIdentifierValue>
+</premis:linkingAgentIdentifier>
+<premis:linkingAgentIdentifier>
+<premis:linkingAgentIdentifierType>repository code</premis:linkingAgentIdentifierType>
+<premis:linkingAgentIdentifierValue/>
+</premis:linkingAgentIdentifier>
+<premis:linkingAgentIdentifier>
+<premis:linkingAgentIdentifierType>Archivematica user pk</premis:linkingAgentIdentifierType>
+<premis:linkingAgentIdentifierValue>1</premis:linkingAgentIdentifierValue>
+</premis:linkingAgentIdentifier>
+</premis:event>
+</mets:xmlData>
+</mets:mdWrap>
+</mets:digiprovMD>
+<mets:digiprovMD ID="digiprovMD_16">
+<mets:mdWrap MDTYPE="PREMIS:EVENT">
+<mets:xmlData>
+<premis:event xmlns:premis="http://www.loc.gov/premis/v3" xsi:schemaLocation="http://www.loc.gov/premis/v3 http://www.loc.gov/standards/premis/v3/premis.xsd" version="3.0">
+<premis:eventIdentifier>
+<premis:eventIdentifierType>UUID</premis:eventIdentifierType>
+<premis:eventIdentifierValue>b255e4e1-7a1b-4f1a-9dc1-f8a2db3eeda7</premis:eventIdentifierValue>
+</premis:eventIdentifier>
+<premis:eventType>message digest calculation</premis:eventType>
+<premis:eventDateTime>2025-10-28T19:07:43.435170+00:00</premis:eventDateTime>
+<premis:eventDetailInformation>
+<premis:eventDetail>program="python"; module="hashlib.sha256()"</premis:eventDetail>
+</premis:eventDetailInformation>
+<premis:eventOutcomeInformation>
+<premis:eventOutcome/>
+<premis:eventOutcomeDetail>
+<premis:eventOutcomeDetailNote>6a29ffcd6c8ab6cff2e5d7b7e144e752cfb894500a78aec151857a3f2ceefbb1</premis:eventOutcomeDetailNote>
+</premis:eventOutcomeDetail>
+</premis:eventOutcomeInformation>
+<premis:linkingAgentIdentifier>
+<premis:linkingAgentIdentifierType>preservation system</premis:linkingAgentIdentifierType>
+<premis:linkingAgentIdentifierValue>Archivematica-1.17.1</premis:linkingAgentIdentifierValue>
+</premis:linkingAgentIdentifier>
+<premis:linkingAgentIdentifier>
+<premis:linkingAgentIdentifierType>repository code</premis:linkingAgentIdentifierType>
+<premis:linkingAgentIdentifierValue/>
+</premis:linkingAgentIdentifier>
+<premis:linkingAgentIdentifier>
+<premis:linkingAgentIdentifierType>Archivematica user pk</premis:linkingAgentIdentifierType>
+<premis:linkingAgentIdentifierValue>1</premis:linkingAgentIdentifierValue>
+</premis:linkingAgentIdentifier>
+</premis:event>
+</mets:xmlData>
+</mets:mdWrap>
+</mets:digiprovMD>
+<mets:digiprovMD ID="digiprovMD_17">
+<mets:mdWrap MDTYPE="PREMIS:AGENT">
+<mets:xmlData>
+<premis:agent xmlns:premis="http://www.loc.gov/premis/v3" xsi:schemaLocation="http://www.loc.gov/premis/v3 http://www.loc.gov/standards/premis/v3/premis.xsd" version="3.0">
+<premis:agentIdentifier>
+<premis:agentIdentifierType>preservation system</premis:agentIdentifierType>
+<premis:agentIdentifierValue>Archivematica-1.17.1</premis:agentIdentifierValue>
+</premis:agentIdentifier>
+<premis:agentName>Archivematica</premis:agentName>
+<premis:agentType>software</premis:agentType>
+</premis:agent>
+</mets:xmlData>
+</mets:mdWrap>
+</mets:digiprovMD>
+<mets:digiprovMD ID="digiprovMD_18">
+<mets:mdWrap MDTYPE="PREMIS:AGENT">
+<mets:xmlData>
+<premis:agent xmlns:premis="http://www.loc.gov/premis/v3" xsi:schemaLocation="http://www.loc.gov/premis/v3 http://www.loc.gov/standards/premis/v3/premis.xsd" version="3.0">
+<premis:agentIdentifier>
+<premis:agentIdentifierType>repository code</premis:agentIdentifierType>
+<premis:agentIdentifierValue/>
+</premis:agentIdentifier>
+<premis:agentName>The Permanent Legacy Foundation</premis:agentName>
+<premis:agentType>organization</premis:agentType>
+</premis:agent>
+</mets:xmlData>
+</mets:mdWrap>
+</mets:digiprovMD>
+<mets:digiprovMD ID="digiprovMD_19">
+<mets:mdWrap MDTYPE="PREMIS:AGENT">
+<mets:xmlData>
+<premis:agent xmlns:premis="http://www.loc.gov/premis/v3" xsi:schemaLocation="http://www.loc.gov/premis/v3 http://www.loc.gov/standards/premis/v3/premis.xsd" version="3.0">
+<premis:agentIdentifier>
+<premis:agentIdentifierType>Archivematica user pk</premis:agentIdentifierType>
+<premis:agentIdentifierValue>1</premis:agentIdentifierValue>
+</premis:agentIdentifier>
+<premis:agentName>username="admin", first_name="", last_name=""</premis:agentName>
+<premis:agentType>Archivematica user</premis:agentType>
+</premis:agent>
+</mets:xmlData>
+</mets:mdWrap>
+</mets:digiprovMD>
+</mets:amdSec>
+<mets:fileSec>
+<mets:fileGrp USE="original">
+<mets:file ID="file-b3c97850-9697-451a-8ad5-9f085188e890" GROUPID="Group-b3c97850-9697-451a-8ad5-9f085188e890" ADMID="amdSec_1">
+<mets:FLocat xlink:href="objects/7058361" LOCTYPE="OTHER" OTHERLOCTYPE="SYSTEM"/>
+</mets:file>
+</mets:fileGrp>
+<mets:fileGrp USE="submissionDocumentation">
+<mets:file ID="file-ab1aac28-52f2-4dee-9d19-f472a027db34" GROUPID="Group-ab1aac28-52f2-4dee-9d19-f472a027db34" ADMID="amdSec_3">
+<mets:FLocat xlink:href="objects/submissionDocumentation/transfer-7058361_upload-6ff77ccb-f4d2-4aeb-84a0-e462ca4138a5/METS.xml" LOCTYPE="OTHER" OTHERLOCTYPE="SYSTEM"/>
+</mets:file>
+</mets:fileGrp>
+<mets:fileGrp USE="preservation">
+<mets:file ID="file-b9c295ea-d201-4216-a9f7-ba65228f297a" GROUPID="Group-b3c97850-9697-451a-8ad5-9f085188e890" ADMID="amdSec_2">
+<mets:FLocat xlink:href="objects/7058361-b9c295ea-d201-4216-a9f7-ba65228f297a.tif" LOCTYPE="OTHER" OTHERLOCTYPE="SYSTEM"/>
+</mets:file>
+</mets:fileGrp>
+</mets:fileSec>
+<mets:structMap TYPE="physical" ID="structMap_1" LABEL="Archivematica default">
+<mets:div TYPE="Directory" LABEL="7058361_upload-4a64ba7c-ceac-4547-ac13-c487b2711d5a" DMDID="dmdSec_1">
+<mets:div TYPE="Directory" LABEL="objects">
+<mets:div TYPE="Item" LABEL="7058361">
+<mets:fptr FILEID="file-b3c97850-9697-451a-8ad5-9f085188e890"/>
+</mets:div>
+<mets:div TYPE="Item" LABEL="7058361-b9c295ea-d201-4216-a9f7-ba65228f297a.tif">
+<mets:fptr FILEID="file-b9c295ea-d201-4216-a9f7-ba65228f297a"/>
+</mets:div>
+<mets:div TYPE="Directory" LABEL="submissionDocumentation">
+<mets:div TYPE="Directory" LABEL="transfer-7058361_upload-6ff77ccb-f4d2-4aeb-84a0-e462ca4138a5">
+<mets:div TYPE="Item" LABEL="METS.xml">
+<mets:fptr FILEID="file-ab1aac28-52f2-4dee-9d19-f472a027db34"/>
+</mets:div>
+</mets:div>
+</mets:div>
+</mets:div>
+</mets:div>
+</mets:structMap>
+</mets:mets>

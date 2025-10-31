@@ -23,9 +23,15 @@ export interface S3Object {
 	versionId: string;
 }
 
+export interface S3Bucket {
+	name: string;
+	arn?: string;
+}
+
 export interface NewDisseminationPackageJpgEvent {
 	Records: Array<{
 		s3: {
+			bucket: S3Bucket;
 			object: S3Object;
 		};
 	}>;
@@ -42,6 +48,15 @@ const newDisseminationPackageJpgEventSchema: JSONSchemaType<NewDisseminationPack
 						s3: {
 							type: "object",
 							properties: {
+								bucket: {
+									type: "object",
+									properties: {
+										name: { type: "string" },
+										arn: { type: "string", nullable: true },
+									},
+									required: ["name"],
+									additionalProperties: true,
+								},
 								object: {
 									type: "object",
 									properties: {
@@ -53,7 +68,7 @@ const newDisseminationPackageJpgEventSchema: JSONSchemaType<NewDisseminationPack
 									additionalProperties: true,
 								},
 							},
-							required: ["object"],
+							required: ["bucket", "object"],
 							additionalProperties: true,
 						},
 					},
