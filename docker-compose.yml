@@ -4,12 +4,12 @@ services:
       context: ./
       dockerfile: packages/api/Dockerfile.test
     networks:
-      - devenv
+      - permanent
     environment:
       - ENV=test
     volumes:
       - ./coverage:/usr/local/apps/stela/packages/api/coverage
 networks:
-  devenv:
-    name: devenv_default
+  permanent:
+    name: permanent_default
     external: true

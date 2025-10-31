@@ -29,7 +29,7 @@
 		"start-containers": "(cd ../..; docker compose up -d --build stela)",
 		"clear-database": "psql postgresql://postgres:permanent@localhost:5432 -c 'DROP DATABASE IF EXISTS test_permanent;'",
 		"create-database": "psql postgresql://postgres:permanent@localhost:5432 -c 'CREATE DATABASE test_permanent;'",
-		"set-up-database": "docker exec --env='PGPASSWORD=permanent' devenv-database-1 pg_dump -U postgres permanent --schema-only | psql postgresql://postgres:permanent@localhost:5432/test_permanent",
+		"set-up-database": "docker exec --env='PGPASSWORD=permanent' permanent-database-1 pg_dump -U postgres permanent --schema-only | psql postgresql://postgres:permanent@localhost:5432/test_permanent",
 		"clear-database-ci": "psql postgresql://postgres:permanent@database:5432 -c 'DROP DATABASE IF EXISTS test_permanent;'",
 		"create-database-ci": "psql postgresql://postgres:permanent@database:5432 -c 'CREATE DATABASE test_permanent;'",
 		"set-up-database-ci": "pg_dump postgresql://postgres:permanent@database:5432/permanent --schema-only | psql postgresql://postgres:permanent@database:5432/test_permanent",
