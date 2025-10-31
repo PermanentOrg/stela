@@ -28,6 +28,8 @@ locals {
     account-space-update-staging-lambda  = try(data.aws_lambda_function.account_space_update_staging_lambda.image_uri, null)
     access-copy-dev-lambda               = try(data.aws_lambda_function.access_copy_dev_lambda.image_uri, null)
     access-copy-staging-lambda           = try(data.aws_lambda_function.access_copy_staging_lambda.image_uri, null)
+    metadata-attacher-dev-lambda         = try(data.aws_lambda_function.metadata_attacher_dev_lambda.image_uri, null)
+    metadata-attacher-staging-lambda     = try(data.aws_lambda_function.metadata_attacher_staging_lambda.image_uri, null)
     record-thumbnail-dev-lambda          = try(data.aws_lambda_function.record_thumbnail_dev_lambda.image_uri, null)
     record-thumbnail-staging-lambda      = try(data.aws_lambda_function.record_thumbnail_staging_lambda.image_uri, null)
     trigger-archivematica-dev-lambda     = try(data.aws_lambda_function.trigger_archivematica_dev_lambda.image_uri, null)
