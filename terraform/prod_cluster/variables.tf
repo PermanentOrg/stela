@@ -67,6 +67,11 @@ variable "trigger_archivematica_lambda_image" {
   type        = string
 }
 
+variable "metadata_attacher_lambda_image" {
+  description = "Tag of metadata attacher lambda image to deploy"
+  type        = string
+}
+
 variable "prod_security_group_id" {
   description = "ID of the Production security group"
   type        = string

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mets:mets xmlns:mets="http://www.loc.gov/METS/" xmlns:premis="info:lc/xmlns/premis-v2" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+  <mets:amdSec>
+    <mets:techMD>
+      <mets:mdWrap>
+        <mets:xmlData>
+          <premis:object>
+            <premis:originalName>objects/710a1def-caf8-48f2-8eee-0848b4cfda10</premis:originalName>
+            <premis:objectCharacteristics>
+              <premis:objectCharacteristicsExtension>
+                <rdf:RDF>
+                  <rdf:Description>
+                    <ExifTool:ExifToolVersion>12.40</ExifTool:ExifToolVersion>
+                  </rdf:Description>
+                </rdf:RDF>
+              </premis:objectCharacteristicsExtension>
+            </premis:objectCharacteristics>
+          </premis:object>
+        </mets:xmlData>
+      </mets:mdWrap>
+    </mets:techMD>
+  </mets:amdSec>
+</mets:mets>
