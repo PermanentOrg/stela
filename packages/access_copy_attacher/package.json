@@ -26,7 +26,7 @@
 		"start": "node dist/index.js",
 		"clear-database": "psql postgresql://postgres:permanent@localhost:5432 -c 'DROP DATABASE IF EXISTS test_permanent;'",
 		"create-database": "psql postgresql://postgres:permanent@localhost:5432 -c 'CREATE DATABASE test_permanent;'",
-		"set-up-database": "docker exec --env='PGPASSWORD=permanent' devenv-database-1 pg_dump -U postgres permanent --schema-only | psql postgresql://postgres:permanent@localhost:5432/test_permanent",
+		"set-up-database": "docker exec --env='PGPASSWORD=permanent' permanent-database-1 pg_dump -U postgres permanent --schema-only | psql postgresql://postgres:permanent@localhost:5432/test_permanent",
 		"test": "npm run clear-database && npm run create-database && npm run set-up-database && node --experimental-vm-modules ../../node_modules/jest/bin/jest.js -i --silent=false"
 	},
 	"dependencies": {
