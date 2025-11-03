@@ -42,7 +42,7 @@
 		"@types/jest": "30.0.0",
 		"@types/jest-when": "^3.5.5",
 		"@types/mailchimp__mailchimp_transactional": "1.0.11",
-		"@types/node": "^24.8.1",
+		"@types/node": "^24.10.0",
 		"@types/pg": "^8.15.4",
 		"@types/supertest": "^6.0.3",
 		"@types/uuid": "^10.0.0",
