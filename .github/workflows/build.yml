@@ -164,3 +164,23 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       - name: Publish Image to ECR
         run: docker push $TRIGGER_ARCHIVEMATICA_IMAGE_TAG
+  build_metadata_attacher:
+    needs:
+      - generate_image_tags
+    runs-on: ubuntu-24.04
+    env:
+      METADATA_ATTACHER_LAMBDA_IMAGE_TAG: ${{ needs.generate_image_tags.outputs.METADATA_ATTACHER_LAMBDA_IMAGE_TAG }}
+    steps:
+      - uses: actions/checkout@v5
+      - name: Build Image
+        run: docker build -t $METADATA_ATTACHER_LAMBDA_IMAGE_TAG --build-arg="AWS_RDS_CERT_BUNDLE=$AWS_RDS_CERT_BUNDLE" -f Dockerfile.metadata_attacher .
+        env:
+          AWS_RDS_CERT_BUNDLE: ${{ secrets.AWS_RDS_CERT_BUNDLE }}
+      - name: AWS Login
+        run: aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin 364159549467.dkr.ecr.$AWS_REGION.amazonaws.com
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      - name: Publish Image to ECR
+        run: docker push $METADATA_ATTACHER_LAMBDA_IMAGE_TAG

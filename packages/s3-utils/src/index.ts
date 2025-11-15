@@ -5,11 +5,13 @@ import {
 	validateNewDisseminationPackageJpgEvent,
 	validateSqsMessage,
 	type S3Object,
+	type S3Bucket,
 } from "./validators";
 
 const yearsUntilCdnUrlExpiration = 1;
 
 export { validateSqsMessage };
+export type { S3Object, S3Bucket };
 
 export const constructSignedCdnUrl = (
 	key: string,
@@ -56,4 +58,29 @@ export const getS3ObjectFromS3Message = (message: SQSRecord): S3Object => {
 	}
 
 	return parsedMessage.Records[0].s3.object;
+};
+
+export const getS3BucketFromS3Message = (message: SQSRecord): S3Bucket => {
+	const { body } = message;
+	const parsedBody: unknown = JSON.parse(body);
+	if (!validateSqsMessage(parsedBody)) {
+		logger.error(
+			`Invalid message body: ${JSON.stringify(validateSqsMessage.errors)}`,
+		);
+		throw new Error("Invalid message body");
+	}
+	const parsedMessage: unknown = JSON.parse(parsedBody.Message);
+	if (
+		!validateNewDisseminationPackageJpgEvent(parsedMessage) ||
+		parsedMessage.Records[0] === undefined
+	) {
+		logger.error(
+			`Invalid message body: ${JSON.stringify(
+				validateNewDisseminationPackageJpgEvent.errors,
+			)}`,
+		);
+		throw new Error("Invalid message body");
+	}
+
+	return parsedMessage.Records[0].s3.bucket;
 };

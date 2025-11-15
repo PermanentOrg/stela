@@ -9,8 +9,7 @@ resource "aws_sns_topic" "record_thumbnail_dev_topic" {
     Statement = [
       {
         Effect = "Allow",
-        Principal = {
-          Service = "s3.amazonaws.com"
+        Principal = { Service = "s3.amazonaws.com"
         },
         Action   = "sns:Publish",
         Resource = "*",

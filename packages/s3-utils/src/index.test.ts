@@ -1,5 +1,9 @@
 import { getSignedUrl } from "aws-cloudfront-sign";
-import { constructSignedCdnUrl, getS3ObjectFromS3Message } from "./index";
+import {
+	constructSignedCdnUrl,
+	getS3ObjectFromS3Message,
+	getS3BucketFromS3Message,
+} from "./index";
 
 jest.mock("aws-cloudfront-sign");
 
@@ -45,6 +49,9 @@ describe("getS3ObjectFromS3Message", () => {
 					Records: [
 						{
 							s3: {
+								bucket: {
+									name: "test-bucket",
+								},
 								object: {
 									key: expectedKey,
 									size: expectedSize,
@@ -103,6 +110,146 @@ describe("getS3ObjectFromS3Message", () => {
 		let error = null;
 		try {
 			getS3ObjectFromS3Message({
+				messageId: "1",
+				receiptHandle: "1",
+				body: JSON.stringify({
+					Message: JSON.stringify({}),
+				}),
+				attributes: {
+					ApproximateReceiveCount: "1",
+					SentTimestamp: "1",
+					SenderId: "1",
+					ApproximateFirstReceiveTimestamp: "1",
+				},
+				messageAttributes: {},
+				md5OfBody: "1",
+				eventSource: "1",
+				eventSourceARN: "1",
+				awsRegion: "1",
+			});
+		} catch (err) {
+			error = err;
+		} finally {
+			expect(error).not.toBeNull();
+		}
+	});
+});
+
+describe("getS3BucketFromS3Message", () => {
+	test("should extract the S3 bucket from a well-formed message", () => {
+		const expectedBucketName = "test-bucket";
+		const expectedBucketArn = "arn:aws:s3:::test-bucket";
+
+		const s3Bucket = getS3BucketFromS3Message({
+			messageId: "1",
+			receiptHandle: "1",
+			body: JSON.stringify({
+				Message: JSON.stringify({
+					Records: [
+						{
+							s3: {
+								bucket: {
+									name: expectedBucketName,
+									arn: expectedBucketArn,
+								},
+								object: {
+									key: "test-key",
+									size: 102400,
+									versionId: "test-version-id",
+								},
+							},
+						},
+					],
+				}),
+			}),
+			attributes: {
+				ApproximateReceiveCount: "1",
+				SentTimestamp: "1",
+				SenderId: "1",
+				ApproximateFirstReceiveTimestamp: "1",
+			},
+			messageAttributes: {},
+			md5OfBody: "1",
+			eventSource: "1",
+			eventSourceARN: "1",
+			awsRegion: "1",
+		});
+
+		expect(s3Bucket.name).toEqual(expectedBucketName);
+		expect(s3Bucket.arn).toEqual(expectedBucketArn);
+	});
+
+	test("should extract the S3 bucket from a message without arn", () => {
+		const expectedBucketName = "test-bucket";
+
+		const s3Bucket = getS3BucketFromS3Message({
+			messageId: "1",
+			receiptHandle: "1",
+			body: JSON.stringify({
+				Message: JSON.stringify({
+					Records: [
+						{
+							s3: {
+								bucket: {
+									name: expectedBucketName,
+								},
+								object: {
+									key: "test-key",
+									size: 102400,
+									versionId: "test-version-id",
+								},
+							},
+						},
+					],
+				}),
+			}),
+			attributes: {
+				ApproximateReceiveCount: "1",
+				SentTimestamp: "1",
+				SenderId: "1",
+				ApproximateFirstReceiveTimestamp: "1",
+			},
+			messageAttributes: {},
+			md5OfBody: "1",
+			eventSource: "1",
+			eventSourceARN: "1",
+			awsRegion: "1",
+		});
+
+		expect(s3Bucket.name).toEqual(expectedBucketName);
+		expect(s3Bucket.arn).toBeUndefined();
+	});
+
+	test("should throw an error if the SQSRecord body is the wrong format", () => {
+		let error = null;
+		try {
+			getS3BucketFromS3Message({
+				messageId: "1",
+				receiptHandle: "1",
+				body: JSON.stringify({}),
+				attributes: {
+					ApproximateReceiveCount: "1",
+					SentTimestamp: "1",
+					SenderId: "1",
+					ApproximateFirstReceiveTimestamp: "1",
+				},
+				messageAttributes: {},
+				md5OfBody: "1",
+				eventSource: "1",
+				eventSourceARN: "1",
+				awsRegion: "1",
+			});
+		} catch (err) {
+			error = err;
+		} finally {
+			expect(error).not.toBeNull();
+		}
+	});
+
+	test("should throw an error if the SQSRecord body.Message is the wrong format", () => {
+		let error = null;
+		try {
+			getS3BucketFromS3Message({
 				messageId: "1",
 				receiptHandle: "1",
 				body: JSON.stringify({
