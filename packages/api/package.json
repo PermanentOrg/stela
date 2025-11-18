@@ -37,7 +37,7 @@
 		"test-ci": "npm run clear-database-ci && npm run create-database-ci && npm run set-up-database-ci && node --experimental-vm-modules ../../node_modules/jest/bin/jest.js -i --coverage"
 	},
 	"dependencies": {
-		"@aws-sdk/client-sns": "^3.932.0",
+		"@aws-sdk/client-sns": "^3.934.0",
 		"@fusionauth/typescript-client": "^1.60.0",
 		"@mailchimp/mailchimp_marketing": "^3.0.80",
 		"@mailchimp/mailchimp_transactional": "1.0.59",
