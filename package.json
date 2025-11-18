@@ -61,6 +61,6 @@
 		"tslint-tinypg": "^2.0.2",
 		"typescript": "^5.9.3",
 		"typescript-cp": "^0.1.9",
-		"typescript-eslint": "^8.46.4"
+		"typescript-eslint": "^8.47.0"
 	}
 }
