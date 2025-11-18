@@ -1,0 +1,48 @@
+{
+	"name": "@stela/metadata_attacher",
+	"version": "1.0.0",
+	"description": "A lambda to attach metadata (extracted from original files by Archivematica) to records",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/PermanentOrg/stela.git"
+	},
+	"author": "Permanent.org",
+	"license": "AGPL-3.0",
+	"bugs": {
+		"url": "https://github.com/PermanentOrg/stela/issues"
+	},
+	"homepage": "https://permanent.org",
+	"engines": {
+		"node": ">=22.0"
+	},
+	"main": "dist/index.js",
+	"scripts": {
+		"check-types": "tsc --noEmit",
+		"check-format": "prettier --check src",
+		"eslint": "eslint --max-warnings 0 ./src --ext .ts",
+		"lint-sql": "(cd ../..; docker run -i --rm -v $PWD:/sql sqlfluff/sqlfluff:3.4.2 lint --dialect postgres --nocolor packages/access_copy_attacher/src/queries/ packages/access_copy_attacher/src/fixtures/)",
+		"lint": "npm run check-format && npm run check-types && npm run eslint && npm run lint-sql",
+		"build": "rm -rf dist/* && tsc -p tsconfig.build.json && tscp -p tsconfig.tscp.json",
+		"start": "node dist/index.js",
+		"clear-database": "psql postgresql://postgres:permanent@localhost:5432 -c 'DROP DATABASE IF EXISTS test_permanent;'",
+		"create-database": "psql postgresql://postgres:permanent@localhost:5432 -c 'CREATE DATABASE test_permanent;'",
+		"set-up-database": "docker exec --env='PGPASSWORD=permanent' permanent-database-1 pg_dump -U postgres permanent --schema-only | psql postgresql://postgres:permanent@localhost:5432/test_permanent",
+		"test": "npm run clear-database && npm run create-database && npm run set-up-database && node --experimental-vm-modules ../../node_modules/jest/bin/jest.js -i --silent=false"
+	},
+	"dependencies": {
+		"@aws-sdk/client-s3": "^3.911.0",
+		"@sentry/aws-serverless": "^10.19.0",
+		"@stela/logger": "^1.0.0",
+		"@stela/s3-utils": "^1.0.0",
+		"@stela/archivematica-utils": "^1.0.0",
+		"dotenv": "^17.2.3",
+		"fast-xml-parser": "^4.5.1",
+		"joi": "^18.0.0",
+		"require-env-variable": "^4.0.2",
+		"tinypg": "^7.0.1"
+	},
+	"devDependencies": {
+		"@types/aws-lambda": "^8.10.156",
+		"@types/mime-types": "^3.0.1"
+	}
+}

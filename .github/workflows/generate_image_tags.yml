@@ -18,6 +18,8 @@ on:
         value: ${{ jobs.generate_image_tags.outputs.ACCOUNT_SPACE_UPDATE_IMAGE_TAG }}
       TRIGGER_ARCHIVEMATICA_IMAGE_TAG:
         value: ${{ jobs.generate_image_tags.outputs.TRIGGER_ARCHIVEMATICA_IMAGE_TAG }}
+      METADATA_ATTACHER_LAMBDA_IMAGE_TAG:
+        value: ${{ jobs.generate_image_tags.outputs.METADATA_ATTACHER_LAMBDA_IMAGE_TAG }}
 jobs:
   generate_image_tags:
     runs-on: ubuntu-24.04
@@ -30,6 +32,7 @@ jobs:
       ACCESS_COPY_LAMBDA_IMAGE_TAG: ${{ steps.generate_access_copy_lambda_image_tag.outputs.ACCESS_COPY_LAMBDA_IMAGE_TAG }}
       ACCOUNT_SPACE_UPDATE_IMAGE_TAG: ${{ steps.generate_account_space_updater_image_tag.outputs.ACCOUNT_SPACE_UPDATE_IMAGE_TAG }}
       TRIGGER_ARCHIVEMATICA_IMAGE_TAG: ${{ steps.generate_trigger_archivematica_image_tag.outputs.TRIGGER_ARCHIVEMATICA_IMAGE_TAG }}
+      METADATA_ATTACHER_LAMBDA_IMAGE_TAG: ${{ steps.generate_metadata_attacher_lambda_image_tag.outputs.METADATA_ATTACHER_LAMBDA_IMAGE_TAG }}
     steps:
       - uses: actions/checkout@v5
       - name: Set ECR domain env var
@@ -67,3 +70,6 @@ jobs:
       - name: Generate Archivematica Triggerer Image Tag
         id: generate_trigger_archivematica_image_tag
         run: echo "TRIGGER_ARCHIVEMATICA_IMAGE_TAG=$ECR_DOMAIN/stela:trigger_archivematica-$BRANCH_TYPE-$ABBREVIATED_COMMIT_HASH" >> "$GITHUB_OUTPUT"
+      - name: Generate Metadata Attacher Lambda Image Tag
+        id: generate_metadata_attacher_lambda_image_tag
+        run: echo "METADATA_ATTACHER_LAMBDA_IMAGE_TAG=$ECR_DOMAIN/stela:metadata_attacher-$BRANCH_TYPE-$ABBREVIATED_COMMIT_HASH" >> "$GITHUB_OUTPUT"
