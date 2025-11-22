@@ -1,0 +1,87 @@
+<mets:mets xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:mets="http://www.loc.gov/METS/" xsi:schemaLocation="http://www.loc.gov/METS/ http://www.loc.gov/standards/mets/version1121/mets.xsd">
+<mets:metsHdr CREATEDATE="2025-10-28T19:07:44"/>
+<mets:dmdSec ID="dmdSec_1" CREATED="2025-10-28T19:07:44" STATUS="original">
+<mets:mdWrap MDTYPE="PREMIS:OBJECT">
+<mets:xmlData>
+<premis:object xmlns:premis="http://www.loc.gov/premis/v3" xsi:type="premis:intellectualEntity" xsi:schemaLocation="http://www.loc.gov/premis/v3 http://www.loc.gov/standards/premis/v3/premis.xsd" version="3.0">
+<premis:objectIdentifier>
+<premis:objectIdentifierType>UUID</premis:objectIdentifierType>
+<premis:objectIdentifierValue>4a64ba7c-ceac-4547-ac13-c487b2711d5a</premis:objectIdentifierValue>
+</premis:objectIdentifier>
+<premis:originalName>test_video_upload-4a64ba7c-ceac-4547-ac13-c487b2711d5a</premis:originalName>
+</premis:object>
+</mets:xmlData>
+</mets:mdWrap>
+</mets:dmdSec>
+<mets:amdSec ID="amdSec_1">
+<mets:techMD ID="techMD_1">
+<mets:mdWrap MDTYPE="PREMIS:OBJECT">
+<mets:xmlData>
+<premis:object xmlns:premis="http://www.loc.gov/premis/v3" xsi:type="premis:file" xsi:schemaLocation="http://www.loc.gov/premis/v3 http://www.loc.gov/standards/premis/v3/premis.xsd" version="3.0">
+<premis:objectIdentifier>
+<premis:objectIdentifierType>UUID</premis:objectIdentifierType>
+<premis:objectIdentifierValue>b3c97850-9697-451a-8ad5-9f085188e890</premis:objectIdentifierValue>
+</premis:objectIdentifier>
+<premis:objectCharacteristics>
+<premis:compositionLevel>0</premis:compositionLevel>
+<premis:fixity>
+<premis:messageDigestAlgorithm>sha256</premis:messageDigestAlgorithm>
+<premis:messageDigest>abc123def456789</premis:messageDigest>
+</premis:fixity>
+<premis:size>5242880</premis:size>
+<premis:format>
+<premis:formatDesignation>
+<premis:formatName>MPEG-4 Media File</premis:formatName>
+<premis:formatVersion>2</premis:formatVersion>
+</premis:formatDesignation>
+<premis:formatRegistry>
+<premis:formatRegistryName>PRONOM</premis:formatRegistryName>
+<premis:formatRegistryKey>fmt/199</premis:formatRegistryKey>
+</premis:formatRegistry>
+</premis:format>
+<premis:creatingApplication>
+<premis:dateCreatedByApplication>2024-03-15T10:30:00Z</premis:dateCreatedByApplication>
+</premis:creatingApplication>
+<premis:objectCharacteristicsExtension>
+<MediaInfo xmlns="https://mediaarea.net/mediainfo" xsi:schemaLocation="https://mediaarea.net/mediainfo https://mediaarea.net/mediainfo/mediainfo_2_0.xsd" version="2.0">
+<creatingLibrary version="25.09" url="https://mediaarea.net/MediaInfo">MediaInfoLib</creatingLibrary>
+<media ref="/var/archivematica/test_video.mp4">
+<track type="General">
+<Count>300</Count>
+<StreamCount>2</StreamCount>
+<StreamKind>General</StreamKind>
+<StreamKind_String>General</StreamKind_String>
+<StreamKindID>0</StreamKindID>
+<VideoCount>1</VideoCount>
+<AudioCount>1</AudioCount>
+<Format>MPEG-4</Format>
+<Format_String>MPEG-4</Format_String>
+<InternetMediaType>video/mp4</InternetMediaType>
+<FileSize>5242880</FileSize>
+<Duration>120.5</Duration>
+<File_Created_Date>2024-03-15 10:30:00 UTC</File_Created_Date>
+<Recorded_Date>2024-03-15 10:30:00 UTC</Recorded_Date>
+</track>
+<track type="Video">
+<StreamKind>Video</StreamKind>
+<Format>AVC</Format>
+<Width>1920</Width>
+<Height>1080</Height>
+<FrameRate>30.000</FrameRate>
+</track>
+</media>
+</MediaInfo>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+<rdf:Description xmlns:File="http://ns.exiftool.org/File/1.0/" rdf:about="/var/archivematica/test_video.mp4">
+<File:MIMEType>video/mp4</File:MIMEType>
+</rdf:Description>
+</rdf:RDF>
+</premis:objectCharacteristicsExtension>
+</premis:objectCharacteristics>
+<premis:originalName>%transferDirectory%objects/4a64ba7c-ceac-4547-ac13-c487b2711d5a</premis:originalName>
+</premis:object>
+</mets:xmlData>
+</mets:mdWrap>
+</mets:techMD>
+</mets:amdSec>
+</mets:mets>
