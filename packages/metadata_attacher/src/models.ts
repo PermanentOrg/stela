@@ -12,11 +12,7 @@ export interface MetsAdministrativeSection {
 					"premis:originalName": string;
 					"premis:objectCharacteristics": {
 						"premis:objectCharacteristicsExtension":
-							| {
-									"rdf:RDF": {
-										"rdf:Description": EmbeddedMetadata;
-									};
-							  }
+							| EmbeddedMetadata
 							| undefined;
 					};
 				};
@@ -25,7 +21,15 @@ export interface MetsAdministrativeSection {
 	};
 }
 
-export interface EmbeddedMetadata {
+export interface TrackMetadata {
+	StreamKind: string;
+	File_Created_Date: string | undefined;
+	Recorded_Date: string | undefined;
+	Encoded_Date: string | undefined;
+}
+
+export interface RdfMetadata {
+	"File:MIMEType": string;
 	"IPTC:ObjectName": string | undefined;
 	"IPTC:Caption-Abstract": string | undefined;
 	"IPTC:Keywords":
@@ -41,4 +45,18 @@ export interface EmbeddedMetadata {
 	"ExifIFD:DateTimeOriginal": string | undefined;
 	"ExifIFD:OffsetTimeOriginal": string | undefined;
 	"XMP-iptcCore:AltTextAccessibility": string | undefined;
+	"QuickTime:CreationDate": string | undefined;
+}
+
+export interface EmbeddedMetadata {
+	"rdf:RDF": {
+		"rdf:Description": RdfMetadata;
+	};
+	MediaInfo:
+		| {
+				media: {
+					track: TrackMetadata[];
+				};
+		  }
+		| undefined;
 }

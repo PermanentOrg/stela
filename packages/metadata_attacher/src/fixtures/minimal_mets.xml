@@ -9,8 +9,9 @@
             <premis:objectCharacteristics>
               <premis:objectCharacteristicsExtension>
                 <rdf:RDF>
-                  <rdf:Description>
+                  <rdf:Description xmlns:File="http://ns.exiftool.org/File/1.0/">
                     <ExifTool:ExifToolVersion>12.40</ExifTool:ExifToolVersion>
+                    <File:MIMEType>image/jpeg</File:MIMEType>
                   </rdf:Description>
                 </rdf:RDF>
               </premis:objectCharacteristicsExtension>
