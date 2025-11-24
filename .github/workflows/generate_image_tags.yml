@@ -34,7 +34,7 @@ jobs:
       TRIGGER_ARCHIVEMATICA_IMAGE_TAG: ${{ steps.generate_trigger_archivematica_image_tag.outputs.TRIGGER_ARCHIVEMATICA_IMAGE_TAG }}
       METADATA_ATTACHER_LAMBDA_IMAGE_TAG: ${{ steps.generate_metadata_attacher_lambda_image_tag.outputs.METADATA_ATTACHER_LAMBDA_IMAGE_TAG }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Set ECR domain env var
         id: set_ecr_domain
         run: echo "ECR_DOMAIN=364159549467.dkr.ecr.$AWS_REGION.amazonaws.com" >> "$GITHUB_ENV"
