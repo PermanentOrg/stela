@@ -11,12 +11,12 @@ interface ThumbnailData {
 	id: string;
 	itemType: "folder" | "record";
 	archiveNumber: string;
-	thumbnail256CloudPath?: string;
-	thumbnail256?: string;
-	thumbnail200?: string;
-	thumbnail500?: string;
-	thumbnail1000?: string;
-	thumbnail2000?: string;
+	thumbnail256CloudPath: string | null;
+	thumbnail256: string | null;
+	thumbnail200: string | null;
+	thumbnail500: string | null;
+	thumbnail1000: string | null;
+	thumbnail2000: string | null;
 }
 
 const constructSignedCdnUrl = (key: string): string => {
@@ -40,23 +40,23 @@ export const refreshThumbnails = async (): Promise<void> => {
 	await Promise.all(
 		itemsToRefreshThumbnails.rows.map(async (item) => {
 			const newThumbnail256 =
-				item.thumbnail256 != null && item.thumbnail256CloudPath != null
+				item.thumbnail256 !== null && item.thumbnail256CloudPath !== null
 					? constructSignedCdnUrl(item.thumbnail256CloudPath)
 					: null;
 			const newThumbnail200 =
-				item.thumbnail200 == null
+				item.thumbnail200 === null
 					? null
 					: constructSignedCdnUrl(item.archiveNumber + thumbnail200Suffix);
 			const newThumbnail500 =
-				item.thumbnail500 == null
+				item.thumbnail500 === null
 					? null
 					: constructSignedCdnUrl(item.archiveNumber + thumbnail500Suffix);
 			const newThumbnail1000 =
-				item.thumbnail1000 == null
+				item.thumbnail1000 === null
 					? null
 					: constructSignedCdnUrl(item.archiveNumber + thumbnail1000Suffix);
 			const newThumbnail2000 =
-				item.thumbnail2000 == null
+				item.thumbnail2000 === null
 					? null
 					: constructSignedCdnUrl(item.archiveNumber + thumbnail2000Suffix);
 			try {
