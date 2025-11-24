@@ -101,10 +101,20 @@ const getEmbeddedMetadataFromS3 = async (
 		metadata,
 	);
 
-	const objectCharacteristicsExtensionSection =
-		administrativeSection["mets:techMD"]["mets:mdWrap"]["mets:xmlData"][
-			"premis:object"
-		]["premis:objectCharacteristics"]["premis:objectCharacteristicsExtension"];
+	const {
+		"mets:techMD": {
+			"mets:mdWrap": {
+				"mets:xmlData": {
+					"premis:object": {
+						"premis:objectCharacteristics": {
+							"premis:objectCharacteristicsExtension":
+								objectCharacteristicsExtensionSection,
+						},
+					},
+				},
+			},
+		},
+	} = administrativeSection;
 
 	return objectCharacteristicsExtensionSection === undefined
 		? undefined
