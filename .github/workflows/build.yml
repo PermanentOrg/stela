@@ -13,7 +13,7 @@ jobs:
     env:
       API_IMAGE_TAG: ${{ needs.generate_image_tags.outputs.API_IMAGE_TAG }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Build Image
         run: docker build -t $API_IMAGE_TAG --build-arg="AWS_RDS_CERT_BUNDLE=$AWS_RDS_CERT_BUNDLE" -f Dockerfile.api .
         env:
@@ -33,7 +33,7 @@ jobs:
     env:
       AM_CLEANUP_IMAGE_TAG: ${{ needs.generate_image_tags.outputs.AM_CLEANUP_IMAGE_TAG }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Build Image
         run: docker build -t $AM_CLEANUP_IMAGE_TAG -f Dockerfile.am_cleanup .
       - name: AWS Login
@@ -51,7 +51,7 @@ jobs:
     env:
       RECORD_THUMBNAIL_LAMBDA_IMAGE_TAG: ${{ needs.generate_image_tags.outputs.RECORD_THUMBNAIL_LAMBDA_IMAGE_TAG }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Build Image
         run: docker build -t $RECORD_THUMBNAIL_LAMBDA_IMAGE_TAG --build-arg="AWS_RDS_CERT_BUNDLE=$AWS_RDS_CERT_BUNDLE" -f Dockerfile.record_thumbnail_attacher .
         env:
@@ -71,7 +71,7 @@ jobs:
     env:
       THUMBNAIL_REFRESH_IMAGE_TAG: ${{ needs.generate_image_tags.outputs.THUMBNAIL_REFRESH_IMAGE_TAG }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Build Image
         run: docker build -t $THUMBNAIL_REFRESH_IMAGE_TAG --build-arg="AWS_RDS_CERT_BUNDLE=$AWS_RDS_CERT_BUNDLE" -f Dockerfile.thumbnail_refresh .
         env:
@@ -91,7 +91,7 @@ jobs:
     env:
       FILE_URL_REFRESH_IMAGE_TAG: ${{ needs.generate_image_tags.outputs.FILE_URL_REFRESH_IMAGE_TAG }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Build Image
         run: docker build -t $FILE_URL_REFRESH_IMAGE_TAG --build-arg="AWS_RDS_CERT_BUNDLE=$AWS_RDS_CERT_BUNDLE" -f Dockerfile.file_url_refresh .
         env:
@@ -111,7 +111,7 @@ jobs:
     env:
       ACCESS_COPY_LAMBDA_IMAGE_TAG: ${{ needs.generate_image_tags.outputs.ACCESS_COPY_LAMBDA_IMAGE_TAG }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Build Image
         run: docker build -t $ACCESS_COPY_LAMBDA_IMAGE_TAG --build-arg="AWS_RDS_CERT_BUNDLE=$AWS_RDS_CERT_BUNDLE" -f Dockerfile.access_copy_attacher .
         env:
@@ -131,7 +131,7 @@ jobs:
     env:
       ACCOUNT_SPACE_UPDATE_IMAGE_TAG: ${{ needs.generate_image_tags.outputs.ACCOUNT_SPACE_UPDATE_IMAGE_TAG }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Build Image
         run: docker build -t $ACCOUNT_SPACE_UPDATE_IMAGE_TAG --build-arg="AWS_RDS_CERT_BUNDLE=$AWS_RDS_CERT_BUNDLE" -f Dockerfile.account_space_updater .
         env:
@@ -151,7 +151,7 @@ jobs:
     env:
       TRIGGER_ARCHIVEMATICA_IMAGE_TAG: ${{ needs.generate_image_tags.outputs.TRIGGER_ARCHIVEMATICA_IMAGE_TAG }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Build Image
         run: docker build -t $TRIGGER_ARCHIVEMATICA_IMAGE_TAG --build-arg="AWS_RDS_CERT_BUNDLE=$AWS_RDS_CERT_BUNDLE" -f Dockerfile.trigger_archivematica .
         env:
@@ -171,7 +171,7 @@ jobs:
     env:
       METADATA_ATTACHER_LAMBDA_IMAGE_TAG: ${{ needs.generate_image_tags.outputs.METADATA_ATTACHER_LAMBDA_IMAGE_TAG }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Build Image
         run: docker build -t $METADATA_ATTACHER_LAMBDA_IMAGE_TAG --build-arg="AWS_RDS_CERT_BUNDLE=$AWS_RDS_CERT_BUNDLE" -f Dockerfile.metadata_attacher .
         env:
