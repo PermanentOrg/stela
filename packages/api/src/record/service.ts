@@ -60,7 +60,9 @@ const validateCanPatchRecord = async (
 	}
 };
 
-const buildPatchQuery = (columnsForUpdate: RecordColumnsForUpdate): string => {
+export const buildPatchQuery = (
+	columnsForUpdate: RecordColumnsForUpdate,
+): string => {
 	const updates = Object.entries(columnsForUpdate)
 		.filter(([key, value]) => value !== undefined && key !== "recordId")
 		.map(([key, _]) => `${key} = :${key}`);

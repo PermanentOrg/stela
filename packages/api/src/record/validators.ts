@@ -41,7 +41,12 @@ export const validatePatchRecordRequest: (
 			...fieldsFromUserAuthentication,
 			locationId: Joi.number().integer().optional().allow(null),
 			description: Joi.string().optional().allow(null),
+			displayName: Joi.string().min(1).optional(),
 		})
+		// We can't use .min(1) here due to the auth fields being in the body
+		// See: https://github.com/PermanentOrg/stela/issues/407
+		.or("locationId", "description", "displayName")
+		.unknown(false)
 		.validate(data);
 
 	if (validation.error !== undefined) {
