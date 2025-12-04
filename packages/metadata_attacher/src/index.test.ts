@@ -603,7 +603,7 @@ describe("handler", () => {
 
 		await handler(event, mock<Context>(), jest.fn());
 
-		expect(logger.warn).toHaveBeenCalledWith(
+		expect(logger.info).toHaveBeenCalledWith(
 			"Invalid timestamp: not_a_timestamp",
 		);
 
@@ -725,5 +725,187 @@ describe("handler", () => {
 		await expect(handler(event, mock<Context>(), jest.fn())).rejects.toThrow(
 			"Database connection failed",
 		);
+	});
+
+	test("should extract timestamp from video with MediaInfo metadata", async () => {
+		const metsContent = await loadMetsFile("video_mediainfo.xml");
+		mockS3Send.mockResolvedValue({
+			Body: {
+				transformToString: jest.fn().mockResolvedValue(metsContent),
+			},
+		});
+
+		const event = {
+			Records: [
+				{
+					messageId: "1",
+					receiptHandle: "1",
+					body: JSON.stringify({
+						Message: JSON.stringify({
+							Records: [
+								{
+									s3: {
+										bucket: {
+											name: "test-bucket",
+										},
+										object: {
+											key: "access_copies/53f9/8c3d/a29e/4fbf/8a4a/4fd9/991e/313d/1_upload-4a64ba7c-ceac-4547-ac13-c487b2711d5a/METS.4a64ba7c-ceac-4547-ac13-c487b2711d5a.xml",
+										},
+									},
+								},
+							],
+						}),
+					}),
+					attributes: {
+						ApproximateReceiveCount: "1",
+						SentTimestamp: "1",
+						SenderId: "1",
+						ApproximateFirstReceiveTimestamp: "1",
+					},
+					messageAttributes: {},
+					md5OfBody: "1",
+					eventSource: "1",
+					eventSourceARN: "1",
+					awsRegion: "1",
+				},
+			],
+		};
+
+		await handler(event, mock<Context>(), jest.fn());
+
+		expect(mockS3Send).toHaveBeenCalledTimes(1);
+
+		const recordMetadata = await getRecordMetadata("1");
+		expect(recordMetadata).toBeDefined();
+		expect(recordMetadata?.derivedTimestamp).toEqual(
+			new Date("2024-03-15T10:30:00.000Z"),
+		);
+		expect(recordMetadata?.originalFileCreationTime).toEqual(
+			"2024-03-15T10:30:00Z",
+		);
+		expect(recordMetadata?.displayName).toEqual("test_file.jpg");
+		expect(recordMetadata?.description).toEqual(null);
+		expect(recordMetadata?.tags.length).toEqual(0);
+		expect(recordMetadata?.altText).toEqual(null);
+	});
+
+	test("should extract timestamp from video with QuickTime metadata", async () => {
+		const metsContent = await loadMetsFile("video_quicktime.xml");
+		mockS3Send.mockResolvedValue({
+			Body: {
+				transformToString: jest.fn().mockResolvedValue(metsContent),
+			},
+		});
+
+		const event = {
+			Records: [
+				{
+					messageId: "1",
+					receiptHandle: "1",
+					body: JSON.stringify({
+						Message: JSON.stringify({
+							Records: [
+								{
+									s3: {
+										bucket: {
+											name: "test-bucket",
+										},
+										object: {
+											key: "access_copies/53f9/8c3d/a29e/4fbf/8a4a/4fd9/991e/313d/1_upload-4a64ba7c-ceac-4547-ac13-c487b2711d5a/METS.4a64ba7c-ceac-4547-ac13-c487b2711d5a.xml",
+										},
+									},
+								},
+							],
+						}),
+					}),
+					attributes: {
+						ApproximateReceiveCount: "1",
+						SentTimestamp: "1",
+						SenderId: "1",
+						ApproximateFirstReceiveTimestamp: "1",
+					},
+					messageAttributes: {},
+					md5OfBody: "1",
+					eventSource: "1",
+					eventSourceARN: "1",
+					awsRegion: "1",
+				},
+			],
+		};
+
+		await handler(event, mock<Context>(), jest.fn());
+
+		expect(mockS3Send).toHaveBeenCalledTimes(1);
+
+		const recordMetadata = await getRecordMetadata("1");
+		expect(recordMetadata).toBeDefined();
+		expect(recordMetadata?.derivedTimestamp).toEqual(
+			new Date("2023-08-20T14:15:30.000Z"),
+		);
+		expect(recordMetadata?.originalFileCreationTime).toEqual(
+			"2023-08-20T14:15:30Z",
+		);
+		expect(recordMetadata?.displayName).toEqual("test_file.jpg");
+		expect(recordMetadata?.description).toEqual(null);
+		expect(recordMetadata?.tags.length).toEqual(0);
+		expect(recordMetadata?.altText).toEqual(null);
+	});
+
+	test("should handle video with no timestamp metadata", async () => {
+		const metsContent = await loadMetsFile("video_no_timestamp.xml");
+		mockS3Send.mockResolvedValue({
+			Body: {
+				transformToString: jest.fn().mockResolvedValue(metsContent),
+			},
+		});
+
+		const event = {
+			Records: [
+				{
+					messageId: "1",
+					receiptHandle: "1",
+					body: JSON.stringify({
+						Message: JSON.stringify({
+							Records: [
+								{
+									s3: {
+										bucket: {
+											name: "test-bucket",
+										},
+										object: {
+											key: "access_copies/53f9/8c3d/a29e/4fbf/8a4a/4fd9/991e/313d/1_upload-4a64ba7c-ceac-4547-ac13-c487b2711d5a/METS.4a64ba7c-ceac-4547-ac13-c487b2711d5a.xml",
+										},
+									},
+								},
+							],
+						}),
+					}),
+					attributes: {
+						ApproximateReceiveCount: "1",
+						SentTimestamp: "1",
+						SenderId: "1",
+						ApproximateFirstReceiveTimestamp: "1",
+					},
+					messageAttributes: {},
+					md5OfBody: "1",
+					eventSource: "1",
+					eventSourceARN: "1",
+					awsRegion: "1",
+				},
+			],
+		};
+
+		await handler(event, mock<Context>(), jest.fn());
+
+		expect(mockS3Send).toHaveBeenCalledTimes(1);
+
+		const recordMetadata = await getRecordMetadata("1");
+		expect(recordMetadata).toBeDefined();
+		expect(recordMetadata?.derivedTimestamp).toEqual(null);
+		expect(recordMetadata?.originalFileCreationTime).toEqual(null);
+		expect(recordMetadata?.displayName).toEqual("test_file.jpg");
+		expect(recordMetadata?.description).toEqual(null);
+		expect(recordMetadata?.tags.length).toEqual(0);
+		expect(recordMetadata?.altText).toEqual(null);
 	});
 });
