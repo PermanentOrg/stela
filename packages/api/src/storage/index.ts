@@ -1,0 +1,1 @@
+export { storageController } from "./controller";
