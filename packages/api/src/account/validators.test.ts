@@ -1,4 +1,5 @@
 import {
+	validateCreateStorageAdjustmentParams,
 	validateLeaveArchiveParams,
 	validateLeaveArchiveRequest,
 	validateUpdateTagsRequest,
@@ -315,6 +316,30 @@ describe("validateLeaveArchiveRequest", () => {
 				ip: "127.0.0.1",
 				emailFromAuthToken: "not_an_email",
 			});
+		} catch (err) {
+			error = err;
+		} finally {
+			expect(error).not.toBeNull();
+		}
+	});
+});
+
+describe("validateCreateStorageAdjustmentParams", () => {
+	test("should error if accountId is missing", () => {
+		let error = null;
+		try {
+			validateCreateStorageAdjustmentParams({});
+		} catch (err) {
+			error = err;
+		} finally {
+			expect(error).not.toBeNull();
+		}
+	});
+
+	test("should error if accountId is not a string", () => {
+		let error = null;
+		try {
+			validateCreateStorageAdjustmentParams({ accountId: 1 });
 		} catch (err) {
 			error = err;
 		} finally {
