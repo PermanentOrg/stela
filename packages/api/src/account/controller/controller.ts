@@ -2,16 +2,21 @@ import { Router } from "express";
 import type { Request, Response, NextFunction } from "express";
 import { HTTP_STATUS } from "@pdc/http-status-codes";
 
-import { extractIp, verifyUserAuthentication } from "../../middleware";
+import {
+	extractIp,
+	verifyUserAuthentication,
+	verifyAdminAuthentication,
+} from "../../middleware";
 import { isValidationError } from "../../validators/validator_util";
-
 import {
 	validateUpdateTagsRequest,
 	validateBodyFromAuthentication,
 	validateLeaveArchiveParams,
 	validateLeaveArchiveRequest,
+	validateCreateStorageAdjustmentRequest,
+	validateCreateStorageAdjustmentParams,
 } from "../validators";
-import { accountService } from "../service";
+import { accountService, createStorageAdjustment } from "../service";
 import type { LeaveArchiveRequest } from "../models";
 
 export const accountController = Router();
@@ -71,6 +76,30 @@ accountController.delete(
 		} catch (err) {
 			if (isValidationError(err)) {
 				res.status(HTTP_STATUS.CLIENT_ERROR.BAD_REQUEST).json({ error: err });
+				return;
+			}
+			next(err);
+		}
+	},
+);
+accountController.post(
+	"/:accountId/storage-adjustments",
+	verifyAdminAuthentication,
+	async (req: Request, res: Response, next: NextFunction) => {
+		try {
+			validateCreateStorageAdjustmentRequest(req.body);
+			validateCreateStorageAdjustmentParams(req.params);
+			const result = await createStorageAdjustment(
+				req.params.accountId,
+				req.body,
+			);
+
+			res.status(HTTP_STATUS.SUCCESSFUL.OK).json(result);
+		} catch (err) {
+			if (isValidationError(err)) {
+				res
+					.status(HTTP_STATUS.CLIENT_ERROR.BAD_REQUEST)
+					.json({ error: err.message });
 				return;
 			}
 			next(err);

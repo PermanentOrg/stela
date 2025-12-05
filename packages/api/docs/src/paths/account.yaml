@@ -41,3 +41,60 @@ account:
         $ref: "../errors.yaml#/400"
       "500":
         $ref: "../errors.yaml#/500"
+storage-adjustment:
+  post:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    summary: Adjust the storage available to an account. Requires admin authentication
+    operationId: storageAdjustment
+    security:
+      - bearerHttpAuthentication: []
+    tags:
+      - storage
+      - admin
+    requestBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [storageAmount]
+            properties:
+              storageAmount:
+                description: The amount of storage to add to the account, expressed as an integer number of GBs (this could be negative)
+                type: integer
+    responses:
+      "200":
+        description: >
+          The account's updated storage values
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                data:
+                  type: object
+                  required: [storageTotal, storageUsed]
+                  properties:
+                    newStorageTotal:
+                      description: The total amount of storage now available to the account expressed in GBs
+                      type: number
+                    adjustmentSize:
+                      description: The amount by which the account's storage total was changed
+                      type: number
+                    createdAt:
+                      description: The time at which the storage adjustment occurred
+                      type: string
+                      format: date-time
+
+      "400":
+        $ref: "../errors.yaml#/400"
+      "401":
+        $ref: "../errors.yaml#/401"
+      "404":
+        $ref: "../errors.yaml#/404"
+      "500":
+        $ref: "../errors.yaml#/500"

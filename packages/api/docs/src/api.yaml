@@ -35,6 +35,8 @@ paths:
     $ref: "./paths/mfa_management.yaml#/mfa-method-with-id"
   /accounts:
     $ref: "./paths/account.yaml#/account"
+  /accounts/{id}/storage-adjustment:
+    $ref: "./paths/account.yaml#/storage-adjustment"
   /share-links:
     $ref: "./paths/share_link.yaml#/share-link"
   /share-links/{shareLinkId}:
