@@ -20,7 +20,7 @@ export const issueGift = async (
 	requestBody: GiftStorageRequest,
 ): Promise<GiftStorageResponse> => {
 	const existingAccountEmailResult = await db
-		.sql<{ email: string }>("billing.queries.get_existing_account_emails", {
+		.sql<{ email: string }>("storage.queries.get_existing_account_emails", {
 			emails: requestBody.recipientEmails,
 		})
 		.catch((err: unknown) => {
@@ -37,7 +37,7 @@ export const issueGift = async (
 	);
 
 	const alreadyInvitedEmailResult = await db
-		.sql<{ email: string }>("billing.queries.get_invited_emails", {
+		.sql<{ email: string }>("storage.queries.get_invited_emails", {
 			emails: newEmails,
 		})
 		.catch((err: unknown) => {
@@ -61,7 +61,7 @@ export const issueGift = async (
 	await db.transaction(async (transactionDb) => {
 		const senderStorage = await transactionDb
 			.sql<{ spaceLeft: string }>(
-				"billing.queries.get_account_space_for_update",
+				"storage.queries.get_account_space_for_update",
 				{
 					email: requestBody.emailFromAuthToken,
 				},
@@ -88,7 +88,7 @@ export const issueGift = async (
 		}
 
 		await transactionDb
-			.sql("billing.queries.record_gift", {
+			.sql("storage.queries.record_gift", {
 				fromEmail: requestBody.emailFromAuthToken,
 				toEmails: existingAccountEmails,
 				storageAmountInBytes: requestBody.storageAmount * GB,
@@ -100,7 +100,7 @@ export const issueGift = async (
 			});
 
 		await transactionDb
-			.sql("billing.queries.create_invites", {
+			.sql("storage.queries.create_invites", {
 				emails: emailsToInvite,
 				storageAmountInBytes: requestBody.storageAmount * GB,
 				tokens: inviteTokens,

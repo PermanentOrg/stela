@@ -1,1 +1,0 @@
-export { billingController } from "./controller";
