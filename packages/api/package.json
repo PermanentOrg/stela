@@ -52,7 +52,7 @@
 		"http-errors": "^2.0.0",
 		"joi": "^18.0.0",
 		"memoizee": "^0.4.17",
-		"mixpanel": "^0.18.0",
+		"mixpanel": "^0.19.1",
 		"newrelic": "^13.6.5",
 		"pg": "^8.16.3",
 		"require-env-variable": "^4.0.2",
