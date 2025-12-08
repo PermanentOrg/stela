@@ -36,7 +36,7 @@
 		"@stela/s3-utils": "^1.0.0",
 		"@stela/archivematica-utils": "^1.0.0",
 		"dotenv": "^17.2.3",
-		"fast-xml-parser": "^4.5.1",
+		"fast-xml-parser": "^5.3.2",
 		"joi": "^18.0.0",
 		"require-env-variable": "^4.0.2",
 		"tinypg": "^7.0.1"
