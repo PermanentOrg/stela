@@ -56,6 +56,8 @@ record/{id}:
           schema:
             type: object
             properties:
+              displayName:
+                type: string
               locationId:
                 type: integer
               description:
@@ -72,6 +74,10 @@ record/{id}:
                   $ref: "../models/record.yaml#/record"
       "400":
         $ref: "../errors.yaml#/400"
+      "403":
+        $ref: "../errors.yaml#/403"
+      "404":
+        $ref: "../errors.yaml#/404"
       "500":
         $ref: "../errors.yaml#/500"
 records-id-share-links:

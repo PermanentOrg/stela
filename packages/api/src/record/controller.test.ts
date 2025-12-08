@@ -546,6 +546,92 @@ describe("PATCH /record", () => {
 		);
 		await agent.patch("/api/v2/record/1").send({ locationId: 123 }).expect(404);
 	});
+
+	test("expect display name is updated", async () => {
+		await agent
+			.patch("/api/v2/record/1")
+			.send({ displayName: "New Name" })
+			.expect(200);
+
+		const result = await db.query(
+			"SELECT displayname FROM record WHERE recordId = :recordId",
+			{
+				recordId: 1,
+			},
+		);
+
+		expect(result.rows[0]).toEqual({ displayname: "New Name" });
+	});
+
+	test("expect display name and description are updated together", async () => {
+		await agent
+			.patch("/api/v2/record/1")
+			.send({ displayName: "Updated Name", description: "Updated description" })
+			.expect(200);
+
+		const result = await db.query(
+			"SELECT displayname, description FROM record WHERE recordId = :recordId",
+			{
+				recordId: 1,
+			},
+		);
+
+		expect(result.rows[0]).toEqual({
+			displayname: "Updated Name",
+			description: "Updated description",
+		});
+	});
+
+	test("expect all fields are updated together", async () => {
+		await agent
+			.patch("/api/v2/record/1")
+			.send({
+				displayName: "All Fields Name",
+				description: "All fields description",
+				locationId: 456,
+			})
+			.expect(200);
+
+		const result = await db.query(
+			"SELECT displayname, description, locnid FROM record WHERE recordId = :recordId",
+			{
+				recordId: 1,
+			},
+		);
+
+		expect(result.rows[0]).toEqual({
+			displayname: "All Fields Name",
+			description: "All fields description",
+			locnid: "456",
+		});
+	});
+
+	test("expect 400 error if display name is empty string", async () => {
+		await agent
+			.patch("/api/v2/record/1")
+			.send({
+				displayName: "",
+			})
+			.expect(400);
+	});
+
+	test("expect 400 error if display name is null", async () => {
+		await agent
+			.patch("/api/v2/record/1")
+			.send({
+				displayName: null,
+			})
+			.expect(400);
+	});
+
+	test("expect 400 error if display name is wrong type", async () => {
+		await agent
+			.patch("/api/v2/record/1")
+			.send({
+				displayName: false,
+			})
+			.expect(400);
+	});
 });
 
 describe("GET /record/{id}/share-links", () => {

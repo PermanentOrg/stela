@@ -6,5 +6,6 @@ export const requestFieldsToDatabaseFields = (
 ): RecordColumnsForUpdate => ({
 	locnid: request.locationId,
 	description: request.description,
+	displayname: request.displayName,
 	recordId,
 });

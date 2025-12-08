@@ -110,14 +110,16 @@ export interface ArchiveFile {
 
 export interface RecordColumnsForUpdate {
 	recordId: string;
-	locnid: bigint;
-	description: string;
+	locnid: bigint | undefined;
+	description: string | undefined;
+	displayname: string | undefined;
 }
 
 export interface PatchRecordRequest {
 	emailFromAuthToken: string;
-	locationId: bigint;
-	description: string;
+	locationId?: bigint;
+	description?: string;
+	displayName?: string;
 }
 
 export enum RecordStatus {
