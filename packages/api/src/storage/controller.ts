@@ -6,9 +6,9 @@ import { isValidationError } from "../validators/validator_util";
 import { issueGift } from "./service";
 import { HTTP_STATUS } from "@pdc/http-status-codes";
 
-export const billingController = Router();
+export const storageController = Router();
 
-billingController.post(
+storageController.post(
 	"/gift",
 	verifyUserAuthentication,
 	async (req: Request, res: Response, next: NextFunction) => {

@@ -1,7 +1,11 @@
 import Joi from "joi";
-import type { UpdateTagsRequest } from "./models";
+import type {
+	CreateStorageAdjustmentRequest,
+	UpdateTagsRequest,
+} from "./models";
 import {
 	fieldsFromUserAuthentication,
+	fieldsFromAdminAuthentication,
 	validateBodyFromAuthentication,
 } from "../validators";
 
@@ -62,6 +66,37 @@ export const validateLeaveArchiveRequest: (data: unknown) => asserts data is {
 		.keys({
 			...fieldsFromUserAuthentication,
 			ip: Joi.string().ip().required(),
+		})
+		.validate(data);
+	if (validation.error !== undefined) {
+		throw validation.error;
+	}
+};
+
+export const validateCreateStorageAdjustmentRequest: (
+	data: unknown,
+) => asserts data is CreateStorageAdjustmentRequest = (
+	data: unknown,
+): asserts data is CreateStorageAdjustmentRequest => {
+	const validation = Joi.object()
+		.keys({
+			...fieldsFromAdminAuthentication,
+			storageAmount: Joi.number().integer().not(0).required(),
+		})
+		.validate(data);
+	if (validation.error !== undefined) {
+		throw validation.error;
+	}
+};
+
+export const validateCreateStorageAdjustmentParams: (
+	data: unknown,
+) => asserts data is { accountId: string } = (
+	data: unknown,
+): asserts data is { accountId: string } => {
+	const validation = Joi.object()
+		.keys({
+			accountId: Joi.string().required(),
 		})
 		.validate(data);
 	if (validation.error !== undefined) {
