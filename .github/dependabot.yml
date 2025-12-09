@@ -2,6 +2,7 @@ version: 2
 updates:
   - package-ecosystem: "npm"
     directory: "/"
+    versioning-strategy: increase
     schedule:
       interval: 'monthly'
       time: '00:00'
@@ -19,6 +20,8 @@ updates:
         update-types: ["version-update:semver-major"]
       - dependency-name: "ts-md5"
         update-types: ["version-update:semver-major"]
+      - dependency-name: "uuid"
+        update-types: ["version-update:semver-major"]
     groups:
       eslint:
         patterns:
@@ -29,96 +32,6 @@ updates:
       aws-sdk:
         patterns:
           - "@aws-sdk/*"
-
-  - package-ecosystem: "npm"
-    directory: "/packages/access_copy_attacher"
-    schedule:
-      interval: 'monthly'
-      time: '00:00'
-      timezone: 'Etc/UTC'
-    cooldown:
-      default-days: 7
-
-  - package-ecosystem: "npm"
-    directory: "/packages/account_space_updater"
-    schedule:
-      interval: 'monthly'
-      time: '00:00'
-      timezone: 'Etc/UTC'
-    cooldown:
-      default-days: 7
-
-  - package-ecosystem: "npm"
-    directory: "/packages/api"
-    schedule:
-      interval: 'monthly'
-      time: '00:00'
-      timezone: 'Etc/UTC'
-    cooldown:
-      default-days: 7
-
-  - package-ecosystem: "npm"
-    directory: "/packages/archivematica_cleanup"
-    schedule:
-      interval: 'monthly'
-      time: '00:00'
-      timezone: 'Etc/UTC'
-    cooldown:
-      default-days: 7
-
-  - package-ecosystem: "npm"
-    directory: "/packages/archivematica-utils"
-    schedule:
-      interval: 'monthly'
-      time: '00:00'
-      timezone: 'Etc/UTC'
-    cooldown:
-      default-days: 7
-
-  - package-ecosystem: "npm"
-    directory: "/packages/file-utils"
-    schedule:
-      interval: 'monthly'
-      time: '00:00'
-      timezone: 'Etc/UTC'
-    cooldown:
-      default-days: 7
-
-  - package-ecosystem: "npm"
-    directory: "/packages/logger"
-    schedule:
-      interval: 'monthly'
-      time: '00:00'
-      timezone: 'Etc/UTC'
-    cooldown:
-      default-days: 7
-
-  - package-ecosystem: "npm"
-    directory: "/packages/record_thumbnail_attacher"
-    schedule:
-      interval: 'monthly'
-      time: '00:00'
-      timezone: 'Etc/UTC'
-    cooldown:
-      default-days: 7
-
-  - package-ecosystem: "npm"
-    directory: "/packages/s3-utils"
-    schedule:
-      interval: 'monthly'
-      time: '00:00'
-      timezone: 'Etc/UTC'
-    cooldown:
-      default-days: 7
-
-  - package-ecosystem: "npm"
-    directory: "/packages/thumbnail_refresh"
-    schedule:
-      interval: 'monthly'
-      time: '00:00'
-      timezone: 'Etc/UTC'
-    cooldown:
-      default-days: 7
 
   - package-ecosystem: "github-actions"
     directory: ".github/workflows"
