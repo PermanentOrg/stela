@@ -1,4 +1,5 @@
 data "kubernetes_resource" "thumbnail_refresh_staging" {
+  count       = local.need_staging_images ? 1 : 0
   kind        = "CronJob"
   api_version = "batch/v1"
   metadata { name = "thumbnail-refresh-staging" }

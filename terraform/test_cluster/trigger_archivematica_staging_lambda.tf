@@ -1,4 +1,5 @@
 data "aws_lambda_function" "trigger_archivematica_staging_lambda" {
+  count         = local.need_staging_images ? 1 : 0
   function_name = "trigger-archivematica-staging-lambda"
 }
 
