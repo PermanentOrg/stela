@@ -1,4 +1,5 @@
 data "kubernetes_resource" "archivematica_cleanup_dev" {
+  count       = local.need_dev_images ? 1 : 0
   kind        = "CronJob"
   api_version = "batch/v1"
   metadata { name = "archivematica-cleanup-dev" }

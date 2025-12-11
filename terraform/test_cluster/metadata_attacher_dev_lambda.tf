@@ -1,4 +1,5 @@
 data "aws_lambda_function" "metadata_attacher_dev_lambda" {
+  count         = local.need_dev_images ? 1 : 0
   function_name = "metadata-attacher-dev-lambda"
 }
 

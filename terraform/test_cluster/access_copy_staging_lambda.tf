@@ -1,4 +1,5 @@
 data "aws_lambda_function" "access_copy_staging_lambda" {
+  count         = local.need_staging_images ? 1 : 0
   function_name = "access-copy-staging-lambda"
 }
 
