@@ -1,4 +1,5 @@
 data "aws_lambda_function" "metadata_attacher_staging_lambda" {
+  count         = local.need_staging_images ? 1 : 0
   function_name = "metadata-attacher-staging-lambda"
 }
 

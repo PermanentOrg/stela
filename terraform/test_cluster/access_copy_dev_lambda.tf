@@ -1,4 +1,5 @@
 data "aws_lambda_function" "access_copy_dev_lambda" {
+  count         = local.need_dev_images ? 1 : 0
   function_name = "access-copy-dev-lambda"
 }
 
