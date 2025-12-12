@@ -12,11 +12,20 @@ const env = process.env["ENV"] ?? "";
 const app = express();
 
 app.set("query parser", "extended");
-app.use(
-	cors({
-		origin: `https://${env === "production" ? "www" : env}.permanent.org`,
-	}),
-);
+if (env === "dev") {
+	app.use(
+		cors({
+			origin: "https://app.dev.permanent.org",
+		}),
+	);
+} else {
+	app.use(
+		cors({
+			origin: `https://${env === "production" ? "www" : env}.permanent.org`,
+		}),
+	);
+}
+
 app.use(expressWinston.logger({ level: "http", winstonInstance: logger }));
 app.use(express.json());
 
