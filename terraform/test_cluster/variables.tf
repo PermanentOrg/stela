@@ -123,7 +123,7 @@ variable "staging_fusionauth_sftp_application_id" {
 variable "legacy_backend_dev_host_url" {
   description = "Host URL of the legacy PHP backend"
   type        = string
-  default     = "https://dev.permanent.org/api"
+  default     = "https://app.dev.permanent.org/api"
 }
 
 variable "legacy_backend_staging_host_url" {
@@ -321,7 +321,7 @@ variable "staging_backblaze_bucket" {
 variable "dev_site_url" {
   description = "URL of the dev site"
   type        = string
-  default     = "dev.permanent.org"
+  default     = "app.dev.permanent.org"
 }
 
 variable "staging_site_url" {
