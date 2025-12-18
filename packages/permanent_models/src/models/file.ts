@@ -50,6 +50,7 @@ export enum FileType {
 	VideoOgv = "type.file.video.ogv",
 	VideoWebm = "type.file.video.webm",
 	VideoWmv = "type.file.video.wmv",
+	WebArchiveWacz = "type.file.web_archive.wacz",
 }
 
 enum FileExtension {
@@ -97,6 +98,7 @@ enum FileExtension {
 	Tif = "tif",
 	Tiff = "tiff",
 	Txt = "txt",
+	Wacz = "wacz",
 	Wav = "wav",
 	Webm = "webm",
 	Wma = "wma",
@@ -158,6 +160,7 @@ const FileTypeToFileExtension: Record<FileType, FileExtension> = {
 	[FileType.VideoOgv]: FileExtension.Ogv,
 	[FileType.VideoWebm]: FileExtension.Webm,
 	[FileType.VideoWmv]: FileExtension.Wmv,
+	[FileType.WebArchiveWacz]: FileExtension.Wacz,
 };
 
 export const getFileExtensionByFileType = (type: FileType): FileExtension =>

@@ -144,6 +144,7 @@ export enum RecordType {
 	Image = "type.record.image",
 	GenealogyArchive = "Genealogy Archive",
 	Archive = "type.record.archive",
+	WebArchive = "type.record.web_archive",
 	Video = "type.record.video",
 	Audio = "type.record.audio",
 	Genealogy = "Genealogy",
