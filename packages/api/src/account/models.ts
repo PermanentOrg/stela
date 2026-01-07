@@ -29,3 +29,15 @@ export interface LeaveArchiveRequest {
 	archiveId: string;
 	ip: string;
 }
+
+export interface CreateStorageAdjustmentRequest {
+	emailFromAuthToken: string;
+	accountEmail: string;
+	storageAmount: number;
+}
+
+export interface StorageAdjustment {
+	newStorageTotal: number;
+	adjustmentAmount: number;
+	createdAt: Date;
+}

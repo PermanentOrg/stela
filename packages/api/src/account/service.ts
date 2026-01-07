@@ -4,7 +4,7 @@ import { logger } from "@stela/logger";
 
 import { db } from "../database";
 import { MailchimpMarketing } from "../mailchimp";
-import { ACCESS_ROLE, EVENT_ACTION, EVENT_ENTITY } from "../constants";
+import { ACCESS_ROLE, EVENT_ACTION, EVENT_ENTITY, GB } from "../constants";
 import { createEvent } from "../event/service";
 import type { CreateEventRequest } from "../event/models";
 
@@ -14,6 +14,8 @@ import type {
 	GetAccountArchiveResult,
 	LeaveArchiveRequest,
 	GetCurrentAccountArchiveResult,
+	CreateStorageAdjustmentRequest,
+	StorageAdjustment,
 } from "./models";
 
 const updateTags = async (requestBody: UpdateTagsRequest): Promise<void> => {
@@ -169,4 +171,35 @@ export const accountService = {
 	updateTags,
 	getAccountArchive,
 	getCurrentAccountArchiveMemberships,
+};
+
+export const createStorageAdjustment = async (
+	accountId: string,
+	requestBody: CreateStorageAdjustmentRequest,
+): Promise<StorageAdjustment> => {
+	const updatedStorage = await db
+		.sql<{
+			storageTotalInBytes: bigint;
+			adjustmentSizeInBytes: bigint;
+			createdAt: Date;
+		}>("account.queries.adjust_account_storage", {
+			accountId,
+			storageAmountInBytes: requestBody.storageAmount * GB,
+		})
+		.catch((err: unknown) => {
+			logger.error(err);
+			throw new createError.InternalServerError(
+				"Failed to update account storage",
+			);
+		});
+
+	if (updatedStorage.rows[0] === undefined) {
+		throw new createError.NotFound("Account not found");
+	}
+
+	return {
+		newStorageTotal: Number(updatedStorage.rows[0].storageTotalInBytes) / GB,
+		adjustmentAmount: Number(updatedStorage.rows[0].adjustmentSizeInBytes) / GB,
+		createdAt: updatedStorage.rows[0].createdAt,
+	};
 };

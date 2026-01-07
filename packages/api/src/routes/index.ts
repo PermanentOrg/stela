@@ -5,7 +5,7 @@ import { legacyContactController } from "../legacy_contact";
 import { accountController } from "../account";
 import { archiveController } from "../archive";
 import { adminController } from "../admin";
-import { billingController } from "../billing";
+import { storageController } from "../storage";
 import { eventController } from "../event";
 import { promoController } from "../promo";
 import { idpUserController } from "../idpuser";
@@ -21,7 +21,8 @@ apiRoutes.use("/legacy-contact", legacyContactController);
 apiRoutes.use("/account", accountController);
 apiRoutes.use("/archive", archiveController);
 apiRoutes.use("/admin", adminController);
-apiRoutes.use("/billing", billingController);
+apiRoutes.use("/billing", storageController); // Deprecated path maintained to avoid breaking changes
+apiRoutes.use("/storage", storageController);
 apiRoutes.use("/event", eventController);
 apiRoutes.use("/promo", promoController);
 apiRoutes.use("/idpuser", idpUserController);
