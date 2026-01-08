@@ -1,4 +1,5 @@
 data "aws_lambda_function" "account_space_update_dev_lambda" {
+  count         = local.need_dev_images ? 1 : 0
   function_name = "account-space-update-dev-lambda"
 }
 

@@ -1,4 +1,5 @@
 data "kubernetes_resource" "stela_staging" {
+  count       = local.need_staging_images ? 1 : 0
   kind        = "Deployment"
   api_version = "apps/v1"
   metadata { name = "stela-staging" }

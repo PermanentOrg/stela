@@ -1,4 +1,5 @@
 data "kubernetes_resource" "file_url_refresh_dev" {
+  count       = local.need_dev_images ? 1 : 0
   kind        = "CronJob"
   api_version = "batch/v1"
   metadata { name = "file-url-refresh-dev" }
