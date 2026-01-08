@@ -42,40 +42,40 @@ npm install -ws
 Depending on the work being done, some environment variable will not be required for the service to run.
 For these, simply fill in any fake value to prevent `require-env-variable` from throwing errors.
 
-| Variable                          | Default                                               | Notes                                                                                                                       |
-| --------------------------------- | ----------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
-| ENV                               | local                                                 | Tells stela what environment it's running in                                                                                |
-| DATABASE_URL                      | postgres://postgres:permanent@database:5432/permanent | Run tests to generate default database                                                                                      |
-| PORT                              | 8080                                                  | Tells stela what port to run on                                                                                             |
-| FUSIONAUTH_HOST                   | <none. needs to be set>                               | Fusionauth's host URL. Should be different between prod and other envs.                                                     |
-| FUSIONAUTH_API_KEY                | <none. needs to be set>                               | Find it in Fusionauth admin panel -> settings -> API keys -> the one called "back-end (local)"                              |
-| FUSIONAUTH_TENANT                 | <none. needs to be set>                               | Find it in Fusionauth admin panel -> Tenants -> the one called "Local"                                                      |
-| FUSIONAUTH_BACKEND_APPLICATION_ID | <none. needs to be set>                               | Find it in Fusionauth admin panel -> Applications -> the one called "back-end (local)"                                      |
-| FUSIONAUTH_ADMIN_APPLICATION_ID   | <none. needs to be set>                               | Find it in Fusionauth admin panel -> Applications -> the one called "admin-local"                                           |
-| FUSIONAUTH_SFTP_APPLICATION_ID    | <none. needs to be set>                               | Find it in Fusionauth admin panel -> Applications -> the one called "sftp (local)"                                          |
-| LEGACY_BACKEND_HOST_URL           | http://load_balancer:80/api                           |
-| LEGACY_BACKEND_SHARED_SECRET      | none                                                  | Can be found in `back-end`'s library/base/constants/base.constants.php                                                      |
-| MAILCHIMP_API_KEY                 | none                                                  | Can be found in `back-end`'s library/base/constants/base.constants.php                                                      |
-| MAILCHIMP_TRANSACTIONAL_API_KEY   | none                                                  | Can be found in `back-end`'s library/base/constants/base.constants.php, where it is called `MANDRILL_API_KEY`               |
-| MAILCHIMP_DATACENTER              | us12                                                  |
-| MAILCHIMP_COMMUNITY_LIST_ID       | 2736f796db                                            | The default value corresponds to the `dev` list                                                                             |
-| SENTRY_DSN                        | none                                                  | Can be found in Sentry under Projects > stela > Settings > Client Keys (DSN)                                                |
-| DEV_NAME                          | none                                                  | Only set in local environments. Should be your given name. all lowercase. Used to create Sentry envs for developers         |
-| AWS_REGION                        | us-west-2                                             |                                                                                                                             |
-| AWS_ACCESS_KEY_ID                 | none                                                  | The same one you use in `devenv`                                                                                            |
-| AWS_SECRET_ACCESS_KEY             | none                                                  | The same one you use in `devenv`                                                                                            |
-| LOW_PRIORITY_TOPIC_ARN            | test                                                  | Doesn't need to be set to a real ARN unless your work touches it specifically                                               |
-| EVENT_TOPIC_ARN                   | test                                                  | Doesn't need to be set to a real ARN unless your working with events specifically                                           |
-| MIXPANEL_TOKEN                    | none                                                  | Found in Mixpanel at Settings > Project Settings > Project Token                                                            |
-| ARCHIVEMATICA_BASE_URL            | none                                                  | It is the url of the EC2 instance on which archivematica is running                                                         |
-| ARCHIVEMATICA_API_KEY             | none                                                  | Found in Bitwarden, not needed unless you're running the cleanup cron                                                       |
-| CLOUDFRONT_URL                    | none                                                  | Can be found as `CDN_URL` in `back-end`'s library/base/constants/base.constants.php. Not required for API server            |
-| CLOUDFRONT_KEY_PAIR_ID            | none                                                  | Can be found as `CLOUDFRONT_KEYPAIR` in `back-end`'s library/base/constants/base.constants.php. Not required for API server |
-| CLOUDFRONT_PRIVATE_KEY            | none                                                  | Can be found in `back-end`'s library/static/certs/pk-APKAJP2D34UGZ6IG443Q.pem. Not required for API server                  |
-| SITE_URL                          | local.permanent.org                                   |
-| ARCHIVEMATICA_HOST_URL            | none                                                  | Only needed for the archivematica_triggerer lambda
-| ARCHIVEMATICA_API_KEY             | none                                                  | Only needed for the archivematica_triggerer lambda
-| ARCHIVEMATICA_ORIGINAL_LOCATION_ID| none                                                  | Only needed for the archivematica_triggerer lambda
+| Variable                           | Default                                               | Notes                                                                                                                       |
+| ---------------------------------- | ----------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| ENV                                | local                                                 | Tells stela what environment it's running in                                                                                |
+| DATABASE_URL                       | postgres://postgres:permanent@database:5432/permanent | Run tests to generate default database                                                                                      |
+| PORT                               | 8080                                                  | Tells stela what port to run on                                                                                             |
+| FUSIONAUTH_HOST                    | <none. needs to be set>                               | Fusionauth's host URL. Should be different between prod and other envs.                                                     |
+| FUSIONAUTH_API_KEY                 | <none. needs to be set>                               | Find it in Fusionauth admin panel -> settings -> API keys -> the one called "back-end (local)"                              |
+| FUSIONAUTH_TENANT                  | <none. needs to be set>                               | Find it in Fusionauth admin panel -> Tenants -> the one called "Local"                                                      |
+| FUSIONAUTH_BACKEND_APPLICATION_ID  | <none. needs to be set>                               | Find it in Fusionauth admin panel -> Applications -> the one called "back-end (local)"                                      |
+| FUSIONAUTH_ADMIN_APPLICATION_ID    | <none. needs to be set>                               | Find it in Fusionauth admin panel -> Applications -> the one called "admin-local"                                           |
+| FUSIONAUTH_SFTP_APPLICATION_ID     | <none. needs to be set>                               | Find it in Fusionauth admin panel -> Applications -> the one called "sftp (local)"                                          |
+| LEGACY_BACKEND_HOST_URL            | http://load_balancer:80/api                           |
+| LEGACY_BACKEND_SHARED_SECRET       | none                                                  | Can be found in `back-end`'s library/base/constants/base.constants.php                                                      |
+| MAILCHIMP_API_KEY                  | none                                                  | Can be found in `back-end`'s library/base/constants/base.constants.php                                                      |
+| MAILCHIMP_TRANSACTIONAL_API_KEY    | none                                                  | Can be found in `back-end`'s library/base/constants/base.constants.php, where it is called `MANDRILL_API_KEY`               |
+| MAILCHIMP_DATACENTER               | us12                                                  |
+| MAILCHIMP_COMMUNITY_LIST_ID        | 2736f796db                                            | The default value corresponds to the `dev` list                                                                             |
+| SENTRY_DSN                         | none                                                  | Can be found in Sentry under Projects > stela > Settings > Client Keys (DSN)                                                |
+| DEV_NAME                           | none                                                  | Only set in local environments. Should be your given name. all lowercase. Used to create Sentry envs for developers         |
+| AWS_REGION                         | us-west-2                                             |                                                                                                                             |
+| AWS_ACCESS_KEY_ID                  | none                                                  | The same one you use in `devenv`                                                                                            |
+| AWS_SECRET_ACCESS_KEY              | none                                                  | The same one you use in `devenv`                                                                                            |
+| LOW_PRIORITY_TOPIC_ARN             | test                                                  | Doesn't need to be set to a real ARN unless your work touches it specifically                                               |
+| EVENT_TOPIC_ARN                    | test                                                  | Doesn't need to be set to a real ARN unless your working with events specifically                                           |
+| MIXPANEL_TOKEN                     | none                                                  | Found in Mixpanel at Settings > Project Settings > Project Token                                                            |
+| ARCHIVEMATICA_BASE_URL             | none                                                  | It is the url of the EC2 instance on which archivematica is running                                                         |
+| ARCHIVEMATICA_API_KEY              | none                                                  | Found in Bitwarden, not needed unless you're running the cleanup cron                                                       |
+| CLOUDFRONT_URL                     | none                                                  | Can be found as `CDN_URL` in `back-end`'s library/base/constants/base.constants.php. Not required for API server            |
+| CLOUDFRONT_KEY_PAIR_ID             | none                                                  | Can be found as `CLOUDFRONT_KEYPAIR` in `back-end`'s library/base/constants/base.constants.php. Not required for API server |
+| CLOUDFRONT_PRIVATE_KEY             | none                                                  | Can be found in `back-end`'s library/static/certs/pk-APKAJP2D34UGZ6IG443Q.pem. Not required for API server                  |
+| SITE_URL                           | local.permanent.org                                   |
+| ARCHIVEMATICA_HOST_URL             | none                                                  | Only needed for the archivematica_triggerer lambda                                                                          |
+| ARCHIVEMATICA_API_KEY              | none                                                  | Only needed for the archivematica_triggerer lambda                                                                          |
+| ARCHIVEMATICA_ORIGINAL_LOCATION_ID | none                                                  | Only needed for the archivematica_triggerer lambda                                                                          |
 
 ## Linting
 
@@ -133,6 +133,25 @@ Outside a container: Run
 ```bash
 npm run start -w @stela/api
 ```
+
+## Adding a New Service
+
+This project contains an API server and some cron jobs, which run on AWS EKS, as well as some serverless functions that run on AWS Lambda.
+All of these are configured and deployed through Terraform.
+Creating new API servers in this project is unlikely, at least in the near future, but it is not uncommon to add a lambda or cron job.
+To do so:
+
+1. Create a new workspace to represent this service. It should have its own directory under `packages`.
+2. Add your workspace to the workspaces array in the top-level package.json
+3. Implement your service within the new workspace
+4. Create a Dockerfile called `Dockerfile.<service_name>` defining a docker image from which a container running your service can be built. Use existing Dockerfiles for lambdas (such as Dockerfile.trigger_archivematica) or crons (such as Dockerfile.thumbnail_refresh) as a guide.
+5. In `terraform/test_cluster` add a terraform file defining your new cron job or lambda and its dependencies (crons don't tend to have dependencies, but lambdas will usually have at least an SQS queue that triggers the lambda). Use existing an existing cron or lambda definition as a guide. Be sure to define a data block corresponding to your service so Terraform can see what image your service is running on future deploys
+6. If your service uses new environment variables, add them to `variables.tf`, and add the correct values for each environment in our [Terraform Cloud](https://app.terraform.io/app/PermanentOrg/workspaces). If you're adding a cron and any of your new environment variables are secrets, add them also to `secrets.tf`.
+7. Add the name of your service's image to `required_dev_images` and `required_staging_images` in `locals.tf`. Also update the `current_kubernetes_images` and `current_lambda_images` definitions to include your service's image.
+8. Repeat steps 5 and 6 in `terraform/prod_cluster`, but don't add data blocks (they are not necessary here)
+9. In the Generate Image Tags Github workflow, add a step to generate an appropriate tag for the image
+10. In the deploy Github workflow for each environment, add your service's image tag to the `env` of the deploy job. In dev and staging, add it also to the `image_overrides` variable passed to `terraform plan` and `terraform apply`. In prod, add it to the variables passed directly to `terraform plan` and `terraform apply`
+11. Add a step to the unit tests Github workflow to run the tests for your new workspace (it would be ideal if we could just run `npm run test -ws`, but in the past this caused silent failures).
 
 ## Running Lambdas Locally
 
