@@ -8,6 +8,7 @@ record (
   uploadaccountid,
   uploadpayeraccountid,
   uploadfilename,
+  downloadname,
   status,
   type
 )
@@ -21,6 +22,7 @@ VALUES
   2,
   2,
   'public_file.jpg',
+  'public_file.jpg',
   'status.generic.ok',
   'type.record.image'
 ),
@@ -32,6 +34,7 @@ VALUES
   'Private File',
   2,
   2,
+  'private_file.jpg',
   'private_file.jpg',
   'status.generic.ok',
   'type.record.image'
@@ -45,6 +48,7 @@ VALUES
   2,
   2,
   'future_public_file.jpg',
+  'future_public_file.jpg',
   'status.generic.ok',
   'type.record.image'
 ),
@@ -56,6 +60,7 @@ VALUES
   'Deleted File',
   2,
   2,
+  'public_file.jpg',
   'public_file.jpg',
   'status.generic.deleted',
   'type.record.image'
@@ -69,6 +74,7 @@ VALUES
   3,
   3,
   'public_file.jpg',
+  'public_file.jpg',
   'status.generic.ok',
   'type.record.image'
 ),
@@ -80,6 +86,7 @@ VALUES
   'Private shared non-owned File',
   3,
   3,
+  'other_file.jpg',
   'other_file.jpg',
   'status.generic.ok',
   'type.record.image'
@@ -93,6 +100,7 @@ VALUES
   3,
   3,
   'other_file.jpg',
+  'other_file.jpg',
   'status.generic.ok',
   'type.record.image'
 ),
@@ -104,6 +112,7 @@ VALUES
   'Record with deleted Files',
   2,
   2,
+  'other_file.jpg',
   'other_file.jpg',
   'status.generic.ok',
   'type.record.image'
@@ -117,6 +126,7 @@ VALUES
   2,
   2,
   'other_file.jpg',
+  'other_file.jpg',
   'status.generic.ok',
   'type.record.image'
 ),
@@ -128,6 +138,7 @@ VALUES
   'Record in an archive with a deleted member',
   3,
   3,
+  'other_file.jpg',
   'other_file.jpg',
   'status.generic.ok',
   'type.record.image'
@@ -141,6 +152,7 @@ VALUES
   2,
   2,
   'other_file.jpg',
+  'other_file.jpg',
   'status.generic.ok',
   'type.record.image'
 ),
@@ -153,6 +165,7 @@ VALUES
   2,
   2,
   'other_file.jpg',
+  'other_file.jpg',
   'status.generic.ok',
   'type.record.image'
 ),
@@ -164,6 +177,7 @@ VALUES
   'Record in deleted folder',
   2,
   2,
+  'other_file.jpg',
   'other_file.jpg',
   'status.generic.ok',
   'type.record.image'

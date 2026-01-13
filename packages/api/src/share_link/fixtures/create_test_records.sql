@@ -8,6 +8,7 @@ record (
   uploadaccountid,
   uploadpayeraccountid,
   uploadfilename,
+  downloadname,
   status,
   type
 )
@@ -21,6 +22,7 @@ VALUES
   2,
   2,
   'private_file.jpg',
+  'private_file.jpg',
   'status.generic.ok',
   'type.record.image'
 ),
@@ -32,6 +34,7 @@ VALUES
   'Private File',
   3,
   3,
+  'private_file.jpg',
   'private_file.jpg',
   'status.generic.ok',
   'type.record.image'
@@ -45,6 +48,7 @@ VALUES
   3,
   3,
   'private_file.jpg',
+  'private_file.jpg',
   'status.generic.ok',
   'type.record.image'
 ),
@@ -56,6 +60,7 @@ VALUES
   'Public File',
   2,
   2,
+  'public.jpg',
   'public.jpg',
   'status.generic.ok',
   'type.record.image'
@@ -69,6 +74,7 @@ VALUES
   2,
   2,
   'private_file.jpg',
+  'private_file.jpg',
   'status.generic.ok',
   'type.record.image'
 ),
@@ -81,6 +87,7 @@ VALUES
   2,
   2,
   'private_file.jpg',
+  'private_file.jpg',
   'status.generic.ok',
   'type.record.image'
 ),
@@ -92,6 +99,7 @@ VALUES
   'Private File',
   2,
   2,
+  'private_file.jpg',
   'private_file.jpg',
   'status.generic.ok',
   'type.record.image'
