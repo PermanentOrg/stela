@@ -8,6 +8,7 @@ record (
   size,
   uploadpayeraccountid,
   uploadfilename,
+  downloadname,
   status,
   type,
   updateddt
@@ -21,6 +22,7 @@ VALUES
   2,
   1024,
   2,
+  'test_file.jpg',
   'test_file.jpg',
   'status.generic.ok',
   'type.record.image',

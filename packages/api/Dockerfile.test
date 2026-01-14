@@ -5,6 +5,7 @@ RUN apk add curl \
     postgresql-client
 
 COPY package.json ./
+COPY package-lock.json ./
 COPY tsconfig.build.json ./
 COPY tsconfig.json ./
 COPY jest.config.js ./
