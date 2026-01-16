@@ -244,3 +244,9 @@ variable "archivematica_original_location_id" {
   type        = string
   default     = "b725c4d9-2fb3-4978-91ef-a325c578ece1"
 }
+
+variable "archivematica_processing_workflow" {
+  description = "Workflow to run on files ingested by Archivematica"
+  type        = string
+  default     = "default"
+}
