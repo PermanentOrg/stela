@@ -40,7 +40,7 @@ export const extractRecordIdFromRecordCreateMessage = (
 	throw new Error("Unsupported action type");
 };
 
-export const handler: SQSHandler = async (event: SQSEvent, _, __) => {
+export const handler: SQSHandler = async (event: SQSEvent) => {
 	await Promise.all(
 		event.Records.map(async (message) => {
 			try {

@@ -57,7 +57,7 @@ export const extractFileAttributesFromS3Message = (
 	};
 };
 
-export const handler: SQSHandler = async (event: SQSEvent, _, __) => {
+export const handler: SQSHandler = async (event: SQSEvent) => {
 	await Promise.all(
 		event.Records.map(async (message) => {
 			const { recordId, operation } =
