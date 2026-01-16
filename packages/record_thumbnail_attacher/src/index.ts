@@ -9,7 +9,7 @@ import { logger } from "@stela/logger";
 import { db } from "./database";
 
 export const handler: SQSHandler = Sentry.wrapHandler(
-	async (event: SQSEvent, _, __) => {
+	async (event: SQSEvent) => {
 		await Promise.all(
 			event.Records.map(async (message) => {
 				const { key } = getS3ObjectFromS3Message(message);

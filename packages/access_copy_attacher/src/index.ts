@@ -25,7 +25,7 @@ const removeFirstCharacter = (str: string): string => {
 };
 
 export const handler: SQSHandler = Sentry.wrapHandler(
-	async (event: SQSEvent, _, __) => {
+	async (event: SQSEvent) => {
 		await Promise.all(
 			event.Records.map(async (message) => {
 				const s3Object = getS3ObjectFromS3Message(message);

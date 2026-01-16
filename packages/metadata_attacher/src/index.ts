@@ -232,7 +232,7 @@ const getVideoMetadata = (
 	getVideoMetadataFromQuickTimeMetadata(embeddedMetadata);
 
 export const handler: SQSHandler = Sentry.wrapHandler(
-	async (event: SQSEvent, _, __) => {
+	async (event: SQSEvent) => {
 		await Promise.all(
 			event.Records.map(async (message) => {
 				const s3Bucket = getS3BucketFromS3Message(message);
