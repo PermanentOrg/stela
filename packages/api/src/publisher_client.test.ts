@@ -162,6 +162,33 @@ describe("batchPublishMessages", () => {
 		expect(result.failedMessages.length).toBe(1);
 		expect(result.messagesSent).toBe(9);
 	});
+
+	test("should construct SNS Client with endpoint when AWS_ENDPOINT_URL is set", async () => {
+		const {
+			env: { AWS_ENDPOINT_URL: originalEndpoint },
+		} = process;
+		process.env["AWS_ENDPOINT_URL"] = "http://localhost:4566";
+
+		const mockSNSClient = jest.fn().mockReturnValue({
+			send: mockSend.mockResolvedValue({ Failed: [] }),
+		});
+		jest.mocked(SNSClient).mockImplementation(mockSNSClient);
+
+		const messages = [{ id: "1", body: "message 1" }];
+
+		await publisherClient.batchPublishMessages("topic", messages);
+
+		expect(mockSNSClient).toHaveBeenCalledWith({
+			region: process.env["AWS_REGION"] ?? "",
+			endpoint: "http://localhost:4566",
+		});
+
+		if (originalEndpoint === undefined) {
+			delete process.env["AWS_ENDPOINT_URL"];
+		} else {
+			process.env["AWS_ENDPOINT_URL"] = originalEndpoint;
+		}
+	});
 });
 
 describe("publishMessage", () => {

@@ -4,6 +4,7 @@ interface ArchivematicaConfig {
 	archivematicaHostUrl: string;
 	archivematicaApiKey: string;
 	archivematicaOriginalLocationId: string;
+	processingWorkflow: string;
 }
 
 export const getOriginalFileIdFromInformationPackagePath = (
@@ -47,7 +48,7 @@ export const triggerArchivematicaProcessing = async (
 		body: JSON.stringify({
 			name: `${fileId}_upload`,
 			type: "standard",
-			processing_config: "default",
+			processing_config: config.processingWorkflow,
 			accession: "",
 			access_system_id: "",
 			auto_approve: true,

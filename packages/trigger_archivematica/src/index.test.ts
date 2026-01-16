@@ -195,6 +195,7 @@ describe("handler", () => {
 				archivematicaHostUrl: "https://example.com",
 				archivematicaApiKey: "test-api-key",
 				archivematicaOriginalLocationId: "a6962a82-5462-4d9c-9ea1-5b9982ed625a",
+				processingWorkflow: "default",
 			},
 		);
 	});
@@ -296,6 +297,7 @@ describe("handler", () => {
 				archivematicaHostUrl: "https://example.com",
 				archivematicaApiKey: "test-api-key",
 				archivematicaOriginalLocationId: "a6962a82-5462-4d9c-9ea1-5b9982ed625a",
+				processingWorkflow: "default",
 			},
 		);
 	});
@@ -387,6 +389,7 @@ describe("handler", () => {
 				archivematicaHostUrl: "https://example.com",
 				archivematicaApiKey: "test-api-key",
 				archivematicaOriginalLocationId: "a6962a82-5462-4d9c-9ea1-5b9982ed625a",
+				processingWorkflow: "default",
 			},
 		);
 	});
@@ -439,6 +442,7 @@ describe("handler", () => {
 				archivematicaHostUrl: "https://example.com",
 				archivematicaApiKey: "test-api-key",
 				archivematicaOriginalLocationId: "a6962a82-5462-4d9c-9ea1-5b9982ed625a",
+				processingWorkflow: "default",
 			},
 		);
 	});

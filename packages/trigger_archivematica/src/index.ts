@@ -8,6 +8,7 @@ import {
 	ARCHIVEMATICA_HOST_URL,
 	ARCHIVEMATICA_API_KEY,
 	ARCHIVEMATICA_ORIGINAL_LOCATION_ID,
+	ARCHIVEMATICA_PROCESSING_WORKFLOW,
 } from "./env";
 
 export const extractRecordIdFromRecordCreateMessage = (
@@ -60,6 +61,7 @@ export const handler: SQSHandler = async (event: SQSEvent) => {
 						archivematicaHostUrl: ARCHIVEMATICA_HOST_URL,
 						archivematicaApiKey: ARCHIVEMATICA_API_KEY,
 						archivematicaOriginalLocationId: ARCHIVEMATICA_ORIGINAL_LOCATION_ID,
+						processingWorkflow: ARCHIVEMATICA_PROCESSING_WORKFLOW,
 					},
 				);
 				if (!response.ok) {
