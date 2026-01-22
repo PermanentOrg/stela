@@ -265,6 +265,7 @@ describe("GET /records", () => {
 			expect(record.uploadPayerAccountId).toEqual("2");
 			expect(record.size).toEqual(1024);
 			expect(record.displayDate).toEqual("2023-06-21T00:00:00.000Z");
+			expect(record.displayTimeInEDTF).toEqual("1985-04-12T23:20:30Z");
 			expect(record.fileCreatedAt).toEqual("2023-06-21T00:00:00.000Z");
 			expect(record.imageRatio).toEqual(1);
 			expect(record.thumbUrl200).toEqual(

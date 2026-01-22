@@ -75,6 +75,9 @@ record:
     displayDate:
       type: string
       format: date-time
+    displayTimeInEDTF:
+      type: string
+      format: edtf
     fileCreatedAt:
       type: string
       format: date-time

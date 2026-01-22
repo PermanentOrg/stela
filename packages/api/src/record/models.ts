@@ -16,6 +16,7 @@ export interface ArchiveRecord {
 	uploadPayerAccountId?: string;
 	size?: number;
 	displayDate?: string;
+	displayTimeInEDTF?: string;
 	fileCreatedAt?: string;
 	imageRatio?: number;
 	thumbUrl200?: string;
