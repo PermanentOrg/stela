@@ -5,9 +5,7 @@ import type {
 	ArchiveRecord,
 	ArchiveRecordRow,
 	PatchRecordRequest,
-	RecordColumnsForUpdate,
 } from "./models";
-import { requestFieldsToDatabaseFields } from "./helper";
 import { getRecordAccessRole, accessRoleLessThan } from "../access/permission";
 import { AccessRole } from "../access/models";
 import { shareLinkService } from "../share_link/service";
@@ -60,37 +58,21 @@ const validateCanPatchRecord = async (
 	}
 };
 
-export const buildPatchQuery = (
-	columnsForUpdate: RecordColumnsForUpdate,
-): string => {
-	const updates = Object.entries(columnsForUpdate)
-		.filter(([key, value]) => value !== undefined && key !== "recordId")
-		.map(([key, _]) => `${key} = :${key}`);
-
-	if (updates.length === 0) {
-		throw new createError.BadRequest("Request cannot be empty");
-	}
-
-	const query = `
-    UPDATE record
-    SET ${updates.join(", ")}
-    WHERE recordid = :recordId
-    RETURNING record.recordid AS "recordId"
-  `;
-
-	return query.trim();
-};
-
 export const patchRecord = async (
 	recordId: string,
 	recordData: PatchRecordRequest,
 ): Promise<string> => {
 	await validateCanPatchRecord(recordId, recordData.emailFromAuthToken);
-	const columnsForUpdate = requestFieldsToDatabaseFields(recordData, recordId);
-	const query = buildPatchQuery(columnsForUpdate);
 
 	const result = await db
-		.query<ArchiveRecordRow>(query, columnsForUpdate)
+		.sql<ArchiveRecordRow>("record.queries.update_record", {
+			recordId,
+			displayName: recordData.displayName,
+			locationId: recordData.locationId,
+			setLocationIdToNull: recordData.locationId === null,
+			description: recordData.description,
+			setDescriptionToNull: recordData.description === null,
+		})
 		.catch((err: unknown) => {
 			logger.error(err);
 			throw new createError.InternalServerError("Failed to update record");

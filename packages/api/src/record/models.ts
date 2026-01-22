@@ -109,13 +109,6 @@ export interface ArchiveFile {
 	updatedAt: Date;
 }
 
-export interface RecordColumnsForUpdate {
-	recordId: string;
-	locnid: bigint | undefined;
-	description: string | undefined;
-	displayname: string | undefined;
-}
-
 export interface PatchRecordRequest {
 	emailFromAuthToken: string;
 	locationId?: bigint;

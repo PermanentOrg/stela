@@ -501,18 +501,34 @@ describe("PATCH /records", () => {
 
 	test("expect location id is updated when set to null", async () => {
 		await agent
-			.patch("/api/v2/records/1")
+			.patch("/api/v2/records/8")
 			.send({ locationId: null })
 			.expect(200);
 
 		const result = await db.query(
 			"SELECT locnid FROM record WHERE recordId = :recordId",
 			{
-				recordId: 1,
+				recordId: 8,
 			},
 		);
 
 		expect(result.rows[0]).toStrictEqual({ locnid: null });
+	});
+
+	test("expect description is updated when set to null", async () => {
+		await agent
+			.patch("/api/v2/records/8")
+			.send({ description: null })
+			.expect(200);
+
+		const result = await db.query(
+			"SELECT description FROM record WHERE recordId = :recordId",
+			{
+				recordId: 8,
+			},
+		);
+
+		expect(result.rows[0]).toStrictEqual({ description: null });
 	});
 
 	test("expect 400 error if location id is wrong type", async () => {
