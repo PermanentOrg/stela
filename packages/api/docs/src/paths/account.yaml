@@ -77,7 +77,7 @@ storage-adjustment:
               properties:
                 data:
                   type: object
-                  required: [storageTotal, storageUsed]
+                  required: [newStorageTotal, adjustmentSize, createdAt]
                   properties:
                     newStorageTotal:
                       description: The total amount of storage now available to the account expressed in GBs
