@@ -111,9 +111,10 @@ export interface ArchiveFile {
 
 export interface PatchRecordRequest {
 	emailFromAuthToken: string;
-	locationId?: bigint;
-	description?: string;
+	locationId?: bigint | null;
+	description?: string | null;
 	displayName?: string;
+	displayTimeInEDTF?: string | null;
 }
 
 export enum RecordStatus {

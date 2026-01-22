@@ -72,6 +72,8 @@ export const patchRecord = async (
 			setLocationIdToNull: recordData.locationId === null,
 			description: recordData.description,
 			setDescriptionToNull: recordData.description === null,
+			displayTimeInEDTF: recordData.displayTimeInEDTF,
+			setDisplayTimeInEDTFToNull: recordData.displayTimeInEDTF === null,
 		})
 		.catch((err: unknown) => {
 			logger.error(err);

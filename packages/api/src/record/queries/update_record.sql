@@ -10,6 +10,10 @@ SET
     WHEN :setDescriptionToNull THEN NULL
     ELSE COALESCE(:description, description)
   END,
+  originalfilecreationtime = CASE
+    WHEN :setDisplayTimeInEDTFToNull THEN NULL
+    ELSE COALESCE(:displayTimeInEDTF, originalfilecreationtime)
+  END,
   updateddt = CURRENT_TIMESTAMP
 WHERE
   recordid = :recordId
