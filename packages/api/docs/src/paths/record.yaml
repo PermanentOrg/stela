@@ -36,7 +36,7 @@ records:
         $ref: "../errors.yaml#/404"
       "500":
         $ref: "../errors.yaml#/500"
-record/{id}:
+records/{id}:
   patch:
     parameters:
       - name: id
