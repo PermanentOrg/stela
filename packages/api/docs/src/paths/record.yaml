@@ -37,6 +37,39 @@ records:
       "500":
         $ref: "../errors.yaml#/500"
 records/{id}:
+  get:
+    summary: Get a single record by ID
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    security:
+      - {}
+      - bearerHttpAuthentication: []
+      - permanentShareToken: []
+    tags:
+      - records
+    operationId: get-one-record
+    responses:
+      "200":
+        description: The requested record
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                data:
+                  $ref: "../models/record.yaml#/record"
+      "400":
+        $ref: "../errors.yaml#/400"
+      "401":
+        $ref: "../errors.yaml#/401"
+      "404":
+        $ref: "../errors.yaml#/404"
+      "500":
+        $ref: "../errors.yaml#/500"
   patch:
     parameters:
       - name: id

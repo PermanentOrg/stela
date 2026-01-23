@@ -13,7 +13,7 @@ import { getRecordById, patchRecord, getRecordShareLinks } from "./service";
 import {
 	validateGetRecordQuery,
 	validatePatchRecordRequest,
-	validateRecordRequest,
+	validateSingleRecordParams,
 } from "./validators";
 import {
 	validateBodyFromAuthentication,
@@ -50,12 +50,38 @@ recordController.get(
 	},
 );
 
+recordController.get(
+	"/:recordId",
+	extractUserEmailFromAuthToken,
+	extractShareTokenFromHeaders,
+	async (req: Request, res: Response, next: NextFunction) => {
+		try {
+			validateOptionalAuthenticationValues(req.body);
+			validateSingleRecordParams(req.params);
+			const records = await getRecordById({
+				recordIds: [req.params.recordId],
+				accountEmail: req.body.emailFromAuthToken,
+				shareToken: req.body.shareToken,
+			});
+			res.send({ data: records[0] });
+		} catch (error) {
+			if (isValidationError(error)) {
+				res
+					.status(HTTP_STATUS.CLIENT_ERROR.BAD_REQUEST)
+					.json({ error: error.message });
+				return;
+			}
+			next(error);
+		}
+	},
+);
+
 recordController.patch(
 	"/:recordId",
 	verifyUserAuthentication,
 	async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			validateRecordRequest(req.params);
+			validateSingleRecordParams(req.params);
 			validatePatchRecordRequest(req.body);
 			const recordId = await patchRecord(req.params.recordId, req.body);
 			const record = await getRecordById({
@@ -81,7 +107,7 @@ recordController.get(
 	verifyUserAuthentication,
 	async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			validateRecordRequest(req.params);
+			validateSingleRecordParams(req.params);
 			validateBodyFromAuthentication(req.body);
 			const shareLinks = await getRecordShareLinks(
 				req.body.emailFromAuthToken,
