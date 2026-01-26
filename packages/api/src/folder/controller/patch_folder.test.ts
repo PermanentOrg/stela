@@ -88,7 +88,7 @@ describe("patch folder", () => {
 
 	test("expect to log error and return 500 if database update fails", async () => {
 		const testError = new Error("test error");
-		const spy = jest.spyOn(db, "query").mockImplementation(async () => {
+		const spy = jest.spyOn(db, "sql").mockImplementation(async () => {
 			throw testError;
 		});
 

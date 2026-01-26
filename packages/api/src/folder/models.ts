@@ -117,12 +117,6 @@ export interface FolderLink {
 	updatedAt: string;
 }
 
-export interface FolderColumnsForUpdate {
-	folderId: string;
-	displaydt: string;
-	displayenddt: string;
-}
-
 export interface PatchFolderRequest {
 	emailFromAuthToken: string;
 	displayDate: string;

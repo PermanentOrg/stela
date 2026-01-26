@@ -28,6 +28,7 @@ export const validatePatchFolderRequest: (
 			displayDate: Joi.string().optional().allow(null),
 			displayEndDate: Joi.string().optional().allow(null),
 		})
+		.or("displayDate", "displayEndDate")
 		.validate(data);
 
 	if (validation.error !== undefined) {
