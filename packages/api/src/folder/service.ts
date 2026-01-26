@@ -4,7 +4,6 @@ import { db } from "../database";
 import type {
 	FolderRow,
 	Folder,
-	FolderColumnsForUpdate,
 	PatchFolderRequest,
 	GetFolderChildrenResponse,
 	FolderChildItem,
@@ -19,7 +18,6 @@ import {
 	PrettyFolderStatus,
 	PrettyFolderView,
 } from "./models";
-import { requestFieldsToDatabaseFields } from "./helper";
 import { getFolderAccessRole, accessRoleLessThan } from "../access/permission";
 import { AccessRole } from "../access/models";
 import { getRecordById } from "../record/service";
@@ -199,27 +197,6 @@ export const getFolderChildren = async (
 	};
 };
 
-const buildPatchQuery = (
-	patchFolderRequest: FolderColumnsForUpdate,
-): string => {
-	const updates = Object.entries(patchFolderRequest)
-		.filter(([key, value]) => value !== undefined && key !== "folderId")
-		.map(([key, _]) => `${key} = :${key}`);
-
-	if (updates.length === 0) {
-		throw new createError.BadRequest("Request cannot be empty");
-	}
-
-	const query = `
-    UPDATE folder
-    SET ${updates.join(", ")}
-    WHERE folderid = :folderId
-    RETURNING folder.folderid AS "folderId"
-  `;
-
-	return query.trim();
-};
-
 const validateCanPatchFolder = async (
 	folderId: string,
 	emailFromAuthToken: string,
@@ -237,11 +214,15 @@ export const patchFolder = async (
 	folderData: PatchFolderRequest,
 ): Promise<string> => {
 	await validateCanPatchFolder(folderId, folderData.emailFromAuthToken);
-	const columnsForUpdate = requestFieldsToDatabaseFields(folderData, folderId);
-	const query = buildPatchQuery(columnsForUpdate);
 
 	const result = await db
-		.query<{ folderId: string }>(query, columnsForUpdate)
+		.sql<{ folderId: string }>("folder.queries.update_folder", {
+			folderId,
+			displayDate: folderData.displayDate,
+			setDisplayDateToNull: folderData.displayDate === null,
+			displayEndDate: folderData.displayEndDate,
+			setDisplayEndDateToNull: folderData.displayEndDate === null,
+		})
 		.catch((err: unknown) => {
 			logger.error(err);
 			throw new createError.InternalServerError("Failed to update folder");
