@@ -17,7 +17,7 @@ export const validateGetRecordQuery: (
 		throw validation.error;
 	}
 };
-export const validateRecordRequest: (
+export const validateSingleRecordParams: (
 	data: unknown,
 ) => asserts data is { recordId: string } = (
 	data: unknown,
