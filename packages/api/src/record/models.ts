@@ -16,6 +16,7 @@ export interface ArchiveRecord {
 	uploadPayerAccountId?: string;
 	size?: number;
 	displayDate?: string;
+	displayTimeInEDTF?: string;
 	fileCreatedAt?: string;
 	imageRatio?: number;
 	thumbUrl200?: string;
@@ -108,18 +109,12 @@ export interface ArchiveFile {
 	updatedAt: Date;
 }
 
-export interface RecordColumnsForUpdate {
-	recordId: string;
-	locnid: bigint | undefined;
-	description: string | undefined;
-	displayname: string | undefined;
-}
-
 export interface PatchRecordRequest {
 	emailFromAuthToken: string;
-	locationId?: bigint;
-	description?: string;
+	locationId?: bigint | null;
+	description?: string | null;
 	displayName?: string;
+	displayTimeInEDTF?: string | null;
 }
 
 export enum RecordStatus {

@@ -62,6 +62,9 @@ records/{id}:
                 type: integer
               description:
                 type: string
+              displayTimeInEDTF:
+                type: string
+                format: edtf
     responses:
       "200":
         description: The updated record

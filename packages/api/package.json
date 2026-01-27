@@ -47,6 +47,7 @@
 		"@pdc/http-status-codes": "^1.0.1",
 		"cors": "^2.8.5",
 		"dotenv": "^17.2.3",
+		"@edtf-ts/core": "^0.4.2",
 		"express": "^5.2.0",
 		"express-winston": "^4.1.0",
 		"http-errors": "^2.0.0",

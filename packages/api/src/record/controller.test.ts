@@ -1,9 +1,11 @@
 import type { NextFunction } from "express";
 import createError from "http-errors";
+import { when } from "jest-when";
 import { logger } from "@stela/logger";
 import request from "supertest";
 import { app } from "../app";
 import { db } from "../database";
+import { AccessRole } from "../access/models";
 import {
 	verifyUserAuthentication,
 	extractShareTokenFromHeaders,
@@ -265,6 +267,7 @@ describe("GET /records", () => {
 			expect(record.uploadPayerAccountId).toEqual("2");
 			expect(record.size).toEqual(1024);
 			expect(record.displayDate).toEqual("2023-06-21T00:00:00.000Z");
+			expect(record.displayTimeInEDTF).toEqual("1985-04-12T23:20:30Z");
 			expect(record.fileCreatedAt).toEqual("2023-06-21T00:00:00.000Z");
 			expect(record.imageRatio).toEqual(1);
 			expect(record.thumbUrl200).toEqual(
@@ -500,18 +503,34 @@ describe("PATCH /records", () => {
 
 	test("expect location id is updated when set to null", async () => {
 		await agent
-			.patch("/api/v2/records/1")
+			.patch("/api/v2/records/8")
 			.send({ locationId: null })
 			.expect(200);
 
 		const result = await db.query(
 			"SELECT locnid FROM record WHERE recordId = :recordId",
 			{
-				recordId: 1,
+				recordId: 8,
 			},
 		);
 
 		expect(result.rows[0]).toStrictEqual({ locnid: null });
+	});
+
+	test("expect description is updated when set to null", async () => {
+		await agent
+			.patch("/api/v2/records/8")
+			.send({ description: null })
+			.expect(200);
+
+		const result = await db.query(
+			"SELECT description FROM record WHERE recordId = :recordId",
+			{
+				recordId: 8,
+			},
+		);
+
+		expect(result.rows[0]).toStrictEqual({ description: null });
 	});
 
 	test("expect 400 error if location id is wrong type", async () => {
@@ -523,11 +542,87 @@ describe("PATCH /records", () => {
 			.expect(400);
 	});
 
-	test("expect to log error and return 500 if database update fails", async () => {
+	test("expect 400 error if display time is not valid Level 1 EDTF", async () => {
+		await agent
+			.patch("/api/v2/records/1")
+			.send({
+				displayTimeInEDTF: "2001-34", // This is Level 2 EDTF for "Q2 of 2001"
+			})
+			.expect(400);
+	});
+
+	test("expect display time is updated", async () => {
+		await agent
+			.patch("/api/v2/records/1")
+			.send({ displayTimeInEDTF: "2001-21~" })
+			.expect(200);
+
+		const result = await db.query(
+			"SELECT originalfilecreationtime FROM record WHERE recordId = :recordId",
+			{
+				recordId: 1,
+			},
+		);
+
+		expect(result.rows[0]).toEqual({ originalfilecreationtime: "2001-21~" });
+	});
+
+	test("expect display time is updated when set to null", async () => {
+		await agent
+			.patch("/api/v2/records/8")
+			.send({ displayTimeInEDTF: null })
+			.expect(200);
+
+		const result = await db.query(
+			"SELECT originalfilecreationtime FROM record WHERE recordId = :recordId",
+			{
+				recordId: 8,
+			},
+		);
+
+		expect(result.rows[0]).toEqual({ originalfilecreationtime: null });
+	});
+
+	test("expect to log error and return 500 if database permissions query fails", async () => {
 		const testError = new Error("test error");
 		jest.spyOn(db, "sql").mockImplementation(async () => {
 			throw testError;
 		});
+
+		await agent
+			.patch("/api/v2/records/1")
+			.send({ locationId: 123 })
+			.expect(500);
+
+		expect(logger.error).toHaveBeenCalledWith(testError);
+	});
+
+	test("expect to log error and return 500 if database update query fails", async () => {
+		const testError = new Error("test error");
+		const dbSpy = jest.spyOn(db, "sql");
+		when(dbSpy)
+			.calledWith("access.queries.get_record_access_role", {
+				itemId: "1",
+				email: "test@permanent.org",
+			})
+			.mockImplementationOnce(
+				jest.fn().mockResolvedValueOnce({
+					rows: [
+						{ archiveAccessRole: AccessRole.Owner, shareAccessRole: undefined },
+					],
+				}),
+			)
+			.calledWith("record.queries.update_record", {
+				recordId: "1",
+				displayName: undefined,
+				locationId: 123,
+				setLocationIdToNull: false,
+				description: undefined,
+				setDescriptionToNull: false,
+				displayTimeInEDTF: undefined,
+				setDisplayTimeInEDTFToNull: false,
+			})
+			.mockRejectedValueOnce(testError);
 
 		await agent
 			.patch("/api/v2/records/1")
@@ -553,6 +648,42 @@ describe("PATCH /records", () => {
 			"unknown@permanent.org",
 			"b5461dc2-1eb0-450e-b710-fef7b2cafe1e",
 		);
+		await agent
+			.patch("/api/v2/records/1")
+			.send({ locationId: 123 })
+			.expect(404);
+	});
+
+	test("expect to return 404 if database update updates nothing", async () => {
+		const dbSpy = jest.spyOn(db, "sql");
+		when(dbSpy)
+			.calledWith("access.queries.get_record_access_role", {
+				itemId: "1",
+				email: "test@permanent.org",
+			})
+			.mockImplementationOnce(
+				jest.fn().mockResolvedValueOnce({
+					rows: [
+						{ archiveAccessRole: AccessRole.Owner, shareAccessRole: undefined },
+					],
+				}),
+			)
+			.calledWith("record.queries.update_record", {
+				recordId: "1",
+				displayName: undefined,
+				locationId: 123,
+				setLocationIdToNull: false,
+				description: undefined,
+				setDescriptionToNull: false,
+				displayTimeInEDTF: undefined,
+				setDisplayTimeInEDTFToNull: false,
+			})
+			.mockImplementationOnce(
+				jest.fn().mockResolvedValueOnce({
+					rows: [],
+				}),
+			);
+
 		await agent
 			.patch("/api/v2/records/1")
 			.send({ locationId: 123 })
