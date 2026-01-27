@@ -26,7 +26,8 @@ apiRoutes.use("/storage", storageController);
 apiRoutes.use("/event", eventController);
 apiRoutes.use("/promo", promoController);
 apiRoutes.use("/idpuser", idpUserController);
-apiRoutes.use("/record", recordController);
+apiRoutes.use("/records", recordController);
+apiRoutes.use("/record", recordController); // Deprecated path maintained to avoid breaking changes
 apiRoutes.use("/feature-flags", featureController);
 apiRoutes.use("/folder", folderController);
 apiRoutes.use("/share-links", shareLinkController);
