@@ -191,7 +191,7 @@ export const getFolderChildren = async (
 					? undefined
 					: `https://${
 							process.env["SITE_URL"] ?? ""
-						}/api/v2/folder/${parentFolderId}/children?pageSize=${pagination.pageSize}&cursor=${nextCursor}`,
+						}/api/v2/folders/${parentFolderId}/children?pageSize=${pagination.pageSize}&cursor=${nextCursor}`,
 			totalPages: result.rows[0] === undefined ? 0 : result.rows[0].totalPages,
 		},
 	};
