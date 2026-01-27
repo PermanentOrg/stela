@@ -29,7 +29,8 @@ apiRoutes.use("/idpuser", idpUserController);
 apiRoutes.use("/records", recordController);
 apiRoutes.use("/record", recordController); // Deprecated path maintained to avoid breaking changes
 apiRoutes.use("/feature-flags", featureController);
-apiRoutes.use("/folder", folderController);
+apiRoutes.use("/folders", folderController);
+apiRoutes.use("/folder", folderController); // Deprecated path maintained to avoid breaking changes
 apiRoutes.use("/share-links", shareLinkController);
 
 export { apiRoutes };
