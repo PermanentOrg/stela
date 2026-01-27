@@ -38,13 +38,13 @@
 	},
 	"dependencies": {
 		"@aws-sdk/client-sns": "^3.975.0",
+		"@edtf-ts/core": "^0.4.2",
 		"@fusionauth/typescript-client": "^1.60.0",
 		"@mailchimp/mailchimp_marketing": "^3.0.80",
 		"@mailchimp/mailchimp_transactional": "1.1.2",
 		"@sentry/node": "^10.36.0",
 		"@stela/logger": "^1.0.0",
 		"@stela/permanent_models": "^1.0.0",
-		"@pdc/http-status-codes": "^1.0.1",
 		"cors": "^2.8.5",
 		"dotenv": "^17.2.3",
 		"@edtf-ts/core": "^0.4.2",
@@ -63,11 +63,11 @@
 		"uuid": "^11.1.0"
 	},
 	"devDependencies": {
+		"@types/http-errors": "^2.0.1",
 		"@types/jest-when": "^3.5.5",
 		"@types/memoizee": "^0.4.12",
 		"@types/newrelic": "^9.14.4",
 		"@types/ua-parser-js": "^0.7.39",
-		"@types/http-errors": "^2.0.1",
 		"jest-when": "^3.7.0",
 		"nock": "^14.0.10",
 		"supertest": "^7.1.0"

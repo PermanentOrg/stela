@@ -194,6 +194,7 @@ SELECT
   folder.description,
   folder.displaydt AS "displayTimestamp",
   folder.displayenddt AS "displayEndTimestamp",
+  folder.displaytime AS "displayTimeInEDTF",
   folder.displayname AS "displayName",
   folder.downloadname AS "downloadName",
   folder.imageratio AS "imageRatio",

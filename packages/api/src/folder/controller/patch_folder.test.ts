@@ -77,6 +77,45 @@ describe("patch folder", () => {
 		expect(result.rows[0]).toStrictEqual({ displaydt: null });
 	});
 
+	test("expect displayTimeInEDTF is updated", async () => {
+		await agent
+			.patch("/api/v2/folder/1")
+			.send({ displayTimeInEDTF: "2024-21" })
+			.expect(200);
+
+		const result = await db.query(
+			"SELECT displaytime FROM folder WHERE folderid = :folderId",
+			{
+				folderId: 1,
+			},
+		);
+
+		expect(result.rows[0]).toEqual({ displaytime: "2024-21" });
+	});
+
+	test("expect displayTimeInEDTF is updated when set to null", async () => {
+		await agent
+			.patch("/api/v2/folder/2")
+			.send({ displayTimeInEDTF: null })
+			.expect(200);
+
+		const result = await db.query(
+			"SELECT displaytime FROM folder WHERE folderid = :folderId",
+			{
+				folderId: 2,
+			},
+		);
+
+		expect(result.rows[0]).toEqual({ displaytime: null });
+	});
+
+	test("expect 400 error when displayTimeInEDTF is now valid Level 1 EDTF", async () => {
+		await agent
+			.patch("/api/v2/folder/2")
+			.send({ displayTimeInEDTF: "2024-33" })
+			.expect(400);
+	});
+
 	test("expect 400 error if display date is wrong type", async () => {
 		await agent
 			.patch("/api/v2/folder/1")
@@ -97,6 +136,31 @@ describe("patch folder", () => {
 			.send({ displayDate: "2024-09-26T15:09:52.000Z" })
 			.expect(500);
 		spy.mockRestore();
+
+		expect(logger.error).toHaveBeenCalledWith(testError);
+	});
+
+	test("expect to log error and return 500 if database update fails", async () => {
+		const testError = new Error("test error");
+		const sqlSpy = jest.spyOn(db, "sql");
+		when(sqlSpy)
+			.calledWith("folder.queries.update_folder", {
+				folderId: "1",
+				displayDate: "2024-09-26T15:09:52.000Z",
+				setDisplayDateToNull: false,
+				displayEndDate: undefined,
+				setDisplayEndDateToNull: false,
+				displayTime: undefined,
+				setDisplayTimeToNull: false,
+			})
+			.mockImplementation(async () => {
+				throw testError;
+			});
+
+		await agent
+			.patch("/api/v2/folders/1")
+			.send({ displayDate: "2024-09-26T15:09:52.000Z" })
+			.expect(500);
 
 		expect(logger.error).toHaveBeenCalledWith(testError);
 	});

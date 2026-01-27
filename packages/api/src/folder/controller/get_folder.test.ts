@@ -247,6 +247,7 @@ describe("GET /folder", () => {
 			expect(folders[0].displayEndTimestamp).toEqual(
 				"2025-01-01T00:00:00.000Z",
 			);
+			expect(folders[0].displayTimeInEDTF).toEqual("2025-01-01");
 			expect(folders[0].displayName).toEqual("Private Folder");
 			expect(folders[0].downloadName).toEqual("Private Folder");
 			expect(folders[0].imageRatio).toEqual(1);
