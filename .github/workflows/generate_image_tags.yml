@@ -42,7 +42,21 @@ jobs:
           AWS_REGION: ${{ vars.AWS_DEFAULT_REGION }}
       - name: Set branch type env var
         id: set_branch_type
-        run: echo "BRANCH_TYPE=$([[ ${GITHUB_REF##*/} = main ]] && echo main || echo feature)" >> "$GITHUB_ENV"
+        run: |
+          if [[ $GITHUB_REF == refs/tags/* ]]; then
+            # For tags/releases, use the target branch
+            BRANCH_NAME="${{ github.event.release.target_commitish }}"
+          else
+            # For branch refs, extract the branch name
+            BRANCH_NAME="${GITHUB_REF##*/}"
+          fi
+
+          # Set BRANCH_TYPE based on whether we're on main
+          if [[ "$BRANCH_NAME" == "main" ]]; then
+            echo "BRANCH_TYPE=main" >> "$GITHUB_ENV"
+          else
+            echo "BRANCH_TYPE=feature" >> "$GITHUB_ENV"
+          fi
       - name: Set abbreviated commit hash env var
         id: set_abbreviated_commit_hash
         run: echo "ABBREVIATED_COMMIT_HASH=$(git rev-parse --short $GITHUB_SHA)" >> "$GITHUB_ENV"
