@@ -19,6 +19,7 @@ folder (
   description,
   displaydt,
   displayenddt,
+  displaytime,
   imageratio,
   sort,
   view
@@ -34,6 +35,7 @@ VALUES
   'status.generic.ok',
   CURRENT_TIMESTAMP - '2 days'::interval,
   'type.folder.public',
+  NULL,
   NULL,
   NULL,
   NULL,
@@ -68,6 +70,7 @@ VALUES
   'A test folder',
   '2025-01-01',
   '2025-01-01',
+  '2025-01-01',
   1.00,
   'sort.alphabetical_asc',
   'folder.view.grid'
@@ -94,6 +97,7 @@ VALUES
   NULL,
   NULL,
   NULL,
+  NULL,
   NULL
 ),
 (
@@ -106,6 +110,7 @@ VALUES
   'status.generic.deleted',
   CURRENT_TIMESTAMP,
   'type.folder.private',
+  NULL,
   NULL,
   NULL,
   NULL,
@@ -142,6 +147,7 @@ VALUES
   NULL,
   NULL,
   NULL,
+  NULL,
   NULL
 ),
 (
@@ -154,6 +160,7 @@ VALUES
   'status.generic.ok',
   CURRENT_TIMESTAMP + '1 day'::interval,
   'type.folder.private',
+  NULL,
   NULL,
   NULL,
   NULL,
@@ -190,6 +197,7 @@ VALUES
   NULL,
   NULL,
   NULL,
+  NULL,
   NULL
 ),
 (
@@ -202,6 +210,7 @@ VALUES
   'status.generic.deleted',
   '2020-01-01 00:00:00',
   'type.folder.private',
+  NULL,
   NULL,
   NULL,
   NULL,
@@ -238,6 +247,7 @@ VALUES
   NULL,
   NULL,
   NULL,
+  NULL,
   NULL
 ),
 (
@@ -252,6 +262,7 @@ VALUES
   'type.folder.root.private',
   NULL,
   'https://test-folder-thumbnail',
+  NULL,
   NULL,
   NULL,
   NULL,
@@ -286,6 +297,7 @@ VALUES
   NULL,
   NULL,
   NULL,
+  NULL,
   NULL
 ),
 (
@@ -298,6 +310,7 @@ VALUES
   'status.generic.ok',
   CURRENT_TIMESTAMP,
   'type.folder.private',
+  NULL,
   NULL,
   NULL,
   NULL,
@@ -334,6 +347,7 @@ VALUES
   NULL,
   NULL,
   NULL,
+  NULL,
   NULL
 ),
 (
@@ -346,6 +360,7 @@ VALUES
   'status.generic.ok',
   CURRENT_TIMESTAMP,
   'type.folder.root.root',
+  NULL,
   NULL,
   NULL,
   NULL,

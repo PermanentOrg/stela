@@ -9,6 +9,10 @@ SET
     WHEN :setDisplayEndDateToNull THEN NULL
     ELSE COALESCE(:displayEndDate, displayenddt)
   END,
+  displaytime = CASE
+    WHEN :setDisplayTimeToNull THEN NULL
+    ELSE COALESCE(:displayTime, displaytime)
+  END,
   updateddt = CURRENT_TIMESTAMP
 WHERE
   folderid = :folderId
