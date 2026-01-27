@@ -19,7 +19,14 @@ const batchPublishMessages = async (
 	topicArn: string,
 	messages: Message[],
 ): Promise<{ messagesSent: number; failedMessages: string[] }> => {
-	const snsClient = new SNSClient({ region: process.env["AWS_REGION"] ?? "" });
+	const snsClient = new SNSClient({
+		region: process.env["AWS_REGION"] ?? "",
+		...(process.env["AWS_ENDPOINT_URL"] === undefined
+			? {}
+			: {
+					endpoint: process.env["AWS_ENDPOINT_URL"],
+				}),
+	});
 	const chunksOfMessages = [
 		...Array(Math.ceil(messages.length / CHUNK_SIZE)).keys(),
 	].map((chunkIndex) =>

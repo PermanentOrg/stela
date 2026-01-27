@@ -41,6 +41,7 @@ describe("triggerArchivematicaProcessing", () => {
 			archivematicaHostUrl: "https://example.com",
 			archivematicaApiKey: "test-api-key",
 			archivematicaOriginalLocationId: "3f896582-06b5-4cfa-bb0b-f2c32879d615",
+			processingWorkflow: "default",
 		});
 
 		expect(fetch).toHaveBeenCalledWith(
@@ -76,6 +77,7 @@ describe("triggerArchivematicaProcessing", () => {
 				archivematicaHostUrl: "https://example.com",
 				archivematicaApiKey: "test-api-key",
 				archivematicaOriginalLocationId: "3f896582-06b5-4cfa-bb0b-f2c32879d615",
+				processingWorkflow: "default",
 			}),
 		).rejects.toThrow(
 			new Error(

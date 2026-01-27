@@ -111,6 +111,7 @@ resource "aws_lambda_function" "trigger_archivematica_staging_lambda" {
       ARCHIVEMATICA_HOST_URL             = var.staging_archivematica_base_url
       ARCHIVEMATICA_API_KEY              = var.staging_archivematica_api_key
       ARCHIVEMATICA_ORIGINAL_LOCATION_ID = var.staging_archivematica_original_location_id
+      ARCHIVEMATICA_PROCESSING_WORKFLOW  = var.dev_archivematica_processing_workflow
     }
   }
 }
