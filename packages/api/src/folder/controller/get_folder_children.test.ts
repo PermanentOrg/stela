@@ -33,31 +33,31 @@ describe("GET /folder/{id}/children", () => {
 	});
 
 	test("should return 200 on a valid request", async () => {
-		await agent.get("/api/v2/folder/1/children?pageSize=100").expect(200);
+		await agent.get("/api/v2/folders/1/children?pageSize=100").expect(200);
 	});
 
 	test("should call extractUserEmailFromAuthToken middleware", async () => {
-		await agent.get("/api/v2/folder/1/children?pageSize=100").expect(200);
+		await agent.get("/api/v2/folders/1/children?pageSize=100").expect(200);
 		expect(extractUserEmailFromAuthToken).toHaveBeenCalled();
 	});
 
 	test("should call extractShareTokenFromHeaders middleware", async () => {
-		await agent.get("/api/v2/folder/1/children?pageSize=100").expect(200);
+		await agent.get("/api/v2/folders/1/children?pageSize=100").expect(200);
 		expect(extractShareTokenFromHeaders).toHaveBeenCalled();
 	});
 
 	test("should return 400 code if the header values are invalid", async () => {
 		mockExtractUserEmailFromAuthToken("not_an_email");
-		await agent.get("/api/v2/folder/1/children").expect(400);
+		await agent.get("/api/v2/folders/1/children").expect(400);
 	});
 
 	test("should return 400 code if the query parameters are invalid", async () => {
-		await agent.get("/api/v2/folder/1/children?cursor=1").expect(400);
+		await agent.get("/api/v2/folders/1/children?cursor=1").expect(400);
 	});
 
 	test("should return the whole folder object", async () => {
 		const response = await agent
-			.get("/api/v2/folder/10/children?pageSize=100")
+			.get("/api/v2/folders/10/children?pageSize=100")
 			.expect(200);
 		const {
 			body: { items: children },
@@ -149,7 +149,7 @@ describe("GET /folder/{id}/children", () => {
 
 	test("should return the whole record object", async () => {
 		const response = await agent
-			.get("/api/v2/folder/10/children?pageSize=100")
+			.get("/api/v2/folders/10/children?pageSize=100")
 			.expect(200);
 		const {
 			body: { items: children },
@@ -279,7 +279,7 @@ describe("GET /folder/{id}/children", () => {
 
 	test("should return folder contents in alphabetical ascending order", async () => {
 		const response = await agent
-			.get("/api/v2/folder/10/children?pageSize=100")
+			.get("/api/v2/folders/10/children?pageSize=100")
 			.expect(200);
 		const {
 			body: { items: children },
@@ -294,7 +294,7 @@ describe("GET /folder/{id}/children", () => {
 			"UPDATE folder SET sort = 'sort.alphabetical_desc' WHERE folderid = 10",
 		);
 		const response = await agent
-			.get("/api/v2/folder/10/children?pageSize=100")
+			.get("/api/v2/folders/10/children?pageSize=100")
 			.expect(200);
 		const {
 			body: { items: children },
@@ -309,7 +309,7 @@ describe("GET /folder/{id}/children", () => {
 			"UPDATE folder SET sort = 'sort.display_date_asc' WHERE folderid = 10",
 		);
 		const response = await agent
-			.get("/api/v2/folder/10/children?pageSize=100")
+			.get("/api/v2/folders/10/children?pageSize=100")
 			.expect(200);
 		const {
 			body: { items: children },
@@ -324,7 +324,7 @@ describe("GET /folder/{id}/children", () => {
 			"UPDATE folder SET sort = 'sort.display_date_desc' WHERE folderid = 10",
 		);
 		const response = await agent
-			.get("/api/v2/folder/10/children?pageSize=100")
+			.get("/api/v2/folders/10/children?pageSize=100")
 			.expect(200);
 		const {
 			body: { items: children },
@@ -339,7 +339,7 @@ describe("GET /folder/{id}/children", () => {
 			"UPDATE folder SET sort = 'sort.type_asc' WHERE folderid = 10",
 		);
 		const response = await agent
-			.get("/api/v2/folder/10/children?pageSize=100")
+			.get("/api/v2/folders/10/children?pageSize=100")
 			.expect(200);
 		const {
 			body: { items: children },
@@ -354,7 +354,7 @@ describe("GET /folder/{id}/children", () => {
 			"UPDATE folder SET sort = 'sort.type_desc' WHERE folderid = 10",
 		);
 		const response = await agent
-			.get("/api/v2/folder/10/children?pageSize=100")
+			.get("/api/v2/folders/10/children?pageSize=100")
 			.expect(200);
 		const {
 			body: { items: children },
@@ -367,7 +367,7 @@ describe("GET /folder/{id}/children", () => {
 	test("should return an empty list if the caller doesn't have access to the folder", async () => {
 		mockExtractUserEmailFromAuthToken("test+5@permanent.org");
 		const response = await agent
-			.get("/api/v2/folder/2/children?pageSize=100")
+			.get("/api/v2/folders/2/children?pageSize=100")
 			.expect(200);
 		const {
 			body: { items: children },
@@ -377,7 +377,7 @@ describe("GET /folder/{id}/children", () => {
 
 	test("should return no more than pageSize items", async () => {
 		const response = await agent
-			.get("/api/v2/folder/10/children?pageSize=1")
+			.get("/api/v2/folders/10/children?pageSize=1")
 			.expect(200);
 		const {
 			body: { items: children },
@@ -387,7 +387,7 @@ describe("GET /folder/{id}/children", () => {
 
 	test("should only return items past the cursor", async () => {
 		const response = await agent
-			.get("/api/v2/folder/10/children?pageSize=1&cursor=1")
+			.get("/api/v2/folders/10/children?pageSize=1&cursor=1")
 			.expect(200);
 		const {
 			body: { items: children },
@@ -398,7 +398,7 @@ describe("GET /folder/{id}/children", () => {
 
 	test("should include pagination data in response", async () => {
 		const response = await agent
-			.get("/api/v2/folder/10/children?pageSize=1")
+			.get("/api/v2/folders/10/children?pageSize=1")
 			.expect(200);
 		const {
 			body: { pagination: paginationData },
@@ -415,13 +415,13 @@ describe("GET /folder/{id}/children", () => {
 		expect(paginationData.nextPage).toEqual(
 			`https://${
 				process.env["SITE_URL"] ?? ""
-			}/api/v2/folder/10/children?pageSize=1&cursor=1`,
+			}/api/v2/folders/10/children?pageSize=1&cursor=1`,
 		);
 		expect(paginationData.totalPages).toEqual(2);
 	});
 
 	test("should return 500 if the database call fails", async () => {
 		jest.spyOn(db, "sql").mockRejectedValue(new Error("test error"));
-		await agent.get("/api/v2/folder/10/children?pageSize=1").expect(500);
+		await agent.get("/api/v2/folders/10/children?pageSize=1").expect(500);
 	});
 });

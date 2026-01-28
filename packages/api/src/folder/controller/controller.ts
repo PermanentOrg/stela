@@ -46,6 +46,7 @@ folderController.patch(
 				res
 					.status(HTTP_STATUS.CLIENT_ERROR.NOT_FOUND)
 					.json({ error: "Folder not found" });
+				return;
 			}
 
 			res.status(HTTP_STATUS.SUCCESSFUL.OK).send({ data: folder });

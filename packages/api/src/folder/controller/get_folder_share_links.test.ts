@@ -33,7 +33,7 @@ describe("GET /folder/{id}/share_links", () => {
 
 	test("expect to return share links for a folder", async () => {
 		const response = await agent
-			.get("/api/v2/folder/2/share_links")
+			.get("/api/v2/folders/2/share_links")
 			.expect(200);
 
 		const {
@@ -55,7 +55,7 @@ describe("GET /folder/{id}/share_links", () => {
 
 	test("expect an empty list if folder doesn't exist", async () => {
 		const response = await agent
-			.get("/api/v2/folder/999/share_links")
+			.get("/api/v2/folders/999/share_links")
 			.expect(200);
 
 		const {
@@ -70,7 +70,7 @@ describe("GET /folder/{id}/share_links", () => {
 			"b5461dc2-1eb0-450e-b710-fef7b2cafe1e",
 		);
 		const response = await agent
-			.get("/api/v2/folder/2/share_links")
+			.get("/api/v2/folders/2/share_links")
 			.expect(200);
 
 		const {
@@ -85,7 +85,7 @@ describe("GET /folder/{id}/share_links", () => {
 			throw testError;
 		});
 
-		await agent.get("/api/v2/folder/1/share_links").expect(500);
+		await agent.get("/api/v2/folders/1/share_links").expect(500);
 		expect(logger.error).toHaveBeenCalledWith(testError);
 	});
 
@@ -95,11 +95,11 @@ describe("GET /folder/{id}/share_links", () => {
 			.mockImplementation(async (_, __, next: NextFunction) => {
 				next(createError.Unauthorized("Invalid auth token"));
 			});
-		await agent.get("/api/v2/folder/1/share_links").expect(401);
+		await agent.get("/api/v2/folders/1/share_links").expect(401);
 	});
 
 	test("expect 400 if the header values are missing", async () => {
 		mockVerifyUserAuthentication();
-		await agent.get("/api/v2/folder/1/share_links").expect(400);
+		await agent.get("/api/v2/folders/1/share_links").expect(400);
 	});
 });
