@@ -1,4 +1,13 @@
-WITH RECURSIVE aggregated_files AS (
+WITH RECURSIVE candidate_records AS (
+  SELECT recordid
+  FROM record
+  WHERE
+    (:recordIds::TEXT[] IS NULL OR recordid = any(:recordIds))
+    AND (:archiveId::TEXT IS NULL OR archiveid = :archiveId::INT)
+    AND status != 'status.generic.deleted'
+),
+
+aggregated_files AS (
   (SELECT
     record_file.recordid,
     array_agg(jsonb_build_object(
@@ -26,7 +35,7 @@ WITH RECURSIVE aggregated_files AS (
     ON record_file.fileid = file.fileid
   WHERE
     file.status != 'status.generic.deleted'
-    AND record_file.recordid = any(:recordIds)
+    AND record_file.recordid IN (SELECT recordid FROM candidate_records)
   GROUP BY record_file.recordid)
 ),
 
@@ -51,7 +60,7 @@ aggregated_tags AS (
   WHERE
     tag_link.reftable = 'record'
     AND tag_link.status = 'status.generic.ok'
-    AND tag_link.refid = any(:recordIds)
+    AND tag_link.refid IN (SELECT recordid FROM candidate_records)
   GROUP BY tag_link.refid
 ),
 
@@ -87,7 +96,7 @@ aggregated_shares AS (
     AND profile_item.status = 'status.generic.ok'
     AND profile_item.string1 IS NOT NULL
     AND share.status != 'status.generic.deleted'
-    AND folder_link.recordid = any(:recordIds)
+    AND folder_link.recordid IN (SELECT recordid FROM candidate_records)
   GROUP BY share.folder_linkid
 ),
 
@@ -110,7 +119,7 @@ ancestor_unrestricted_share_tokens (
         OR shareby_url.expiresdt > current_timestamp
       )
   WHERE
-    folder_link.recordid = any(:recordIds)
+    folder_link.recordid IN (SELECT recordid FROM candidate_records)
   UNION
   SELECT
     folder_link.parentfolder_linkid,
@@ -269,7 +278,7 @@ LEFT JOIN
   aggregated_ancestor_unrestricted_share_tokens
   ON record.recordid = aggregated_ancestor_unrestricted_share_tokens.recordid
 WHERE
-  record.recordid = any(:recordIds)
+  record.recordid IN (SELECT recordid FROM candidate_records)
   AND (
     record_account.primaryemail = :accountEmail
     OR share_account.primaryemail = :accountEmail
