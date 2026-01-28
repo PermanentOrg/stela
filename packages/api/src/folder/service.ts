@@ -163,6 +163,7 @@ export const getFolderChildren = async (
 		recordIds: result.rows
 			.filter((item) => item.item_type === "record")
 			.map((record) => record.id),
+		archiveId: undefined,
 		accountEmail: email,
 		shareToken,
 	});

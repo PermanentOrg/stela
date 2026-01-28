@@ -34,6 +34,7 @@ recordController.get(
 			validateGetRecordQuery(req.query);
 			const records = await getRecordById({
 				recordIds: req.query.recordIds,
+				archiveId: req.query.archiveId,
 				accountEmail: req.body.emailFromAuthToken,
 				shareToken: req.body.shareToken,
 			});
@@ -60,6 +61,7 @@ recordController.get(
 			validateSingleRecordParams(req.params);
 			const records = await getRecordById({
 				recordIds: [req.params.recordId],
+				archiveId: undefined,
 				accountEmail: req.body.emailFromAuthToken,
 				shareToken: req.body.shareToken,
 			});
@@ -86,6 +88,7 @@ recordController.patch(
 			const recordId = await patchRecord(req.params.recordId, req.body);
 			const record = await getRecordById({
 				recordIds: [recordId],
+				archiveId: undefined,
 				accountEmail: req.body.emailFromAuthToken,
 			});
 
