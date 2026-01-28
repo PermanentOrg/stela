@@ -32,7 +32,6 @@ Update values as needed (see [Environment Variables](#environment-variables).
 
 ```bash
 npm install
-npm install -ws
 ```
 
 4. `psql` needs to be installed for running tests
@@ -82,7 +81,7 @@ For these, simply fill in any fake value to prevent `require-env-variable` from 
 Run
 
 ```bash
-npm run lint -ws
+npm run lint
 ```
 
 ## Testing
@@ -96,7 +95,7 @@ docker compose up -d
 then run tests with
 
 ```bash
-npm run test -ws
+npm run test
 ```
 
 or, for a single project, specify the workspace
