@@ -5,13 +5,15 @@ import { fieldsFromUserAuthentication } from "../validators";
 
 export const validateGetRecordQuery: (
 	data: unknown,
-) => asserts data is { recordIds: string[] } = (
+) => asserts data is { recordIds?: string[]; archiveId?: string } = (
 	data: unknown,
-): asserts data is { recordIds: string[] } => {
+): asserts data is { recordIds?: string[]; archiveId?: string } => {
 	const validation = Joi.object()
 		.keys({
-			recordIds: Joi.array().items(Joi.string().required()).required(),
+			recordIds: Joi.array().items(Joi.string().required()),
+			archiveId: Joi.string(),
 		})
+		.or("recordIds", "archiveId")
 		.validate(data);
 	if (validation.error !== undefined) {
 		throw validation.error;

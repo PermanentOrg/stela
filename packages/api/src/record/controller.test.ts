@@ -446,6 +446,62 @@ describe("GET /records", () => {
 		await agent.get("/api/v2/records?recordIds[]=14").expect(500);
 		expect(logger.error).toHaveBeenCalledWith(testError);
 	});
+	test("expect to return records filtered by archiveId", async () => {
+		const response = await agent
+			.get("/api/v2/records?archiveId=1")
+			.expect(200);
+		const { body: records } = response as { body: ArchiveRecord[] };
+		const recordIds = records.map((record) => record.recordId);
+		expect(recordIds).toContain("1");
+		expect(recordIds).toContain("2");
+		expect(recordIds).toContain("3");
+		expect(recordIds).toContain("8");
+		expect(recordIds).toContain("9");
+		expect(recordIds).not.toContain("4");
+		expect(recordIds).not.toContain("5");
+		expect(recordIds).not.toContain("12");
+		expect(recordIds).not.toContain("14");
+	});
+	test("expect archiveId and recordIds to act as an AND filter", async () => {
+		const response = await agent
+			.get("/api/v2/records?archiveId=1&recordIds[]=1")
+			.expect(200);
+		const { body: records } = response as { body: ArchiveRecord[] };
+		expect(records.length).toEqual(1);
+		expect(records[0]?.recordId).toEqual("1");
+	});
+	test("expect archiveId with no matching records to return empty array", async () => {
+		const response = await agent
+			.get("/api/v2/records?archiveId=9999")
+			.expect(200);
+		const { body: records } = response as { body: ArchiveRecord[] };
+		expect(records.length).toEqual(0);
+	});
+	test("expect archiveId for non-owned archive to return only public records", async () => {
+		const response = await agent
+			.get("/api/v2/records?archiveId=2")
+			.expect(200);
+		const { body: records } = response as { body: ArchiveRecord[] };
+		const recordIds = records.map((record) => record.recordId);
+		expect(recordIds).toContain("5");
+		expect(recordIds).toContain("6");
+		expect(recordIds).not.toContain("7");
+	});
+	test("expect archiveId query without recordIds still requires archiveId", async () => {
+		await agent.get("/api/v2/records").expect(400);
+	});
+	test("expect return records by archiveId for a public record when not logged in", async () => {
+		mockExtractUserEmailFromAuthToken();
+		const response = await agent
+			.get("/api/v2/records?archiveId=1")
+			.expect(200);
+		const { body: records } = response as { body: ArchiveRecord[] };
+		const recordIds = records.map((record) => record.recordId);
+		expect(recordIds).toContain("1");
+		expect(recordIds).toContain("8");
+		expect(recordIds).not.toContain("2");
+		expect(recordIds).not.toContain("3");
+	});
 });
 
 describe("PATCH /records", () => {
