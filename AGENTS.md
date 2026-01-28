@@ -1,0 +1,399 @@
+# AGENTS.md
+
+> **Maintenance note:** This file must be kept up to date as the project changes. When modifying project structure, conventions, dependencies, or patterns, update the relevant sections here. This file should never reference local environment setup such as users or non-project paths, and should remain LLM-agnostic without referencing specific LLM tooling.
+
+## Project Overview
+
+Stela is the TypeScript backend for [Permanent.org](https://permanent.org), a digital archiving and preservation platform. It provides a REST API server and multiple Lambda functions and cron jobs for background processing. Licensed under AGPL-3.0.
+
+Repository: `PermanentOrg/stela`
+
+## Monorepo Structure
+
+This is an npm workspace monorepo (workspaces defined in the root `package.json`). All packages live under `packages/`.
+
+### Core Packages
+
+| Package | Description |
+|---------|-------------|
+| `@stela/api` | Main Express API server — the primary package where most development happens |
+| `@stela/logger` | Centralized logging via Winston |
+| `@stela/permanent_models` | Shared TypeScript models and data types |
+| `@stela/event_utils` | Event validation utilities |
+| `@stela/file-utils` | File manipulation utilities |
+| `@stela/s3-utils` | AWS S3 integration utilities |
+| `@stela/archivematica-utils` | Archivematica integration utilities |
+
+### Lambda / Cron Packages
+
+| Package | Type | Description |
+|---------|------|-------------|
+| `@stela/record_thumbnail_attacher` | Lambda | Attaches thumbnails to records via CloudFront signed URLs |
+| `@stela/account_space_updater` | Lambda | Updates account storage ledger |
+| `@stela/access_copy_attacher` | Lambda | Handles access permissions during record copy |
+| `@stela/metadata_attacher` | Lambda | Processes and attaches metadata to records |
+| `@stela/trigger_archivematica` | Lambda | Triggers archivematica preservation workflows |
+| `@stela/thumbnail_refresh` | Cron | Refreshes expired CDN thumbnail URLs |
+| `@stela/file_url_refresh` | Cron | Refreshes expired file URLs |
+| `@stela/archivematica_cleanup` | Cron | Cleans up archivematica processes |
+
+## Technology Stack
+
+- **Runtime:** Node.js (version pinned in `.node-version`)
+- **Language:** TypeScript with strict mode (`@tsconfig/strictest`)
+- **Framework:** Express
+- **Database:** PostgreSQL, accessed via TinyPg (SQL file-based ORM)
+- **Authentication:** FusionAuth (external identity provider)
+- **Testing:** Jest with ts-jest, Supertest, jest-when, nock, jest-mock-extended
+- **Linting:** ESLint (eslint-config-love + prettier), SQLFluff (PostgreSQL dialect)
+- **API Docs:** OpenAPI, linted with Redocly CLI
+- **Error Tracking:** Sentry
+- **APM:** New Relic
+- **Analytics:** Mixpanel
+- **Cloud:** AWS (SNS, SQS, Lambda, EKS, ECR, RDS, CloudFront)
+
+## Build and Development Commands
+
+All commands are run from the repository root unless otherwise noted.
+
+```bash
+# Install dependencies
+npm install --include dev
+npm install -ws
+
+# Build all workspaces
+npm run build -ws
+
+# Lint all workspaces (runs prettier, tsc, eslint, sqlfluff, redocly)
+npm run lint -ws
+
+# Run tests for a specific workspace
+npm run test -w @stela/api
+npm run test -w @stela/account_space_updater
+
+# Run tests for all workspaces
+npm run test -ws
+```
+
+### Lint Pipeline (in order)
+
+The `@stela/api` lint script runs these checks sequentially:
+
+1. `prettier --check src` — formatting
+2. `tsc --noEmit` — type checking
+3. `eslint --max-warnings 0 ./src --ext .ts` — linting
+4. SQLFluff via Docker — SQL linting (`packages/api/src/*/queries/` and `packages/api/src/*/fixtures/`)
+5. `redocly lint docs/src/api.yaml` — OpenAPI documentation
+
+### Testing
+
+Tests for `@stela/api` require a running PostgreSQL instance. The test setup:
+1. Starts Docker containers (`docker compose up`)
+2. Creates a fresh `test_permanent` database from the main database schema
+3. Runs Jest inside the Docker container
+
+Other workspace tests can generally run independently.
+
+## API Architecture
+
+### Base Path
+
+All API routes are mounted under `/api/v2/`. Route registration is in `packages/api/src/routes/index.ts`.
+
+### Domain Module Structure
+
+Each domain feature follows a consistent vertical-slice pattern within `packages/api/src/`:
+
+```
+<domain>/
+├── controller.ts       # Express Router with HTTP handlers
+├── controller.test.ts  # Integration tests using Supertest
+├── service.ts          # Business logic
+├── models.ts           # TypeScript interfaces and enums
+├── validators.ts       # Joi validation schemas (using type assertion functions)
+├── queries/            # SQL files for database operations
+│   └── *.sql
+└── fixtures/           # SQL files for test data setup
+    └── *.sql
+```
+
+Not every domain has every file — simpler domains may omit some.
+
+### Current Route Modules
+
+`account`, `admin`, `archive`, `directive`, `email`, `event`, `feature_flag`, `folder`, `health`, `idpuser`, `legacy_contact`, `promo`, `record`, `share_link`, `storage`
+
+Some routes have deprecated aliases (e.g., `/record` → `/records`, `/billing` → `/storage`).
+
+### Controller Pattern
+
+Controllers use Express `Router()` and follow this pattern:
+
+```typescript
+export const exampleController = Router();
+
+exampleController.get(
+  "/",
+  verifyUserAuthentication,  // middleware
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      validateRequestParams(req.params);  // Joi assertion
+      const result = await serviceFunction(req.body.emailFromAuthToken, ...);
+      res.status(HTTP_STATUS.SUCCESSFUL.OK).send(result);
+    } catch (error) {
+      if (isValidationError(error)) {
+        res.status(HTTP_STATUS.CLIENT_ERROR.BAD_REQUEST).json({ error: error.message });
+        return;
+      }
+      next(error);
+    }
+  },
+);
+```
+
+Key conventions:
+- Authentication middleware injects `emailFromAuthToken` and `userSubjectFromAuthToken` into `req.body`
+- Validation uses Joi with TypeScript `asserts` type guards
+- Validation errors produce 400 responses; other errors are passed to `next()`
+- HTTP status codes come from `@pdc/http-status-codes`
+- Error creation uses the `http-errors` library
+
+### Service Pattern
+
+Services contain business logic and database access:
+
+```typescript
+export const getThingById = async (id: string): Promise<Thing> => {
+  const result = await db
+    .sql<ThingRow>("domain.queries.query_name", { id })
+    .catch((err: unknown) => {
+      logger.error(err);
+      throw new createError.InternalServerError("Failed to get thing");
+    });
+  return result.rows[0];
+};
+```
+
+Key conventions:
+- Use `db.sql<RowType>("domain.queries.file_name", params)` for parameterized queries
+- The SQL file path is dot-notation: `domain.queries.file_name` maps to `packages/api/src/domain/queries/file_name.sql`
+- Errors are logged then re-thrown as HTTP errors
+- Access control checks happen in the service layer
+
+### Validation Pattern
+
+Validators use Joi with TypeScript assertion functions:
+
+```typescript
+export const validateSomething: (
+  data: unknown,
+) => asserts data is SomeType = (
+  data: unknown,
+): asserts data is SomeType => {
+  const validation = Joi.object()
+    .keys({ /* schema */ })
+    .validate(data);
+  if (validation.error !== undefined) {
+    throw validation.error;
+  }
+};
+```
+
+Shared authentication validation fields are in `packages/api/src/validators/shared.ts`:
+- `fieldsFromUserAuthentication` — requires `emailFromAuthToken` + `userSubjectFromAuthToken`
+- `fieldsFromAdminAuthentication` — requires `emailFromAuthToken` + `adminSubjectFromAuthToken`
+
+## Database
+
+### SQL File Pattern
+
+All database queries are in `.sql` files within `queries/` directories (never inline SQL). TinyPg resolves them by dot-notation path relative to `packages/api/src/`.
+
+SQL parameters use `:paramName` colon syntax:
+
+```sql
+SELECT *
+FROM record
+WHERE
+  recordid = :recordId
+  AND status != 'status.generic.deleted';
+```
+
+For nullable updates, the codebase uses a `COALESCE` + boolean flag pattern:
+
+```sql
+UPDATE record
+SET
+  description = CASE
+    WHEN :setDescriptionToNull THEN NULL
+    ELSE COALESCE(:description, description)
+  END
+WHERE recordid = :recordId
+RETURNING recordid;
+```
+
+### SQL Linting
+
+SQL files are linted with SQLFluff (PostgreSQL dialect, colon-style placeholder parameters). Configuration is in `.sqlfluff` at the repo root. Reserved words used as column names are listed in the `ignore_words` config.
+
+### Schema
+
+The base database schema lives in `database/base.sql` (dumped from production). Key tables include:
+- `account`, `account_archive` — user accounts and archive memberships
+- `archive` — archives (collections)
+- `folder`, `folder_link`, `folder_child` — folder hierarchy
+- `record`, `record_file` — records and their file associations
+- `tag`, `tag_link` — tagging system
+- `access` — role-based access control
+- `directive` — legal directives (legacy planning)
+- `event` — audit trail
+- `share`, `shareby_url` — sharing system
+
+### Test Database
+
+Tests use a separate `test_permanent` database created fresh from the production schema before each test run. Test fixtures are SQL files in `fixtures/` directories that insert known test data.
+
+## Testing Patterns
+
+### Test File Location
+
+Test files are co-located with source: `controller.test.ts` next to `controller.ts`.
+
+### Integration Test Pattern (API)
+
+```typescript
+jest.mock("../database");
+jest.mock("../middleware");
+jest.mock("@stela/logger");
+
+const setupDatabase = async (): Promise<void> => {
+  await db.sql("domain.fixtures.create_test_accounts");
+  await db.sql("domain.fixtures.create_test_data");
+  // ... load all required fixtures
+};
+
+const clearDatabase = async (): Promise<void> => {
+  await db.query(`TRUNCATE account, archive, ... CASCADE`);
+};
+
+describe("GET /endpoint", () => {
+  beforeEach(async () => {
+    mockVerifyUserAuthentication("test@permanent.org", "uuid-here");
+    await clearDatabase();
+    await setupDatabase();
+  });
+
+  afterEach(async () => {
+    await clearDatabase();
+    jest.restoreAllMocks();
+    jest.clearAllMocks();
+  });
+
+  const agent = request(app);
+
+  test("description", async () => {
+    const response = await agent.get("/api/v2/endpoint").expect(200);
+    expect(response.body).toEqual(/* ... */);
+  });
+});
+```
+
+Key patterns:
+- The database module, middleware, and logger are always mocked at the module level
+- `setupDatabase` loads SQL fixtures; `clearDatabase` truncates tables
+- Middleware mocks are in `packages/api/test/middleware_mocks.ts`
+- Each test block clears and rebuilds the database in `beforeEach`/`afterEach`
+- Use `jest-when` for conditional mock behavior based on arguments
+- Supertest `agent` is created from the Express `app`
+
+## Authentication & Authorization
+
+### Middleware
+
+- `verifyUserAuthentication` — validates auth token, injects `emailFromAuthToken` and `userSubjectFromAuthToken` into `req.body`
+- `verifyAdminAuthentication` — validates admin auth token
+- `extractUserEmailFromAuthToken` — optional auth extraction (doesn't reject if missing)
+- `extractShareTokenFromHeaders` — extracts share token from `X-Permanent-Share-Token` header
+
+### Access Roles
+
+Defined in `packages/api/src/access/models.ts`. Hierarchy (highest to lowest):
+`owner` > `manager` > `curator` > `editor` > `contributor` > `viewer`
+
+Access checks use `getRecordAccessRole` / `getFolderAccessRole` and `accessRoleLessThan` comparisons.
+
+## Event System
+
+Events are published to AWS SNS and persisted to the `event` database table. Structure:
+
+```typescript
+{
+  entity: string,        // "account", "record", "folder", etc.
+  action: string,        // "create", "update", "delete", etc.
+  actorType: "user" | "admin",
+  actorId: string,       // UUID
+  entityId: string,
+  ip: string,
+  userAgent: string,
+  body: { ... },         // action-specific payload
+  analytics?: { ... },   // optional Mixpanel data
+}
+```
+
+## ESLint Rules of Note
+
+Configuration in `eslint.config.mjs`:
+
+- **No default exports:** `import/no-default-export: "error"` — all exports must be named
+- **No magic numbers:** Only `0` and `1` are allowed outside enums; extract others to constants
+- **No unused vars:** Prefix with `_` to mark intentionally unused (args, vars, caught errors)
+- **Test files:** Magic numbers allowed, `max-lines` disabled, `@typescript-eslint/require-await` disabled
+
+## Code Style Conventions
+
+- **Named exports only** — no default exports anywhere
+- **camelCase** for variables and functions
+- **PascalCase** for types, interfaces, and enums
+- **SCREAMING_SNAKE_CASE** for constants
+- Enum values use dot-notation strings: `"status.generic.ok"`, `"type.record.image"`
+- Formatting enforced by Prettier (no project-level `.prettierrc` — uses defaults)
+- `async/await` exclusively (no callbacks or raw `.then()` chains in application code)
+- Strict TypeScript — no `any` types
+
+## OpenAPI Documentation
+
+API docs are at `packages/api/docs/src/api.yaml` using modular YAML references. Built to HTML via `redocly build-docs` and published to GitHub Pages.
+
+## CI/CD
+
+GitHub Actions workflows in `.github/workflows/`:
+
+| Workflow | Trigger | Purpose |
+|----------|---------|---------|
+| `lint.yml` | Every push | Builds and lints all workspaces |
+| `test.yml` | Push to non-main branches | Runs all workspace tests with Codecov |
+| `build.yml` | Called by deploy workflows | Builds Docker images, pushes to AWS ECR |
+| `dev_deploy.yml` | Merge to main | Auto-deploys to dev environment |
+| `staging_deploy.yml` | Manual | Deploys to staging |
+| `prod_deploy.yml` | Manual (requires approval) | Deploys to production |
+| `deploy_docs.yml` | Docs changes | Publishes API docs to GitHub Pages |
+
+## Lambda Handler Pattern
+
+```typescript
+export const handler: SQSHandler = async (event: SQSEvent) => {
+  for (const record of event.Records) {
+    // Validate and parse SQS message
+    // Execute business logic
+    // Handle errors with Sentry + logger
+  }
+};
+```
+
+## Key Architectural Notes
+
+- The database singleton is in `packages/api/src/database.ts` — a single `TinyPg` instance with `root_dir` pointing to `src/` so all SQL files are discoverable via dot-notation
+- Authentication middleware mutates `req.body` to inject auth values — this is a known pattern the team wants to move away from (noted in eslint config re: `no-param-reassign`)
+- The codebase uses `http-errors` for creating typed HTTP errors that the global error handler catches
+- `@stela/logger` wraps Winston and is used across all packages
+- Infrastructure is managed with Terraform in `/terraform/` (separate configs for test and prod clusters)
