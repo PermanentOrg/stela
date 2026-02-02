@@ -26,8 +26,8 @@
 		"test": "node --experimental-vm-modules ../../node_modules/jest/bin/jest.js -i --silent=false"
 	},
 	"dependencies": {
-		"@sentry/node": "^10.27.0",
-		"@sentry/profiling-node": "^10.27.0",
+		"@sentry/node": "^10.36.0",
+		"@sentry/profiling-node": "^10.36.0",
 		"@stela/logger": "^1.0.0",
 		"dotenv": "^17.2.3",
 		"require-env-variable": "^4.0.2"
