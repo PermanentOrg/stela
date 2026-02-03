@@ -1,14 +1,71 @@
-name: lint
+name: Lint
 on: [push, workflow_dispatch]
 jobs:
-  lint:
+  build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
+
       - uses: actions/setup-node@v6
         with:
           node-version-file: .node-version
+          cache: npm
+
       - run: npm install --include dev
       - run: npm install -ws
       - run: npm run build -ws
-      - run: npm run lint -ws
+
+      - uses: actions/cache/save@v4
+        with:
+          path: packages/*/dist
+          key: build-${{ github.sha }}
+
+  lint:
+    name: ${{ matrix.package }}
+    needs: build
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - package: api
+          - package: access_copy_attacher
+          - package: account_space_updater
+          - package: archivematica_cleanup
+          - package: archivematica-utils
+          - package: event_utils
+          - package: file_url_refresh
+          - package: file-utils
+          - package: logger
+          - package: metadata_attacher
+          - package: permanent_models
+          - package: record_thumbnail_attacher
+          - package: s3-utils
+          - package: thumbnail_refresh
+          - package: trigger_archivematica
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: .node-version
+          cache: npm
+
+      - run: npm install --include dev
+      - run: npm install -w @stela/${{ matrix.package }}
+
+      - uses: actions/cache/restore@v4
+        with:
+          path: packages/*/dist
+          key: build-${{ github.sha }}
+          fail-on-cache-miss: true
+
+      - run: npm run lint -w @stela/${{ matrix.package }}
+
+  # Gate job for branch protection
+  all-lint-passed:
+    name: All lint passed
+    needs: lint
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "All lint checks passed"

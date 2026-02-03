@@ -1,4 +1,4 @@
-name: Unit tests
+name: Test
 on:
   push:
     branches-ignore:
@@ -6,73 +6,105 @@ on:
   workflow_dispatch:
   workflow_call:
 jobs:
-  run_tests:
-    runs-on: ubuntu-24.04
+  test:
+    name: ${{ matrix.package }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # API - runs tests in Docker
+          - package: api
+            needs_devenv: true
+            test_in_docker: true
+          # Database-dependent packages
+          - package: account_space_updater
+            needs_devenv: true
+          - package: record_thumbnail_attacher
+            needs_devenv: true
+          - package: access_copy_attacher
+            needs_devenv: true
+          - package: trigger_archivematica
+            needs_devenv: true
+          - package: metadata_attacher
+            needs_devenv: true
+          - package: thumbnail_refresh
+            needs_devenv: true
+          - package: file_url_refresh
+            needs_devenv: true
+          # Simple packages - no database needed
+          - package: archivematica_cleanup
+          - package: archivematica-utils
+          - package: s3-utils
     steps:
+      # Always checkout stela
       - uses: actions/checkout@v6
         with:
           path: ./stela
-      - uses: actions/setup-node@v6
-        with:
-          node-version-file: stela/.node-version
+
+      # Conditionally checkout external repos (only if needs_devenv)
       - name: Checkout back-end
+        if: matrix.needs_devenv
         uses: actions/checkout@v6
         with:
           ssh-key: ${{ secrets.BACKEND_ACCESS_PRIVATE_SSH_KEY }}
           repository: PermanentOrg/back-end
           ref: main
           path: ./back-end
+
       - name: Checkout devenv
+        if: matrix.needs_devenv
         uses: actions/checkout@v6
         with:
           ssh-key: ${{ secrets.DEVENV_ACCESS_PRIVATE_SSH_KEY }}
           repository: PermanentOrg/devenv
           ref: main
           path: ./devenv
+
+      # Setup Node with npm cache
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: stela/.node-version
+          cache: npm
+          cache-dependency-path: stela/package-lock.json
+
+      # Install and build
       - run: (cd stela; npm install --production=false)
       - run: (cd stela; npm run build -ws)
-      - run: touch stela/.env
-      - run: touch devenv/.env
-      - run: (cd devenv; docker compose up database_setup -d; docker logs permanent-database_setup-1)
-      - run: (cd stela/packages/api; npm run start-containers)
-      - run: (cd stela/packages/api; docker compose run stela npm run test:ci)
-      - run: (cd stela; npm run test -w @stela/account_space_updater)
+
+      # Conditionally setup database and containers
+      - name: Create .env files
+        if: matrix.needs_devenv
+        run: touch stela/.env && touch devenv/.env
+
+      - name: Start database
+        if: matrix.needs_devenv
+        run: (cd devenv; docker compose up database_setup -d)
+
+      - name: Start stela containers
+        if: matrix.needs_devenv
+        run: (cd stela/packages/api; npm run start-containers)
+
+      # Run tests - different command for API vs others
+      - name: Run tests (Docker)
+        if: matrix.test_in_docker
+        run: (cd stela/packages/api; docker compose run stela npm run test:ci)
+
+      - name: Run tests
+        if: ${{ !matrix.test_in_docker }}
+        run: (cd stela; npm run test -w @stela/${{ matrix.package }})
+
+      # Upload coverage
       - uses: codecov/codecov-action@v5
+        with:
+          flags: ${{ matrix.package }}
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-      - run: (cd stela; npm run test -w @stela/record_thumbnail_attacher)
-      - uses: codecov/codecov-action@v5
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-      - run: (cd stela; npm run test -w @stela/archivematica_cleanup)
-      - uses: codecov/codecov-action@v5
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-      - run: (cd stela; npm run test -w @stela/thumbnail_refresh)
-      - uses: codecov/codecov-action@v5
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-      - run: (cd stela; npm run test -w @stela/access_copy_attacher)
-      - uses: codecov/codecov-action@v5
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-      - run: (cd stela; npm run test -w @stela/archivematica-utils)
-      - uses: codecov/codecov-action@v5
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-      - run: (cd stela; npm run test -w @stela/file_url_refresh)
-      - uses: codecov/codecov-action@v5
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-      - run: (cd stela; npm run test -w @stela/s3-utils)
-      - uses: codecov/codecov-action@v5
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-      - run: (cd stela; npm run test -w @stela/trigger_archivematica)
-      - uses: codecov/codecov-action@v5
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-      - run: (cd stela; npm run test -w @stela/metadata_attacher)
-      - uses: codecov/codecov-action@v5
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
+  # Gate job for branch protection
+  all-tests-passed:
+    name: All tests passed
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "All tests passed"
