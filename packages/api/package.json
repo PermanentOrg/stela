@@ -27,14 +27,8 @@
 		"start:watch": "tsc-watch --onSuccess \"npm run start\"",
 		"start": "tscp -p tsconfig.tscp.json && node dist/index.js",
 		"start-containers": "(cd ../..; docker compose up -d --build stela)",
-		"clear-database": "psql postgresql://postgres:permanent@localhost:5432 -c 'DROP DATABASE IF EXISTS test_permanent;'",
-		"create-database": "psql postgresql://postgres:permanent@localhost:5432 -c 'CREATE DATABASE test_permanent;'",
-		"set-up-database": "docker exec --env='PGPASSWORD=permanent' permanent-database-1 pg_dump -U postgres permanent --schema-only | psql postgresql://postgres:permanent@localhost:5432/test_permanent",
-		"clear-database-ci": "psql postgresql://postgres:permanent@database:5432 -c 'DROP DATABASE IF EXISTS test_permanent;'",
-		"create-database-ci": "psql postgresql://postgres:permanent@database:5432 -c 'CREATE DATABASE test_permanent;'",
-		"set-up-database-ci": "pg_dump postgresql://postgres:permanent@database:5432/permanent --schema-only | psql postgresql://postgres:permanent@database:5432/test_permanent",
-		"test": "npm run start-containers && npm run clear-database && npm run create-database && npm run set-up-database && (cd ../..; docker compose run stela node --experimental-vm-modules ../../node_modules/jest/bin/jest.js -i --silent=false)",
-		"test-ci": "npm run clear-database-ci && npm run create-database-ci && npm run set-up-database-ci && node --experimental-vm-modules ../../node_modules/jest/bin/jest.js -i --coverage"
+		"test": "npm run start-containers && (cd ../..; docker compose run stela node --experimental-vm-modules ../../node_modules/jest/bin/jest.js -i --silent=false)",
+		"test:ci": "node --experimental-vm-modules ../../node_modules/jest/bin/jest.js -i --coverage"
 	},
 	"dependencies": {
 		"@aws-sdk/client-sns": "^3.975.0",
