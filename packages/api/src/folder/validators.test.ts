@@ -18,7 +18,7 @@ describe("validatePatchFolderRequest", () => {
 			expect(error).toBeNull();
 		}
 	});
-	test("should not raise an error when optional fields are missing", () => {
+	test("should raise an error when all fields are missing", () => {
 		let error = null;
 		try {
 			validatePatchFolderRequest({
@@ -28,7 +28,7 @@ describe("validatePatchFolderRequest", () => {
 		} catch (err) {
 			error = err;
 		} finally {
-			expect(error).toBeNull();
+			expect(error).not.toBeNull();
 		}
 	});
 	test("should not raise an error when fields are null", () => {

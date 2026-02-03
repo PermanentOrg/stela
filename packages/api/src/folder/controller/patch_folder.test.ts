@@ -29,12 +29,12 @@ describe("patch folder", () => {
 	});
 
 	test("expect an empty query to cause a 400 error", async () => {
-		await agent.patch("/api/v2/folder/1").send({}).expect(400);
+		await agent.patch("/api/v2/folders/1").send({}).expect(400);
 	});
 
 	test("expect non existent folder to cause a 404 error", async () => {
 		await agent
-			.patch("/api/v2/folder/111111111")
+			.patch("/api/v2/folders/111111111")
 			.send({ displayDate: "2024-09-26T15:09:52.000Z" })
 			.expect(404);
 	});
@@ -42,12 +42,12 @@ describe("patch folder", () => {
 	test("expect request to have an email from auth token if an auth token exists", async () => {
 		mockVerifyUserAuthentication("not_an_email");
 
-		await agent.patch("/api/v2/folder/1").expect(400);
+		await agent.patch("/api/v2/folders/1").expect(400);
 	});
 
 	test("expect displayDate is updated", async () => {
 		await agent
-			.patch("/api/v2/folder/1")
+			.patch("/api/v2/folders/1")
 			.send({ displayDate: "2024-09-26T15:09:52" })
 			.expect(200);
 
@@ -63,7 +63,7 @@ describe("patch folder", () => {
 
 	test("expect displayDate is updated when set to null", async () => {
 		await agent
-			.patch("/api/v2/folder/1")
+			.patch("/api/v2/folders/1")
 			.send({ displayDate: null })
 			.expect(200);
 
@@ -77,9 +77,48 @@ describe("patch folder", () => {
 		expect(result.rows[0]).toStrictEqual({ displaydt: null });
 	});
 
+	test("expect displayTimeInEDTF is updated", async () => {
+		await agent
+			.patch("/api/v2/folders/1")
+			.send({ displayTimeInEDTF: "2024-1X" })
+			.expect(200);
+
+		const result = await db.query(
+			"SELECT displaytime FROM folder WHERE folderid = :folderId",
+			{
+				folderId: 1,
+			},
+		);
+
+		expect(result.rows[0]).toEqual({ displaytime: "2024-1X" });
+	});
+
+	test("expect displayTimeInEDTF is updated when set to null", async () => {
+		await agent
+			.patch("/api/v2/folders/2")
+			.send({ displayTimeInEDTF: null })
+			.expect(200);
+
+		const result = await db.query(
+			"SELECT displaytime FROM folder WHERE folderid = :folderId",
+			{
+				folderId: 2,
+			},
+		);
+
+		expect(result.rows[0]).toEqual({ displaytime: null });
+	});
+
+	test("expect 400 error when displayTimeInEDTF is not valid Level 1 EDTF", async () => {
+		await agent
+			.patch("/api/v2/folders/2")
+			.send({ displayTimeInEDTF: "2024-33" })
+			.expect(400);
+	});
+
 	test("expect 400 error if display date is wrong type", async () => {
 		await agent
-			.patch("/api/v2/folder/1")
+			.patch("/api/v2/folders/1")
 			.send({
 				displayDate: false,
 			})
@@ -88,15 +127,40 @@ describe("patch folder", () => {
 
 	test("expect to log error and return 500 if database update fails", async () => {
 		const testError = new Error("test error");
-		const spy = jest.spyOn(db, "query").mockImplementation(async () => {
+		const spy = jest.spyOn(db, "sql").mockImplementation(async () => {
 			throw testError;
 		});
 
 		await agent
-			.patch("/api/v2/folder/1")
+			.patch("/api/v2/folders/1")
 			.send({ displayDate: "2024-09-26T15:09:52.000Z" })
 			.expect(500);
 		spy.mockRestore();
+
+		expect(logger.error).toHaveBeenCalledWith(testError);
+	});
+
+	test("expect to log error and return 500 if database update fails", async () => {
+		const testError = new Error("test error");
+		const sqlSpy = jest.spyOn(db, "sql");
+		when(sqlSpy)
+			.calledWith("folder.queries.update_folder", {
+				folderId: "1",
+				displayDate: "2024-09-26T15:09:52.000Z",
+				setDisplayDateToNull: false,
+				displayEndDate: undefined,
+				setDisplayEndDateToNull: false,
+				displayTime: undefined,
+				setDisplayTimeToNull: false,
+			})
+			.mockImplementation(async () => {
+				throw testError;
+			});
+
+		await agent
+			.patch("/api/v2/folders/1")
+			.send({ displayDate: "2024-09-26T15:09:52.000Z" })
+			.expect(500);
 
 		expect(logger.error).toHaveBeenCalledWith(testError);
 	});
@@ -115,7 +179,7 @@ describe("patch folder", () => {
 			});
 
 		await agent
-			.patch("/api/v2/folder/1")
+			.patch("/api/v2/folders/1")
 			.send({ displayDate: "2024-09-26T15:09:52.000Z" })
 			.expect(500);
 
@@ -137,7 +201,7 @@ describe("patch folder", () => {
 			);
 
 		await agent
-			.patch("/api/v2/folder/1")
+			.patch("/api/v2/folders/1")
 			.send({ displayDate: "2024-09-26T15:09:52.000Z" })
 			.expect(404);
 	});
@@ -149,7 +213,7 @@ describe("patch folder", () => {
 		);
 
 		await agent
-			.patch("/api/v2/folder/1")
+			.patch("/api/v2/folders/1")
 			.send({ displayDate: "2024-09-26T15:09:52" })
 			.expect(403);
 	});
@@ -161,7 +225,7 @@ describe("patch folder", () => {
 		);
 
 		await agent
-			.patch("/api/v2/folder/1")
+			.patch("/api/v2/folders/1")
 			.send({ displayDate: "2024-09-26T15:09:52" })
 			.expect(404);
 	});

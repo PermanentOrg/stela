@@ -34,28 +34,28 @@ describe("GET /folder", () => {
 	});
 
 	test("should return 200 code for successful call", async () => {
-		await agent.get("/api/v2/folder?folderIds[]=1").expect(200);
+		await agent.get("/api/v2/folders?folderIds[]=1").expect(200);
 	});
 
 	test("should call extractUserEmailFromAuthToken middleware", async () => {
-		await agent.get("/api/v2/folder?folderIds[]=1").expect(200);
+		await agent.get("/api/v2/folders?folderIds[]=1").expect(200);
 		expect(extractUserEmailFromAuthToken).toHaveBeenCalled();
 	});
 
 	test("should call extractShareTokenFromHeaders middleware", async () => {
-		await agent.get("/api/v2/folder?folderIds[]=1").expect(200);
+		await agent.get("/api/v2/folders?folderIds[]=1").expect(200);
 		expect(extractShareTokenFromHeaders).toHaveBeenCalled();
 	});
 
 	test("should return 400 code if the header values are improper", async () => {
 		mockExtractUserEmailFromAuthToken("not_an_email");
-		await agent.get("/api/v2/folder?folderIds[]=1").expect(400);
+		await agent.get("/api/v2/folders?folderIds[]=1").expect(400);
 	});
 
 	test("should return a public folder if the user is not authenticated", async () => {
 		mockExtractUserEmailFromAuthToken();
 		const response = await agent
-			.get("/api/v2/folder?folderIds[]=1")
+			.get("/api/v2/folders?folderIds[]=1")
 			.expect(200);
 		const {
 			body: { items: folders },
@@ -67,7 +67,7 @@ describe("GET /folder", () => {
 	test("should not return a private folder if the user is not authenticated", async () => {
 		mockExtractUserEmailFromAuthToken();
 		const response = await agent
-			.get("/api/v2/folder?folderIds[]=2")
+			.get("/api/v2/folders?folderIds[]=2")
 			.expect(200);
 		const {
 			body: { items: folders },
@@ -77,7 +77,7 @@ describe("GET /folder", () => {
 
 	test("should return a private folder if the user is authenticated", async () => {
 		const response = await agent
-			.get("/api/v2/folder?folderIds[]=2")
+			.get("/api/v2/folders?folderIds[]=2")
 			.expect(200);
 		const {
 			body: { items: folders },
@@ -90,7 +90,7 @@ describe("GET /folder", () => {
 		mockExtractUserEmailFromAuthToken("test+3@permanent.org");
 
 		const response = await agent
-			.get("/api/v2/folder?folderIds[]=2")
+			.get("/api/v2/folders?folderIds[]=2")
 			.expect(200);
 		const {
 			body: { items: folders },
@@ -102,7 +102,7 @@ describe("GET /folder", () => {
 		mockExtractUserEmailFromAuthToken();
 		mockExtractShareTokenFromHeaders("c0f523e4-48d8-4c39-8cda-5e95161532e4");
 		const response = await agent
-			.get("/api/v2/folder?folderIds[]=2")
+			.get("/api/v2/folders?folderIds[]=2")
 			.set("X-Permanent-Share-Token", "c0f523e4-48d8-4c39-8cda-5e95161532e4")
 			.expect(200);
 		const {
@@ -116,7 +116,7 @@ describe("GET /folder", () => {
 		mockExtractUserEmailFromAuthToken();
 		mockExtractShareTokenFromHeaders("56f7c246-e4ec-41f3-b117-6df4c9377075");
 		const response = await agent
-			.get("/api/v2/folder?folderIds[]=2")
+			.get("/api/v2/folders?folderIds[]=2")
 			.set("X-Permanent-Share-Token", "56f7c246-e4ec-41f3-b117-6df4c9377075")
 			.expect(200);
 		const {
@@ -130,7 +130,7 @@ describe("GET /folder", () => {
 		mockExtractUserEmailFromAuthToken();
 		mockExtractShareTokenFromHeaders("7d6412af-5abe-4acb-808a-64e9ce3b7535");
 		const response = await agent
-			.get("/api/v2/folder?folderIds[]=2")
+			.get("/api/v2/folders?folderIds[]=2")
 			.set("X-Permanent-Share-Token", "7d6412af-5abe-4acb-808a-64e9ce3b7535")
 			.expect(200);
 		const {
@@ -143,7 +143,7 @@ describe("GET /folder", () => {
 		mockExtractUserEmailFromAuthToken();
 		mockExtractShareTokenFromHeaders("9cc057f0-d3e8-41df-94d6-9b315b4921af");
 		const response = await agent
-			.get("/api/v2/folder?folderIds[]=2")
+			.get("/api/v2/folders?folderIds[]=2")
 			.set("X-Permanent-Share-Token", "9cc057f0-d3e8-41df-94d6-9b315b4921af")
 			.expect(200);
 		const {
@@ -155,7 +155,7 @@ describe("GET /folder", () => {
 	test("should return a private folder if the folder is shared with the caller", async () => {
 		mockExtractUserEmailFromAuthToken("test+2@permanent.org");
 		const response = await agent
-			.get("/api/v2/folder?folderIds[]=2")
+			.get("/api/v2/folders?folderIds[]=2")
 			.expect(200);
 		const {
 			body: { items: folders },
@@ -167,7 +167,7 @@ describe("GET /folder", () => {
 	test("should not return a private folder if caller access relies on a deleted share", async () => {
 		mockExtractUserEmailFromAuthToken("test+3@permanent.org");
 		const response = await agent
-			.get("/api/v2/folder?folderIds[]=2")
+			.get("/api/v2/folders?folderIds[]=2")
 			.expect(200);
 		const {
 			body: { items: folders },
@@ -178,7 +178,7 @@ describe("GET /folder", () => {
 	test("should not return a private folder if caller access relies on a share to an archive caller can no longer access", async () => {
 		mockExtractUserEmailFromAuthToken("test+4@permanent.org");
 		const response = await agent
-			.get("/api/v2/folder?folderIds[]=2")
+			.get("/api/v2/folders?folderIds[]=2")
 			.expect(200);
 		const {
 			body: { items: folders },
@@ -188,7 +188,7 @@ describe("GET /folder", () => {
 
 	test("should return all folder data", async () => {
 		const response = await agent
-			.get("/api/v2/folder?folderIds[]=2")
+			.get("/api/v2/folders?folderIds[]=2")
 			.expect(200);
 		const {
 			body: { items: folders },
@@ -247,6 +247,7 @@ describe("GET /folder", () => {
 			expect(folders[0].displayEndTimestamp).toEqual(
 				"2025-01-01T00:00:00.000Z",
 			);
+			expect(folders[0].displayTimeInEDTF).toEqual("2025-01-01");
 			expect(folders[0].displayName).toEqual("Private Folder");
 			expect(folders[0].downloadName).toEqual("Private Folder");
 			expect(folders[0].imageRatio).toEqual(1);
@@ -281,7 +282,7 @@ describe("GET /folder", () => {
 
 	test("should retrieve multiple folders if requested", async () => {
 		const response = await agent
-			.get("/api/v2/folder?folderIds[]=2&folderIds[]=1")
+			.get("/api/v2/folders?folderIds[]=2&folderIds[]=1")
 			.expect(200);
 		const {
 			body: { items: folders },
@@ -291,7 +292,7 @@ describe("GET /folder", () => {
 
 	test("should not retrieve a deleted folder", async () => {
 		const response = await agent
-			.get("/api/v2/folder?folderIds[]=4")
+			.get("/api/v2/folders?folderIds[]=4")
 			.expect(200);
 		const {
 			body: { items: folders },
@@ -301,7 +302,7 @@ describe("GET /folder", () => {
 
 	test("should not retrieve a folder with a deleted folder_link", async () => {
 		const response = await agent
-			.get("/api/v2/folder?folderIds[]=3")
+			.get("/api/v2/folders?folderIds[]=3")
 			.expect(200);
 		const {
 			body: { items: folders },
@@ -311,7 +312,7 @@ describe("GET /folder", () => {
 
 	test("should omit size from a folder with a deleted folder_size", async () => {
 		const response = await agent
-			.get("/api/v2/folder?folderIds[]=7")
+			.get("/api/v2/folders?folderIds[]=7")
 			.expect(200);
 		const {
 			body: { items: folders },
@@ -322,6 +323,6 @@ describe("GET /folder", () => {
 
 	test("should throw a 500 error if database call fails", async () => {
 		jest.spyOn(db, "sql").mockRejectedValue(new Error("test error"));
-		await agent.get("/api/v2/folder?folderIds[]=2").expect(500);
+		await agent.get("/api/v2/folders?folderIds[]=2").expect(500);
 	});
 });
