@@ -11,14 +11,14 @@ import { AccessRole } from "../access/models";
 import { shareLinkService } from "../share_link/service";
 import type { ShareLink } from "../share_link/models";
 
-export const getRecordById = async (requestQuery: {
+export const getRecords = async (requestQuery: {
 	recordIds: string[] | undefined;
 	archiveId: string | undefined;
 	accountEmail: string | undefined;
 	shareToken?: string | undefined;
 }): Promise<ArchiveRecord[]> => {
 	const record = await db
-		.sql<ArchiveRecordRow>("record.queries.get_record_by_id", {
+		.sql<ArchiveRecordRow>("record.queries.get_records", {
 			recordIds: requestQuery.recordIds ?? null,
 			archiveId: requestQuery.archiveId ?? null,
 			accountEmail: requestQuery.accountEmail,
