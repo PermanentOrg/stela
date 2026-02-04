@@ -11,7 +11,7 @@ describe("fusionAuthClient", () => {
 		});
 		test("should correctly make a network call the first time a unique set of parameters are passed", async () => {
 			const mockFusionAuthService = nock(mockFusionAuthHost)
-				.post(/.*/)
+				.post(/.*/v)
 				.times(1)
 				.reply(200);
 			await fusionAuthClient.introspectAccessToken(
@@ -22,7 +22,7 @@ describe("fusionAuthClient", () => {
 		});
 		test("should correctly make additional network calls when distinct parameters are passed", async () => {
 			const mockFusionAuthService = nock(mockFusionAuthHost)
-				.post(/.*/)
+				.post(/.*/v)
 				.times(2)
 				.reply(200);
 			await fusionAuthClient.introspectAccessToken(
@@ -37,7 +37,7 @@ describe("fusionAuthClient", () => {
 		});
 		test("should NOT make a network call, and should use the cached result, when identical parameters are passed", async () => {
 			const mockFusionAuthService = nock(mockFusionAuthHost)
-				.post(/.*/)
+				.post(/.*/v)
 				.times(1)
 				.reply(200);
 			await fusionAuthClient.introspectAccessToken(

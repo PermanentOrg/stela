@@ -39,6 +39,9 @@ export default defineConfig([
 			// Breaking the following rule is a key part of how our middleware works right now.
 			// We want to move away from that, but for the moment the rule must be disabled.
 			"no-param-reassign": ["error", { props: false }],
+
+			// This rule objects to most express middleware.
+			"require-atomic-updates": "off",
 		},
 	},
 	{

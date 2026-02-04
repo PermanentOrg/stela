@@ -3,7 +3,7 @@ import { logger } from "@stela/logger";
 type ExifTimestamp =
 	`${number}${number}${number}${number}:${number}${number}:${number}${number} ${number}${number}:${number}${number}:${number}${number}`;
 const isExifTimestamp = (value: string): value is ExifTimestamp =>
-	/^(\d{4}):(0[1-9]|1[0-2]):(0[1-9]|[12]\d|3[01]) ([01]\d|2[0-3]):[0-5]\d:[0-5]\d$/.test(
+	/^(?:\d{4}):(?:0[1-9]|1[0-2]):(?:0[1-9]|[12]\d|3[01]) (?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d$/v.test(
 		value,
 	);
 export const getISOStringFromExifTimestamp = (
@@ -23,18 +23,13 @@ export const getISOStringFromExifTimestamp = (
 	}
 	const dateComponent = timestampPieces[0].replaceAll(":", "-");
 	const [, timeComponent] = timestampPieces;
-	return (
-		dateComponent +
-		"T" +
-		timeComponent +
-		(exifOffset === undefined ? "" : exifOffset === "+00:00" ? "Z" : exifOffset)
-	);
+	return `${dateComponent}T${timeComponent}${exifOffset === undefined ? "" : exifOffset === "+00:00" ? "Z" : exifOffset}`;
 };
 
 type MediaInfoTimestamp =
 	`${number}${number}${number}${number}-${number}${number}-${number}${number} ${number}${number}:${number}${number}:${number}${number} UTC`;
 const isMediaInfoTimestamp = (value: string): value is MediaInfoTimestamp =>
-	/^(\d{4})-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01]) ([01]\d|2[0-3]):[0-5]\d:[0-5]\d UTC$/.test(
+	/^(?:\d{4})-(?:0[1-9]|1[0-2])-(?:0[1-9]|[12]\d|3[01]) (?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d UTC$/v.test(
 		value,
 	);
 export const getISOStringFromMediaInfoTimestamp = (
@@ -61,13 +56,13 @@ export const getISOStringFromMediaInfoTimestamp = (
 		);
 		return undefined;
 	}
-	return dateComponent + "T" + timeComponent + "Z";
+	return `${dateComponent}T${timeComponent}Z`;
 };
 
 type QuicktimeTimestamp =
 	`${number}${number}${number}${number}:${number}${number}:${number}${number} ${number}${number}:${number}${number}:${number}${number}${"+" | "-"}${number}${number}:${number}${number}`;
 const isQuicktimeTimestamp = (value: string): value is QuicktimeTimestamp =>
-	/^(\d{4}):(0[1-9]|1[0-2]):(0[1-9]|[12]\d|3[01]) ([01]\d|2[0-3]):[0-5]\d:[0-5]\d(\+|-)([01]\d|2[0-3]):[0-5]\d$/.test(
+	/^(?:\d{4}):(?:0[1-9]|1[0-2]):(?:0[1-9]|[12]\d|3[01]) (?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d(?:\+|-)(?:[01]\d|2[0-3]):[0-5]\d$/v.test(
 		value,
 	);
 export const getISOStringFromQuicktimeTimestamp = (
@@ -85,5 +80,5 @@ export const getISOStringFromQuicktimeTimestamp = (
 	}
 	const dateComponent = timestampPieces[0].replaceAll(":", "-");
 	const timeComponent = timestampPieces[1].replace("+00:00", "Z");
-	return dateComponent + "T" + timeComponent;
+	return `${dateComponent}T${timeComponent}`;
 };
