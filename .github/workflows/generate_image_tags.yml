@@ -1,6 +1,12 @@
 name: Generate Image Tags
 on:
   workflow_call:
+    inputs:
+      main_branch_tag:
+        description: 'Tag to use for main branch images (main or live)'
+        required: false
+        type: string
+        default: 'main'
     outputs:
       API_IMAGE_TAG:
         value: ${{ jobs.generate_image_tags.outputs.API_IMAGE_TAG }}
@@ -40,8 +46,8 @@ jobs:
         run: echo "ECR_DOMAIN=364159549467.dkr.ecr.$AWS_REGION.amazonaws.com" >> "$GITHUB_ENV"
         env:
           AWS_REGION: ${{ vars.AWS_DEFAULT_REGION }}
-      - name: Set branch type env var
-        id: set_branch_type
+      - name: Set tag suffix env var
+        id: set_tag_suffix
         run: |
           if [[ $GITHUB_REF == refs/tags/* ]]; then
             # For tags/releases, use the target branch
@@ -51,39 +57,39 @@ jobs:
             BRANCH_NAME="${GITHUB_REF##*/}"
           fi
 
-          # Set BRANCH_TYPE based on whether we're on main
+          # Set TAG_SUFFIX based on whether we're on main
           if [[ "$BRANCH_NAME" == "main" ]]; then
-            echo "BRANCH_TYPE=main" >> "$GITHUB_ENV"
+            echo "TAG_SUFFIX=${{ inputs.main_branch_tag }}" >> "$GITHUB_ENV"
           else
-            echo "BRANCH_TYPE=feature" >> "$GITHUB_ENV"
+            echo "TAG_SUFFIX=feature" >> "$GITHUB_ENV"
           fi
       - name: Set abbreviated commit hash env var
         id: set_abbreviated_commit_hash
         run: echo "ABBREVIATED_COMMIT_HASH=$(git rev-parse --short $GITHUB_SHA)" >> "$GITHUB_ENV"
       - name: Generate API Image Tag
         id: generate_api_image_tag
-        run: echo "API_IMAGE_TAG=$ECR_DOMAIN/stela:api-$BRANCH_TYPE-$ABBREVIATED_COMMIT_HASH" >> "$GITHUB_OUTPUT"
+        run: echo "API_IMAGE_TAG=$ECR_DOMAIN/stela:api-$TAG_SUFFIX-$ABBREVIATED_COMMIT_HASH" >> "$GITHUB_OUTPUT"
       - name: Generate Archivematica Cleanup Image Tag
         id: generate_am_cleanup_image_tag
-        run: echo "AM_CLEANUP_IMAGE_TAG=$ECR_DOMAIN/stela:am_cleanup-$BRANCH_TYPE-$ABBREVIATED_COMMIT_HASH" >> "$GITHUB_OUTPUT"
+        run: echo "AM_CLEANUP_IMAGE_TAG=$ECR_DOMAIN/stela:am_cleanup-$TAG_SUFFIX-$ABBREVIATED_COMMIT_HASH" >> "$GITHUB_OUTPUT"
       - name: Generate Record Thumbnail Image Tag
         id: generate_record_thumbnail_lambda_image_tag
-        run: echo "RECORD_THUMBNAIL_LAMBDA_IMAGE_TAG=$ECR_DOMAIN/stela:record_thumbnail-$BRANCH_TYPE-$ABBREVIATED_COMMIT_HASH" >> "$GITHUB_OUTPUT"
+        run: echo "RECORD_THUMBNAIL_LAMBDA_IMAGE_TAG=$ECR_DOMAIN/stela:record_thumbnail-$TAG_SUFFIX-$ABBREVIATED_COMMIT_HASH" >> "$GITHUB_OUTPUT"
       - name: Generate Thumbnail Refresh Image Tag
         id: generate_thumbnail_refresh_image_tag
-        run: echo "THUMBNAIL_REFRESH_IMAGE_TAG=$ECR_DOMAIN/stela:thumbnail_refresh-$BRANCH_TYPE-$ABBREVIATED_COMMIT_HASH" >> "$GITHUB_OUTPUT"
+        run: echo "THUMBNAIL_REFRESH_IMAGE_TAG=$ECR_DOMAIN/stela:thumbnail_refresh-$TAG_SUFFIX-$ABBREVIATED_COMMIT_HASH" >> "$GITHUB_OUTPUT"
       - name: Generate File URL Refresh Image Tag
         id: generate_file_url_refresh_image_tag
-        run: echo "FILE_URL_REFRESH_IMAGE_TAG=$ECR_DOMAIN/stela:file_url_refresh-$BRANCH_TYPE-$ABBREVIATED_COMMIT_HASH" >> "$GITHUB_OUTPUT"
+        run: echo "FILE_URL_REFRESH_IMAGE_TAG=$ECR_DOMAIN/stela:file_url_refresh-$TAG_SUFFIX-$ABBREVIATED_COMMIT_HASH" >> "$GITHUB_OUTPUT"
       - name: Generate Access Copy Lambda Image Tag
         id: generate_access_copy_lambda_image_tag
-        run: echo "ACCESS_COPY_LAMBDA_IMAGE_TAG=$ECR_DOMAIN/stela:access_copy_lambda-$BRANCH_TYPE-$ABBREVIATED_COMMIT_HASH" >> "$GITHUB_OUTPUT"
+        run: echo "ACCESS_COPY_LAMBDA_IMAGE_TAG=$ECR_DOMAIN/stela:access_copy_lambda-$TAG_SUFFIX-$ABBREVIATED_COMMIT_HASH" >> "$GITHUB_OUTPUT"
       - name: Generate Account Space Updater Image Tag
         id: generate_account_space_updater_image_tag
-        run: echo "ACCOUNT_SPACE_UPDATE_IMAGE_TAG=$ECR_DOMAIN/stela:account_space_updater-$BRANCH_TYPE-$ABBREVIATED_COMMIT_HASH" >> "$GITHUB_OUTPUT"
+        run: echo "ACCOUNT_SPACE_UPDATE_IMAGE_TAG=$ECR_DOMAIN/stela:account_space_updater-$TAG_SUFFIX-$ABBREVIATED_COMMIT_HASH" >> "$GITHUB_OUTPUT"
       - name: Generate Archivematica Triggerer Image Tag
         id: generate_trigger_archivematica_image_tag
-        run: echo "TRIGGER_ARCHIVEMATICA_IMAGE_TAG=$ECR_DOMAIN/stela:trigger_archivematica-$BRANCH_TYPE-$ABBREVIATED_COMMIT_HASH" >> "$GITHUB_OUTPUT"
+        run: echo "TRIGGER_ARCHIVEMATICA_IMAGE_TAG=$ECR_DOMAIN/stela:trigger_archivematica-$TAG_SUFFIX-$ABBREVIATED_COMMIT_HASH" >> "$GITHUB_OUTPUT"
       - name: Generate Metadata Attacher Lambda Image Tag
         id: generate_metadata_attacher_lambda_image_tag
-        run: echo "METADATA_ATTACHER_LAMBDA_IMAGE_TAG=$ECR_DOMAIN/stela:metadata_attacher-$BRANCH_TYPE-$ABBREVIATED_COMMIT_HASH" >> "$GITHUB_OUTPUT"
+        run: echo "METADATA_ATTACHER_LAMBDA_IMAGE_TAG=$ECR_DOMAIN/stela:metadata_attacher-$TAG_SUFFIX-$ABBREVIATED_COMMIT_HASH" >> "$GITHUB_OUTPUT"
