@@ -1,3 +1,5 @@
+# Monorepo Dockerfile - must be built from repository root:
+#   docker build -f packages/metadata_attacher/Dockerfile .
 FROM public.ecr.aws/lambda/nodejs:24 as builder
 WORKDIR /usr/local/apps/stela/
 
@@ -22,8 +24,8 @@ WORKDIR ${LAMBDA_TASK_ROOT}
 RUN mkdir /etc/ca-certificates
 RUN echo -e $AWS_RDS_CERT_BUNDLE > /etc/ca-certificates/rds-us-west-2-ca-bundle.pem
 
-COPY --from=builder /usr/local/apps/stela/packages/access_copy_attacher/dist ./packages/access_copy_attacher/dist
-COPY --from=builder /usr/local/apps/stela/packages/access_copy_attacher/package.json ./packages/access_copy_attacher/package.json
+COPY --from=builder /usr/local/apps/stela/packages/metadata_attacher/dist ./packages/metadata_attacher/dist
+COPY --from=builder /usr/local/apps/stela/packages/metadata_attacher/package.json ./packages/metadata_attacher/package.json
 COPY --from=builder /usr/local/apps/stela/packages/logger/dist ./packages/logger/dist
 COPY --from=builder /usr/local/apps/stela/packages/logger/package.json ./packages/logger/package.json
 COPY --from=builder /usr/local/apps/stela/packages/s3-utils/dist ./packages/s3-utils/dist
@@ -36,6 +38,6 @@ COPY --from=builder /usr/local/apps/stela/package.json ./package.json
 COPY --from=builder /usr/local/apps/stela/package-lock.json ./package-lock.json
 
 RUN npm cache clean --force
-RUN npm install --workspace @stela/access_copy_attacher
+RUN npm install --workspace @stela/metadata_attacher
 
-CMD ["packages/access_copy_attacher/dist/index.handler"]
+CMD ["packages/metadata_attacher/dist/index.handler"]

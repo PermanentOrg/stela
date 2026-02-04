@@ -160,7 +160,7 @@ To do so:
 1. Create a new workspace to represent this service. It should have its own directory under `packages`.
 2. Add your workspace to the workspaces array in the top-level package.json
 3. Implement your service within the new workspace
-4. Create a Dockerfile called `Dockerfile.<service_name>` defining a docker image from which a container running your service can be built. Use existing Dockerfiles for lambdas (such as Dockerfile.trigger_archivematica) or crons (such as Dockerfile.thumbnail_refresh) as a guide.
+4. Create a Dockerfile at `packages/<service_name>/Dockerfile` defining a docker image from which a container running your service can be built. Use existing Dockerfiles for lambdas (such as `packages/trigger_archivematica/Dockerfile`) or crons (such as `packages/thumbnail_refresh/Dockerfile`) as a guide.
 5. In `terraform/test_cluster` add a terraform file defining your new cron job or lambda and its dependencies (crons don't tend to have dependencies, but lambdas will usually have at least an SQS queue that triggers the lambda). Use existing an existing cron or lambda definition as a guide. Be sure to define a data block corresponding to your service so Terraform can see what image your service is running on future deploys
 6. If your service uses new environment variables, add them to `variables.tf`, and add the correct values for each environment in our [Terraform Cloud](https://app.terraform.io/app/PermanentOrg/workspaces). If you're adding a cron and any of your new environment variables are secrets, add them also to `secrets.tf`.
 7. Add the name of your service's image to `required_dev_images` and `required_staging_images` in `locals.tf`. Also update the `current_kubernetes_images` and `current_lambda_images` definitions to include your service's image.
@@ -174,7 +174,7 @@ To do so:
 1. Build the lambda image
 
 ```bash
-docker build --platform linux/amd64 -t <LAMBDA NAME>:test -f Dockerfile.<LAMBDA NAME> .
+docker build --platform linux/amd64 -t <LAMBDA NAME>:test -f packages/<LAMBDA NAME>/Dockerfile .
 ```
 
 2. Run the lambda container. Add additional --env arguments as needed. Note that the `CLOUDFRONT_PRIVATE_KEY` required

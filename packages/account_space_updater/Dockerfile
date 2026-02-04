@@ -1,3 +1,5 @@
+# Monorepo Dockerfile - must be built from repository root:
+#   docker build -f packages/account_space_updater/Dockerfile .
 FROM public.ecr.aws/lambda/nodejs:24 as builder
 WORKDIR /usr/local/apps/stela/
 

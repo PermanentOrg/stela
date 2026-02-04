@@ -1,3 +1,5 @@
+# Monorepo Dockerfile - must be built from repository root:
+#   docker build -f packages/api/Dockerfile .
 FROM node:24-alpine AS builder
 WORKDIR /usr/local/apps/stela/
 
@@ -18,16 +20,25 @@ ARG AWS_RDS_CERT_BUNDLE
 
 WORKDIR /usr/local/apps/stela/
 
+ENV NEW_RELIC_NO_CONFIG_FILE=true
+ENV NEW_RELIC_DISTRIBUTED_TRACING_ENABLED=true
+ENV NEW_RELIC_LOG=stdout
+
 RUN mkdir /etc/ca-certificates
 RUN echo -e $AWS_RDS_CERT_BUNDLE > /etc/ca-certificates/rds-us-west-2-ca-bundle.pem
 
-COPY --from=builder /usr/local/apps/stela/packages/thumbnail_refresh/dist ./packages/thumbnail_refresh/dist
-COPY --from=builder /usr/local/apps/stela/packages/thumbnail_refresh/package.json ./packages/thumbnail_refresh/package.json
+COPY --from=builder /usr/local/apps/stela/packages/api/dist ./packages/api/dist
+COPY --from=builder /usr/local/apps/stela/packages/api/package.json ./packages/api/package.json
 COPY --from=builder /usr/local/apps/stela/packages/logger/dist ./packages/logger/dist
 COPY --from=builder /usr/local/apps/stela/packages/logger/package.json ./packages/logger/package.json
+COPY --from=builder /usr/local/apps/stela/packages/permanent_models/dist ./packages/permanent_models/dist
+COPY --from=builder /usr/local/apps/stela/packages/permanent_models/package.json ./packages/permanent_models/package.json
 COPY --from=builder /usr/local/apps/stela/package.json ./package.json
 COPY --from=builder /usr/local/apps/stela/package-lock.json ./package-lock.json
 
-RUN npm install --workspace @stela/thumbnail_refresh
+RUN npm install --workspace @stela/api
 
-CMD node packages/thumbnail_refresh/dist/index.js
+ENV PORT=80
+EXPOSE 80
+
+CMD node packages/api/dist/index.js

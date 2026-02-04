@@ -1,3 +1,5 @@
+# Monorepo Dockerfile - must be built from repository root:
+#   docker build -f packages/record_thumbnail_attacher/Dockerfile .
 FROM public.ecr.aws/lambda/nodejs:24 as builder
 WORKDIR /usr/local/apps/stela/
 
@@ -22,19 +24,17 @@ WORKDIR ${LAMBDA_TASK_ROOT}
 RUN mkdir /etc/ca-certificates
 RUN echo -e $AWS_RDS_CERT_BUNDLE > /etc/ca-certificates/rds-us-west-2-ca-bundle.pem
 
-COPY --from=builder /usr/local/apps/stela/packages/trigger_archivematica/dist ./packages/trigger_archivematica/dist
-COPY --from=builder /usr/local/apps/stela/packages/trigger_archivematica/package.json ./packages/trigger_archivematica/package.json
+COPY --from=builder /usr/local/apps/stela/packages/record_thumbnail_attacher/dist ./packages/record_thumbnail_attacher/dist
+COPY --from=builder /usr/local/apps/stela/packages/record_thumbnail_attacher/package.json ./packages/record_thumbnail_attacher/package.json
 COPY --from=builder /usr/local/apps/stela/packages/logger/dist ./packages/logger/dist
 COPY --from=builder /usr/local/apps/stela/packages/logger/package.json ./packages/logger/package.json
-COPY --from=builder /usr/local/apps/stela/packages/archivematica-utils/dist ./packages/archivematica-utils/dist
-COPY --from=builder /usr/local/apps/stela/packages/archivematica-utils/package.json ./packages/archivematica-utils/package.json
-COPY --from=builder /usr/local/apps/stela/packages/event_utils/dist ./packages/event_utils/dist
-COPY --from=builder /usr/local/apps/stela/packages/event_utils/package.json ./packages/event_utils/package.json
 COPY --from=builder /usr/local/apps/stela/packages/s3-utils/dist ./packages/s3-utils/dist
 COPY --from=builder /usr/local/apps/stela/packages/s3-utils/package.json ./packages/s3-utils/package.json
+COPY --from=builder /usr/local/apps/stela/packages/archivematica-utils/dist ./packages/archivematica-utils/dist
+COPY --from=builder /usr/local/apps/stela/packages/archivematica-utils/package.json ./packages/archivematica-utils/package.json
 COPY --from=builder /usr/local/apps/stela/package.json ./package.json
 COPY --from=builder /usr/local/apps/stela/package-lock.json ./package-lock.json
 
-RUN npm install --workspace @stela/trigger_archivematica
+RUN npm install --workspace @stela/record_thumbnail_attacher
 
-CMD ["packages/trigger_archivematica/dist/index.handler"]
+CMD ["packages/record_thumbnail_attacher/dist/index.handler"]
