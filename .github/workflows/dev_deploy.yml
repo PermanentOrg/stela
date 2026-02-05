@@ -16,7 +16,7 @@ jobs:
   build_images:
     uses: ./.github/workflows/build.yml
     with:
-      publish: true
+      publish: 'true'
     secrets: inherit
 
   deploy:

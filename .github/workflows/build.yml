@@ -6,7 +6,7 @@ on:
       publish:
         description: 'Whether to publish images to ECR'
         required: true
-        type: boolean
+        type: string
 jobs:
   generate_image_tags:
     uses: ./.github/workflows/generate_image_tags.yml
@@ -47,14 +47,14 @@ jobs:
           IMAGE_TAG: ${{ needs.generate_image_tags.outputs[matrix.image_tag_var] }}
           AWS_RDS_CERT_BUNDLE: ${{ secrets.AWS_RDS_CERT_BUNDLE }}
       - name: AWS Login
-        if: github.event_name == 'workflow_call' && inputs.publish
+        if: github.event_name == 'workflow_call' && fromJSON(inputs.publish)
         run: aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin 364159549467.dkr.ecr.$AWS_REGION.amazonaws.com
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       - name: Publish Image to ECR
-        if: github.event_name == 'workflow_call' && inputs.publish
+        if: github.event_name == 'workflow_call' && fromJSON(inputs.publish)
         run: docker push $IMAGE_TAG
         env:
           IMAGE_TAG: ${{ needs.generate_image_tags.outputs[matrix.image_tag_var] }}
