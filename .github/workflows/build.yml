@@ -1,4 +1,4 @@
-name: Build deployable images
+name: Build
 on:
   pull_request:
   workflow_call:
@@ -13,17 +13,39 @@ jobs:
     uses: ./.github/workflows/generate_image_tags.yml
     secrets: inherit
 
-  build_api:
+  build:
+    name: ${{ matrix.package }}
     needs:
       - generate_image_tags
-    runs-on: ubuntu-24.04
-    env:
-      API_IMAGE_TAG: ${{ needs.generate_image_tags.outputs.API_IMAGE_TAG }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - package: api
+            image_tag_var: API_IMAGE_TAG
+          - package: archivematica_cleanup
+            image_tag_var: AM_CLEANUP_IMAGE_TAG
+          - package: record_thumbnail_attacher
+            image_tag_var: RECORD_THUMBNAIL_LAMBDA_IMAGE_TAG
+          - package: thumbnail_refresh
+            image_tag_var: THUMBNAIL_REFRESH_IMAGE_TAG
+          - package: file_url_refresh
+            image_tag_var: FILE_URL_REFRESH_IMAGE_TAG
+          - package: access_copy_attacher
+            image_tag_var: ACCESS_COPY_LAMBDA_IMAGE_TAG
+          - package: account_space_updater
+            image_tag_var: ACCOUNT_SPACE_UPDATE_IMAGE_TAG
+          - package: trigger_archivematica
+            image_tag_var: TRIGGER_ARCHIVEMATICA_IMAGE_TAG
+          - package: metadata_attacher
+            image_tag_var: METADATA_ATTACHER_LAMBDA_IMAGE_TAG
     steps:
       - uses: actions/checkout@v6
       - name: Build Image
-        run: docker build -t $API_IMAGE_TAG --build-arg="AWS_RDS_CERT_BUNDLE=$AWS_RDS_CERT_BUNDLE" -f packages/api/Dockerfile .
+        run: docker build -t $IMAGE_TAG --build-arg="AWS_RDS_CERT_BUNDLE=$AWS_RDS_CERT_BUNDLE" -f packages/${{ matrix.package }}/Dockerfile .
         env:
+          IMAGE_TAG: ${{ needs.generate_image_tags.outputs[matrix.image_tag_var] }}
           AWS_RDS_CERT_BUNDLE: ${{ secrets.AWS_RDS_CERT_BUNDLE }}
       - name: AWS Login
         if: github.event_name == 'workflow_call' && inputs.publish
@@ -34,178 +56,13 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       - name: Publish Image to ECR
         if: github.event_name == 'workflow_call' && inputs.publish
-        run: docker push $API_IMAGE_TAG
-  build_am_cleanup:
-    needs:
-      - generate_image_tags
-    runs-on: ubuntu-24.04
-    env:
-      AM_CLEANUP_IMAGE_TAG: ${{ needs.generate_image_tags.outputs.AM_CLEANUP_IMAGE_TAG }}
+        run: docker push $IMAGE_TAG
+        env:
+          IMAGE_TAG: ${{ needs.generate_image_tags.outputs[matrix.image_tag_var] }}
+
+  all-builds-passed:
+    name: All builds passed
+    needs: build
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
-      - name: Build Image
-        run: docker build -t $AM_CLEANUP_IMAGE_TAG -f packages/archivematica_cleanup/Dockerfile .
-      - name: AWS Login
-        if: github.event_name == 'workflow_call' && inputs.publish
-        run: aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin 364159549467.dkr.ecr.$AWS_REGION.amazonaws.com
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      - name: Publish Image to ECR
-        if: github.event_name == 'workflow_call' && inputs.publish
-        run: docker push $AM_CLEANUP_IMAGE_TAG
-  build_record_thumbnail_lambda:
-    needs:
-      - generate_image_tags
-    runs-on: ubuntu-24.04
-    env:
-      RECORD_THUMBNAIL_LAMBDA_IMAGE_TAG: ${{ needs.generate_image_tags.outputs.RECORD_THUMBNAIL_LAMBDA_IMAGE_TAG }}
-    steps:
-      - uses: actions/checkout@v6
-      - name: Build Image
-        run: docker build -t $RECORD_THUMBNAIL_LAMBDA_IMAGE_TAG --build-arg="AWS_RDS_CERT_BUNDLE=$AWS_RDS_CERT_BUNDLE" -f packages/record_thumbnail_attacher/Dockerfile .
-        env:
-          AWS_RDS_CERT_BUNDLE: ${{ secrets.AWS_RDS_CERT_BUNDLE }}
-      - name: AWS Login
-        if: github.event_name == 'workflow_call' && inputs.publish
-        run: aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin 364159549467.dkr.ecr.$AWS_REGION.amazonaws.com
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      - name: Publish Image to ECR
-        if: github.event_name == 'workflow_call' && inputs.publish
-        run: docker push $RECORD_THUMBNAIL_LAMBDA_IMAGE_TAG
-  build_thumbnail_refresh:
-    needs:
-      - generate_image_tags
-    runs-on: ubuntu-24.04
-    env:
-      THUMBNAIL_REFRESH_IMAGE_TAG: ${{ needs.generate_image_tags.outputs.THUMBNAIL_REFRESH_IMAGE_TAG }}
-    steps:
-      - uses: actions/checkout@v6
-      - name: Build Image
-        run: docker build -t $THUMBNAIL_REFRESH_IMAGE_TAG --build-arg="AWS_RDS_CERT_BUNDLE=$AWS_RDS_CERT_BUNDLE" -f packages/thumbnail_refresh/Dockerfile .
-        env:
-          AWS_RDS_CERT_BUNDLE: ${{ secrets.AWS_RDS_CERT_BUNDLE }}
-      - name: AWS Login
-        if: github.event_name == 'workflow_call' && inputs.publish
-        run: aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin 364159549467.dkr.ecr.$AWS_REGION.amazonaws.com
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      - name: Publish Image to ECR
-        if: github.event_name == 'workflow_call' && inputs.publish
-        run: docker push $THUMBNAIL_REFRESH_IMAGE_TAG
-  build_file_url_refresh:
-    needs:
-      - generate_image_tags
-    runs-on: ubuntu-24.04
-    env:
-      FILE_URL_REFRESH_IMAGE_TAG: ${{ needs.generate_image_tags.outputs.FILE_URL_REFRESH_IMAGE_TAG }}
-    steps:
-      - uses: actions/checkout@v6
-      - name: Build Image
-        run: docker build -t $FILE_URL_REFRESH_IMAGE_TAG --build-arg="AWS_RDS_CERT_BUNDLE=$AWS_RDS_CERT_BUNDLE" -f packages/file_url_refresh/Dockerfile .
-        env:
-          AWS_RDS_CERT_BUNDLE: ${{ secrets.AWS_RDS_CERT_BUNDLE }}
-      - name: AWS Login
-        if: github.event_name == 'workflow_call' && inputs.publish
-        run: aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin 364159549467.dkr.ecr.$AWS_REGION.amazonaws.com
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      - name: Publish Image to ECR
-        if: github.event_name == 'workflow_call' && inputs.publish
-        run: docker push $FILE_URL_REFRESH_IMAGE_TAG
-  build_access_copy_lambda:
-    needs:
-      - generate_image_tags
-    runs-on: ubuntu-24.04
-    env:
-      ACCESS_COPY_LAMBDA_IMAGE_TAG: ${{ needs.generate_image_tags.outputs.ACCESS_COPY_LAMBDA_IMAGE_TAG }}
-    steps:
-      - uses: actions/checkout@v6
-      - name: Build Image
-        run: docker build -t $ACCESS_COPY_LAMBDA_IMAGE_TAG --build-arg="AWS_RDS_CERT_BUNDLE=$AWS_RDS_CERT_BUNDLE" -f packages/access_copy_attacher/Dockerfile .
-        env:
-          AWS_RDS_CERT_BUNDLE: ${{ secrets.AWS_RDS_CERT_BUNDLE }}
-      - name: AWS Login
-        if: github.event_name == 'workflow_call' && inputs.publish
-        run: aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin 364159549467.dkr.ecr.$AWS_REGION.amazonaws.com
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      - name: Publish Image to ECR
-        if: github.event_name == 'workflow_call' && inputs.publish
-        run: docker push $ACCESS_COPY_LAMBDA_IMAGE_TAG
-  build_account_space_updater:
-    needs:
-      - generate_image_tags
-    runs-on: ubuntu-24.04
-    env:
-      ACCOUNT_SPACE_UPDATE_IMAGE_TAG: ${{ needs.generate_image_tags.outputs.ACCOUNT_SPACE_UPDATE_IMAGE_TAG }}
-    steps:
-      - uses: actions/checkout@v6
-      - name: Build Image
-        run: docker build -t $ACCOUNT_SPACE_UPDATE_IMAGE_TAG --build-arg="AWS_RDS_CERT_BUNDLE=$AWS_RDS_CERT_BUNDLE" -f packages/account_space_updater/Dockerfile .
-        env:
-          AWS_RDS_CERT_BUNDLE: ${{ secrets.AWS_RDS_CERT_BUNDLE }}
-      - name: AWS Login
-        if: github.event_name == 'workflow_call' && inputs.publish
-        run: aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin 364159549467.dkr.ecr.$AWS_REGION.amazonaws.com
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      - name: Publish Image to ECR
-        if: github.event_name == 'workflow_call' && inputs.publish
-        run: docker push $ACCOUNT_SPACE_UPDATE_IMAGE_TAG
-  build_trigger_archivematica:
-    needs:
-      - generate_image_tags
-    runs-on: ubuntu-24.04
-    env:
-      TRIGGER_ARCHIVEMATICA_IMAGE_TAG: ${{ needs.generate_image_tags.outputs.TRIGGER_ARCHIVEMATICA_IMAGE_TAG }}
-    steps:
-      - uses: actions/checkout@v6
-      - name: Build Image
-        run: docker build -t $TRIGGER_ARCHIVEMATICA_IMAGE_TAG --build-arg="AWS_RDS_CERT_BUNDLE=$AWS_RDS_CERT_BUNDLE" -f packages/trigger_archivematica/Dockerfile .
-        env:
-          AWS_RDS_CERT_BUNDLE: ${{ secrets.AWS_RDS_CERT_BUNDLE }}
-      - name: AWS Login
-        if: github.event_name == 'workflow_call' && inputs.publish
-        run: aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin 364159549467.dkr.ecr.$AWS_REGION.amazonaws.com
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      - name: Publish Image to ECR
-        if: github.event_name == 'workflow_call' && inputs.publish
-        run: docker push $TRIGGER_ARCHIVEMATICA_IMAGE_TAG
-  build_metadata_attacher:
-    needs:
-      - generate_image_tags
-    runs-on: ubuntu-24.04
-    env:
-      METADATA_ATTACHER_LAMBDA_IMAGE_TAG: ${{ needs.generate_image_tags.outputs.METADATA_ATTACHER_LAMBDA_IMAGE_TAG }}
-    steps:
-      - uses: actions/checkout@v6
-      - name: Build Image
-        run: docker build -t $METADATA_ATTACHER_LAMBDA_IMAGE_TAG --build-arg="AWS_RDS_CERT_BUNDLE=$AWS_RDS_CERT_BUNDLE" -f packages/metadata_attacher/Dockerfile .
-        env:
-          AWS_RDS_CERT_BUNDLE: ${{ secrets.AWS_RDS_CERT_BUNDLE }}
-      - name: AWS Login
-        if: github.event_name == 'workflow_call' && inputs.publish
-        run: aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin 364159549467.dkr.ecr.$AWS_REGION.amazonaws.com
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      - name: Publish Image to ECR
-        if: github.event_name == 'workflow_call' && inputs.publish
-        run: docker push $METADATA_ATTACHER_LAMBDA_IMAGE_TAG
+      - run: echo "All builds passed"
