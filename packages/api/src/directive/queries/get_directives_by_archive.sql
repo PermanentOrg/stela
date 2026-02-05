@@ -6,13 +6,13 @@ SELECT
   directive.updated_dt AS "updatedDt",
   directive.note,
   directive.execution_dt AS "executionDt",
-  jsonb_build_object(
+  JSONB_BUILD_OBJECT(
     'email',
     account.primaryemail,
     'name',
     account.fullname
   ) AS steward,
-  jsonb_build_object(
+  JSONB_BUILD_OBJECT(
     'directiveTriggerId',
     directive_trigger.directive_trigger_id,
     'directiveId',

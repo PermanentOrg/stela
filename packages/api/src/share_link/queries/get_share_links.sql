@@ -5,14 +5,14 @@ SELECT
   shareby_url.expiresdt AS "expirationTimestamp",
   shareby_url.createddt AS "createdAt",
   shareby_url.updateddt AS "updatedAt",
-  substring(
-    shareby_url.defaultaccessrole FROM (length('access.role.') + 1)
+  SUBSTRING(
+    shareby_url.defaultaccessrole FROM (LENGTH('access.role.') + 1)
   ) AS "permissionsLevel",
   CASE
     WHEN shareby_url.maxuses = 0 THEN NULL
     ELSE shareby_url.maxuses
   END AS "maxUses",
-  coalesce(folder_link.recordid, folder_link.folderid) AS "itemId",
+  COALESCE(folder_link.recordid, folder_link.folderid) AS "itemId",
   CASE
     WHEN folder_link.recordid IS NOT NULL THEN 'record'
     ELSE 'folder'
@@ -22,7 +22,7 @@ SELECT
     WHEN shareby_url.autoapprovetoggle = 1 THEN 'account'
     ELSE 'approval'
   END AS "accessRestrictions",
-  json_build_object(
+  JSON_BUILD_OBJECT(
     'id',
     shareby_url.byaccountid::text,
     'name',
@@ -38,8 +38,8 @@ INNER JOIN
   ON shareby_url.folder_linkid = folder_link.folder_linkid
 WHERE
   (
-    shareby_url.shareby_urlid::text = any(:shareLinkIds)
-    OR shareby_url.urltoken = any(:shareTokens)
+    shareby_url.shareby_urlid::text = ANY(:shareLinkIds)
+    OR shareby_url.urltoken = ANY(:shareTokens)
   )
   AND (
     account.primaryemail = :email

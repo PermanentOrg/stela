@@ -7,7 +7,7 @@ WITH all_archives AS (
     archive.public,
     archive.publicdt AS "publicAt",
     archive.allowpublicdownload AS "allowPublicDownload",
-    jsonb_build_object(
+    JSONB_BUILD_OBJECT(
       'width200', archive.thumburl200,
       'width500', archive.thumburl500,
       'width1000', archive.thumburl1000,
@@ -21,7 +21,7 @@ WITH all_archives AS (
     CASE
       WHEN :isAdmin
         THEN
-          jsonb_build_object(
+          JSONB_BUILD_OBJECT(
             'name', owner_account.fullname,
             'email', owner_account.primaryemail,
             'phoneNumber', owner_account.primaryphone
@@ -29,11 +29,11 @@ WITH all_archives AS (
       ELSE NULL
     END AS owner,
     archive.payeraccountid AS "payerAccountId",
-    row_number() OVER (
+    ROW_NUMBER() OVER (
       ORDER BY
-        ts_rank(
-          to_tsvector('english', basic_profile_item.string1),
-          plainto_tsquery('english', :searchQuery)
+        TS_RANK(
+          TO_TSVECTOR('english', basic_profile_item.string1),
+          PLAINTO_TSQUERY('english', :searchQuery)
         ) DESC,
         basic_profile_item.string1
     ) AS rank
@@ -70,8 +70,8 @@ WITH all_archives AS (
     account AS owner_account
     ON owner_account_archive.accountid = owner_account.accountid
   WHERE
-    plainto_tsquery('english', :searchQuery)
-    @@ to_tsvector('english', basic_profile_item.string1)
+    PLAINTO_TSQUERY('english', :searchQuery)
+    @@ TO_TSVECTOR('english', basic_profile_item.string1)
     AND archive.status != 'status.generic.deleted'
     AND (
       (archive.public IS NOT NULL AND archive.public)
@@ -97,7 +97,7 @@ cursor AS (
 ),
 
 total_pages AS (
-  SELECT ceiling(count(*) / :pageSize::numeric)::int AS total_pages
+  SELECT CEILING(COUNT(*) / :pageSize::numeric)::int AS total_pages
   FROM all_archives
 )
 
@@ -120,6 +120,6 @@ SELECT
   (SELECT total_pages.total_pages FROM total_pages) AS "totalPages"
 FROM all_archives
 WHERE
-  rank > coalesce((SELECT cursor.rank FROM cursor), 0)
+  rank > COALESCE((SELECT cursor.rank FROM cursor), 0)
 ORDER BY rank ASC
 LIMIT :pageSize;
