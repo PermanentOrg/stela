@@ -4,6 +4,17 @@
 
 # Stela: A Monolithic Typescript Backend for Permanent.org
 
+## Prerequisites
+
+Stela is designed to run alongside the [devenv](https://github.com/PermanentOrg/devenv) development environment. Before running the API server or tests locally, you must have devenv set up and running.
+
+The devenv provides:
+- The shared Docker network (`permanent_default`) that stela containers connect to
+- The PostgreSQL database
+- Other dependent services (nginx load balancer, back-end PHP server, etc.)
+
+See the [devenv README](https://github.com/PermanentOrg/devenv#readme) for setup instructions.
+
 ## Documentation
 
 Historically, documentation of this repo's API server was kept in https://github.com/PermanentOrg/stela/blob/main/API.md.
@@ -18,23 +29,23 @@ Then open redoc-static.html to view the docs in browser. Alternatively, see the 
 
 ## Setup
 
-1. Create a `.env` file
+1. Set up devenv first (see [Prerequisites](#prerequisites)).
+
+2. Create a `.env` file
 
 ```bash
 cp .env.template .env
 ```
 
-Update values as needed (see [Environment Variables](#environment-variables).
+Update values as needed (see [Environment Variables](#environment-variables)).
 
-2. Install the Node.js version specified in [.node-version](https://github.com/PermanentOrg/stela/blob/main/.node-version) (doing this using [nvm](https://github.com/nvm-sh/nvm) is recommended).
+3. Install the Node.js version specified in [.node-version](https://github.com/PermanentOrg/stela/blob/main/.node-version) (using [nvm](https://github.com/nvm-sh/nvm) is recommended).
 
-3. Install dependencies
+4. Install dependencies
 
 ```bash
 npm install
 ```
-
-4. `psql` needs to be installed for running tests
 
 ## Environment Variables
 
@@ -86,13 +97,15 @@ npm run lint
 
 ## Testing
 
-Make sure the local database from `devenv`'s docker compose is running
+Stela tests require the devenv Docker environment to be running, as stela's test containers connect to devenv's database via a shared Docker network.
+
+First, ensure devenv is running (from the `devenv` directory):
 
 ```bash
 docker compose up -d
 ```
 
-then run tests with
+Then, from the stela directory, run tests with
 
 ```bash
 npm run test
@@ -115,23 +128,27 @@ For running tests on a single file in `stela`, you can make an adjustment to the
 
 ## Running the API Server Locally
 
-Preferred method: From the `devenv` repo, run
+The API server should be run via devenv, which manages stela alongside the database and other services.
+
+From the `devenv` directory, run:
 
 ```bash
 docker compose up -d
 ```
 
-or if you've added or updated dependencies, run
+If you've added or updated stela dependencies, rebuild the stela container:
 
 ```bash
 docker compose up -d --build stela
 ```
 
-Outside a container: Run
+**Running outside a container (not recommended):** If you have a local PostgreSQL instance and all environment variables configured, you can run:
 
 ```bash
 npm run start -w @stela/api
 ```
+
+However, running via devenv is preferred as it ensures all services are properly networked.
 
 ## Adding a New Service
 
@@ -173,10 +190,10 @@ docker run --platform linux/amd64 -p 9001:8080 --env DATABASE_URL=postgres://pos
 docker ps
 ```
 
-4. Connect to the local env docker network
+4. Connect to the devenv docker network (devenv must be running)
 
 ```bash
-docker network connect devenv_default <YOUR CONTAINER NAME>
+docker network connect permanent_default <YOUR CONTAINER NAME>
 ```
 
 5. Trigger the lambda
