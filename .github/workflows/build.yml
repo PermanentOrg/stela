@@ -41,6 +41,11 @@ jobs:
             image_tag_var: METADATA_ATTACHER_LAMBDA_IMAGE_TAG
     steps:
       - uses: actions/checkout@v6
+      - name: Debug context
+        run: |
+          echo "Event name: ${{ github.event_name }}"
+          echo "Publish input: ${{ inputs.publish }}"
+          echo "Publish input type: $(echo '${{ inputs.publish }}' | jq -r 'type')"
       - name: Build Image
         run: docker build -t $IMAGE_TAG --build-arg="AWS_RDS_CERT_BUNDLE=$AWS_RDS_CERT_BUNDLE" -f packages/${{ matrix.package }}/Dockerfile .
         env:
