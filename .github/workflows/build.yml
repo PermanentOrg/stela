@@ -5,9 +5,8 @@ on:
     inputs:
       publish:
         description: 'Whether to publish images to ECR'
-        required: false
+        required: true
         type: boolean
-        default: true
 jobs:
   generate_image_tags:
     uses: ./.github/workflows/generate_image_tags.yml
