@@ -83,14 +83,19 @@ record:
       format: date-time
     imageRatio:
       type: number
-    thumbUrl200:
-      type: string
-    thumbUrl500:
-      type: string
-    thumbUrl1000:
-      type: string
-    thumbUrl2000:
-      type: string
+    thumbnailUrls:
+      type: object
+      properties:
+        200:
+          type: string
+        256:
+          type: string
+        500:
+          type: string
+        1000:
+          type: string
+        2000:
+          type: string
     status:
       type: string
     type:

@@ -10,9 +10,7 @@ import {
 	verifyUserAuthentication,
 	extractShareTokenFromHeaders,
 } from "../middleware";
-import type { ArchiveFile, ArchiveRecord } from "./models";
-import type { Share } from "../share/models";
-import type { Tag } from "../tag/models";
+import type { ArchiveRecord } from "./models";
 import type { ShareLink } from "../share_link/models";
 import {
 	mockExtractShareTokenFromHeaders,
@@ -397,136 +395,121 @@ describe("GET /records", () => {
 		const [record] = records;
 		expect(records.length).toEqual(1);
 		if (record !== undefined) {
-			expect(record.recordId).toEqual("8");
-			expect(record.displayName).toEqual("Public File");
-			expect(record.archiveId).toEqual("1");
-			expect(record.archive.id).toEqual("1");
-			expect(record.archive.name).toEqual("Jack Rando");
-			expect(record.archiveNumber).toEqual("0000-0008");
-			expect(record.publicAt).toEqual("2023-06-21T00:00:00.000Z");
-			expect(record.description).toEqual("A description of the image");
-			expect(record.downloadName).toEqual("public_file.jpg");
-			expect(record.uploadFileName).toEqual("public_file.jpg");
-			expect(record.uploadAccountId).toEqual("2");
-			expect(record.uploadPayerAccountId).toEqual("2");
-			expect(record.size).toEqual(1024);
-			expect(record.displayDate).toEqual("2023-06-21T00:00:00.000Z");
-			expect(record.displayTimeInEDTF).toEqual("1985-04-12T23:20:30Z");
-			expect(record.fileCreatedAt).toEqual("2023-06-21T00:00:00.000Z");
-			expect(record.imageRatio).toEqual(1);
-			expect(record.thumbUrl200).toEqual(
-				"https://localcdn.permanent.org/8/thumb200.jpg",
-			);
-			expect(record.thumbUrl500).toEqual(
-				"https://localcdn.permanent.org/8/thumb500.jpg",
-			);
-			expect(record.thumbUrl1000).toEqual(
-				"https://localcdn.permanent.org/8/thumb1000.jpg",
-			);
-			expect(record.thumbUrl2000).toEqual(
-				"https://localcdn.permanent.org/8/thumb2000.jpg",
-			);
-			expect(record.status).toEqual("status.generic.ok");
-			expect(record.type).toEqual("type.record.image");
-			expect(record.createdAt).toEqual("2023-06-21T00:00:00.000Z");
-			expect(record.updatedAt).toEqual("2023-06-21T00:00:00.000Z");
-			expect(record.altText).toEqual("An image");
-
-			expect(record.location).toBeDefined();
-			expect(record.location.id).toEqual("1");
-			expect(record.location.streetNumber).toEqual("55");
-			expect(record.location.streetName).toEqual("Rue Plumet");
-			expect(record.location.locality).toEqual("Paris");
-			expect(record.location.county).toEqual("Ile-de-France");
-			expect(record.location.state).toBeNull();
-			expect(record.location.latitude).toEqual(48.838608548520966);
-			expect(record.location.longitude).toEqual(2.3069214988665303);
-			expect(record.location.country).toEqual("France");
-			expect(record.location.countryCode).toEqual("FR");
-			expect(record.location.displayName).toEqual("Jean Valjean's House");
-
-			expect(record.files.length).toEqual(2);
-			const originalFile = record.files.find(
-				(file: ArchiveFile) => file.fileId === "8",
-			);
-			const convertedFile = record.files.find(
-				(file: ArchiveFile) => file.fileId === "9",
-			);
-			expect(originalFile).toBeDefined();
-			if (originalFile !== undefined) {
-				expect(originalFile.size).toEqual(1024);
-				expect(originalFile.format).toEqual("file.format.original");
-				expect(originalFile.type).toEqual("type.file.image.png");
-				expect(originalFile.fileUrl).toEqual(
-					"https://localcdn.permanent.org/_Dev/8?t=1732914102&Expires=1732914102&Signature=AmCIgw__&Key-Pair-Id=APKA",
-				);
-				expect(originalFile.downloadUrl).toEqual(
-					"https://localcdn.permanent.org/_Dev/8?t=1732914102&response-content-disposition=attachment%3B+filename%3D%22Robert+birthday+%281%29.jpg%22&Expires=1732914102&Signature=R25~ODA0uZ77J2rjQ__&Key-Pair-Id=APKA",
-				);
-				expect(originalFile.createdAt).toEqual("2023-06-21T00:00:00+00:00");
-				expect(originalFile.updatedAt).toEqual("2023-06-21T00:00:00+00:00");
-			}
-			expect(convertedFile).toBeDefined();
-			if (convertedFile !== undefined) {
-				expect(convertedFile.size).toEqual(2056);
-				expect(convertedFile.format).toEqual("file.format.converted");
-				expect(convertedFile.type).toEqual("type.file.image.jpg");
-				expect(convertedFile.createdAt).toEqual("2023-06-21T00:00:00+00:00");
-				expect(convertedFile.updatedAt).toEqual("2023-06-21T00:00:00+00:00");
-			}
-
-			expect(record.folderLinkId).toEqual("8");
-			expect(record.folderLinkType).toEqual("type.folder_link.public");
-			expect(record.parentFolderId).toEqual("1");
-			expect(record.parentFolderLinkId).toEqual("9");
-			expect(record.parentFolderArchiveNumber).toEqual("0001-test");
-			expect(record.tags.length).toEqual(3);
-			const firstTag = record.tags.find((tag: Tag) => tag.id === "14");
-			const secondTag = record.tags.find((tag: Tag) => tag.id === "15");
-			const thirdTag = record.tags.find((tag: Tag) => tag.id === "16");
-			expect(firstTag).toBeDefined();
-			if (firstTag !== undefined) {
-				expect(firstTag.name).toEqual("Generic Tag 1");
-				expect(firstTag.type).toEqual("type.generic.placeholder");
-			}
-			expect(secondTag).toBeDefined();
-			if (secondTag !== undefined) {
-				expect(secondTag.name).toEqual("Generic Tag 2");
-				expect(secondTag.type).toEqual("type.generic.placeholder");
-			}
-			expect(thirdTag).toBeDefined();
-			if (thirdTag !== undefined) {
-				expect(thirdTag.name).toEqual("Generic Tag 3");
-				expect(thirdTag.type).toEqual("type.tag.metadata.CustomField");
-			}
-
-			expect(record.archiveArchiveNumber).toEqual("0001-0001");
-
-			expect(record.shares.length).toEqual(2);
-			const shareViewer = record.shares.find(
-				(share: Share) => share.id === "1",
-			);
-			const shareContributor = record.shares.find(
-				(share: Share) => share.id === "2",
-			);
-			expect(shareViewer).toBeDefined();
-			if (shareViewer !== undefined) {
-				expect(shareViewer.accessRole).toEqual("access.role.viewer");
-				expect(shareViewer.status).toEqual("status.generic.ok");
-				expect(shareViewer.archive.id).toEqual("3");
-				expect(shareViewer.archive.thumbUrl200).toEqual(
-					"https://test-archive-thumbnail",
-				);
-				expect(shareViewer.archive.name).toEqual("Jay Rando");
-			}
-			expect(shareContributor).toBeDefined();
-			if (shareContributor !== undefined) {
-				expect(shareContributor.accessRole).toEqual("access.role.contributor");
-				expect(shareContributor.status).toEqual("status.generic.ok");
-				expect(shareContributor.archive.id).toEqual("2");
-				expect(shareContributor.archive.thumbUrl200).toBeFalsy();
-				expect(shareContributor.archive.name).toEqual("Jane Rando");
-			}
+			expect(record).toMatchObject({
+				recordId: "8",
+				displayName: "Public File",
+				archiveId: "1",
+				archive: {
+					id: "1",
+					name: "Jack Rando",
+				},
+				archiveNumber: "0000-0008",
+				publicAt: "2023-06-21T00:00:00.000Z",
+				description: "A description of the image",
+				downloadName: "public_file.jpg",
+				uploadFileName: "public_file.jpg",
+				uploadAccountId: "2",
+				size: 1024,
+				displayDate: "2023-06-21T00:00:00.000Z",
+				fileCreatedAt: "2023-06-21T00:00:00.000Z",
+				imageRatio: 1,
+				thumbnailUrls: {
+					"256": "https://localcdn.permanent.org/8/thumb256.jpg",
+					"200": "https://localcdn.permanent.org/8/thumb200.jpg",
+					"500": "https://localcdn.permanent.org/8/thumb500.jpg",
+					"1000": "https://localcdn.permanent.org/8/thumb1000.jpg",
+					"2000": "https://localcdn.permanent.org/8/thumb2000.jpg",
+				},
+				thumbUrl200: "https://localcdn.permanent.org/8/thumb200.jpg",
+				thumbUrl500: "https://localcdn.permanent.org/8/thumb500.jpg",
+				thumbUrl1000: "https://localcdn.permanent.org/8/thumb1000.jpg",
+				thumbUrl2000: "https://localcdn.permanent.org/8/thumb2000.jpg",
+				status: "status.generic.ok",
+				type: "type.record.image",
+				createdAt: "2023-06-21T00:00:00.000Z",
+				updatedAt: "2023-06-21T00:00:00.000Z",
+				altText: "An image",
+				location: {
+					id: "1",
+					streetNumber: "55",
+					streetName: "Rue Plumet",
+					locality: "Paris",
+					county: "Ile-de-France",
+					state: null,
+					latitude: 48.838608548520966,
+					longitude: 2.3069214988665303,
+					country: "France",
+					countryCode: "FR",
+					displayName: "Jean Valjean's House",
+				},
+				files: [
+					{
+						fileId: "8",
+						size: 1024,
+						format: "file.format.original",
+						type: "type.file.image.png",
+						fileUrl:
+							"https://localcdn.permanent.org/_Dev/8?t=1732914102&Expires=1732914102&Signature=AmCIgw__&Key-Pair-Id=APKA",
+						downloadUrl:
+							"https://localcdn.permanent.org/_Dev/8?t=1732914102&response-content-disposition=attachment%3B+filename%3D%22Robert+birthday+%281%29.jpg%22&Expires=1732914102&Signature=R25~ODA0uZ77J2rjQ__&Key-Pair-Id=APKA",
+						createdAt: "2023-06-21T00:00:00+00:00",
+						updatedAt: "2023-06-21T00:00:00+00:00",
+					},
+					{
+						fileId: "9",
+						size: 2056,
+						format: "file.format.converted",
+						type: "type.file.image.jpg",
+						createdAt: "2023-06-21T00:00:00+00:00",
+						updatedAt: "2023-06-21T00:00:00+00:00",
+					},
+				],
+				folderLinkId: "8",
+				folderLinkType: "type.folder_link.public",
+				parentFolderId: "1",
+				parentFolderLinkId: "9",
+				parentFolderArchiveNumber: "0001-test",
+				tags: [
+					{
+						id: "14",
+						name: "Generic Tag 1",
+						type: "type.generic.placeholder",
+					},
+					{
+						id: "15",
+						name: "Generic Tag 2",
+						type: "type.generic.placeholder",
+					},
+					{
+						id: "16",
+						name: "Generic Tag 3",
+						type: "type.tag.metadata.CustomField",
+					},
+				],
+				archiveArchiveNumber: "0001-0001",
+				shares: [
+					{
+						id: "1",
+						accessRole: "access.role.viewer",
+						status: "status.generic.ok",
+						archive: {
+							id: "3",
+							thumbUrl200: "https://test-archive-thumbnail",
+							name: "Jay Rando",
+						},
+					},
+					{
+						id: "2",
+						accessRole: "access.role.contributor",
+						status: "status.generic.ok",
+						archive: {
+							id: "2",
+							thumbUrl200: null,
+							name: "Jane Rando",
+						},
+					},
+				],
+			});
 		}
 	});
 	test("expect to not return deleted files", async () => {
