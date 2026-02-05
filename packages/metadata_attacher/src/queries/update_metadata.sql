@@ -17,7 +17,7 @@ new_tag_names AS (
 	SELECT
 		name
 	FROM
-		unnest(:fileTags) AS file_tags(name)
+		UNNEST(:fileTags) AS file_tags(name)
 	WHERE
 		name NOT IN (SELECT name FROM existing_tags)
 ),

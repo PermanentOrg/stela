@@ -20,7 +20,7 @@ RETURNING
   updated_dt AS "updatedDt",
   (
     SELECT
-      jsonb_build_object(
+      JSONB_BUILD_OBJECT(
         'email',
         primaryemail,
         'name',

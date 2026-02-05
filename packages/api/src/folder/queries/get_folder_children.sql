@@ -3,7 +3,7 @@ WITH all_children AS (
     id,
     item_type,
     folder_linkid,
-    row_number() OVER (
+    ROW_NUMBER() OVER (
       ORDER BY
         (CASE
           WHEN (
@@ -100,7 +100,7 @@ cursor AS (
 ),
 
 total_pages AS (
-  SELECT ceiling(count(*) / :pageSize) AS total_pages
+  SELECT CEILING(COUNT(*) / :pageSize) AS total_pages
   FROM all_children
 )
 
@@ -110,6 +110,6 @@ SELECT
   (SELECT total_pages.total_pages FROM total_pages) AS "totalPages"
 FROM all_children
 WHERE
-  rank > coalesce((SELECT cursor.rank FROM cursor), 0)
+  rank > COALESCE((SELECT cursor.rank FROM cursor), 0)
 ORDER BY rank ASC
 LIMIT :pageSize;

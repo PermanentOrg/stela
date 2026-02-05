@@ -1,7 +1,7 @@
 WITH RECURSIVE aggregated_files AS (
   (SELECT
     record_file.recordid,
-    array_agg(jsonb_build_object(
+    ARRAY_AGG(JSONB_BUILD_OBJECT(
       'fileId',
       file.fileid::TEXT,
       'size',
@@ -26,14 +26,14 @@ WITH RECURSIVE aggregated_files AS (
     ON record_file.fileid = file.fileid
   WHERE
     file.status != 'status.generic.deleted'
-    AND record_file.recordid = any(:recordIds)
+    AND record_file.recordid = ANY(:recordIds)
   GROUP BY record_file.recordid)
 ),
 
 aggregated_tags AS (
   SELECT
     tag_link.refid,
-    array_agg(jsonb_build_object(
+    ARRAY_AGG(JSONB_BUILD_OBJECT(
       'id',
       tag.tagid::TEXT,
       'name',
@@ -51,14 +51,14 @@ aggregated_tags AS (
   WHERE
     tag_link.reftable = 'record'
     AND tag_link.status = 'status.generic.ok'
-    AND tag_link.refid = any(:recordIds)
+    AND tag_link.refid = ANY(:recordIds)
   GROUP BY tag_link.refid
 ),
 
 aggregated_shares AS (
   SELECT
     share.folder_linkid,
-    array_agg(jsonb_build_object(
+    ARRAY_AGG(JSONB_BUILD_OBJECT(
       'id',
       share.shareid::TEXT,
       'accessRole',
@@ -66,7 +66,7 @@ aggregated_shares AS (
       'status',
       share.status,
       'archive',
-      jsonb_build_object(
+      JSONB_BUILD_OBJECT(
         'thumbUrl200',
         archive.thumburl200,
         'name',
@@ -87,7 +87,7 @@ aggregated_shares AS (
     AND profile_item.status = 'status.generic.ok'
     AND profile_item.string1 IS NOT NULL
     AND share.status != 'status.generic.deleted'
-    AND folder_link.recordid = any(:recordIds)
+    AND folder_link.recordid = ANY(:recordIds)
   GROUP BY share.folder_linkid
 ),
 
@@ -107,10 +107,10 @@ ancestor_unrestricted_share_tokens (
       AND shareby_url.unrestricted
       AND (
         shareby_url.expiresdt IS NULL
-        OR shareby_url.expiresdt > current_timestamp
+        OR shareby_url.expiresdt > CURRENT_TIMESTAMP
       )
   WHERE
-    folder_link.recordid = any(:recordIds)
+    folder_link.recordid = ANY(:recordIds)
   UNION
   SELECT
     folder_link.parentfolder_linkid,
@@ -128,14 +128,14 @@ ancestor_unrestricted_share_tokens (
       AND shareby_url.unrestricted
       AND (
         shareby_url.expiresdt IS NULL
-        OR shareby_url.expiresdt > current_timestamp
+        OR shareby_url.expiresdt > CURRENT_TIMESTAMP
       )
 ),
 
 aggregated_ancestor_unrestricted_share_tokens AS (
   SELECT
     recordid,
-    array_agg(urltoken) FILTER (WHERE urltoken IS NOT NULL) AS tokens
+    ARRAY_AGG(urltoken) FILTER (WHERE urltoken IS NOT NULL) AS tokens
   FROM
     ancestor_unrestricted_share_tokens
   GROUP BY recordid
@@ -175,7 +175,7 @@ SELECT DISTINCT ON (record.recordid)
   aggregated_tags.tags,
   archive.archivenbr AS "archiveArchiveNumber",
   aggregated_shares.shares_as_json AS shares,
-  json_build_object(
+  JSON_BUILD_OBJECT(
     'id',
     locn.locnid::TEXT,
     'streetNumber',
@@ -199,7 +199,7 @@ SELECT DISTINCT ON (record.recordid)
     'displayName',
     locn.displayname
   ) AS location,
-  json_build_object(
+  JSON_BUILD_OBJECT(
     'id',
     archive.archiveid::TEXT,
     'archiveNumber',
@@ -269,14 +269,14 @@ LEFT JOIN
   aggregated_ancestor_unrestricted_share_tokens
   ON record.recordid = aggregated_ancestor_unrestricted_share_tokens.recordid
 WHERE
-  record.recordid = any(:recordIds)
+  record.recordid = ANY(:recordIds)
   AND (
     record_account.primaryemail = :accountEmail
     OR share_account.primaryemail = :accountEmail
-    OR (record.publicdt IS NOT NULL AND record.publicdt <= now())
+    OR (record.publicdt IS NOT NULL AND record.publicdt <= NOW())
     OR (
       :shareToken::TEXT IS NOT NULL
-      AND :shareToken = any(
+      AND :shareToken = ANY(
         aggregated_ancestor_unrestricted_share_tokens.tokens
       )
     )
