@@ -15,7 +15,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - name: Build Image
-        run: docker build -t $API_IMAGE_TAG --build-arg="AWS_RDS_CERT_BUNDLE=$AWS_RDS_CERT_BUNDLE" -f Dockerfile.api .
+        run: docker build -t $API_IMAGE_TAG --build-arg="AWS_RDS_CERT_BUNDLE=$AWS_RDS_CERT_BUNDLE" -f packages/api/Dockerfile .
         env:
           AWS_RDS_CERT_BUNDLE: ${{ secrets.AWS_RDS_CERT_BUNDLE }}
       - name: AWS Login
@@ -35,7 +35,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - name: Build Image
-        run: docker build -t $AM_CLEANUP_IMAGE_TAG -f Dockerfile.am_cleanup .
+        run: docker build -t $AM_CLEANUP_IMAGE_TAG -f packages/archivematica_cleanup/Dockerfile .
       - name: AWS Login
         run: aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin 364159549467.dkr.ecr.$AWS_REGION.amazonaws.com
         env:
@@ -53,7 +53,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - name: Build Image
-        run: docker build -t $RECORD_THUMBNAIL_LAMBDA_IMAGE_TAG --build-arg="AWS_RDS_CERT_BUNDLE=$AWS_RDS_CERT_BUNDLE" -f Dockerfile.record_thumbnail_attacher .
+        run: docker build -t $RECORD_THUMBNAIL_LAMBDA_IMAGE_TAG --build-arg="AWS_RDS_CERT_BUNDLE=$AWS_RDS_CERT_BUNDLE" -f packages/record_thumbnail_attacher/Dockerfile .
         env:
           AWS_RDS_CERT_BUNDLE: ${{ secrets.AWS_RDS_CERT_BUNDLE }}
       - name: AWS Login
@@ -73,7 +73,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - name: Build Image
-        run: docker build -t $THUMBNAIL_REFRESH_IMAGE_TAG --build-arg="AWS_RDS_CERT_BUNDLE=$AWS_RDS_CERT_BUNDLE" -f Dockerfile.thumbnail_refresh .
+        run: docker build -t $THUMBNAIL_REFRESH_IMAGE_TAG --build-arg="AWS_RDS_CERT_BUNDLE=$AWS_RDS_CERT_BUNDLE" -f packages/thumbnail_refresh/Dockerfile .
         env:
           AWS_RDS_CERT_BUNDLE: ${{ secrets.AWS_RDS_CERT_BUNDLE }}
       - name: AWS Login
@@ -93,7 +93,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - name: Build Image
-        run: docker build -t $FILE_URL_REFRESH_IMAGE_TAG --build-arg="AWS_RDS_CERT_BUNDLE=$AWS_RDS_CERT_BUNDLE" -f Dockerfile.file_url_refresh .
+        run: docker build -t $FILE_URL_REFRESH_IMAGE_TAG --build-arg="AWS_RDS_CERT_BUNDLE=$AWS_RDS_CERT_BUNDLE" -f packages/file_url_refresh/Dockerfile .
         env:
           AWS_RDS_CERT_BUNDLE: ${{ secrets.AWS_RDS_CERT_BUNDLE }}
       - name: AWS Login
@@ -113,7 +113,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - name: Build Image
-        run: docker build -t $ACCESS_COPY_LAMBDA_IMAGE_TAG --build-arg="AWS_RDS_CERT_BUNDLE=$AWS_RDS_CERT_BUNDLE" -f Dockerfile.access_copy_attacher .
+        run: docker build -t $ACCESS_COPY_LAMBDA_IMAGE_TAG --build-arg="AWS_RDS_CERT_BUNDLE=$AWS_RDS_CERT_BUNDLE" -f packages/access_copy_attacher/Dockerfile .
         env:
           AWS_RDS_CERT_BUNDLE: ${{ secrets.AWS_RDS_CERT_BUNDLE }}
       - name: AWS Login
@@ -133,7 +133,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - name: Build Image
-        run: docker build -t $ACCOUNT_SPACE_UPDATE_IMAGE_TAG --build-arg="AWS_RDS_CERT_BUNDLE=$AWS_RDS_CERT_BUNDLE" -f Dockerfile.account_space_updater .
+        run: docker build -t $ACCOUNT_SPACE_UPDATE_IMAGE_TAG --build-arg="AWS_RDS_CERT_BUNDLE=$AWS_RDS_CERT_BUNDLE" -f packages/account_space_updater/Dockerfile .
         env:
           AWS_RDS_CERT_BUNDLE: ${{ secrets.AWS_RDS_CERT_BUNDLE }}
       - name: AWS Login
@@ -153,7 +153,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - name: Build Image
-        run: docker build -t $TRIGGER_ARCHIVEMATICA_IMAGE_TAG --build-arg="AWS_RDS_CERT_BUNDLE=$AWS_RDS_CERT_BUNDLE" -f Dockerfile.trigger_archivematica .
+        run: docker build -t $TRIGGER_ARCHIVEMATICA_IMAGE_TAG --build-arg="AWS_RDS_CERT_BUNDLE=$AWS_RDS_CERT_BUNDLE" -f packages/trigger_archivematica/Dockerfile .
         env:
           AWS_RDS_CERT_BUNDLE: ${{ secrets.AWS_RDS_CERT_BUNDLE }}
       - name: AWS Login
@@ -173,7 +173,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - name: Build Image
-        run: docker build -t $METADATA_ATTACHER_LAMBDA_IMAGE_TAG --build-arg="AWS_RDS_CERT_BUNDLE=$AWS_RDS_CERT_BUNDLE" -f Dockerfile.metadata_attacher .
+        run: docker build -t $METADATA_ATTACHER_LAMBDA_IMAGE_TAG --build-arg="AWS_RDS_CERT_BUNDLE=$AWS_RDS_CERT_BUNDLE" -f packages/metadata_attacher/Dockerfile .
         env:
           AWS_RDS_CERT_BUNDLE: ${{ secrets.AWS_RDS_CERT_BUNDLE }}
       - name: AWS Login

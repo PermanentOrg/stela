@@ -1,3 +1,5 @@
+# Monorepo Dockerfile - must be built from repository root:
+#   docker build -f packages/thumbnail_refresh/Dockerfile .
 FROM node:24-alpine AS builder
 WORKDIR /usr/local/apps/stela/
 
@@ -21,17 +23,13 @@ WORKDIR /usr/local/apps/stela/
 RUN mkdir /etc/ca-certificates
 RUN echo -e $AWS_RDS_CERT_BUNDLE > /etc/ca-certificates/rds-us-west-2-ca-bundle.pem
 
-COPY --from=builder /usr/local/apps/stela/packages/file_url_refresh/dist ./packages/file_url_refresh/dist
-COPY --from=builder /usr/local/apps/stela/packages/file_url_refresh/package.json ./packages/file_url_refresh/package.json
+COPY --from=builder /usr/local/apps/stela/packages/thumbnail_refresh/dist ./packages/thumbnail_refresh/dist
+COPY --from=builder /usr/local/apps/stela/packages/thumbnail_refresh/package.json ./packages/thumbnail_refresh/package.json
 COPY --from=builder /usr/local/apps/stela/packages/logger/dist ./packages/logger/dist
 COPY --from=builder /usr/local/apps/stela/packages/logger/package.json ./packages/logger/package.json
-COPY --from=builder /usr/local/apps/stela/packages/s3-utils/dist ./packages/s3-utils/dist
-COPY --from=builder /usr/local/apps/stela/packages/s3-utils/package.json ./packages/s3-utils/package.json
-COPY --from=builder /usr/local/apps/stela/packages/permanent_models/dist ./packages/permanent_models/dist
-COPY --from=builder /usr/local/apps/stela/packages/permanent_models/package.json ./packages/permanent_models/package.json
 COPY --from=builder /usr/local/apps/stela/package.json ./package.json
 COPY --from=builder /usr/local/apps/stela/package-lock.json ./package-lock.json
 
-RUN npm install --workspace @stela/file_url_refresh
+RUN npm install --workspace @stela/thumbnail_refresh
 
-CMD node packages/file_url_refresh/dist/index.js
+CMD node packages/thumbnail_refresh/dist/index.js
