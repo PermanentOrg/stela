@@ -9,6 +9,7 @@
 Stela is designed to run alongside the [devenv](https://github.com/PermanentOrg/devenv) development environment. Before running the API server or tests locally, you must have devenv set up and running.
 
 The devenv provides:
+
 - The shared Docker network (`permanent_default`) that stela containers connect to
 - The PostgreSQL database
 - Other dependent services (nginx load balancer, back-end PHP server, etc.)
@@ -166,8 +167,9 @@ To do so:
 7. Add the name of your service's image to `required_dev_images` and `required_staging_images` in `locals.tf`. Also update the `current_kubernetes_images` and `current_lambda_images` definitions to include your service's image.
 8. Repeat steps 5 and 6 in `terraform/prod_cluster`, but don't add data blocks (they are not necessary here)
 9. In the Generate Image Tags Github workflow, add a step to generate an appropriate tag for the image
-10. In the deploy Github workflow for each environment, add your service's image tag to the `env` of the deploy job. In dev and staging, add it also to the `image_overrides` variable passed to `terraform plan` and `terraform apply`. In prod, add it to the variables passed directly to `terraform plan` and `terraform apply`
-11. Add a step to the unit tests Github workflow to run the tests for your new workspace (it would be ideal if we could just run `npm run test -ws`, but in the past this caused silent failures).
+10. Add the image tag for the new service to the inputs of the Build and Deploy to Staging workflows, and to the parameters passed by staging deploys to Build and by prod deploys to staging deploys
+11. In the deploy Github workflow for each environment, add your service's image tag to the `env` of the deploy job. In dev and staging, add it also to the `image_overrides` variable passed to `terraform plan` and `terraform apply`. In prod, add it to the variables passed directly to `terraform plan` and `terraform apply`
+12. Add a step to the unit tests Github workflow to run the tests for your new workspace (it would be ideal if we could just run `npm run test -ws`, but in the past this caused silent failures).
 
 ## Running Lambdas Locally
 
