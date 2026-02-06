@@ -1,8 +1,37 @@
 name: Build
 on:
   workflow_call:
+    inputs:
+      API_IMAGE_TAG:
+        type: string
+        required: false
+      AM_CLEANUP_IMAGE_TAG:
+        type: string
+        required: false
+      RECORD_THUMBNAIL_LAMBDA_IMAGE_TAG:
+        type: string
+        required: false
+      THUMBNAIL_REFRESH_IMAGE_TAG:
+        type: string
+        required: false
+      FILE_URL_REFRESH_IMAGE_TAG:
+        type: string
+        required: false
+      ACCESS_COPY_LAMBDA_IMAGE_TAG:
+        type: string
+        required: false
+      ACCOUNT_SPACE_UPDATE_IMAGE_TAG:
+        type: string
+        required: false
+      TRIGGER_ARCHIVEMATICA_IMAGE_TAG:
+        type: string
+        required: false
+      METADATA_ATTACHER_LAMBDA_IMAGE_TAG:
+        type: string
+        required: false
 jobs:
   generate_image_tags:
+    if: inputs.API_IMAGE_TAG == ''
     uses: ./.github/workflows/generate_image_tags.yml
     secrets: inherit
 
@@ -10,6 +39,7 @@ jobs:
     name: ${{ matrix.package }}
     needs:
       - generate_image_tags
+    if: always() && !cancelled() && !contains(needs.*.result, 'failure')
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -38,7 +68,7 @@ jobs:
       - name: Build Image
         run: docker build -t $IMAGE_TAG --build-arg="AWS_RDS_CERT_BUNDLE=$AWS_RDS_CERT_BUNDLE" -f packages/${{ matrix.package }}/Dockerfile .
         env:
-          IMAGE_TAG: ${{ needs.generate_image_tags.outputs[matrix.image_tag_var] }}
+          IMAGE_TAG: ${{ fromJSON(toJSON(inputs))[matrix.image_tag_var] || needs.generate_image_tags.outputs[matrix.image_tag_var] }}
           AWS_RDS_CERT_BUNDLE: ${{ secrets.AWS_RDS_CERT_BUNDLE }}
       - name: AWS Login
         run: aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin 364159549467.dkr.ecr.$AWS_REGION.amazonaws.com
@@ -49,7 +79,7 @@ jobs:
       - name: Publish Image to ECR
         run: docker push $IMAGE_TAG
         env:
-          IMAGE_TAG: ${{ needs.generate_image_tags.outputs[matrix.image_tag_var] }}
+          IMAGE_TAG: ${{ fromJSON(toJSON(inputs))[matrix.image_tag_var] || needs.generate_image_tags.outputs[matrix.image_tag_var] }}
 
   all-builds-passed:
     name: All builds passed
