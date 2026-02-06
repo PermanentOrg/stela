@@ -35,6 +35,10 @@ jobs:
             image_tag_var: METADATA_ATTACHER_LAMBDA_IMAGE_TAG
     steps:
       - uses: actions/checkout@v6
+      - name: Print image tag
+        run: echo $IMAGE_TAG
+        env:
+          IMAGE_TAG: ${{ needs.generate_image_tags.outputs[matrix.image_tag_var] }}
       - name: Build Image
         run: docker build -t $IMAGE_TAG --build-arg="AWS_RDS_CERT_BUNDLE=$AWS_RDS_CERT_BUNDLE" -f packages/${{ matrix.package }}/Dockerfile .
         env:
