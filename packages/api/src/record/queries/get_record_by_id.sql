@@ -176,6 +176,18 @@ SELECT DISTINCT ON (record.recordid)
   archive.archivenbr AS "archiveArchiveNumber",
   aggregated_shares.shares_as_json AS shares,
   JSON_BUILD_OBJECT(
+    '200',
+    record.thumburl200,
+    '500',
+    record.thumburl500,
+    '1000',
+    record.thumburl1000,
+    '2000',
+    record.thumburl2000,
+    '256',
+    record.thumbnail256
+  ) AS "thumbnailUrls",
+  JSON_BUILD_OBJECT(
     'id',
     locn.locnid::TEXT,
     'streetNumber',
