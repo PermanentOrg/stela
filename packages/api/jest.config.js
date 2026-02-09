@@ -6,5 +6,7 @@ module.exports = {
 	},
 	setupFiles: ["<rootDir>/jest.env.setup.js"],
 	globalSetup: "<rootDir>/jest.db.setup.ts",
+	globalTeardown: "<rootDir>/jest.db.teardown.ts",
 	modulePathIgnorePatterns: ["<rootDir>/dist/"],
+	maxWorkers: "50%",
 };
