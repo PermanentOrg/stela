@@ -1,4 +1,13 @@
-WITH RECURSIVE aggregated_files AS (
+WITH RECURSIVE candidate_records AS (
+  SELECT recordid
+  FROM record
+  WHERE
+    (:recordIds::BIGINT[] IS NULL OR recordid = ANY(:recordIds::BIGINT[]))
+    AND (:archiveId::BIGINT IS NULL OR archiveid = :archiveId::BIGINT)
+    AND status != 'status.generic.deleted'
+),
+
+aggregated_files AS (
   (SELECT
     record_file.recordid,
     ARRAY_AGG(JSONB_BUILD_OBJECT(
@@ -24,9 +33,11 @@ WITH RECURSIVE aggregated_files AS (
   INNER JOIN
     file
     ON record_file.fileid = file.fileid
+  INNER JOIN
+    candidate_records
+    ON record_file.recordid = candidate_records.recordid
   WHERE
     file.status != 'status.generic.deleted'
-    AND record_file.recordid = ANY(:recordIds)
   GROUP BY record_file.recordid)
 ),
 
@@ -48,10 +59,12 @@ aggregated_tags AS (
     ON
       tag_link.tagid = tag.tagid
       AND tag.status = 'status.generic.ok'
+  INNER JOIN
+    candidate_records
+    ON tag_link.refid = candidate_records.recordid
   WHERE
     tag_link.reftable = 'record'
     AND tag_link.status = 'status.generic.ok'
-    AND tag_link.refid = ANY(:recordIds)
   GROUP BY tag_link.refid
 ),
 
@@ -82,12 +95,13 @@ aggregated_shares AS (
     ON archive.archiveid = profile_item.archiveid
   INNER JOIN folder_link
     ON share.folder_linkid = folder_link.folder_linkid
+  INNER JOIN candidate_records
+    ON folder_link.recordid = candidate_records.recordid
   WHERE
     profile_item.fieldnameui = 'profile.basic'
     AND profile_item.status = 'status.generic.ok'
     AND profile_item.string1 IS NOT NULL
     AND share.status != 'status.generic.deleted'
-    AND folder_link.recordid = ANY(:recordIds)
   GROUP BY share.folder_linkid
 ),
 
@@ -101,6 +115,8 @@ ancestor_unrestricted_share_tokens (
     folder_link.recordid,
     shareby_url.urltoken
   FROM folder_link
+  INNER JOIN candidate_records
+    ON folder_link.recordid = candidate_records.recordid
   LEFT JOIN shareby_url
     ON
       folder_link.folder_linkid = shareby_url.folder_linkid
@@ -109,8 +125,6 @@ ancestor_unrestricted_share_tokens (
         shareby_url.expiresdt IS NULL
         OR shareby_url.expiresdt > CURRENT_TIMESTAMP
       )
-  WHERE
-    folder_link.recordid = ANY(:recordIds)
   UNION
   SELECT
     folder_link.parentfolder_linkid,
@@ -280,9 +294,11 @@ LEFT JOIN
 LEFT JOIN
   aggregated_ancestor_unrestricted_share_tokens
   ON record.recordid = aggregated_ancestor_unrestricted_share_tokens.recordid
+INNER JOIN
+  candidate_records
+  ON record.recordid = candidate_records.recordid
 WHERE
-  record.recordid = ANY(:recordIds)
-  AND (
+  (
     record_account.primaryemail = :accountEmail
     OR share_account.primaryemail = :accountEmail
     OR (record.publicdt IS NOT NULL AND record.publicdt <= NOW())

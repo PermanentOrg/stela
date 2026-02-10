@@ -573,6 +573,48 @@ describe("GET /records", () => {
 		await agent.get("/api/v2/records?recordIds[]=14").expect(500);
 		expect(logger.error).toHaveBeenCalledWith(testError);
 	});
+	test("expect to return records filtered by archiveId", async () => {
+		const response = await agent.get("/api/v2/records?archiveId=1").expect(200);
+		const { body: records } = response as { body: ArchiveRecord[] };
+		const recordIds = records.map((record) => record.recordId);
+		expect(recordIds).toHaveLength(5);
+		expect(recordIds).toEqual(
+			expect.arrayContaining(["1", "2", "3", "8", "9"]),
+		);
+	});
+	test("expect archiveId and recordIds to act as an AND filter", async () => {
+		const response = await agent
+			.get("/api/v2/records?archiveId=1&recordIds[]=1")
+			.expect(200);
+		const { body: records } = response as { body: ArchiveRecord[] };
+		expect(records.length).toEqual(1);
+		expect(records[0]?.recordId).toEqual("1");
+	});
+	test("expect archiveId with no matching records to return empty array", async () => {
+		const response = await agent
+			.get("/api/v2/records?archiveId=9999")
+			.expect(200);
+		const { body: records } = response as { body: ArchiveRecord[] };
+		expect(records.length).toEqual(0);
+	});
+	test("expect archiveId for non-owned archive to return only public records", async () => {
+		const response = await agent.get("/api/v2/records?archiveId=2").expect(200);
+		const { body: records } = response as { body: ArchiveRecord[] };
+		const recordIds = records.map((record) => record.recordId);
+		expect(recordIds).toHaveLength(2);
+		expect(recordIds).toEqual(expect.arrayContaining(["5", "6"]));
+	});
+	test("expect archiveId query without recordIds still requires archiveId", async () => {
+		await agent.get("/api/v2/records").expect(400);
+	});
+	test("expect return records by archiveId for a public record when not logged in", async () => {
+		mockExtractUserEmailFromAuthToken();
+		const response = await agent.get("/api/v2/records?archiveId=1").expect(200);
+		const { body: records } = response as { body: ArchiveRecord[] };
+		const recordIds = records.map((record) => record.recordId);
+		expect(recordIds).toHaveLength(2);
+		expect(recordIds).toEqual(expect.arrayContaining(["1", "8"]));
+	});
 });
 
 describe("PATCH /records", () => {

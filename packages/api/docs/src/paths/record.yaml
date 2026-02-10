@@ -1,21 +1,32 @@
 records:
   get:
-    summary: Get records by ID
+    summary: Get records
     parameters:
       - name: recordIds
         in: query
-        required: true
+        required: false
+        description: |
+          An array of record IDs to retrieve.
+          At least one of recordIds or archiveId must be provided.
         schema:
           type: array
           items:
             type: string
+      - name: archiveId
+        in: query
+        required: false
+        description: |
+          An archive ID to filter records by.
+          At least one of recordIds or archiveId must be provided.
+        schema:
+          type: string
     security:
       - {}
       - bearerHttpAuthentication: []
       - permanentShareToken: []
     tags:
       - records
-    operationId: get-record
+    operationId: get-records
     responses:
       "200":
         description: The requested records

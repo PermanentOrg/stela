@@ -6,7 +6,8 @@
 	"scripts": {
 		"build": "npm run build --ws",
 		"lint": "npm run lint --ws",
-		"test": "npm run test --ws --if-present"
+		"test": "npm run test --ws --if-present",
+		"format": "npm run format --ws --if-present"
 	},
 	"workspaces": [
 		"./packages/logger",

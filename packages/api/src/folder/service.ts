@@ -20,7 +20,7 @@ import {
 } from "./models";
 import { getFolderAccessRole, accessRoleLessThan } from "../access/permission";
 import { AccessRole } from "../access/models";
-import { getRecordById } from "../record/service";
+import { getRecords } from "../record/service";
 import { shareLinkService } from "../share_link/service";
 import type { ShareLink } from "../share_link/models";
 
@@ -159,10 +159,11 @@ export const getFolderChildren = async (
 		shareToken,
 	);
 
-	const records = await getRecordById({
+	const records = await getRecords({
 		recordIds: result.rows
 			.filter((item) => item.item_type === "record")
 			.map((record) => record.id),
+		archiveId: undefined,
 		accountEmail: email,
 		shareToken,
 	});

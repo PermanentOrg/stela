@@ -9,7 +9,7 @@ import {
 	extractUserEmailFromAuthToken,
 	verifyUserAuthentication,
 } from "../middleware";
-import { getRecordById, patchRecord, getRecordShareLinks } from "./service";
+import { getRecords, patchRecord, getRecordShareLinks } from "./service";
 import {
 	validateGetRecordQuery,
 	validatePatchRecordRequest,
@@ -32,8 +32,9 @@ recordController.get(
 		try {
 			validateOptionalAuthenticationValues(req.body);
 			validateGetRecordQuery(req.query);
-			const records = await getRecordById({
+			const records = await getRecords({
 				recordIds: req.query.recordIds,
+				archiveId: req.query.archiveId,
 				accountEmail: req.body.emailFromAuthToken,
 				shareToken: req.body.shareToken,
 			});
@@ -58,8 +59,9 @@ recordController.get(
 		try {
 			validateOptionalAuthenticationValues(req.body);
 			validateSingleRecordParams(req.params);
-			const records = await getRecordById({
+			const records = await getRecords({
 				recordIds: [req.params.recordId],
+				archiveId: undefined,
 				accountEmail: req.body.emailFromAuthToken,
 				shareToken: req.body.shareToken,
 			});
@@ -84,8 +86,9 @@ recordController.patch(
 			validateSingleRecordParams(req.params);
 			validatePatchRecordRequest(req.body);
 			const recordId = await patchRecord(req.params.recordId, req.body);
-			const record = await getRecordById({
+			const record = await getRecords({
 				recordIds: [recordId],
+				archiveId: undefined,
 				accountEmail: req.body.emailFromAuthToken,
 			});
 

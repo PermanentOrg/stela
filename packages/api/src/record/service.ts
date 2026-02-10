@@ -11,14 +11,16 @@ import { AccessRole } from "../access/models";
 import { shareLinkService } from "../share_link/service";
 import type { ShareLink } from "../share_link/models";
 
-export const getRecordById = async (requestQuery: {
-	recordIds: string[];
+export const getRecords = async (requestQuery: {
+	recordIds: string[] | undefined;
+	archiveId: string | undefined;
 	accountEmail: string | undefined;
 	shareToken?: string | undefined;
 }): Promise<ArchiveRecord[]> => {
 	const record = await db
-		.sql<ArchiveRecordRow>("record.queries.get_record_by_id", {
-			recordIds: requestQuery.recordIds,
+		.sql<ArchiveRecordRow>("record.queries.get_records", {
+			recordIds: requestQuery.recordIds ?? null,
+			archiveId: requestQuery.archiveId ?? null,
 			accountEmail: requestQuery.accountEmail,
 			shareToken: requestQuery.shareToken,
 		})
@@ -32,18 +34,24 @@ export const getRecordById = async (requestQuery: {
 		imageRatio: +(row.imageRatio ?? 0),
 	}));
 
-	// Our API contract remains that the order in which this endpoint returns
-	// records is undefined. This ordering logic is implemented as a hotfix, and
-	// should be removed when our clients no longer rely on this endpoint returning
-	// records in a particular order.
-	const recordsById = new Map<string, ArchiveRecord>();
-	records.forEach((record: ArchiveRecord) =>
-		recordsById.set(record.recordId, record),
-	);
-	const recordsInOrder = requestQuery.recordIds
-		.map((recordId: string) => recordsById.get(recordId))
-		.filter((record: ArchiveRecord | undefined) => record !== undefined);
-	return recordsInOrder;
+	if (requestQuery.recordIds !== undefined) {
+		// Our API contract remains that the order in which this endpoint returns
+		// records is undefined. This ordering logic is implemented as a hotfix, and
+		// should be removed when our clients no longer rely on this endpoint returning
+		// records in a particular order.
+		const recordsById = new Map<string, ArchiveRecord>();
+		records.forEach((archiveRecord: ArchiveRecord) =>
+			recordsById.set(archiveRecord.recordId, archiveRecord),
+		);
+		const recordsInOrder = requestQuery.recordIds
+			.map((recordId: string) => recordsById.get(recordId))
+			.filter(
+				(archiveRecord: ArchiveRecord | undefined) =>
+					archiveRecord !== undefined,
+			);
+		return recordsInOrder;
+	}
+	return records;
 };
 
 const validateCanPatchRecord = async (
