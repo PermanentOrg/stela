@@ -65,3 +65,8 @@ archive:
     updatedAt:
       type: string
       format: date-time
+    milestoneSortOrder:
+      type: string
+      enum:
+        - chronological
+        - reverse_chronological

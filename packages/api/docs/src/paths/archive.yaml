@@ -33,6 +33,45 @@ archives:
         $ref: "../errors.yaml#/400"
       "500":
         $ref: "../errors.yaml#/500"
+archives/{id}:
+  patch:
+    summary: Update an archive
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+    security:
+      - bearerHttpAuthentication: []
+    tags:
+      - archives
+    operationId: patch-archives
+    requestBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              milestoneSortOrder:
+                type: string
+                enum:
+                  - chronological
+                  - reverse_chronological
+    responses:
+      "200":
+        description: The updated archive
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                data:
+                  $ref: "../models/archive.yaml#/archive"
+      "400":
+        $ref: "../errors.yaml#/400"
+      "500":
+        $ref: "../errors.yaml#/500"
 archive-id-folders-shared:
   parameters:
     - name: id

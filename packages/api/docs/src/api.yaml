@@ -55,6 +55,8 @@ paths:
     $ref: "./paths/folder.yaml#/folders-id-children"
   /folders/{id}/share-links:
     $ref: "./paths/folder.yaml#/folders-id-share-links"
+  /archive/{id}:
+    $ref: "./paths/archive.yaml#/archives~1{id}"
   /archive/{id}/folders/shared:
     $ref: "./paths/archive.yaml#/archive-id-folders-shared"
   /archives:

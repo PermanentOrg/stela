@@ -10,6 +10,7 @@ import {
 	validateArchiveIdFromParams,
 	validateBodyFromAuthentication,
 	validateSearchQuery,
+	validatePatchArchiveBody,
 } from "../validators";
 import { isValidationError } from "../../validators/validator_util";
 import { archiveService } from "../service";
@@ -51,6 +52,30 @@ archiveController.get(
 		}
 	},
 );
+
+archiveController.patch(
+	"/:archiveId",
+	verifyUserAuthentication,
+	async (req: Request, res: Response, next: NextFunction) => {
+		try {
+			validateArchiveIdFromParams(req.params);
+			validatePatchArchiveBody(req.body);
+			const archive = await archiveService.updateArchive(
+				req.params.archiveId,
+				req.body.milestoneSortOrder,
+				req.body.emailFromAuthToken,
+			);
+			res.json({ data: archive });
+		} catch (err) {
+			if (isValidationError(err)) {
+				res.status(HTTP_STATUS.CLIENT_ERROR.BAD_REQUEST).json({ error: err });
+				return;
+			}
+			next(err);
+		}
+	},
+);
+
 archiveController.get(
 	"/:archiveId/tags/public",
 	async (req: Request, res: Response, next: NextFunction) => {

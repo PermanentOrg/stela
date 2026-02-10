@@ -43,6 +43,11 @@ export interface ArchiveOwner {
 	phoneNumber?: string | null;
 }
 
+export enum MilestoneSortOrder {
+	Chronological = "chronological",
+	ReverseChronological = "reverse_chronological",
+}
+
 export interface Archive {
 	archiveId: string;
 	rootFolderId: string;
@@ -54,6 +59,7 @@ export interface Archive {
 	allowPublicDownload: boolean;
 	thumbnailUrls: ThumbnailUrls;
 	owner?: ArchiveOwner | null;
+	milestoneSortOrder: MilestoneSortOrder;
 	status: string;
 	type: string;
 	createdAt: string;
