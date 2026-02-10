@@ -1,3 +1,7 @@
+import { ArchiveMembershipRole } from "../access/models";
+
+export { ArchiveMembershipRole };
+
 export interface Tag {
 	tagId: string;
 	name: string;
@@ -60,6 +64,7 @@ export interface Archive {
 	thumbnailUrls: ThumbnailUrls;
 	owner?: ArchiveOwner | null;
 	milestoneSortOrder: MilestoneSortOrder;
+	callerMembershipRole?: ArchiveMembershipRole | null;
 	status: string;
 	type: string;
 	createdAt: string;

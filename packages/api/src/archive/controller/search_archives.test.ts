@@ -2,7 +2,7 @@ import request from "supertest";
 import { logger } from "@stela/logger";
 import { app } from "../../app";
 import { db } from "../../database";
-import type { Archive } from "../models";
+import { ArchiveMembershipRole, type Archive } from "../models";
 import {
 	mockExtractUserIsAdminFromAuthToken,
 	mockExtractUserEmailFromAuthToken,
@@ -170,10 +170,10 @@ describe("searchArchives", () => {
 		);
 	});
 
-	test("should return 400 if searchQuery is missing", async () => {
+	test("should return 400 if neither searchQuery nor callerMembershipRole is provided", async () => {
 		mockExtractUserIsAdminFromAuthToken(false);
 		mockExtractUserEmailFromAuthToken(undefined);
-		await agent.get("/api/v2/archive").expect(400);
+		await agent.get("/api/v2/archive?pageSize=10").expect(400);
 	});
 
 	test("should throw InternalServerError if database query fails", async () => {
@@ -183,5 +183,107 @@ describe("searchArchives", () => {
 		jest.spyOn(db, "sql").mockRejectedValueOnce(testError);
 		await agent.get("/api/v2/archive?searchQuery=test&pageSize=10").expect(500);
 		expect(logger.error).toHaveBeenCalledWith(testError);
+	});
+
+	test("should filter by single callerMembershipRole and return archives with that role", async () => {
+		mockExtractUserIsAdminFromAuthToken(false);
+		mockExtractUserEmailFromAuthToken("test@permanent.org");
+
+		const result = await agent
+			.get(
+				`/api/v2/archive?callerMembershipRole=${ArchiveMembershipRole.Owner}&pageSize=10`,
+			)
+			.set("Authorization", "Bearer user-token")
+			.expect(200);
+
+		const {
+			body: { items },
+		} = result as { body: { items: Archive[] } };
+		expect(items).toHaveLength(3);
+		expect(items.map((a) => a.archiveId).sort()).toEqual(["1", "3", "5"]);
+		expect(
+			items.every(
+				(a) => a.callerMembershipRole === ArchiveMembershipRole.Owner,
+			),
+		).toBe(true);
+	});
+
+	test("should filter by multiple callerMembershipRole values with OR logic", async () => {
+		mockExtractUserIsAdminFromAuthToken(false);
+		mockExtractUserEmailFromAuthToken("test+1@permanent.org");
+
+		const result = await agent
+			.get(
+				`/api/v2/archive?callerMembershipRole=${ArchiveMembershipRole.Owner}&callerMembershipRole=${ArchiveMembershipRole.Viewer}&pageSize=10`,
+			)
+			.set("Authorization", "Bearer user-token")
+			.expect(200);
+
+		const {
+			body: { items },
+		} = result as { body: { items: Archive[] } };
+		expect(items).toHaveLength(2);
+		const archiveIds = items.map((a) => a.archiveId).sort();
+		expect(archiveIds).toEqual(["1", "2"]);
+	});
+
+	test("should return 401 if callerMembershipRole is provided without authentication", async () => {
+		mockExtractUserIsAdminFromAuthToken(false);
+		mockExtractUserEmailFromAuthToken(undefined);
+
+		const result = await agent
+			.get(
+				`/api/v2/archive?callerMembershipRole=${ArchiveMembershipRole.Owner}&pageSize=10`,
+			)
+			.expect(401);
+
+		expect(result.body).toMatchObject({
+			error: "Authentication required for callerMembershipRole filter",
+		});
+	});
+
+	test("should return 400 for invalid callerMembershipRole value", async () => {
+		mockExtractUserIsAdminFromAuthToken(false);
+		mockExtractUserEmailFromAuthToken("test@permanent.org");
+
+		await agent
+			.get("/api/v2/archive?callerMembershipRole=invalid_role&pageSize=10")
+			.set("Authorization", "Bearer user-token")
+			.expect(400);
+	});
+
+	test("should filter by both searchQuery and callerMembershipRole", async () => {
+		mockExtractUserIsAdminFromAuthToken(false);
+		mockExtractUserEmailFromAuthToken("test@permanent.org");
+
+		const result = await agent
+			.get(
+				`/api/v2/archive?searchQuery=Jack&callerMembershipRole=${ArchiveMembershipRole.Owner}&pageSize=10`,
+			)
+			.set("Authorization", "Bearer user-token")
+			.expect(200);
+
+		const {
+			body: { items },
+		} = result as { body: { items: Archive[] } };
+		expect(items).toHaveLength(1);
+		expect(items[0]?.name).toBe("Jack Rando");
+		expect(items[0]?.callerMembershipRole).toBe(ArchiveMembershipRole.Owner);
+	});
+
+	test("should not include callerMembershipRole in response when not filtering by callerMembershipRole", async () => {
+		mockExtractUserIsAdminFromAuthToken(false);
+		mockExtractUserEmailFromAuthToken("test@permanent.org");
+
+		const result = await agent
+			.get("/api/v2/archive?searchQuery=Jack&pageSize=10")
+			.set("Authorization", "Bearer user-token")
+			.expect(200);
+
+		const {
+			body: { items },
+		} = result as { body: { items: Archive[] } };
+		expect(items).toHaveLength(1);
+		expect(items[0]?.callerMembershipRole).toBeNull();
 	});
 });

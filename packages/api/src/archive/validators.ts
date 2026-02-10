@@ -3,7 +3,7 @@ import {
 	validateBodyFromAuthentication,
 	fieldsFromUserAuthentication,
 } from "../validators";
-import type { MilestoneSortOrder } from "./models";
+import { ArchiveMembershipRole, type MilestoneSortOrder } from "./models";
 
 export { validateBodyFromAuthentication };
 
@@ -20,23 +20,42 @@ export const validateArchiveIdFromParams: (
 	}
 };
 
+const archiveMembershipRoleSchema = Joi.string().valid(
+	...Object.values(ArchiveMembershipRole),
+);
+
 export const validateSearchQuery: (data: unknown) => asserts data is {
-	searchQuery: string;
+	searchQuery?: string | undefined;
+	callerMembershipRole?:
+		| ArchiveMembershipRole
+		| ArchiveMembershipRole[]
+		| undefined;
 	pageSize: number;
-	cursor?: string;
+	cursor?: string | undefined;
 } = (
 	data: unknown,
 ): asserts data is {
-	searchQuery: string;
+	searchQuery?: string | undefined;
+	callerMembershipRole?:
+		| ArchiveMembershipRole
+		| ArchiveMembershipRole[]
+		| undefined;
 	pageSize: number;
-	cursor?: string;
+	cursor?: string | undefined;
 } => {
 	const validation = Joi.object()
 		.keys({
-			searchQuery: Joi.string().required(),
+			searchQuery: Joi.string().optional(),
+			callerMembershipRole: Joi.alternatives()
+				.try(
+					archiveMembershipRoleSchema,
+					Joi.array().items(archiveMembershipRoleSchema),
+				)
+				.optional(),
 			pageSize: Joi.number().integer().min(1).required(),
 			cursor: Joi.string().optional(),
 		})
+		.or("searchQuery", "callerMembershipRole")
 		.validate(data);
 	if (validation.error !== undefined) {
 		throw validation.error;

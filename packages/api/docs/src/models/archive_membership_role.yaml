@@ -1,0 +1,10 @@
+archiveMembershipRole:
+  type: string
+  description: The role that defines a user's permissions as a member of an archive.
+  enum:
+    - viewer
+    - contributor
+    - editor
+    - curator
+    - manager
+    - owner

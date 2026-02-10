@@ -2,15 +2,47 @@ archives:
   parameters:
     - name: searchQuery
       in: query
+      required: false
+      description: Filter archives by name matching this search query. At least one of searchQuery or callerMembershipRole is required.
+      schema:
+        type: string
+    - name: callerMembershipRole
+      in: query
+      required: false
+      description: |
+        Filter to archives where the authenticated user has one of the specified archive membership roles.
+        Can be repeated to filter by multiple roles (OR logic). Requires authentication.
+        At least one of searchQuery or callerMembershipRole is required.
+      schema:
+        type: array
+        items:
+          $ref: "../models/archive_membership_role.yaml#/archiveMembershipRole"
+      style: form
+      explode: true
+    - name: pageSize
+      in: query
       required: true
+      schema:
+        type: integer
+        minimum: 1
+    - name: cursor
+      in: query
+      required: false
       schema:
         type: string
   get:
-    summary: Get archives whose names match the search query
+    summary: Search and filter archives
     description: |
-      Unauthenticated requests return only public archives.
-      Admin-authenticated requests return public archives with owner contact information.
-      User-authenticated requests return public archives and archives of which the caller is a member.
+      Search for archives by name and/or filter by the authenticated user's archive membership role.
+
+      - Unauthenticated requests return only public archives.
+      - Admin-authenticated requests return public archives with owner contact information.
+      - User-authenticated requests return public archives and archives of which the caller is a member.
+
+      When filtering by callerMembershipRole:
+      - Requires authentication (returns 401 if unauthenticated)
+      - Returns only archives where the user has one of the specified roles
+      - Includes the user's callerMembershipRole for each returned archive
     security:
       - {}
       - bearerHttpAuthentication: []
@@ -31,6 +63,8 @@ archives:
                     $ref: "../models/archive.yaml#/archive"
       "400":
         $ref: "../errors.yaml#/400"
+      "401":
+        $ref: "../errors.yaml#/401"
       "500":
         $ref: "../errors.yaml#/500"
 archives/{id}:
