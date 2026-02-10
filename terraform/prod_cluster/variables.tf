@@ -62,6 +62,11 @@ variable "account_space_updater_lambda_image" {
   type        = string
 }
 
+variable "folder_size_updater_lambda_image" {
+  description = "Tag of the folder size updater lambda image to deploy"
+  type        = string
+}
+
 variable "trigger_archivematica_lambda_image" {
   description = "Tag of archivematica triggerer image to deploy"
   type        = string

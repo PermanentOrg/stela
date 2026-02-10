@@ -2,6 +2,7 @@ locals {
   required_dev_images = [
     "access-copy-dev-lambda",
     "account-space-update-dev-lambda",
+    "folder-size-update-dev-lambda",
     "archivematica-cleanup-dev",
     "file-url-refresh-dev",
     "metadata-attacher-dev-lambda",
@@ -13,6 +14,7 @@ locals {
   required_staging_images = [
     "access-copy-staging-lambda",
     "account-space-update-staging-lambda",
+    "folder-size-update-staging-lambda",
     "archivematica-cleanup-staging",
     "file-url-refresh-staging",
     "metadata-attacher-staging-lambda",
@@ -38,6 +40,8 @@ locals {
   current_lambda_images = {
     account-space-update-dev-lambda      = try(data.aws_lambda_function.account_space_update_dev_lambda[0].image_uri, null)
     account-space-update-staging-lambda  = try(data.aws_lambda_function.account_space_update_staging_lambda[0].image_uri, null)
+    folder-size-update-dev-lambda        = try(data.aws_lambda_function.folder_size_update_dev_lambda[0].image_uri, null)
+    folder-size-update-staging-lambda    = try(data.aws_lambda_function.folder_size_update_staging_lambda[0].image_uri, null)
     access-copy-dev-lambda               = try(data.aws_lambda_function.access_copy_dev_lambda[0].image_uri, null)
     access-copy-staging-lambda           = try(data.aws_lambda_function.access_copy_staging_lambda[0].image_uri, null)
     metadata-attacher-dev-lambda         = try(data.aws_lambda_function.metadata_attacher_dev_lambda[0].image_uri, null)
