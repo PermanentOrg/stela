@@ -13,6 +13,7 @@ WITH all_archives AS (
       'width1000', archive.thumburl1000,
       'width2000', archive.thumburl2000
     ) AS "thumbnailUrls",
+    archive.milestonesortorder AS "milestoneSortOrder",
     archive.status,
     archive.type,
     archive.createddt AS "createdAt",
@@ -110,6 +111,7 @@ SELECT
   "publicAt",
   "allowPublicDownload",
   "thumbnailUrls",
+  "milestoneSortOrder",
   status,
   type,
   "createdAt",
