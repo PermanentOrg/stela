@@ -106,7 +106,7 @@ archives/{id}:
         $ref: "../errors.yaml#/400"
       "500":
         $ref: "../errors.yaml#/500"
-archive-id-folders-shared:
+archives-id-folders-shared:
   parameters:
     - name: id
       in: path

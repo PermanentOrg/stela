@@ -19,7 +19,8 @@ apiRoutes.get("/health", healthController.getHealth);
 apiRoutes.use("/directive", directiveController);
 apiRoutes.use("/legacy-contact", legacyContactController);
 apiRoutes.use("/account", accountController);
-apiRoutes.use("/archive", archiveController);
+apiRoutes.use("/archives", archiveController);
+apiRoutes.use("/archive", archiveController); // Deprecated path maintained to avoid breaking changes
 apiRoutes.use("/admin", adminController);
 apiRoutes.use("/billing", storageController); // Deprecated path maintained to avoid breaking changes
 apiRoutes.use("/storage", storageController);
