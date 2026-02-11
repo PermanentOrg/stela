@@ -13,6 +13,7 @@ import { recordController } from "../record";
 import { featureController } from "../feature_flag";
 import { folderController } from "../folder";
 import { shareLinkController } from "../share_link";
+import { donationController } from "../donation";
 
 const apiRoutes = express.Router();
 apiRoutes.get("/health", healthController.getHealth);
@@ -32,5 +33,6 @@ apiRoutes.use("/feature-flags", featureController);
 apiRoutes.use("/folders", folderController);
 apiRoutes.use("/folder", folderController); // Deprecated path maintained to avoid breaking changes
 apiRoutes.use("/share-links", shareLinkController);
+apiRoutes.use("/donation", donationController);
 
 export { apiRoutes };
