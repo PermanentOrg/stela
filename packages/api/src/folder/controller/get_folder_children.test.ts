@@ -1,5 +1,5 @@
 import request from "supertest";
-import type { FolderChildItem } from "../models";
+import type { FolderChildItem, Folder } from "../models";
 import type { ArchiveFile } from "../../record/models";
 import type { Tag } from "../../tag/models";
 import type { Share } from "../../share/models";
@@ -304,7 +304,7 @@ describe("GET /folder/{id}/children", () => {
 		expect(children[1]?.displayName).toEqual("Private Folder");
 	});
 
-	test("should return folder contents in alphabetical ascending order by date", async () => {
+	test("should return folder contents in ascending order by date", async () => {
 		await db.query(
 			"UPDATE folder SET sort = 'sort.display_date_asc' WHERE folderid = 10",
 		);
@@ -319,7 +319,7 @@ describe("GET /folder/{id}/children", () => {
 		expect(children[1]?.displayName).toEqual("Private Folder");
 	});
 
-	test("should return folder contents in alphabetical descending order by date", async () => {
+	test("should return folder contents in descending order by date", async () => {
 		await db.query(
 			"UPDATE folder SET sort = 'sort.display_date_desc' WHERE folderid = 10",
 		);
@@ -332,6 +332,21 @@ describe("GET /folder/{id}/children", () => {
 		expect(children.length).toEqual(2);
 		expect(children[0]?.displayName).toEqual("Private Folder");
 		expect(children[1]?.displayName).toEqual("Public File");
+	});
+
+	test("should prefer displayTimeLowerBound over displayDt when sorting by date", async () => {
+		await db.query(
+			"UPDATE folder SET sort = 'sort.display_date_desc' WHERE folderid = 13",
+		);
+		const response = await agent
+			.get("/api/v2/folders/13/children?pageSize=100")
+			.expect(200);
+		const {
+			body: { items: children },
+		} = response as { body: { items: Folder[] } };
+		expect(children.length).toEqual(2);
+		expect(children[0]?.folderId).toEqual("102");
+		expect(children[1]?.folderId).toEqual("101");
 	});
 
 	test("should return folder contents in alphabetical ascending order by type", async () => {
