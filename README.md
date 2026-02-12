@@ -88,6 +88,7 @@ For these, simply fill in any fake value to prevent `require-env-variable` from 
 | ARCHIVEMATICA_HOST_URL             | dev.archivematica.permanent.org                       | Only needed for the archivematica_triggerer lambda                                                                                           |
 | ARCHIVEMATICA_API_KEY              | none                                                  | Only needed for the archivematica_triggerer lambda. Can be found in Bitwarden. Uses the format `username:apikey`                             |
 | ARCHIVEMATICA_ORIGINAL_LOCATION_ID | none                                                  | Only needed for the archivematica_triggerer lambda. Check the dev storage service to find the ID of the correct location for your local env. |
+| ARCHIVEMATICA_PROCESSING_WORKFLOW  | none                                                  | Only needed for the archivematica_triggerer lambda. Check dev Archivematica to find the find the correct processing workflow for your local env. It should have been created in CLOUD_SETUP.md, in the devenv repo. |
 
 ## Linting
 
