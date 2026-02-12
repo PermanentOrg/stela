@@ -30,6 +30,8 @@ COPY --from=builder /usr/local/apps/stela/packages/logger/dist ./packages/logger
 COPY --from=builder /usr/local/apps/stela/packages/logger/package.json ./packages/logger/package.json
 COPY --from=builder /usr/local/apps/stela/packages/s3-utils/dist ./packages/s3-utils/dist
 COPY --from=builder /usr/local/apps/stela/packages/s3-utils/package.json ./packages/s3-utils/package.json
+COPY --from=builder /usr/local/apps/stela/packages/event_utils/dist ./packages/event_utils/dist
+COPY --from=builder /usr/local/apps/stela/packages/event_utils/package.json ./packages/event_utils/package.json
 COPY --from=builder /usr/local/apps/stela/package.json ./package.json
 COPY --from=builder /usr/local/apps/stela/package-lock.json ./package-lock.json
 
