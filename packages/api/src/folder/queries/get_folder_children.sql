@@ -27,7 +27,7 @@ WITH all_children AS (
             FROM folder
             WHERE folder.folderid = :parentFolderId
           ) = 'sort.display_date_asc'
-            THEN displaydt
+            THEN COALESCE(displaytimelowerbound, displaydt)
         END) ASC,
         (CASE
           WHEN (
@@ -35,7 +35,7 @@ WITH all_children AS (
             FROM folder
             WHERE folder.folderid = :parentFolderId
           ) = 'sort.display_date_desc'
-            THEN displaydt
+            THEN COALESCE(displaytimelowerbound, displaydt)
         END) DESC,
         (CASE
           WHEN (
@@ -60,6 +60,7 @@ WITH all_children AS (
       'folder' AS item_type,
       folder_link.folder_linkid,
       folder.displayname,
+      folder.displaytimelowerbound,
       folder.displaydt,
       folder.type
     FROM
@@ -77,6 +78,7 @@ WITH all_children AS (
       'record' AS item_type,
       folder_link.folder_linkid,
       record.displayname,
+      record.displaytimelowerbound,
       record.displaydt,
       record.type
     FROM
