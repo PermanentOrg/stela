@@ -777,7 +777,10 @@ describe("PATCH /records", () => {
 			.mockImplementationOnce(
 				jest.fn().mockResolvedValueOnce({
 					rows: [
-						{ archiveAccessRole: AccessRole.Owner, shareAccessRole: undefined },
+						{
+							archiveAccessRole: AccessRole.Owner,
+							shareAccessRole: undefined,
+						},
 					],
 				}),
 			)
@@ -833,7 +836,10 @@ describe("PATCH /records", () => {
 			.mockImplementationOnce(
 				jest.fn().mockResolvedValueOnce({
 					rows: [
-						{ archiveAccessRole: AccessRole.Owner, shareAccessRole: undefined },
+						{
+							archiveAccessRole: AccessRole.Owner,
+							shareAccessRole: undefined,
+						},
 					],
 				}),
 			)

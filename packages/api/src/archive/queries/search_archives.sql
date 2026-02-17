@@ -30,6 +30,11 @@ WITH all_archives AS (
       ELSE NULL
     END AS owner,
     archive.payeraccountid AS "payerAccountId",
+    CASE
+      WHEN :callerMembershipRoles::text[] != '{}'::text[]
+        THEN user_access.accessrole
+      ELSE NULL
+    END AS "callerMembershipRole",
     ROW_NUMBER() OVER (
       ORDER BY
         TS_RANK(
@@ -70,10 +75,26 @@ WITH all_archives AS (
   LEFT JOIN
     account AS owner_account
     ON owner_account_archive.accountid = owner_account.accountid
+  LEFT JOIN
+    account AS user_access_account
+    ON user_access_account.primaryemail = :userEmail
+  LEFT JOIN
+    account_archive AS user_access
+    ON
+      archive.archiveid = user_access.archiveid
+      AND user_access_account.accountid = user_access.accountid
+      AND user_access.status = 'status.generic.ok'
   WHERE
-    PLAINTO_TSQUERY('english', :searchQuery)
-    @@ TO_TSVECTOR('english', basic_profile_item.string1)
-    AND archive.status != 'status.generic.deleted'
+    archive.status != 'status.generic.deleted'
+    AND (
+      :searchQuery = ''
+      OR PLAINTO_TSQUERY('english', :searchQuery)
+      @@ TO_TSVECTOR('english', basic_profile_item.string1)
+    )
+    AND (
+      :callerMembershipRoles::text[] = '{}'::text[]
+      OR user_access.accessrole = ANY(:callerMembershipRoles::text[])
+    )
     AND (
       (archive.public IS NOT NULL AND archive.public)
       OR (NOT :isAdmin AND EXISTS (
@@ -119,6 +140,7 @@ SELECT
   "rootFolderId",
   owner,
   "payerAccountId",
+  "callerMembershipRole",
   (SELECT total_pages.total_pages FROM total_pages) AS "totalPages"
 FROM all_archives
 WHERE

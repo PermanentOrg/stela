@@ -33,8 +33,20 @@ archiveController.get(
 	) => {
 		try {
 			validateSearchQuery(req.query);
+			if (
+				req.query.callerMembershipRole !== undefined &&
+				req.body.emailFromAuthToken === undefined
+			) {
+				res.status(HTTP_STATUS.CLIENT_ERROR.UNAUTHORIZED).json({
+					error: "Authentication required for callerMembershipRole filter",
+				});
+				return;
+			}
 			const response = await archiveService.searchArchives(
-				req.query.searchQuery,
+				{
+					searchQuery: req.query.searchQuery,
+					callerMembershipRole: req.query.callerMembershipRole,
+				},
 				{
 					pageSize: req.query.pageSize,
 					cursor: req.query.cursor,

@@ -55,6 +55,9 @@ archive:
           format: email
         phoneNumber:
           type: string
+    callerMembershipRole:
+      description: The authenticated user's archive membership role. Only returned when filtering by callerMembershipRole.
+      $ref: "./archive_membership_role.yaml#/archiveMembershipRole"
     status:
       type: string
     type:
