@@ -2,7 +2,6 @@ export const KB = 1024;
 export const GB = KB * KB * KB;
 
 export const ACCESS_ROLE = {
-	Admin: "access.role.admin",
 	Contributor: "access.role.contributor",
 	Curator: "access.role.curator",
 	Editor: "access.role.editor",

@@ -9,7 +9,6 @@ const EDITOR_ACCESS_ROLE_RANK = 3;
 const CURATOR_ACCESS_ROLE_RANK = 4;
 const MANAGER_ACCESS_ROLE_RANK = 5;
 const OWNER_ACCESS_ROLE_RANK = 6;
-const ADMIN_ACCESS_ROLE_RANK = 7;
 
 export const accessRoleLessThan = (
 	roleOne: AccessRole,
@@ -22,7 +21,6 @@ export const accessRoleLessThan = (
 	accessRoleRank.set(AccessRole.Curator, CURATOR_ACCESS_ROLE_RANK);
 	accessRoleRank.set(AccessRole.Manager, MANAGER_ACCESS_ROLE_RANK);
 	accessRoleRank.set(AccessRole.Owner, OWNER_ACCESS_ROLE_RANK);
-	accessRoleRank.set(AccessRole.Admin, ADMIN_ACCESS_ROLE_RANK);
 
 	return accessRoleRank.get(roleOne) < accessRoleRank.get(roleTwo);
 };

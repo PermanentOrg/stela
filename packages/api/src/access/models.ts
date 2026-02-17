@@ -1,5 +1,4 @@
 export enum AccessRole {
-	Admin = "access.role.admin",
 	Contributor = "access.role.contributor",
 	Curator = "access.role.curator",
 	Owner = "access.role.owner",
