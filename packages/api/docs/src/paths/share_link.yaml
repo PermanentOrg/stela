@@ -78,13 +78,14 @@ share-link:
       - name: shareLinkIds
         in: query
         required: false
-        description: An array of share links' ids. Required if shareTokens is not set.
+        description: An array of share links' ids. Required if shareTokens is not set. Requires bearer token authentication.
         schema:
           type: array
           items:
             type: string
     summary: Retrieve a share link by ID or token
     security:
+      - {}
       - bearerHttpAuthentication: []
     operationId: getShareLink
     tags:
