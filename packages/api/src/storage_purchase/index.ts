@@ -1,0 +1,1 @@
+export { storagePurchaseController } from "./controller";
