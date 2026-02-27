@@ -88,6 +88,7 @@ For these, simply fill in any fake value to prevent `require-env-variable` from 
 | ARCHIVEMATICA_HOST_URL             | dev.archivematica.permanent.org                           | Only needed for the archivematica_triggerer lambda                                                                                           |
 | ARCHIVEMATICA_API_KEY              | none                                                      | Only needed for the archivematica_triggerer lambda. Can be found in Bitwarden. Uses the format `username:apikey`                             |
 | ARCHIVEMATICA_ORIGINAL_LOCATION_ID | none                                                      | Only needed for the archivematica_triggerer lambda. Check the dev storage service to find the ID of the correct location for your local env. |
+| STRIPE_SECRET_KEY                  | none                                                      | Can be found in the Stripe dashboard. Use the test key for all non-prod envs.                                                                |
 
 ## Linting
 

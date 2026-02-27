@@ -1,0 +1,37 @@
+storage-purchases:
+  post:
+    summary: Initiate a storage purchase using Stripe.
+    operationId: startStoragePurchase
+    security:
+      - bearerHttpAuthentication: []
+    tags:
+      - storage-purchases
+    requestBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [amountInUSD]
+            properties:
+              amountInUSD:
+                description: The amount of money to be used to purchase storage in US dollars
+                type: integer
+    responses:
+      "201":
+        description: An abridged form of the Stripe PaymentIntent object representing the transaction
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                data:
+                  type: object
+                  properties:
+                    clientSecret:
+                      type: string
+      "400":
+        $ref: "../errors.yaml#/400"
+      "401":
+        $ref: "../errors.yaml#/401"
+      "500":
+        $ref: "../errors.yaml#/500"
