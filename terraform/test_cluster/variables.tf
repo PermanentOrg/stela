@@ -353,3 +353,8 @@ variable "staging_archivematica_processing_workflow" {
   type        = string
   default     = "default"
 }
+
+variable "stripe_test_secret_key" {
+  description = "A key used in dev and staging to connect to Stripe's test environment"
+  type        = string
+}

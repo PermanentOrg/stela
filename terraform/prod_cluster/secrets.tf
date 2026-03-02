@@ -20,5 +20,6 @@ resource "kubernetes_secret" "prod-secrets" {
     "NEW_RELIC_LICENSE_KEY"           = var.new_relic_license_key
     "CLOUDFRONT_KEY_PAIR_ID"          = var.cloudfront_key_pair_id
     "CLOUDFRONT_PRIVATE_KEY"          = var.cloudfront_private_key
+    "STRIPE_SECRET_KEY"               = var.stripe_secret_key
   }
 }
