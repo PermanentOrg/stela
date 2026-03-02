@@ -40,9 +40,9 @@ export const getRecords = async (requestQuery: {
 		// should be removed when our clients no longer rely on this endpoint returning
 		// records in a particular order.
 		const recordsById = new Map<string, ArchiveRecord>();
-		records.forEach((archiveRecord: ArchiveRecord) =>
-			recordsById.set(archiveRecord.recordId, archiveRecord),
-		);
+		records.forEach((archiveRecord: ArchiveRecord) => {
+			recordsById.set(archiveRecord.recordId, archiveRecord);
+		});
 		const recordsInOrder = requestQuery.recordIds
 			.map((recordId: string) => recordsById.get(recordId))
 			.filter(
