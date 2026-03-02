@@ -215,6 +215,17 @@ resource "kubernetes_deployment" "stela_dev" {
           }
 
           env {
+            name = "STRIPE_SECRET_KEY"
+            value_from {
+              secret_key_ref {
+                name     = "dev-secrets"
+                key      = "STRIPE_SECRET_KEY"
+                optional = false
+              }
+            }
+          }
+
+          env {
             name  = "NEW_RELIC_APP_NAME"
             value = var.dev_new_relic_app_name
           }

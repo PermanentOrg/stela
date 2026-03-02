@@ -250,3 +250,8 @@ variable "archivematica_processing_workflow" {
   type        = string
   default     = "default"
 }
+
+variable "stripe_secret_key" {
+  description = "A key used to connect to Stripe"
+  type        = string
+}

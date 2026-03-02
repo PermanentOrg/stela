@@ -215,6 +215,17 @@ resource "kubernetes_deployment" "stela_staging" {
           }
 
           env {
+            name = "STRIPE_SECRET_KEY"
+            value_from {
+              secret_key_ref {
+                name     = "staging-secrets"
+                key      = "STRIPE_SECRET_KEY"
+                optional = false
+              }
+            }
+          }
+
+          env {
             name  = "NEW_RELIC_APP_NAME"
             value = var.staging_new_relic_app_name
           }
