@@ -62,6 +62,8 @@ export default defineConfig([
 			"@typescript-eslint/no-magic-numbers": "off",
 			// async methods without awaits are sometimes needed for mocking
 			"@typescript-eslint/require-await": "off",
+			// This interferes with some mocking patterns that we use widely
+			"@typescript-eslint/strict-void-return": "off",
 		},
 	},
 ]);
