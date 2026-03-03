@@ -163,6 +163,7 @@
 <ExifIFD:ComponentsConfiguration>Y, Cb, Cr, -</ExifIFD:ComponentsConfiguration>
 <ExifIFD:FlashpixVersion>0100</ExifIFD:FlashpixVersion>
 <ExifIFD:ColorSpace>Uncalibrated</ExifIFD:ColorSpace>
+<ExifIFD:UserComment></ExifIFD:UserComment>
 <IPTC:ObjectAttributeReference>000:Actuality</IPTC:ObjectAttributeReference>
 <IPTC:ObjectName>Test Image Title</IPTC:ObjectName>
 <IPTC:SubjectReference>
