@@ -4,20 +4,20 @@ import type { MetsMetadata } from "./models";
 
 const rdfMetadataSchema = Joi.object({
 	"File:MIMEType": Joi.string().required(),
-	"IPTC:ObjectName": Joi.string().optional(),
-	"IPTC:Caption-Abstract": Joi.string().optional(),
+	"IPTC:ObjectName": Joi.string().optional().empty(""),
+	"IPTC:Caption-Abstract": Joi.string().optional().empty(""),
 	"IPTC:Keywords": Joi.object({
 		"rdf:Bag": Joi.object({
 			"rdf:li": Joi.array().items(Joi.string()).required(),
 		}).required(),
 	}).optional(),
-	"ExifIFD:Title": Joi.string().optional(),
-	"ExifIFD:UserComment": Joi.string().optional(),
-	"ExifIFD:Comments": Joi.string().optional(),
-	"ExifIFD:DateTimeOriginal": Joi.string().optional(),
-	"ExifIFD:OffsetTimeOriginal": Joi.string().optional(),
-	"XMP-iptcCore:AltTextAccessibility": Joi.string().optional(),
-	"QuickTime:CreationDate": Joi.string().optional(),
+	"ExifIFD:Title": Joi.string().optional().empty(""),
+	"ExifIFD:UserComment": Joi.string().optional().empty(""),
+	"ExifIFD:Comments": Joi.string().optional().empty(""),
+	"ExifIFD:DateTimeOriginal": Joi.string().optional().empty(""),
+	"ExifIFD:OffsetTimeOriginal": Joi.string().optional().empty(""),
+	"XMP-iptcCore:AltTextAccessibility": Joi.string().optional().empty(""),
+	"QuickTime:CreationDate": Joi.string().optional().empty(""),
 }).unknown(true);
 
 const trackMetadataSchema = Joi.object({
