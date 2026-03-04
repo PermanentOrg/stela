@@ -90,7 +90,9 @@ For these, simply fill in any fake value to prevent `require-env-variable` from 
 | ARCHIVEMATICA_ORIGINAL_LOCATION_ID | none                                                      | Only needed for the archivematica_triggerer lambda. Check the dev storage service to find the ID of the correct location for your local env.                                                                        |
 | ARCHIVEMATICA_PROCESSING_WORKFLOW  | none                                                      | Only needed for the archivematica_triggerer lambda. Check dev Archivematica to find the find the correct processing workflow for your local env. It should have been created in CLOUD_SETUP.md, in the devenv repo. |
 | STRIPE_SECRET_KEY                  | none                                                      | Can be found in the Stripe dashboard. Use the test key for all non-prod envs.                                                                                                                                       |
+| STRIPE_WEBHOOK_SECRET              | none                                                      | Can be found in the Stripe dashboard.                                                                                                                                                                               |
 | DELEGATED_CALL_SECRET              | local-test-delegated-call-secret                          | A secret other servers pass to the stela API to verify their identities. This can be left as the default in local environments.                                                                                     |
+| SLACK_WEBHOOK_URL                  | none                                                      | Don't set this in your local environment unless you're testing Slack notifications specifically; we don't want to spam the channel                                                                                  |
 
 ## Linting
 

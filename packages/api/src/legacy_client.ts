@@ -1,5 +1,7 @@
 const hostUrl = process.env["LEGACY_BACKEND_HOST_URL"] ?? "";
 const authenticationSecret = process.env["LEGACY_BACKEND_SHARED_SECRET"] ?? "";
+const creditStorageAuthenticationSecret =
+	process.env["LEGACY_BACKEND_CREDIT_STORAGE_SECRET"] ?? "";
 
 const transferArchiveOwnership = async (request: {
 	recipientEmail: string;
@@ -27,4 +29,24 @@ const transferArchiveOwnership = async (request: {
 	return response;
 };
 
-export const legacyClient = { transferArchiveOwnership };
+const creditStorage = async (request: {
+	accountId: number;
+	donationAmountInCents: number;
+	paymentIntentId: string;
+}): Promise<Response> => {
+	const response = await fetch(`${hostUrl}/billing/claimpledgemobile`, {
+		method: "POST",
+		headers: {
+			"Content-Type": "application/json",
+		},
+		body: JSON.stringify({
+			accountId: request.accountId,
+			donationAmountUSX: request.donationAmountInCents,
+			pledgeId: request.paymentIntentId,
+			donationToken: creditStorageAuthenticationSecret,
+		}),
+	});
+	return response;
+};
+
+export const legacyClient = { transferArchiveOwnership, creditStorage };
