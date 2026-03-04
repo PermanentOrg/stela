@@ -1,12 +1,16 @@
 import request from "supertest";
+import Stripe from "stripe";
+import { logger } from "@stela/logger";
 import { app } from "../app";
 import { db } from "../database";
 import { stripeClient } from "../stripe";
+import { legacyClient } from "../legacy_client";
 import { verifyUserAuthentication } from "../middleware";
 import { mockVerifyUserAuthentication } from "../../test/middleware_mocks";
 
 jest.mock("../database");
 jest.mock("../stripe");
+jest.mock("../legacy_client");
 jest.mock("../middleware");
 jest.mock("@stela/logger");
 
@@ -232,5 +236,218 @@ describe("POST /storage-purchases", () => {
 			.post("/api/v2/storage-purchases")
 			.send({ amountInUSD: 10 })
 			.expect(500);
+	});
+});
+
+describe("POST /storage-purchases/stripe/webhook", () => {
+	const agent = request(app);
+
+	const mockPaymentIntent = {
+		id: "pi_test123",
+		customer: "cus_existing123",
+		amount: 10000,
+	};
+
+	const mockSuccessEvent = {
+		type: "payment_intent.succeeded",
+		data: { object: mockPaymentIntent },
+	};
+
+	beforeEach(async () => {
+		process.env["STRIPE_WEBHOOK_SECRET"] = "test_webhook_secret";
+		jest
+			.spyOn(stripeClient.webhooks, "constructEvent")
+			.mockImplementation(jest.fn().mockReturnValue(mockSuccessEvent));
+		jest
+			.spyOn(legacyClient, "creditStorage")
+			.mockImplementation(jest.fn().mockResolvedValue({ ok: true }));
+		await clearDatabase();
+		await loadFixtures();
+	});
+
+	afterEach(async () => {
+		delete process.env["STRIPE_WEBHOOK_SECRET"];
+		delete process.env["SLACK_WEBHOOK_URL"];
+		await clearDatabase();
+		jest.restoreAllMocks();
+		jest.clearAllMocks();
+	});
+
+	test("should return 400 if no stripe-signature header", async () => {
+		await agent
+			.post("/api/v2/storage-purchases/stripe/webhook")
+			.set("Content-Type", "application/json")
+			.send("{}")
+			.expect(400);
+	});
+
+	test("should return 400 if Stripe signature verification fails", async () => {
+		const signatureError = new Stripe.errors.StripeSignatureVerificationError({
+			type: "api_error",
+		});
+		jest.spyOn(stripeClient.webhooks, "constructEvent").mockImplementationOnce(
+			jest.fn().mockImplementation(() => {
+				throw signatureError;
+			}),
+		);
+		await agent
+			.post("/api/v2/storage-purchases/stripe/webhook")
+			.set("stripe-signature", "invalid_sig")
+			.set("Content-Type", "application/json")
+			.send("{}")
+			.expect(400);
+	});
+
+	test("should return 200 on payment_intent.succeeded", async () => {
+		await agent
+			.post("/api/v2/storage-purchases/stripe/webhook")
+			.set("stripe-signature", "test_sig")
+			.set("Content-Type", "application/json")
+			.send("{}")
+			.expect(200);
+	});
+
+	test("should call creditStorage with the correct params on payment_intent.succeeded", async () => {
+		await agent
+			.post("/api/v2/storage-purchases/stripe/webhook")
+			.set("stripe-signature", "test_sig")
+			.set("Content-Type", "application/json")
+			.send("{}");
+		expect(legacyClient.creditStorage).toHaveBeenCalledWith({
+			accountId: "3",
+			donationAmountInCents: 10000,
+			paymentIntentId: "pi_test123",
+		});
+	});
+
+	test("should return 200 on payment_intent.payment_failed and log the failure", async () => {
+		jest.spyOn(stripeClient.webhooks, "constructEvent").mockImplementation(
+			jest.fn().mockReturnValueOnce({
+				type: "payment_intent.payment_failed",
+				data: { object: mockPaymentIntent },
+			}),
+		);
+		await agent
+			.post("/api/v2/storage-purchases/stripe/webhook")
+			.set("stripe-signature", "test_sig")
+			.set("Content-Type", "application/json")
+			.send("{}")
+			.expect(200);
+		expect(logger.info).toHaveBeenCalledWith("Stripe payment failed", {
+			paymentIntentId: "pi_test123",
+		});
+	});
+
+	test("should return 200 on unhandled event types", async () => {
+		jest.spyOn(stripeClient.webhooks, "constructEvent").mockImplementation(
+			jest.fn().mockReturnValueOnce({
+				type: "customer.created",
+				data: { object: {} },
+			}),
+		);
+		await agent
+			.post("/api/v2/storage-purchases/stripe/webhook")
+			.set("stripe-signature", "test_sig")
+			.set("Content-Type", "application/json")
+			.send("{}")
+			.expect(200);
+	});
+
+	test("should return 500 if the account lookup fails", async () => {
+		jest
+			.spyOn(db, "sql")
+			.mockImplementationOnce(
+				jest.fn().mockRejectedValueOnce(new Error("DB error")),
+			);
+		await agent
+			.post("/api/v2/storage-purchases/stripe/webhook")
+			.set("stripe-signature", "test_sig")
+			.set("Content-Type", "application/json")
+			.send("{}")
+			.expect(500);
+	});
+
+	test("should return 500 if no account is found for the Stripe customer", async () => {
+		jest
+			.spyOn(db, "sql")
+			.mockImplementationOnce(jest.fn().mockResolvedValueOnce({ rows: [] }));
+		await agent
+			.post("/api/v2/storage-purchases/stripe/webhook")
+			.set("stripe-signature", "test_sig")
+			.set("Content-Type", "application/json")
+			.send("{}")
+			.expect(500);
+	});
+
+	test("should return 500 if creditStorage throws", async () => {
+		jest
+			.spyOn(legacyClient, "creditStorage")
+			.mockRejectedValueOnce(new Error("Network error"));
+		await agent
+			.post("/api/v2/storage-purchases/stripe/webhook")
+			.set("stripe-signature", "test_sig")
+			.set("Content-Type", "application/json")
+			.send("{}")
+			.expect(500);
+	});
+
+	test("should return 500 if the legacy API returns an error", async () => {
+		jest
+			.spyOn(legacyClient, "creditStorage")
+			.mockImplementation(
+				jest.fn().mockResolvedValueOnce({ ok: false, status: 500 }),
+			);
+		await agent
+			.post("/api/v2/storage-purchases/stripe/webhook")
+			.set("stripe-signature", "test_sig")
+			.set("Content-Type", "application/json")
+			.send("{}")
+			.expect(500);
+	});
+
+	test("should send a Slack notification on payment_intent.succeeded", async () => {
+		process.env["SLACK_WEBHOOK_URL"] = "https://hooks.slack.com/test";
+		jest
+			.spyOn(global, "fetch")
+			.mockImplementation(jest.fn().mockResolvedValue({ ok: true }));
+		await agent
+			.post("/api/v2/storage-purchases/stripe/webhook")
+			.set("stripe-signature", "test_sig")
+			.set("Content-Type", "application/json")
+			.send("{}");
+		expect(global.fetch).toHaveBeenCalledWith(
+			"https://hooks.slack.com/test",
+			expect.objectContaining({
+				method: "POST",
+				body: JSON.stringify({
+					text: "NEW PURCHASE - Test User 2 just spent $100 on storage!",
+					icon_url:
+						"https://www.permanent.org/app/assets/icon/android-chrome-192x192.png",
+				}),
+			}),
+		);
+	});
+
+	test("should not send a Slack notification if SLACK_WEBHOOK_URL is not set", async () => {
+		jest
+			.spyOn(global, "fetch")
+			.mockImplementation(jest.fn().mockResolvedValue({ ok: true }));
+		await agent
+			.post("/api/v2/storage-purchases/stripe/webhook")
+			.set("stripe-signature", "test_sig")
+			.set("Content-Type", "application/json")
+			.send("{}");
+		expect(global.fetch).not.toHaveBeenCalled();
+	});
+
+	test("should return 200 if the Slack notification fails", async () => {
+		process.env["SLACK_WEBHOOK_URL"] = "https://hooks.slack.com/test";
+		jest.spyOn(global, "fetch").mockRejectedValue(new Error("Slack error"));
+		await agent
+			.post("/api/v2/storage-purchases/stripe/webhook")
+			.set("stripe-signature", "test_sig")
+			.set("Content-Type", "application/json")
+			.send("{}")
+			.expect(200);
 	});
 });
