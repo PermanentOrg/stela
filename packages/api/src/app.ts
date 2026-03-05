@@ -27,6 +27,11 @@ if (env === "dev") {
 }
 
 app.use(expressWinston.logger({ level: "http", winstonInstance: logger }));
+// Must be before express.json() so the raw body is available for Stripe signature verification
+app.use(
+	"/api/v2/storage-purchases/stripe/webhook",
+	express.raw({ type: "application/json" }),
+);
 app.use(express.json());
 
 // This is a temporary measure; it should be removed when the rest of

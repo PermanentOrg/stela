@@ -124,6 +124,11 @@ variable "prod_legacy_backend_shared_secret" {
   type        = string
 }
 
+variable "legacy_backend_credit_storage_secret" {
+  description = "Shared secret for authenticating calls to the legacy backend's credit storage endpoint"
+  type        = string
+}
+
 variable "mailchimp_api_key" {
   description = "API key for Mailchimp Marketing"
   type        = string
@@ -253,5 +258,15 @@ variable "archivematica_processing_workflow" {
 
 variable "stripe_secret_key" {
   description = "A key used to connect to Stripe"
+  type        = string
+}
+
+variable "stripe_webhook_secret" {
+  description = "A key used to authenticate calls to the Stripe webhook"
+  type        = string
+}
+
+variable "slack_webhook_url" {
+  description = "The webhook URL for posting messages in Permanent's slack"
   type        = string
 }

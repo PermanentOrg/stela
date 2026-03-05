@@ -4,23 +4,25 @@ resource "kubernetes_secret" "dev-secrets" {
   }
 
   data = {
-    "DATABASE_URL"                    = var.dev_database_url
-    "FUSIONAUTH_API_KEY"              = var.dev_fusionauth_api_key
-    "LEGACY_BACKEND_SHARED_SECRET"    = var.dev_legacy_backend_shared_secret
-    "MAILCHIMP_API_KEY"               = var.mailchimp_api_key
-    "MAILCHIMP_TRANSACTIONAL_API_KEY" = var.mailchimp_transactional_api_key
-    "SENTRY_DSN"                      = var.sentry_dsn
-    "AWS_ACCESS_KEY_ID"               = var.dev_aws_access_key_id
-    "AWS_SECRET_ACCESS_KEY"           = var.dev_aws_secret_access_key
-    "LOW_PRIORITY_TOPIC_ARN"          = var.dev_low_priority_topic_arn
-    "EVENT_TOPIC_ARN"                 = var.dev_event_topic_arn
-    "MIXPANEL_TOKEN"                  = var.dev_mixpanel_token
-    "ARCHIVEMATICA_BASE_URL"          = var.dev_archivematica_base_url
-    "ARCHIVEMATICA_API_KEY"           = var.dev_archivematica_api_key
-    "NEW_RELIC_LICENSE_KEY"           = var.dev_new_relic_license_key
-    "CLOUDFRONT_KEY_PAIR_ID"          = var.cloudfront_key_pair_id
-    "CLOUDFRONT_PRIVATE_KEY"          = var.cloudfront_private_key
-    "STRIPE_SECRET_KEY"               = var.stripe_test_secret_key
+    "DATABASE_URL"                         = var.dev_database_url
+    "FUSIONAUTH_API_KEY"                   = var.dev_fusionauth_api_key
+    "LEGACY_BACKEND_SHARED_SECRET"         = var.dev_legacy_backend_shared_secret
+    "LEGACY_BACKEND_CREDIT_STORAGE_SECRET" = var.dev_legacy_backend_credit_storage_secret
+    "MAILCHIMP_API_KEY"                    = var.mailchimp_api_key
+    "MAILCHIMP_TRANSACTIONAL_API_KEY"      = var.mailchimp_transactional_api_key
+    "SENTRY_DSN"                           = var.sentry_dsn
+    "AWS_ACCESS_KEY_ID"                    = var.dev_aws_access_key_id
+    "AWS_SECRET_ACCESS_KEY"                = var.dev_aws_secret_access_key
+    "LOW_PRIORITY_TOPIC_ARN"               = var.dev_low_priority_topic_arn
+    "EVENT_TOPIC_ARN"                      = var.dev_event_topic_arn
+    "MIXPANEL_TOKEN"                       = var.dev_mixpanel_token
+    "ARCHIVEMATICA_BASE_URL"               = var.dev_archivematica_base_url
+    "ARCHIVEMATICA_API_KEY"                = var.dev_archivematica_api_key
+    "NEW_RELIC_LICENSE_KEY"                = var.dev_new_relic_license_key
+    "CLOUDFRONT_KEY_PAIR_ID"               = var.cloudfront_key_pair_id
+    "CLOUDFRONT_PRIVATE_KEY"               = var.cloudfront_private_key
+    "STRIPE_SECRET_KEY"                    = var.stripe_test_secret_key
+    "STRIPE_WEBHOOK_SECRET"                = var.stripe_dev_webhook_secret
   }
 }
 
@@ -30,22 +32,24 @@ resource "kubernetes_secret" "staging-secrets" {
   }
 
   data = {
-    "DATABASE_URL"                    = var.staging_database_url
-    "FUSIONAUTH_API_KEY"              = var.staging_fusionauth_api_key
-    "LEGACY_BACKEND_SHARED_SECRET"    = var.staging_legacy_backend_shared_secret
-    "MAILCHIMP_API_KEY"               = var.mailchimp_api_key
-    "MAILCHIMP_TRANSACTIONAL_API_KEY" = var.mailchimp_transactional_api_key
-    "SENTRY_DSN"                      = var.sentry_dsn
-    "AWS_ACCESS_KEY_ID"               = var.staging_aws_access_key_id
-    "AWS_SECRET_ACCESS_KEY"           = var.staging_aws_secret_access_key
-    "LOW_PRIORITY_TOPIC_ARN"          = var.staging_low_priority_topic_arn
-    "EVENT_TOPIC_ARN"                 = var.staging_event_topic_arn
-    "MIXPANEL_TOKEN"                  = var.staging_mixpanel_token
-    "ARCHIVEMATICA_BASE_URL"          = var.staging_archivematica_base_url
-    "ARCHIVEMATICA_API_KEY"           = var.staging_archivematica_api_key
-    "NEW_RELIC_LICENSE_KEY"           = var.staging_new_relic_license_key
-    "CLOUDFRONT_KEY_PAIR_ID"          = var.cloudfront_key_pair_id
-    "CLOUDFRONT_PRIVATE_KEY"          = var.cloudfront_private_key
-    "STRIPE_SECRET_KEY"               = var.stripe_test_secret_key
+    "DATABASE_URL"                         = var.staging_database_url
+    "FUSIONAUTH_API_KEY"                   = var.staging_fusionauth_api_key
+    "LEGACY_BACKEND_SHARED_SECRET"         = var.staging_legacy_backend_shared_secret
+    "LEGACY_BACKEND_CREDIT_STORAGE_SECRET" = var.dev_legacy_backend_credit_storage_secret
+    "MAILCHIMP_API_KEY"                    = var.mailchimp_api_key
+    "MAILCHIMP_TRANSACTIONAL_API_KEY"      = var.mailchimp_transactional_api_key
+    "SENTRY_DSN"                           = var.sentry_dsn
+    "AWS_ACCESS_KEY_ID"                    = var.staging_aws_access_key_id
+    "AWS_SECRET_ACCESS_KEY"                = var.staging_aws_secret_access_key
+    "LOW_PRIORITY_TOPIC_ARN"               = var.staging_low_priority_topic_arn
+    "EVENT_TOPIC_ARN"                      = var.staging_event_topic_arn
+    "MIXPANEL_TOKEN"                       = var.staging_mixpanel_token
+    "ARCHIVEMATICA_BASE_URL"               = var.staging_archivematica_base_url
+    "ARCHIVEMATICA_API_KEY"                = var.staging_archivematica_api_key
+    "NEW_RELIC_LICENSE_KEY"                = var.staging_new_relic_license_key
+    "CLOUDFRONT_KEY_PAIR_ID"               = var.cloudfront_key_pair_id
+    "CLOUDFRONT_PRIVATE_KEY"               = var.cloudfront_private_key
+    "STRIPE_SECRET_KEY"                    = var.stripe_test_secret_key
+    "STRIPE_WEBHOOK_SECRET"                = var.stripe_staging_webhook_secret
   }
 }
