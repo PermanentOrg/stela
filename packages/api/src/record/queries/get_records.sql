@@ -168,7 +168,7 @@ SELECT DISTINCT ON (record.recordid)
   record.uploadpayeraccountid AS "uploadPayerAccountId",
   record.size,
   record.displaydt AS "displayDate",
-  record.originalfilecreationtime AS "displayTimeInEDTF",
+  record.originalfilecreationtime AS "displayTime",
   record.derivedcreateddt AS "fileCreatedAt",
   record.imageratio AS "imageRatio",
   record.thumburl200 AS "thumbUrl200",

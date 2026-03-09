@@ -45,7 +45,7 @@ export const validatePatchRecordRequest: (
 			locationId: Joi.number().integer().optional().allow(null),
 			description: Joi.string().optional().allow(null),
 			displayName: Joi.string().min(1).optional(),
-			displayTimeInEDTF: Joi.string()
+			displayTime: Joi.string()
 				.custom((value: string) => {
 					if (isValidEDTF(value, 1)) {
 						return value;
@@ -58,7 +58,7 @@ export const validatePatchRecordRequest: (
 		})
 		// We can't use .min(1) here due to the auth fields being in the body
 		// See: https://github.com/PermanentOrg/stela/issues/407
-		.or("locationId", "description", "displayName", "displayTimeInEDTF")
+		.or("locationId", "description", "displayName", "displayTime")
 		.unknown(false)
 		.validate(data);
 

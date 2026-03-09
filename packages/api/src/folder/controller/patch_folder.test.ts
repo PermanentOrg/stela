@@ -77,10 +77,10 @@ describe("patch folder", () => {
 		expect(result.rows[0]).toStrictEqual({ displaydt: null });
 	});
 
-	test("expect displayTimeInEDTF is updated", async () => {
+	test("expect displayTime is updated", async () => {
 		await agent
 			.patch("/api/v2/folders/1")
-			.send({ displayTimeInEDTF: "2024-1X" })
+			.send({ displayTime: "2024-1X" })
 			.expect(200);
 
 		const result = await db.query(
@@ -93,10 +93,10 @@ describe("patch folder", () => {
 		expect(result.rows[0]).toEqual({ displaytime: "2024-1X" });
 	});
 
-	test("expect displayTimeInEDTF is updated when set to null", async () => {
+	test("expect displayTime is updated when set to null", async () => {
 		await agent
 			.patch("/api/v2/folders/2")
-			.send({ displayTimeInEDTF: null })
+			.send({ displayTime: null })
 			.expect(200);
 
 		const result = await db.query(
@@ -109,10 +109,10 @@ describe("patch folder", () => {
 		expect(result.rows[0]).toEqual({ displaytime: null });
 	});
 
-	test("expect 400 error when displayTimeInEDTF is not valid Level 1 EDTF", async () => {
+	test("expect 400 error when displayTime is not valid Level 1 EDTF", async () => {
 		await agent
 			.patch("/api/v2/folders/2")
-			.send({ displayTimeInEDTF: "2024-33" })
+			.send({ displayTime: "2024-33" })
 			.expect(400);
 	});
 
@@ -234,7 +234,7 @@ describe("patch folder", () => {
 		test("expect displaytimelowerbound is set for year only (YYYY)", async () => {
 			await agent
 				.patch("/api/v2/folder/1")
-				.send({ displayTimeInEDTF: "2024" })
+				.send({ displayTime: "2024" })
 				.expect(200);
 
 			const result = await db.query(
@@ -250,7 +250,7 @@ describe("patch folder", () => {
 		test("expect displaytimelowerbound is set for year-month (YYYY-MM)", async () => {
 			await agent
 				.patch("/api/v2/folder/1")
-				.send({ displayTimeInEDTF: "2024-06" })
+				.send({ displayTime: "2024-06" })
 				.expect(200);
 
 			const result = await db.query(
@@ -266,7 +266,7 @@ describe("patch folder", () => {
 		test("expect displaytimelowerbound is set for full date (YYYY-MM-DD)", async () => {
 			await agent
 				.patch("/api/v2/folder/1")
-				.send({ displayTimeInEDTF: "2024-06-15" })
+				.send({ displayTime: "2024-06-15" })
 				.expect(200);
 
 			const result = await db.query(
@@ -282,7 +282,7 @@ describe("patch folder", () => {
 		test("expect displaytimelowerbound is set for date with time (YYYY-MM-DDTHH:MM:SS)", async () => {
 			await agent
 				.patch("/api/v2/folder/1")
-				.send({ displayTimeInEDTF: "2024-06-15T14:30:45" })
+				.send({ displayTime: "2024-06-15T14:30:45" })
 				.expect(200);
 
 			const result = await db.query(
@@ -298,7 +298,7 @@ describe("patch folder", () => {
 		test("expect displaytimelowerbound is set for date with UTC timezone (YYYY-MM-DDTHH:MM:SSZ)", async () => {
 			await agent
 				.patch("/api/v2/folder/1")
-				.send({ displayTimeInEDTF: "2024-06-15T14:30:45Z" })
+				.send({ displayTime: "2024-06-15T14:30:45Z" })
 				.expect(200);
 
 			const result = await db.query(
@@ -314,7 +314,7 @@ describe("patch folder", () => {
 		test("expect displaytimelowerbound is set for date with timezone offset (YYYY-MM-DDTHH:MM:SS+HH:MM)", async () => {
 			await agent
 				.patch("/api/v2/folder/1")
-				.send({ displayTimeInEDTF: "2024-06-15T14:30:45-07:00" })
+				.send({ displayTime: "2024-06-15T14:30:45-07:00" })
 				.expect(200);
 
 			const result = await db.query(
@@ -330,7 +330,7 @@ describe("patch folder", () => {
 		test("expect displaytimelowerbound is set for uncertain date (YYYY-MM-DD?)", async () => {
 			await agent
 				.patch("/api/v2/folder/1")
-				.send({ displayTimeInEDTF: "2024-06-15?" })
+				.send({ displayTime: "2024-06-15?" })
 				.expect(200);
 
 			const result = await db.query(
@@ -346,7 +346,7 @@ describe("patch folder", () => {
 		test("expect displaytimelowerbound is set for uncertain year (YYYY?)", async () => {
 			await agent
 				.patch("/api/v2/folder/1")
-				.send({ displayTimeInEDTF: "2024?" })
+				.send({ displayTime: "2024?" })
 				.expect(200);
 
 			const result = await db.query(
@@ -362,7 +362,7 @@ describe("patch folder", () => {
 		test("expect displaytimelowerbound is set for uncertain year-month (YYYY-MM?)", async () => {
 			await agent
 				.patch("/api/v2/folder/1")
-				.send({ displayTimeInEDTF: "2024-06?" })
+				.send({ displayTime: "2024-06?" })
 				.expect(200);
 
 			const result = await db.query(
@@ -378,7 +378,7 @@ describe("patch folder", () => {
 		test("expect displaytimelowerbound is set for approximate date (YYYY-MM-DD~)", async () => {
 			await agent
 				.patch("/api/v2/folder/1")
-				.send({ displayTimeInEDTF: "2024-06-15~" })
+				.send({ displayTime: "2024-06-15~" })
 				.expect(200);
 
 			const result = await db.query(
@@ -394,7 +394,7 @@ describe("patch folder", () => {
 		test("expect displaytimelowerbound is set for uncertain and approximate date (YYYY-MM-DD%)", async () => {
 			await agent
 				.patch("/api/v2/folder/1")
-				.send({ displayTimeInEDTF: "2024-06-15%" })
+				.send({ displayTime: "2024-06-15%" })
 				.expect(200);
 
 			const result = await db.query(
@@ -410,7 +410,7 @@ describe("patch folder", () => {
 		test("expect displaytimelowerbound is set for uncertain and approximate year (YYYY%)", async () => {
 			await agent
 				.patch("/api/v2/folder/1")
-				.send({ displayTimeInEDTF: "2024%" })
+				.send({ displayTime: "2024%" })
 				.expect(200);
 
 			const result = await db.query(
@@ -426,7 +426,7 @@ describe("patch folder", () => {
 		test("expect displaytimelowerbound is set for unspecified day (YYYY-MM-XX)", async () => {
 			await agent
 				.patch("/api/v2/folder/1")
-				.send({ displayTimeInEDTF: "2024-06-XX" })
+				.send({ displayTime: "2024-06-XX" })
 				.expect(200);
 
 			const result = await db.query(
@@ -442,7 +442,7 @@ describe("patch folder", () => {
 		test("expect displaytimelowerbound is set for unspecified month (YYYY-XX)", async () => {
 			await agent
 				.patch("/api/v2/folder/1")
-				.send({ displayTimeInEDTF: "2024-XX" })
+				.send({ displayTime: "2024-XX" })
 				.expect(200);
 
 			const result = await db.query(
@@ -458,7 +458,7 @@ describe("patch folder", () => {
 		test("expect displaytimelowerbound is set for unspecified year digits (19XX)", async () => {
 			await agent
 				.patch("/api/v2/folder/1")
-				.send({ displayTimeInEDTF: "19XX" })
+				.send({ displayTime: "19XX" })
 				.expect(200);
 
 			const result = await db.query(
@@ -474,7 +474,7 @@ describe("patch folder", () => {
 		test("expect displaytimelowerbound is set for multiple unspecified digits (1XXX)", async () => {
 			await agent
 				.patch("/api/v2/folder/1")
-				.send({ displayTimeInEDTF: "1XXX" })
+				.send({ displayTime: "1XXX" })
 				.expect(200);
 
 			const result = await db.query(
@@ -490,7 +490,7 @@ describe("patch folder", () => {
 		test("expect displaytimelowerbound is -infinity for completely unspecified year (XXXX)", async () => {
 			await agent
 				.patch("/api/v2/folder/1")
-				.send({ displayTimeInEDTF: "XXXX" })
+				.send({ displayTime: "XXXX" })
 				.expect(200);
 
 			const result = await db.query(
@@ -504,7 +504,7 @@ describe("patch folder", () => {
 		test("expect displaytimelowerbound is set for full interval (YYYY-MM-DD/YYYY-MM-DD)", async () => {
 			await agent
 				.patch("/api/v2/folder/1")
-				.send({ displayTimeInEDTF: "2024-01-15/2024-06-15" })
+				.send({ displayTime: "2024-01-15/2024-06-15" })
 				.expect(200);
 
 			const result = await db.query(
@@ -520,7 +520,7 @@ describe("patch folder", () => {
 		test("expect displaytimelowerbound is set for interval with open end (YYYY-MM-DD/..)", async () => {
 			await agent
 				.patch("/api/v2/folder/1")
-				.send({ displayTimeInEDTF: "2024-01-15/.." })
+				.send({ displayTime: "2024-01-15/.." })
 				.expect(200);
 
 			const result = await db.query(
@@ -536,7 +536,7 @@ describe("patch folder", () => {
 		test("expect displaytimelowerbound is -infinity for interval with open start (../YYYY-MM-DD)", async () => {
 			await agent
 				.patch("/api/v2/folder/1")
-				.send({ displayTimeInEDTF: "../2024-06-15" })
+				.send({ displayTime: "../2024-06-15" })
 				.expect(200);
 
 			const result = await db.query(
@@ -550,7 +550,7 @@ describe("patch folder", () => {
 		test("expect displaytimelowerbound is -infinity for interval with unknown start (/YYYY-MM-DD)", async () => {
 			await agent
 				.patch("/api/v2/folder/1")
-				.send({ displayTimeInEDTF: "/2024-06-15" })
+				.send({ displayTime: "/2024-06-15" })
 				.expect(200);
 
 			const result = await db.query(
@@ -564,7 +564,7 @@ describe("patch folder", () => {
 		test("expect displaytimelowerbound is set for year interval (YYYY/YYYY)", async () => {
 			await agent
 				.patch("/api/v2/folder/1")
-				.send({ displayTimeInEDTF: "2020/2024" })
+				.send({ displayTime: "2020/2024" })
 				.expect(200);
 
 			const result = await db.query(
@@ -580,7 +580,7 @@ describe("patch folder", () => {
 		test("expect displaytimelowerbound is set for spring (YYYY-21)", async () => {
 			await agent
 				.patch("/api/v2/folder/1")
-				.send({ displayTimeInEDTF: "2024-21" })
+				.send({ displayTime: "2024-21" })
 				.expect(200);
 
 			const result = await db.query(
@@ -596,7 +596,7 @@ describe("patch folder", () => {
 		test("expect displaytimelowerbound is set for summer (YYYY-22)", async () => {
 			await agent
 				.patch("/api/v2/folder/1")
-				.send({ displayTimeInEDTF: "2024-22" })
+				.send({ displayTime: "2024-22" })
 				.expect(200);
 
 			const result = await db.query(
@@ -612,7 +612,7 @@ describe("patch folder", () => {
 		test("expect displaytimelowerbound is set for autumn (YYYY-23)", async () => {
 			await agent
 				.patch("/api/v2/folder/1")
-				.send({ displayTimeInEDTF: "2024-23" })
+				.send({ displayTime: "2024-23" })
 				.expect(200);
 
 			const result = await db.query(
@@ -628,7 +628,7 @@ describe("patch folder", () => {
 		test("expect displaytimelowerbound is set for winter (YYYY-24)", async () => {
 			await agent
 				.patch("/api/v2/folder/1")
-				.send({ displayTimeInEDTF: "2024-24" })
+				.send({ displayTime: "2024-24" })
 				.expect(200);
 
 			const result = await db.query(
@@ -644,7 +644,7 @@ describe("patch folder", () => {
 		test("expect displaytimelowerbound is set for uncertain season (YYYY-21?)", async () => {
 			await agent
 				.patch("/api/v2/folder/1")
-				.send({ displayTimeInEDTF: "2024-21?" })
+				.send({ displayTime: "2024-21?" })
 				.expect(200);
 
 			const result = await db.query(
@@ -660,7 +660,7 @@ describe("patch folder", () => {
 		test("expect displaytimelowerbound is set for five-digit year (Y17000)", async () => {
 			await agent
 				.patch("/api/v2/folder/1")
-				.send({ displayTimeInEDTF: "Y17000" })
+				.send({ displayTime: "Y17000" })
 				.expect(200);
 
 			const result = await db.query(
@@ -676,7 +676,7 @@ describe("patch folder", () => {
 		test("expect displaytimelowerbound is set for negative year after 4000 BC (-3000)", async () => {
 			await agent
 				.patch("/api/v2/folder/1")
-				.send({ displayTimeInEDTF: "-3000" })
+				.send({ displayTime: "-3000" })
 				.expect(200);
 
 			const result = await db.query(
@@ -692,7 +692,7 @@ describe("patch folder", () => {
 		test("expect displaytimelowerbound is -infinity for year before PostgreSQL timestamp range (Y-10000)", async () => {
 			await agent
 				.patch("/api/v2/folder/1")
-				.send({ displayTimeInEDTF: "Y-10000" })
+				.send({ displayTime: "Y-10000" })
 				.expect(200);
 
 			const result = await db.query(
@@ -706,7 +706,7 @@ describe("patch folder", () => {
 		test("expect displaytimelowerbound is infinity for year after PostgreSQL timestamp range (Y300000)", async () => {
 			await agent
 				.patch("/api/v2/folder/1")
-				.send({ displayTimeInEDTF: "Y300000" })
+				.send({ displayTime: "Y300000" })
 				.expect(200);
 
 			const result = await db.query(
@@ -720,7 +720,7 @@ describe("patch folder", () => {
 		test("expect displaytimelowerbound is set for unspecified day with uncertainty (YYYY-MM-XX?)", async () => {
 			await agent
 				.patch("/api/v2/folder/1")
-				.send({ displayTimeInEDTF: "2024-06-XX?" })
+				.send({ displayTime: "2024-06-XX?" })
 				.expect(200);
 
 			const result = await db.query(
@@ -736,7 +736,7 @@ describe("patch folder", () => {
 		test("expect displaytimelowerbound is set for interval with uncertain dates (YYYY-MM-DD?/YYYY-MM-DD?)", async () => {
 			await agent
 				.patch("/api/v2/folder/1")
-				.send({ displayTimeInEDTF: "2024-01-15?/2024-06-15?" })
+				.send({ displayTime: "2024-01-15?/2024-06-15?" })
 				.expect(200);
 
 			const result = await db.query(
@@ -749,17 +749,17 @@ describe("patch folder", () => {
 			});
 		});
 
-		test("expect displaytimelowerbound is set to null when displayTimeInEDTF is set to null", async () => {
-			// First set a displayTimeInEDTF
+		test("expect displaytimelowerbound is set to null when displayTime is set to null", async () => {
+			// First set a displayTime
 			await agent
 				.patch("/api/v2/folder/1")
-				.send({ displayTimeInEDTF: "2024-06-15" })
+				.send({ displayTime: "2024-06-15" })
 				.expect(200);
 
 			// Then set it to null
 			await agent
 				.patch("/api/v2/folder/1")
-				.send({ displayTimeInEDTF: null })
+				.send({ displayTime: null })
 				.expect(200);
 
 			const result = await db.query(

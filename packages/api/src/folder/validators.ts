@@ -28,7 +28,7 @@ export const validatePatchFolderRequest: (
 			...fieldsFromUserAuthentication,
 			displayDate: Joi.string().optional().allow(null),
 			displayEndDate: Joi.string().optional().allow(null),
-			displayTimeInEDTF: Joi.string()
+			displayTime: Joi.string()
 				.custom((value: string) => {
 					if (isValidEDTF(value, 1)) {
 						return value;
@@ -39,7 +39,7 @@ export const validatePatchFolderRequest: (
 				.optional()
 				.allow(null),
 		})
-		.or("displayDate", "displayEndDate", "displayTimeInEDTF")
+		.or("displayDate", "displayEndDate", "displayTime")
 		.validate(data);
 
 	if (validation.error !== undefined) {
