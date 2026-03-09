@@ -28,7 +28,7 @@
 		"lint": "npm run check-format && npm run check-types && npm run eslint && npm run lint-sql && npm run lint-docs",
 		"build": "rm -rf dist/* && tsc -p tsconfig.build.json && tscp -p tsconfig.tscp.json",
 		"start:watch": "tsc-watch --onSuccess \"npm run start\"",
-		"start": "tscp -p tsconfig.tscp.json && node dist/index.js",
+		"start": "tsc -p tsconfig.build.json && tscp -p tsconfig.tscp.json && node dist/index.js",
 		"start-containers": "(cd ../..; docker compose up -d --build stela)",
 		"test": "npm run start-containers && (cd ../..; docker compose run stela node --experimental-vm-modules ../../node_modules/jest/bin/jest.js --silent=false)",
 		"test:ci": "node --experimental-vm-modules ../../node_modules/jest/bin/jest.js --coverage"
