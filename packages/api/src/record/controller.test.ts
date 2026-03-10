@@ -715,7 +715,7 @@ describe("PATCH /records", () => {
 		await agent
 			.patch("/api/v2/records/1")
 			.send({
-				displayTimeInEDTF: "2001-34", // This is Level 2 EDTF for "Q2 of 2001"
+				displayTime: "2001-34", // This is Level 2 EDTF for "Q2 of 2001"
 			})
 			.expect(400);
 	});
@@ -723,7 +723,7 @@ describe("PATCH /records", () => {
 	test("expect display time is updated", async () => {
 		await agent
 			.patch("/api/v2/records/1")
-			.send({ displayTimeInEDTF: "2001-21~" })
+			.send({ displayTime: "2001-21~" })
 			.expect(200);
 
 		const result = await db.query(
@@ -739,7 +739,7 @@ describe("PATCH /records", () => {
 	test("expect display time is updated when set to null", async () => {
 		await agent
 			.patch("/api/v2/records/8")
-			.send({ displayTimeInEDTF: null })
+			.send({ displayTime: null })
 			.expect(200);
 
 		const result = await db.query(
@@ -791,8 +791,8 @@ describe("PATCH /records", () => {
 				setLocationIdToNull: false,
 				description: undefined,
 				setDescriptionToNull: false,
-				displayTimeInEDTF: undefined,
-				setDisplayTimeInEDTFToNull: false,
+				displayTime: undefined,
+				setDisplayTimeToNull: false,
 			})
 			.mockRejectedValueOnce(testError);
 
@@ -850,8 +850,8 @@ describe("PATCH /records", () => {
 				setLocationIdToNull: false,
 				description: undefined,
 				setDescriptionToNull: false,
-				displayTimeInEDTF: undefined,
-				setDisplayTimeInEDTFToNull: false,
+				displayTime: undefined,
+				setDisplayTimeToNull: false,
 			})
 			.mockImplementationOnce(
 				jest.fn().mockResolvedValueOnce({

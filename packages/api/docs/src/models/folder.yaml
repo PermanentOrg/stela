@@ -63,7 +63,7 @@ folder:
     displayEndTimestamp:
       type: string
       format: date-time
-    displayTimeInEDTF:
+    displayTime:
       type: string
       format: edtf
     displayName:

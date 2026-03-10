@@ -16,7 +16,7 @@ export interface ArchiveRecord {
 	uploadPayerAccountId?: string;
 	size?: number;
 	displayDate?: string;
-	displayTimeInEDTF?: string;
+	displayTime?: string;
 	fileCreatedAt?: string;
 	imageRatio?: number;
 	thumbUrl200?: string;
@@ -114,7 +114,7 @@ export interface PatchRecordRequest {
 	locationId?: bigint | null;
 	description?: string | null;
 	displayName?: string;
-	displayTimeInEDTF?: string | null;
+	displayTime?: string | null;
 }
 
 export enum RecordStatus {

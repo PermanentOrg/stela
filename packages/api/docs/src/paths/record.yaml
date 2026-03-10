@@ -106,7 +106,7 @@ records/{id}:
                 type: integer
               description:
                 type: string
-              displayTimeInEDTF:
+              displayTime:
                 type: string
                 format: edtf
     responses:

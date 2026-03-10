@@ -223,8 +223,8 @@ export const patchFolder = async (
 			setDisplayDateToNull: folderData.displayDate === null,
 			displayEndDate: folderData.displayEndDate,
 			setDisplayEndDateToNull: folderData.displayEndDate === null,
-			displayTime: folderData.displayTimeInEDTF,
-			setDisplayTimeToNull: folderData.displayTimeInEDTF === null,
+			displayTime: folderData.displayTime,
+			setDisplayTimeToNull: folderData.displayTime === null,
 		})
 		.catch((err: unknown) => {
 			logger.error(err);

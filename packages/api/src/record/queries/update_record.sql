@@ -11,8 +11,8 @@ SET
     ELSE COALESCE(:description, description)
   END,
   originalfilecreationtime = CASE
-    WHEN :setDisplayTimeInEDTFToNull THEN NULL
-    ELSE COALESCE(:displayTimeInEDTF, originalfilecreationtime)
+    WHEN :setDisplayTimeToNull THEN NULL
+    ELSE COALESCE(:displayTime, originalfilecreationtime)
   END,
   updateddt = CURRENT_TIMESTAMP
 WHERE

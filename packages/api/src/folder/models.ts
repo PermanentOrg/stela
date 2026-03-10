@@ -32,7 +32,7 @@ export interface FolderRow {
 	description?: string;
 	displayTimestamp?: string;
 	displayEndTimestamp?: string;
-	displayTimeInEDTF?: string;
+	displayTime?: string;
 	displayName: string;
 	downloadName?: string;
 	imageRatio?: string;
@@ -80,7 +80,7 @@ export interface Folder {
 	description?: string;
 	displayTimestamp?: string;
 	displayEndTimestamp?: string;
-	displayTimeInEDTF?: string;
+	displayTime?: string;
 	displayName: string;
 	downloadName?: string;
 	imageRatio?: number;
@@ -123,7 +123,7 @@ export interface PatchFolderRequest {
 	emailFromAuthToken: string;
 	displayDate?: string | null;
 	displayEndDate?: string | null;
-	displayTimeInEDTF?: string | null;
+	displayTime?: string | null;
 }
 
 export enum FolderStatus {
