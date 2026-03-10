@@ -25,7 +25,8 @@ apiRoutes.use("/archive", archiveController); // Deprecated path maintained to a
 apiRoutes.use("/admin", adminController);
 apiRoutes.use("/billing", storageController); // Deprecated path maintained to avoid breaking changes
 apiRoutes.use("/storage", storageController);
-apiRoutes.use("/event", eventController);
+apiRoutes.use("/events", eventController);
+apiRoutes.use("/event", eventController); // Deprecated path maintained to avoid breaking changes
 apiRoutes.use("/promo", promoController);
 apiRoutes.use("/idpuser", idpUserController);
 apiRoutes.use("/records", recordController);
