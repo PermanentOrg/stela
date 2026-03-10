@@ -75,3 +75,7 @@ paths:
     $ref: "./paths/feature_flags.yaml#/feature-flags~1{id}"
   /storage-purchases:
     $ref: "./paths/storage_purchase.yaml#/storage-purchases"
+  /events:
+    $ref: "./paths/event.yaml#/events"
+  /events/checklist:
+    $ref: "./paths/event.yaml#/events~1checklist"

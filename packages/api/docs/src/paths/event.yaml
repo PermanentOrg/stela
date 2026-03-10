@@ -1,0 +1,123 @@
+events:
+  post:
+    summary: Create an event
+    description: >
+      Records an event in the audit trail and publishes it to the event topic.
+      Optionally tracks analytics data via Mixpanel. Requires either user or
+      admin authentication.
+    security:
+      - bearerHttpAuthentication: []
+    operationId: createEvent
+    tags:
+      - events
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - entity
+              - action
+              - version
+              - entityId
+              - body
+            properties:
+              entity:
+                type: string
+                description: The type of entity the event pertains to (e.g. "account", "record", "folder")
+              action:
+                type: string
+                description: The action performed on the entity (e.g. "create", "update", "delete")
+              version:
+                type: number
+                description: The version number of the event schema
+              entityId:
+                type: string
+                description: The identifier of the entity the event pertains to
+              userAgent:
+                type: string
+                description: The user agent string of the client. If omitted, the User-Agent request header is used.
+              body:
+                type: object
+                description: Action-specific payload. May include an optional analytics object.
+                properties:
+                  analytics:
+                    type: object
+                    description: Optional Mixpanel analytics data
+                    required:
+                      - event
+                      - distinctId
+                      - data
+                    properties:
+                      event:
+                        type: string
+                        description: The Mixpanel event name
+                      distinctId:
+                        type: string
+                        description: The Mixpanel distinct ID for the user
+                      data:
+                        type: object
+                        description: Additional analytics properties
+                        additionalProperties: true
+                additionalProperties: true
+    responses:
+      "200":
+        description: Event created successfully
+        content:
+          application/json:
+            schema:
+              type: object
+      "400":
+        $ref: "../errors.yaml#/400"
+      "401":
+        $ref: "../errors.yaml#/401"
+      "500":
+        $ref: "../errors.yaml#/500"
+events/checklist:
+  get:
+    summary: Retrieve checklist events
+    description: >
+      Returns the status of onboarding checklist items for the authenticated
+      user, indicating which tasks have been completed.
+    security:
+      - bearerHttpAuthentication: []
+    operationId: getEventsChecklist
+    tags:
+      - events
+    responses:
+      "200":
+        description: A list of checklist items with their completion status
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                checklistItems:
+                  type: array
+                  items:
+                    type: object
+                    required:
+                      - id
+                      - title
+                      - completed
+                    properties:
+                      id:
+                        type: string
+                        description: >
+                          A key identifying the checklist item. One of:
+                          archiveCreated, storageRedeemed, legacyContact,
+                          archiveSteward, archiveProfile, firstUpload,
+                          publishContent.
+                      title:
+                        type: string
+                        description: A human-readable description of the checklist item
+                      completed:
+                        type: boolean
+                        description: Whether the checklist item has been completed
+      "400":
+        $ref: "../errors.yaml#/400"
+      "401":
+        $ref: "../errors.yaml#/401"
+      "500":
+        $ref: "../errors.yaml#/500"
