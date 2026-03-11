@@ -5,6 +5,7 @@ import {
 	verifyUserAuthentication,
 	verifyAdminAuthentication,
 	verifyUserOrAdminAuthentication,
+	verifyUserOrAdminOrDelegatedCallAuthentication,
 	extractIp,
 	extractUserIsAdminFromAuthToken,
 } from "../src/middleware";
@@ -107,8 +108,8 @@ export const mockVerifyUserAuthentication = (
 				unknown,
 				unknown,
 				{
-					emailFromAuthToken?: string;
-					userSubjectFromAuthToken?: string;
+					emailFromAuthToken?: string | undefined;
+					userSubjectFromAuthToken?: string | undefined;
 				}
 			>,
 			__,
@@ -163,6 +164,38 @@ export const mockExtractUserIsAdminFromAuthToken = (isAdmin: boolean): void => {
 				next: NextFunction,
 			) => {
 				req.body.admin = isAdmin;
+				next();
+			},
+		);
+};
+
+export const mockVerifyUserOrAdminOrDelegatedCallAuthentication = (
+	mockUserEmail: string | undefined,
+	mockUserSubject: string | undefined,
+	mockAdminEmail: string | undefined,
+	mockAdminSubject: string | undefined,
+): void => {
+	jest
+		.mocked(verifyUserOrAdminOrDelegatedCallAuthentication)
+		.mockImplementation(
+			async (
+				req: Request<
+					unknown,
+					unknown,
+					{
+						userEmailFromAuthToken?: string | undefined;
+						userSubjectFromAuthToken?: string | undefined;
+						adminEmailFromAuthToken?: string | undefined;
+						adminSubjectFromAuthToken?: string | undefined;
+					}
+				>,
+				__,
+				next: NextFunction,
+			) => {
+				req.body.userEmailFromAuthToken = mockUserEmail;
+				req.body.userSubjectFromAuthToken = mockUserSubject;
+				req.body.adminEmailFromAuthToken = mockAdminEmail;
+				req.body.adminSubjectFromAuthToken = mockAdminSubject;
 				next();
 			},
 		);
