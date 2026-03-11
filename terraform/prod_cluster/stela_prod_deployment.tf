@@ -219,6 +219,17 @@ resource "kubernetes_deployment" "stela_prod" {
           }
 
           env {
+            name = "DELEGATED_CALL_SECRET"
+            value_from {
+              secret_key_ref {
+                name     = "prod-secrets"
+                key      = "DELEGATED_CALL_SECRET"
+                optional = false
+              }
+            }
+          }
+
+          env {
             name  = "NEW_RELIC_APP_NAME"
             value = var.new_relic_app_name
           }

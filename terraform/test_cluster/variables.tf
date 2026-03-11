@@ -358,3 +358,13 @@ variable "stripe_test_secret_key" {
   description = "A key used in dev and staging to connect to Stripe's test environment"
   type        = string
 }
+
+variable "dev_delegated_call_secret" {
+  description = "Secret used to authenticate delegated calls in the dev environment"
+  type        = string
+}
+
+variable "staging_delegated_call_secret" {
+  description = "Secret used to authenticate delegated calls in the staging environment"
+  type        = string
+}

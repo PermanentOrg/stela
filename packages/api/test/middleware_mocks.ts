@@ -4,7 +4,6 @@ import {
 	extractUserEmailFromAuthToken,
 	verifyUserAuthentication,
 	verifyAdminAuthentication,
-	verifyUserOrAdminAuthentication,
 	verifyUserOrAdminOrDelegatedCallAuthentication,
 	extractIp,
 	extractUserIsAdminFromAuthToken,
@@ -66,36 +65,6 @@ export const mockExtractIp = (ip?: string): void => {
 				next();
 			},
 		);
-};
-
-export const mockVerifyUserOrAdminAuthentication = (
-	mockUserEmail: string | undefined,
-	mockUserSubject: string | undefined,
-	mockAdminEmail: string | undefined,
-	mockAdminSubject: string | undefined,
-): void => {
-	jest.mocked(verifyUserOrAdminAuthentication).mockImplementation(
-		async (
-			req: Request<
-				unknown,
-				unknown,
-				{
-					userEmailFromAuthToken?: string | undefined;
-					userSubjectFromAuthToken?: string | undefined;
-					adminEmailFromAuthToken?: string | undefined;
-					adminSubjectFromAuthToken?: string | undefined;
-				}
-			>,
-			__,
-			next: NextFunction,
-		) => {
-			req.body.userSubjectFromAuthToken = mockUserSubject;
-			req.body.userEmailFromAuthToken = mockUserEmail;
-			req.body.adminSubjectFromAuthToken = mockAdminSubject;
-			req.body.adminEmailFromAuthToken = mockAdminEmail;
-			next();
-		},
-	);
 };
 
 export const mockVerifyUserAuthentication = (

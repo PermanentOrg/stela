@@ -3,7 +3,7 @@ import type { Request, Response, NextFunction } from "express";
 import { logger } from "@stela/logger";
 import {
 	verifyUserAuthentication,
-	verifyUserOrAdminAuthentication,
+	verifyUserOrAdminOrDelegatedCallAuthentication,
 	extractIp,
 } from "../middleware";
 import { validateCreateEventRequest } from "./validators";
@@ -16,7 +16,7 @@ export const eventController = Router();
 
 eventController.post(
 	"/",
-	verifyUserOrAdminAuthentication,
+	verifyUserOrAdminOrDelegatedCallAuthentication,
 	extractIp,
 	async (req: Request, res: Response, next: NextFunction) => {
 		try {

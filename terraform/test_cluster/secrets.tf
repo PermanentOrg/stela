@@ -21,6 +21,7 @@ resource "kubernetes_secret" "dev-secrets" {
     "CLOUDFRONT_KEY_PAIR_ID"          = var.cloudfront_key_pair_id
     "CLOUDFRONT_PRIVATE_KEY"          = var.cloudfront_private_key
     "STRIPE_SECRET_KEY"               = var.stripe_test_secret_key
+    "DELEGATED_CALL_SECRET"           = var.dev_delegated_call_secret
   }
 }
 
@@ -47,5 +48,6 @@ resource "kubernetes_secret" "staging-secrets" {
     "CLOUDFRONT_KEY_PAIR_ID"          = var.cloudfront_key_pair_id
     "CLOUDFRONT_PRIVATE_KEY"          = var.cloudfront_private_key
     "STRIPE_SECRET_KEY"               = var.stripe_test_secret_key
+    "DELEGATED_CALL_SECRET"           = var.staging_delegated_call_secret
   }
 }

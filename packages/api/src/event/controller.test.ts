@@ -7,11 +7,11 @@ import { publisherClient } from "../publisher_client";
 import { app } from "../app";
 import {
 	verifyUserAuthentication,
-	verifyUserOrAdminAuthentication,
+	verifyUserOrAdminOrDelegatedCallAuthentication,
 } from "../middleware";
 import type { ChecklistItem } from "./models";
 import {
-	mockVerifyUserOrAdminAuthentication,
+	mockVerifyUserOrAdminOrDelegatedCallAuthentication,
 	mockVerifyUserAuthentication,
 	mockExtractIp,
 } from "../../test/middleware_mocks";
@@ -34,7 +34,7 @@ describe("POST /event", () => {
 	};
 
 	beforeEach(async () => {
-		mockVerifyUserOrAdminAuthentication(
+		mockVerifyUserOrAdminOrDelegatedCallAuthentication(
 			testEmail,
 			testSubject,
 			undefined,
@@ -51,7 +51,7 @@ describe("POST /event", () => {
 
 	test("should return 401 if unauthenticated", async () => {
 		jest
-			.mocked(verifyUserOrAdminAuthentication)
+			.mocked(verifyUserOrAdminOrDelegatedCallAuthentication)
 			.mockImplementation(async (_, __, next: NextFunction) => {
 				next(new createError.Unauthorized("You aren't logged in"));
 			});
@@ -82,7 +82,7 @@ describe("POST /event", () => {
 	});
 
 	test("should record actor type admin if authenticated as an admin", async () => {
-		mockVerifyUserOrAdminAuthentication(
+		mockVerifyUserOrAdminOrDelegatedCallAuthentication(
 			undefined,
 			undefined,
 			testEmail,
@@ -112,7 +112,7 @@ describe("POST /event", () => {
 
 	test("should return 400 if fields from auth token fail validation", async () => {
 		jest
-			.mocked(verifyUserOrAdminAuthentication)
+			.mocked(verifyUserOrAdminOrDelegatedCallAuthentication)
 			.mockImplementation(async (_, __, next: NextFunction) => {
 				next();
 			});
@@ -421,7 +421,7 @@ describe("POST /event", () => {
 	});
 
 	test("should send pass the caller email to Mixpanel when the caller is an admin", async () => {
-		mockVerifyUserOrAdminAuthentication(
+		mockVerifyUserOrAdminOrDelegatedCallAuthentication(
 			undefined,
 			undefined,
 			testEmail,

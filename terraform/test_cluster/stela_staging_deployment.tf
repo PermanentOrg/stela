@@ -226,6 +226,17 @@ resource "kubernetes_deployment" "stela_staging" {
           }
 
           env {
+            name = "DELEGATED_CALL_SECRET"
+            value_from {
+              secret_key_ref {
+                name     = "staging-secrets"
+                key      = "DELEGATED_CALL_SECRET"
+                optional = false
+              }
+            }
+          }
+
+          env {
             name  = "NEW_RELIC_APP_NAME"
             value = var.staging_new_relic_app_name
           }
