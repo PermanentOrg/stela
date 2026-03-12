@@ -18,6 +18,15 @@ components:
       type: apiKey
       in: header
       name: X-Permanent-Share-Token
+    delegatedCallAuthentication:
+      description: >
+        An authentication scheme for calls made by another Permanent server on behalf of a particular user.
+        This requires three headers, X-Permanent-Delegated-Call-Secret, X-Permanent-Delegated-Call-User-Email,
+        and X-Permanent-Delegated-Call-User-Subject. The first is a secret that serves as authentication for
+        the calling server, the other two allow the stela API to behave as though that user is making the call.
+      type: apiKey
+      in: header
+      name: X-Permanent-Delegated-Call-Secret
 paths:
   /login:
     $ref: "./paths/authentication.yaml#/login"
@@ -75,3 +84,7 @@ paths:
     $ref: "./paths/feature_flags.yaml#/feature-flags~1{id}"
   /storage-purchases:
     $ref: "./paths/storage_purchase.yaml#/storage-purchases"
+  /events:
+    $ref: "./paths/event.yaml#/events"
+  /events/checklist:
+    $ref: "./paths/event.yaml#/events~1checklist"

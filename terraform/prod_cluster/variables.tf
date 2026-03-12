@@ -255,3 +255,8 @@ variable "stripe_secret_key" {
   description = "A key used to connect to Stripe"
   type        = string
 }
+
+variable "delegated_call_secret" {
+  description = "Secret used to authenticate delegated calls in the prod environment"
+  type        = string
+}

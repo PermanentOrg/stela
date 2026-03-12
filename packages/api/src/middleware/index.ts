@@ -2,6 +2,7 @@ export {
 	verifyUserAuthentication,
 	verifyAdminAuthentication,
 	verifyUserOrAdminAuthentication,
+	verifyUserOrAdminOrDelegatedCallAuthentication,
 	extractUserEmailFromAuthToken,
 	extractUserIsAdminFromAuthToken,
 	extractShareTokenFromHeaders,

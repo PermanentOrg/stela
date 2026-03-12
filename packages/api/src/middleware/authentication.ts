@@ -133,7 +133,10 @@ const verifyUserAuthentication = async (
 	req: Request<
 		unknown,
 		unknown,
-		{ emailFromAuthToken?: string; userSubjectFromAuthToken?: string }
+		{
+			emailFromAuthToken?: string | undefined;
+			userSubjectFromAuthToken?: string | undefined;
+		}
 	>,
 	_: Response,
 	next: NextFunction,
@@ -186,10 +189,10 @@ const verifyUserOrAdminAuthentication = async (
 		unknown,
 		unknown,
 		{
-			userSubjectFromAuthToken?: string;
-			adminSubjectFromAuthToken?: string;
-			userEmailFromAuthToken?: string;
-			adminEmailFromAuthToken?: string;
+			userSubjectFromAuthToken?: string | undefined;
+			adminSubjectFromAuthToken?: string | undefined;
+			userEmailFromAuthToken?: string | undefined;
+			adminEmailFromAuthToken?: string | undefined;
 		}
 	>,
 	_: Response,
@@ -299,10 +302,45 @@ const extractShareTokenFromHeaders = (
 	next();
 };
 
+const verifyUserOrAdminOrDelegatedCallAuthentication = async (
+	req: Request<
+		unknown,
+		unknown,
+		{
+			userEmailFromAuthToken?: string | undefined;
+			userSubjectFromAuthToken?: string | undefined;
+			adminEmailFromAuthToken?: string | undefined;
+			adminSubjectFromAuthToken?: string | undefined;
+		}
+	>,
+	res: Response,
+	next: NextFunction,
+): Promise<void> => {
+	try {
+		const secret = req.get("X-Permanent-Delegated-Call-Secret");
+		if (secret !== undefined && secret !== "") {
+			const expectedSecret = process.env["DELEGATED_CALL_SECRET"] ?? "";
+			if (expectedSecret === "" || secret !== expectedSecret) {
+				throw new createError.Unauthorized("Invalid delegated call secret");
+			}
+			const email = req.get("X-Permanent-Delegated-Call-User-Email");
+			const subject = req.get("X-Permanent-Delegated-Call-User-Subject");
+			req.body.userEmailFromAuthToken = email;
+			req.body.userSubjectFromAuthToken = subject;
+			next();
+		} else {
+			await verifyUserOrAdminAuthentication(req, res, next);
+		}
+	} catch (err) {
+		next(err);
+	}
+};
+
 export {
 	verifyUserAuthentication,
 	verifyAdminAuthentication,
 	verifyUserOrAdminAuthentication,
+	verifyUserOrAdminOrDelegatedCallAuthentication,
 	extractUserEmailFromAuthToken,
 	extractUserIsAdminFromAuthToken,
 	extractShareTokenFromHeaders,

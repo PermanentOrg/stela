@@ -21,5 +21,6 @@ resource "kubernetes_secret" "prod-secrets" {
     "CLOUDFRONT_KEY_PAIR_ID"          = var.cloudfront_key_pair_id
     "CLOUDFRONT_PRIVATE_KEY"          = var.cloudfront_private_key
     "STRIPE_SECRET_KEY"               = var.stripe_secret_key
+    "DELEGATED_CALL_SECRET"           = var.delegated_call_secret
   }
 }

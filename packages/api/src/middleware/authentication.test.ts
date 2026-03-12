@@ -4,6 +4,7 @@ import {
 	verifyUserAuthentication,
 	verifyAdminAuthentication,
 	verifyUserOrAdminAuthentication,
+	verifyUserOrAdminOrDelegatedCallAuthentication,
 	extractUserIsAdminFromAuthToken,
 	extractShareTokenFromHeaders,
 } from "./authentication";
@@ -17,6 +18,7 @@ jest.mock("../fusionauth");
 
 const testEmail = "test@permanent.org";
 const testSubject = "b2a6787c-f255-465a-8eb0-1583004d4a4f";
+const testDelegatedCallSecret = "test-delegated-call-secret";
 
 const successfulIntrospectionResponse = {
 	statusCode: 200,
@@ -649,5 +651,203 @@ describe("extractShareTokenFromHeaders", () => {
 			body: { shareToken },
 		} = request as { body: { shareToken: string } };
 		expect(shareToken).toEqual(testShareToken);
+	});
+});
+
+describe("verifyUserOrAdminOrDelegatedCallAuthentication", () => {
+	beforeEach(() => {
+		process.env["DELEGATED_CALL_SECRET"] = testDelegatedCallSecret;
+	});
+
+	afterEach(() => {
+		delete process.env["DELEGATED_CALL_SECRET"];
+	});
+
+	test("should add user email and subject to the request body if all delegated headers are valid", async () => {
+		const request = createRequest({
+			headers: {
+				"X-Permanent-Delegated-Call-Secret": testDelegatedCallSecret,
+				"X-Permanent-Delegated-Call-User-Email": testEmail,
+				"X-Permanent-Delegated-Call-User-Subject": testSubject,
+			},
+		});
+		await verifyUserOrAdminOrDelegatedCallAuthentication(
+			request,
+			createResponse(),
+			jest.fn(),
+		);
+		const {
+			body: { userEmailFromAuthToken, userSubjectFromAuthToken },
+		} = request as {
+			body: {
+				userEmailFromAuthToken: string;
+				userSubjectFromAuthToken: string;
+			};
+		};
+		expect(userEmailFromAuthToken).toBe(testEmail);
+		expect(userSubjectFromAuthToken).toBe(testSubject);
+	});
+
+	test("should produce a request body that passes user-or-admin auth validation for delegated calls", async () => {
+		const request = createRequest({
+			headers: {
+				"X-Permanent-Delegated-Call-Secret": testDelegatedCallSecret,
+				"X-Permanent-Delegated-Call-User-Email": testEmail,
+				"X-Permanent-Delegated-Call-User-Subject": testSubject,
+			},
+		});
+		await verifyUserOrAdminOrDelegatedCallAuthentication(
+			request,
+			createResponse(),
+			jest.fn(),
+		);
+		expect(
+			fieldsFromUserOrAdminAuthentication.validate(request.body).error,
+		).toBeFalsy();
+	});
+
+	test("should throw unauthorized if the delegated call secret does not match", async () => {
+		const request = createRequest({
+			headers: {
+				"X-Permanent-Delegated-Call-Secret": "wrong-secret",
+				"X-Permanent-Delegated-Call-User-Email": testEmail,
+				"X-Permanent-Delegated-Call-User-Subject": testSubject,
+			},
+		});
+		await verifyUserOrAdminOrDelegatedCallAuthentication(
+			request,
+			createResponse(),
+			(err: unknown) => {
+				expect(typeof err).toBe("object");
+				expect(err).not.toBeNull();
+				if (typeof err === "object" && err !== null) {
+					expect("statusCode" in err).toBe(true);
+					if ("statusCode" in err) {
+						expect(err.statusCode).toBe(401);
+					}
+				}
+			},
+		);
+	});
+
+	test("should throw unauthorized if the env secret is not set", async () => {
+		delete process.env["DELEGATED_CALL_SECRET"];
+		const request = createRequest({
+			headers: {
+				"X-Permanent-Delegated-Call-Secret": testDelegatedCallSecret,
+				"X-Permanent-Delegated-Call-User-Email": testEmail,
+				"X-Permanent-Delegated-Call-User-Subject": testSubject,
+			},
+		});
+		await verifyUserOrAdminOrDelegatedCallAuthentication(
+			request,
+			createResponse(),
+			(err: unknown) => {
+				expect(typeof err).toBe("object");
+				expect(err).not.toBeNull();
+				if (typeof err === "object" && err !== null) {
+					expect("statusCode" in err).toBe(true);
+					if ("statusCode" in err) {
+						expect(err.statusCode).toBe(401);
+					}
+				}
+			},
+		);
+	});
+
+	test("should add user subject and email to the request body if user token is valid", async () => {
+		const request = createRequest({
+			headers: { Authorization: "Bearer test" },
+		});
+		jest
+			.spyOn(fusionAuthClient, "introspectAccessToken")
+			.mockImplementation(async () => successfulIntrospectionResponse);
+
+		await verifyUserOrAdminOrDelegatedCallAuthentication(
+			request,
+			createResponse(),
+			jest.fn(),
+		);
+		const {
+			body: { userSubjectFromAuthToken, userEmailFromAuthToken },
+		} = request as {
+			body: {
+				userSubjectFromAuthToken: string;
+				userEmailFromAuthToken: string;
+			};
+		};
+		expect(userSubjectFromAuthToken).toBe(testSubject);
+		expect(userEmailFromAuthToken).toBe(testEmail);
+	});
+
+	test("should add admin subject and email to the request body if admin token is valid", async () => {
+		const request = createRequest({
+			headers: { Authorization: "Bearer test" },
+		});
+		jest
+			.spyOn(fusionAuthClient, "introspectAccessToken")
+			.mockImplementationOnce(async () => expiredTokenIntrospectionResponse)
+			.mockImplementationOnce(async () => successfulIntrospectionResponse);
+
+		await verifyUserOrAdminOrDelegatedCallAuthentication(
+			request,
+			createResponse(),
+			jest.fn(),
+		);
+		const {
+			body: { adminSubjectFromAuthToken, adminEmailFromAuthToken },
+		} = request as {
+			body: {
+				adminSubjectFromAuthToken: string;
+				adminEmailFromAuthToken: string;
+			};
+		};
+		expect(adminSubjectFromAuthToken).toBe(testSubject);
+		expect(adminEmailFromAuthToken).toBe(testEmail);
+	});
+
+	test("should throw unauthorized if both tokens are invalid", async () => {
+		const request = createRequest({
+			headers: { Authorization: "Bearer test" },
+		});
+		jest
+			.spyOn(fusionAuthClient, "introspectAccessToken")
+			.mockImplementation(async () => failedIntrospectionResponse);
+
+		await verifyUserOrAdminOrDelegatedCallAuthentication(
+			request,
+			createResponse(),
+			(err: unknown) => {
+				expect(typeof err).toBe("object");
+				expect(err).not.toBeNull();
+				if (typeof err === "object" && err !== null) {
+					expect("statusCode" in err).toBe(true);
+					if ("statusCode" in err) {
+						expect(err.statusCode).toBe(401);
+					}
+				}
+			},
+		);
+	});
+
+	test("should throw unauthorized if the authorization header is missing", async () => {
+		const request = createRequest();
+		jest
+			.spyOn(fusionAuthClient, "introspectAccessToken")
+			.mockImplementation(async () => successfulIntrospectionResponse);
+		await verifyUserOrAdminOrDelegatedCallAuthentication(
+			request,
+			createResponse(),
+			(err: unknown) => {
+				expect(typeof err).toBe("object");
+				expect(err).not.toBeNull();
+				if (typeof err === "object" && err !== null) {
+					expect("statusCode" in err).toBe(true);
+					if ("statusCode" in err) {
+						expect(err.statusCode).toBe(401);
+					}
+				}
+			},
+		);
 	});
 });
