@@ -26,6 +26,21 @@ describe("extractIp", () => {
 		} = request as { body: { ip: string } };
 		expect(ip).toBe(testIp);
 	});
+	test("should extract IP from the remoteAddress if forwarded value is not an IP", () => {
+		const testIp = "192.168.0.1";
+		const request = createRequest({
+			headers: { "X-Forwarded-For": "unknown" },
+			socket: {
+				remoteAddress: testIp,
+			},
+		});
+		extractIp(request, createResponse(), jest.fn());
+
+		const {
+			body: { ip },
+		} = request as { body: { ip: string } };
+		expect(ip).toBe(testIp);
+	});
 	test("should extract the client IP from X-Forwarded-For header with multiple proxies", () => {
 		const testIp = "192.168.0.1";
 		const request = createRequest({ headers: { "X-Forwarded-For": testIp } });

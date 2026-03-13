@@ -1,4 +1,5 @@
 import type { Request, Response, NextFunction } from "express";
+import Joi from "joi";
 
 const extractClientIpFromProxyList = (
 	list: string | undefined,
@@ -16,8 +17,12 @@ export const extractIp = (
 	_: Response,
 	next: NextFunction,
 ): void => {
+	const ipFromHeaders = extractClientIpFromProxyList(
+		req.get("X-Forwarded-For"),
+	);
 	req.body["ip"] =
-		extractClientIpFromProxyList(req.get("X-Forwarded-For")) ??
-		req.socket.remoteAddress;
+		Joi.string().ip().required().validate(ipFromHeaders).error === undefined
+			? ipFromHeaders
+			: req.socket.remoteAddress;
 	next();
 };
