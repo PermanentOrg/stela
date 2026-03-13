@@ -14,7 +14,7 @@ export const validateCreateEventRequest: (
 			version: Joi.number().required(),
 			entityId: Joi.string().required(),
 			ip: Joi.string().ip().required(),
-			userAgent: Joi.string(),
+			userAgent: Joi.string().empty(""),
 			body: Joi.object()
 				.keys({
 					analytics: Joi.object().keys({

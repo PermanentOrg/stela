@@ -213,6 +213,20 @@ describe("POST /event", () => {
 			.expect(400);
 	});
 
+	test("should not error if userAgent is an empty string", async () => {
+		await agent
+			.post("/api/v2/event")
+			.send({
+				entity: "account",
+				action: "create",
+				version: 1,
+				entityId: "123",
+				userAgent: "",
+				body: {},
+			})
+			.expect(200);
+	});
+
 	test("should return 400 if userAgent is not a string", async () => {
 		await agent
 			.post("/api/v2/event")
