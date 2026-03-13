@@ -3,7 +3,7 @@ import { mock } from "jest-mock-extended";
 import { logger } from "@stela/logger";
 import { triggerArchivematicaProcessing } from "@stela/archivematica-utils";
 import { db } from "./database";
-import { handler, extractRecordIdFromRecordCreateMessage } from "./index";
+import { handler, extractRecordIdFromNewRecordMessage } from "./index";
 
 jest.mock("./database");
 jest.mock("@stela/archivematica-utils", () => ({
@@ -64,7 +64,7 @@ describe("extractRecordIdFromRecordCreateMessage", () => {
 			awsRegion: "1",
 		};
 
-		const recordId = extractRecordIdFromRecordCreateMessage(message);
+		const recordId = extractRecordIdFromNewRecordMessage(message);
 		expect(recordId).toBe("123");
 	});
 
@@ -86,7 +86,7 @@ describe("extractRecordIdFromRecordCreateMessage", () => {
 			awsRegion: "1",
 		};
 
-		expect(() => extractRecordIdFromRecordCreateMessage(message)).toThrow(
+		expect(() => extractRecordIdFromNewRecordMessage(message)).toThrow(
 			"Invalid message body",
 		);
 	});
@@ -111,7 +111,7 @@ describe("extractRecordIdFromRecordCreateMessage", () => {
 			awsRegion: "1",
 		};
 
-		expect(() => extractRecordIdFromRecordCreateMessage(message)).toThrow(
+		expect(() => extractRecordIdFromNewRecordMessage(message)).toThrow(
 			"Invalid message",
 		);
 	});
@@ -140,8 +140,37 @@ describe("extractRecordIdFromRecordCreateMessage", () => {
 			awsRegion: "1",
 		};
 
-		expect(() => extractRecordIdFromRecordCreateMessage(message)).toThrow(
+		expect(() => extractRecordIdFromNewRecordMessage(message)).toThrow(
 			"record field missing in body of record.create",
+		);
+	});
+
+	test("should throw error when newRecord field is missing", () => {
+		const message = {
+			messageId: "1",
+			receiptHandle: "1",
+			body: JSON.stringify({
+				Message: JSON.stringify({
+					entity: "record",
+					action: "copy",
+					body: {},
+				}),
+			}),
+			attributes: {
+				ApproximateReceiveCount: "1",
+				SentTimestamp: "1",
+				SenderId: "1",
+				ApproximateFirstReceiveTimestamp: "1",
+			},
+			messageAttributes: {},
+			md5OfBody: "1",
+			eventSource: "1",
+			eventSourceARN: "1",
+			awsRegion: "1",
+		};
+
+		expect(() => extractRecordIdFromNewRecordMessage(message)).toThrow(
+			"newRecord field missing in body of record.copy",
 		);
 	});
 });
@@ -211,7 +240,7 @@ describe("handler", () => {
 							Message: JSON.stringify({
 								entity: "record",
 								action: "create",
-								body: { record: { recordId: "2" } },
+								body: { record: { recordId: "3" } },
 							}),
 						}),
 						attributes: {
@@ -268,7 +297,7 @@ describe("handler", () => {
 							Message: JSON.stringify({
 								entity: "record",
 								action: "copy",
-								body: { record: { recordId: "2" } },
+								body: { newRecord: { recordId: "2" } },
 							}),
 						}),
 						attributes: {
@@ -289,10 +318,20 @@ describe("handler", () => {
 			jest.fn(),
 		);
 
-		expect(triggerArchivematicaProcessing).toHaveBeenCalledTimes(1);
+		expect(triggerArchivematicaProcessing).toHaveBeenCalledTimes(2);
 		expect(triggerArchivematicaProcessing).toHaveBeenCalledWith(
 			"1",
 			"originals/1/1",
+			{
+				archivematicaHostUrl: "https://example.com",
+				archivematicaApiKey: "test-api-key",
+				archivematicaOriginalLocationId: "a6962a82-5462-4d9c-9ea1-5b9982ed625a",
+				processingWorkflow: "default",
+			},
+		);
+		expect(triggerArchivematicaProcessing).toHaveBeenCalledWith(
+			"3",
+			"originals/3/3",
 			{
 				archivematicaHostUrl: "https://example.com",
 				archivematicaApiKey: "test-api-key",

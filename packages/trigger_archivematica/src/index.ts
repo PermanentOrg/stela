@@ -11,7 +11,7 @@ import {
 	ARCHIVEMATICA_PROCESSING_WORKFLOW,
 } from "./env";
 
-export const extractRecordIdFromRecordCreateMessage = (
+export const extractRecordIdFromNewRecordMessage = (
 	message: SQSRecord,
 ): string => {
 	const { body } = message;
@@ -27,7 +27,7 @@ export const extractRecordIdFromRecordCreateMessage = (
 	}
 	const { action } = parsedMessage;
 
-	if (action === "create" || action === "copy") {
+	if (action === "create") {
 		if (parsedMessage.body.record === undefined) {
 			logger.error(
 				`record.create event missing record: ${JSON.stringify(
@@ -37,6 +37,16 @@ export const extractRecordIdFromRecordCreateMessage = (
 			throw new Error("record field missing in body of record.create");
 		}
 		return parsedMessage.body.record.recordId;
+	} else if (action === "copy") {
+		if (parsedMessage.body.newRecord === undefined) {
+			logger.error(
+				`record.copy event missing newRecord: ${JSON.stringify(
+					parsedMessage.body,
+				)}`,
+			);
+			throw new Error("newRecord field missing in body of record.copy");
+		}
+		return parsedMessage.body.newRecord.recordId;
 	}
 	throw new Error("Unsupported action type");
 };
@@ -45,7 +55,7 @@ export const handler: SQSHandler = async (event: SQSEvent) => {
 	await Promise.all(
 		event.Records.map(async (message) => {
 			try {
-				const recordId = extractRecordIdFromRecordCreateMessage(message);
+				const recordId = extractRecordIdFromNewRecordMessage(message);
 				const fileResult = await db.sql<{ fileId: string; filePath: string }>(
 					"queries.get_file",
 					{ recordId },
