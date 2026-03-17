@@ -17,8 +17,16 @@ VALUES
   CURRENT_TIMESTAMP
 ),
 (
-  1,
+  3,
   2,
+  'status.generic.ok',
+  'type.generic.placeholder',
+  CURRENT_TIMESTAMP,
+  CURRENT_TIMESTAMP
+),
+(
+  2,
+  3,
   'status.generic.ok',
   'type.generic.placeholder',
   CURRENT_TIMESTAMP,

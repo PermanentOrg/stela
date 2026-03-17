@@ -29,4 +29,14 @@ VALUES
   'originals/2/2',
   CURRENT_TIMESTAMP,
   CURRENT_TIMESTAMP
+),
+(
+  3,
+  1,
+  'status.generic.original',
+  1024,
+  'file.format.original',
+  'originals/3/3',
+  CURRENT_TIMESTAMP,
+  CURRENT_TIMESTAMP
 );
