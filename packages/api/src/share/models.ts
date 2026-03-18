@@ -13,6 +13,12 @@ export interface ShareArchive {
 	name: string;
 }
 
+export interface PendingShare {
+	id: string;
+	email: string;
+	accessRole: AccessRole;
+}
+
 export enum ShareStatus {
 	Ok = "status.generic.ok",
 	Pending = "status.generic.pending",

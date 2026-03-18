@@ -41,6 +41,7 @@ const setupDatabase = async (): Promise<void> => {
 	await db.sql("record.fixtures.create_test_profile_items");
 	await db.sql("record.fixtures.create_complete_test_folder_links");
 	await db.sql("record.fixtures.create_test_shareby_urls");
+	await db.sql("record.fixtures.create_test_invite_shares");
 };
 
 const clearDatabase = async (): Promise<void> => {
@@ -58,7 +59,9 @@ const clearDatabase = async (): Promise<void> => {
 			tag_link,
 			share,
 			shareby_url,
-			profile_item CASCADE`,
+			profile_item,
+			invite,
+			invite_share CASCADE`,
 	);
 };
 
@@ -194,6 +197,21 @@ describe("GET /records/:recordId", () => {
 				},
 			],
 		});
+		expect(record).toMatchObject({
+			pendingShares: expect.arrayContaining([
+				expect.objectContaining({
+					id: "1",
+					email: "pending1@example.com",
+					accessRole: "access.role.viewer",
+				}),
+				expect.objectContaining({
+					id: "2",
+					email: "pending2@example.com",
+					accessRole: "access.role.editor",
+				}),
+			]) as unknown,
+		});
+		expect(record.pendingShares).toHaveLength(2);
 	});
 	test("expect to log error and return 500 if database lookup fails", async () => {
 		const testError = new Error("test error");
@@ -368,6 +386,24 @@ describe("GET /records", () => {
 		const { body: records } = response as { body: ArchiveRecord[] };
 		expect(records.length).toEqual(0);
 	});
+	test("expect non-manager viewer to not receive pendingShares", async () => {
+		mockExtractUserEmailFromAuthToken("test+1@permanent.org");
+		const response = await agent
+			.get("/api/v2/records?recordIds[]=8")
+			.expect(200);
+		const { body: records } = response as { body: ArchiveRecord[] };
+		expect(records.length).toEqual(1);
+		expect(records[0]?.pendingShares).toBeNull();
+	});
+	test("expect unauthenticated viewer of public record to not receive pendingShares", async () => {
+		mockExtractUserEmailFromAuthToken();
+		const response = await agent
+			.get("/api/v2/records?recordIds[]=8")
+			.expect(200);
+		const { body: records } = response as { body: ArchiveRecord[] };
+		expect(records.length).toEqual(1);
+		expect(records[0]?.pendingShares).toBeNull();
+	});
 	test("expect not to return a private record when not logged in", async () => {
 		mockExtractUserEmailFromAuthToken();
 		const response = await agent
@@ -510,6 +546,21 @@ describe("GET /records", () => {
 					},
 				],
 			});
+			expect(record).toMatchObject({
+				pendingShares: expect.arrayContaining([
+					expect.objectContaining({
+						id: "1",
+						email: "pending1@example.com",
+						accessRole: "access.role.viewer",
+					}),
+					expect.objectContaining({
+						id: "2",
+						email: "pending2@example.com",
+						accessRole: "access.role.editor",
+					}),
+				]) as unknown,
+			});
+			expect(record.pendingShares).toHaveLength(2);
 		}
 	});
 	test("expect to not return deleted files", async () => {
