@@ -129,7 +129,7 @@ variable "legacy_backend_dev_host_url" {
 variable "legacy_backend_staging_host_url" {
   description = "Host URL of the legacy PHP backend"
   type        = string
-  default     = "https://staging.permanent.org/api"
+  default     = "https://app.staging.permanent.org/api"
 }
 
 variable "dev_legacy_backend_shared_secret" {
