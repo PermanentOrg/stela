@@ -121,7 +121,7 @@ resource "aws_lambda_function" "record_thumbnail_dev_lambda" {
 
   vpc_config {
     security_group_ids = [var.dev_security_group_id]
-    subnet_ids         = var.subnet_ids
+    subnet_ids         = var.private_subnet_ids
   }
 
   environment {
@@ -132,6 +132,7 @@ resource "aws_lambda_function" "record_thumbnail_dev_lambda" {
       CLOUDFRONT_URL         = var.dev_cloudfront_url
       CLOUDFRONT_KEY_PAIR_ID = var.cloudfront_key_pair_id
       CLOUDFRONT_PRIVATE_KEY = var.cloudfront_private_key
+      NODE_OPTIONS           = "--import ./packages/record_thumbnail_attacher/dist/instrument.js"
     }
   }
 }

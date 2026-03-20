@@ -1,7 +1,6 @@
 resource "aws_sqs_queue" "trigger_archivematica_prod_deadletter_queue" {
   name = "trigger-archivematica-prod-deadletter-queue"
 }
-
 resource "aws_sqs_queue" "trigger_archivematica_prod_queue" {
   name = "trigger-archivematica-prod-queue"
 
@@ -95,7 +94,7 @@ resource "aws_lambda_function" "trigger_archivematica_prod_lambda" {
 
   vpc_config {
     security_group_ids = [var.prod_security_group_id]
-    subnet_ids         = var.subnet_ids
+    subnet_ids         = var.private_subnet_ids
   }
 
   environment {
@@ -107,6 +106,7 @@ resource "aws_lambda_function" "trigger_archivematica_prod_lambda" {
       ARCHIVEMATICA_API_KEY              = var.archivematica_api_key
       ARCHIVEMATICA_ORIGINAL_LOCATION_ID = var.archivematica_original_location_id
       ARCHIVEMATICA_PROCESSING_WORKFLOW  = var.archivematica_processing_workflow
+      NODE_OPTIONS                       = "--import ./packages/trigger_archivematica/dist/instrument.js"
     }
   }
 }

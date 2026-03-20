@@ -91,7 +91,7 @@ resource "aws_lambda_function" "access_copy_prod_lambda" {
 
   vpc_config {
     security_group_ids = [var.prod_security_group_id]
-    subnet_ids         = var.subnet_ids
+    subnet_ids         = var.private_subnet_ids
   }
 
   environment {
@@ -104,6 +104,7 @@ resource "aws_lambda_function" "access_copy_prod_lambda" {
       CLOUDFRONT_PRIVATE_KEY = var.cloudfront_private_key
       S3_BUCKET              = var.s3_bucket
       BACKBLAZE_BUCKET       = var.backblaze_bucket
+      NODE_OPTIONS           = "--import ./packages/access_copy_attacher/dist/instrument.js"
     }
   }
 }

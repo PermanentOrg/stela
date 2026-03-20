@@ -3,6 +3,9 @@ import { requireEnv } from "require-env-variable";
 
 config({ path: "../../.env" });
 
+requireEnv("SENTRY_DSN");
+requireEnv("ENV");
+
 export const {
 	ARCHIVEMATICA_HOST_URL,
 	ARCHIVEMATICA_API_KEY,

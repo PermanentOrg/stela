@@ -1,5 +1,6 @@
 import type { SQSHandler, SQSEvent, SQSRecord } from "aws-lambda";
 import { TinyPgError } from "tinypg";
+import * as Sentry from "@sentry/aws-serverless";
 import { validateSqsMessage } from "@stela/s3-utils";
 import { logger } from "@stela/logger";
 import { validateRecordSubmitEvent } from "@stela/event_utils";
@@ -57,34 +58,36 @@ export const extractFileAttributesFromS3Message = (
 	};
 };
 
-export const handler: SQSHandler = async (event: SQSEvent) => {
-	await Promise.all(
-		event.Records.map(async (message) => {
-			const { recordId, operation } =
-				extractFileAttributesFromS3Message(message);
-			try {
-				const archiveTypeResult = await db.sql<{ type: string }>(
-					"queries.get_record_archive_type",
-					{ recordId },
-				);
-				if (archiveTypeResult.rows[0]?.type === "type.archive.nonprofit") {
-					// Skip charging storage for nonprofit archives
-					return;
+export const handler: SQSHandler = Sentry.wrapHandler(
+	async (event: SQSEvent) => {
+		await Promise.all(
+			event.Records.map(async (message) => {
+				const { recordId, operation } =
+					extractFileAttributesFromS3Message(message);
+				try {
+					const archiveTypeResult = await db.sql<{ type: string }>(
+						"queries.get_record_archive_type",
+						{ recordId },
+					);
+					if (archiveTypeResult.rows[0]?.type === "type.archive.nonprofit") {
+						// Skip charging storage for nonprofit archives
+						return;
+					}
+					await db.sql("queries.update_account_space", { recordId, operation });
+				} catch (err: unknown) {
+					// If the error occurred because the ledger entry already exists, we can safely ignore the error.
+					// Otherwise, rethrow it
+					if (
+						!(
+							err instanceof TinyPgError &&
+							err.message === duplicateLedgerNonfinancialError
+						)
+					) {
+						logger.error(err);
+						throw err;
+					}
 				}
-				await db.sql("queries.update_account_space", { recordId, operation });
-			} catch (err: unknown) {
-				// If the error occurred because the ledger entry already exists, we can safely ignore the error.
-				// Otherwise, rethrow it
-				if (
-					!(
-						err instanceof TinyPgError &&
-						err.message === duplicateLedgerNonfinancialError
-					)
-				) {
-					logger.error(err);
-					throw err;
-				}
-			}
-		}),
-	);
-};
+			}),
+		);
+	},
+);

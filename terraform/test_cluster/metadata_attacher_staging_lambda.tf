@@ -97,7 +97,7 @@ resource "aws_lambda_function" "metadata_attacher_lambda_staging" {
 
   vpc_config {
     security_group_ids = [var.staging_security_group_id]
-    subnet_ids         = var.subnet_ids
+    subnet_ids         = var.private_subnet_ids
   }
 
   environment {
@@ -105,6 +105,7 @@ resource "aws_lambda_function" "metadata_attacher_lambda_staging" {
       ENV          = var.staging_env
       SENTRY_DSN   = var.sentry_dsn
       DATABASE_URL = var.staging_database_url
+      NODE_OPTIONS = "--import ./packages/metadata_attacher/dist/instrument.js"
     }
   }
 }

@@ -1,4 +1,5 @@
 import type { SQSHandler, SQSEvent, SQSRecord } from "aws-lambda";
+import * as Sentry from "@sentry/aws-serverless";
 import { validateSqsMessage } from "@stela/s3-utils";
 import { logger } from "@stela/logger";
 import { triggerArchivematicaProcessing } from "@stela/archivematica-utils";
@@ -51,39 +52,44 @@ export const extractRecordIdFromNewRecordMessage = (
 	throw new Error("Unsupported action type");
 };
 
-export const handler: SQSHandler = async (event: SQSEvent) => {
-	await Promise.all(
-		event.Records.map(async (message) => {
-			try {
-				const recordId = extractRecordIdFromNewRecordMessage(message);
-				const fileResult = await db.sql<{ fileId: string; filePath: string }>(
-					"queries.get_file",
-					{ recordId },
-				);
-				if (fileResult.rows[0] === undefined) {
-					logger.error(`File not found for record ${recordId}`);
-					return;
-				}
-				const response = await triggerArchivematicaProcessing(
-					fileResult.rows[0].fileId,
-					fileResult.rows[0].filePath,
-					{
-						archivematicaHostUrl: ARCHIVEMATICA_HOST_URL,
-						archivematicaApiKey: ARCHIVEMATICA_API_KEY,
-						archivematicaOriginalLocationId: ARCHIVEMATICA_ORIGINAL_LOCATION_ID,
-						processingWorkflow: ARCHIVEMATICA_PROCESSING_WORKFLOW,
-					},
-				);
-				if (!response.ok) {
-					logger.error(response.status);
-					throw new Error(
-						`Call to Archivematica failed with status ${response.status}`,
+export const handler: SQSHandler = Sentry.wrapHandler(
+	async (event: SQSEvent) => {
+		await Promise.all(
+			event.Records.map(async (message) => {
+				try {
+					const recordId = extractRecordIdFromNewRecordMessage(message);
+					const fileResult = await db.sql<{ fileId: string; filePath: string }>(
+						"queries.get_file",
+						{ recordId },
 					);
+					if (fileResult.rows[0] === undefined) {
+						const message = `File not found for record ${recordId}`;
+						logger.error(message);
+						Sentry.captureMessage(message);
+						return;
+					}
+					const response = await triggerArchivematicaProcessing(
+						fileResult.rows[0].fileId,
+						fileResult.rows[0].filePath,
+						{
+							archivematicaHostUrl: ARCHIVEMATICA_HOST_URL,
+							archivematicaApiKey: ARCHIVEMATICA_API_KEY,
+							archivematicaOriginalLocationId:
+								ARCHIVEMATICA_ORIGINAL_LOCATION_ID,
+							processingWorkflow: ARCHIVEMATICA_PROCESSING_WORKFLOW,
+						},
+					);
+					if (!response.ok) {
+						logger.error(response.status);
+						throw new Error(
+							`Call to Archivematica failed with status ${response.status}`,
+						);
+					}
+				} catch (err: unknown) {
+					logger.error(err);
+					throw err;
 				}
-			} catch (err: unknown) {
-				logger.error(err);
-				throw err;
-			}
-		}),
-	);
-};
+			}),
+		);
+	},
+);
