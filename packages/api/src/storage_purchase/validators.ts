@@ -22,3 +22,12 @@ export const validateStoragePurchaseRequest: (
 		throw validation.error;
 	}
 };
+
+export const validateStripeWebhookBody: (
+	data: unknown,
+) => asserts data is Buffer = (data: unknown): asserts data is Buffer => {
+	const validation = Joi.binary().validate(data);
+	if (validation.error !== undefined) {
+		throw validation.error;
+	}
+};

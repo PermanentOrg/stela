@@ -71,6 +71,17 @@ resource "kubernetes_deployment" "stela_dev" {
           }
 
           env {
+            name = "LEGACY_BACKEND_CREDIT_STORAGE_SECRET"
+            value_from {
+              secret_key_ref {
+                name     = "dev-secrets"
+                key      = "LEGACY_BACKEND_CREDIT_STORAGE_SECRET"
+                optional = false
+              }
+            }
+          }
+
+          env {
             name  = "FUSIONAUTH_HOST"
             value = var.fusionauth_host
           }
@@ -231,6 +242,17 @@ resource "kubernetes_deployment" "stela_dev" {
               secret_key_ref {
                 name     = "dev-secrets"
                 key      = "DELEGATED_CALL_SECRET"
+                optional = false
+              }
+            }
+          }
+
+          env {
+            name = "STRIPE_WEBHOOK_SECRET"
+            value_from {
+              secret_key_ref {
+                name     = "dev-secrets"
+                key      = "STRIPE_WEBHOOK_SECRET"
                 optional = false
               }
             }

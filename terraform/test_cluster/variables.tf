@@ -142,6 +142,16 @@ variable "staging_legacy_backend_shared_secret" {
   type        = string
 }
 
+variable "dev_legacy_backend_credit_storage_secret" {
+  description = "Shared secret for authenticating calls to the legacy backend's credit storage endpoint in the dev environment"
+  type        = string
+}
+
+variable "staging_legacy_backend_credit_storage_secret" {
+  description = "Shared secret for authenticating calls to the legacy backend's credit storage endpoint in the staging environment"
+  type        = string
+}
+
 variable "mailchimp_api_key" {
   description = "API key for Mailchimp Marketing"
   type        = string
@@ -366,5 +376,15 @@ variable "dev_delegated_call_secret" {
 
 variable "staging_delegated_call_secret" {
   description = "Secret used to authenticate delegated calls in the staging environment"
+  type        = string
+}
+
+variable "stripe_dev_webhook_secret" {
+  description = "A key used in dev for verifying requests to the stripe webhook"
+  type        = string
+}
+
+variable "stripe_staging_webhook_secret" {
+  description = "A key used in staging for verifying requests to the stripe webhook"
   type        = string
 }
