@@ -70,7 +70,11 @@ share-link:
       - name: shareTokens
         in: query
         required: false
-        description: An array of share links' tokens. Required if shareLinkIds is not set.
+        description: |
+          An array of share links' tokens. Required if shareLinkIds is not set.
+          Note that if bearer token authentication is set, the results will filter to
+          links created by the email in the token. To open a link owned by someone else,
+          do not send a bearer token.
         schema:
           type: array
           items:
