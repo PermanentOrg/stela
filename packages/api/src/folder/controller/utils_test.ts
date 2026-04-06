@@ -17,6 +17,7 @@ export const loadFixtures = async (): Promise<void> => {
 	await db.sql("folder.fixtures.create_test_profile_items");
 	await db.sql("folder.fixtures.create_test_tags");
 	await db.sql("folder.fixtures.create_test_tag_links");
+	await db.sql("folder.fixtures.create_test_invite_shares");
 };
 
 export const clearDatabase = async (): Promise<void> => {
@@ -38,7 +39,9 @@ export const clearDatabase = async (): Promise<void> => {
       tag_link,
       record,
       file,
-      record_file
+      record_file,
+      invite,
+      invite_share
     CASCADE`,
 	);
 };

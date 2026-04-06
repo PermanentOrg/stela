@@ -1,4 +1,4 @@
-import type { Share } from "../share/models";
+import type { PendingShare, Share } from "../share/models";
 import type { Tag } from "../tag/models";
 import type { ArchiveRecord } from "../record/models";
 import type { Location } from "../common/models";
@@ -22,6 +22,7 @@ export interface FolderRow {
 		id: string;
 	};
 	shares?: Share[];
+	pendingShares: PendingShare[] | null;
 	tags?: Tag[];
 	archive: {
 		id: string;
@@ -70,6 +71,7 @@ export interface Folder {
 		id: string;
 	};
 	shares?: Share[];
+	pendingShares: PendingShare[] | null;
 	tags?: Tag[];
 	archive: {
 		id: string;

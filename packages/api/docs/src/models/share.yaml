@@ -11,6 +11,17 @@ share:
       type: string
     archive:
       $ref: "#/shareArchive"
+pendingShare:
+  description: >
+    A pending share invitation on an item
+  type: object
+  properties:
+    id:
+      type: string
+    email:
+      type: string
+    accessRole:
+      type: string
 shareArchive:
   description: >
     Record Share Archive Object

@@ -229,6 +229,21 @@ describe("GET /folder", () => {
 					expect(folders[0].shares[0].archive.name).toEqual("Test Archive");
 				}
 			}
+			expect(folders[0]).toMatchObject({
+				pendingShares: expect.arrayContaining([
+					expect.objectContaining({
+						id: "1",
+						email: "pending1@example.com",
+						accessRole: "access.role.viewer",
+					}),
+					expect.objectContaining({
+						id: "2",
+						email: "pending2@example.com",
+						accessRole: "access.role.editor",
+					}),
+				]) as unknown,
+			});
+			expect(folders[0].pendingShares).toHaveLength(2);
 			expect(folders[0].tags).toBeDefined();
 			if (folders[0].tags !== undefined) {
 				expect(folders[0].tags.length).toEqual(1);
@@ -278,6 +293,18 @@ describe("GET /folder", () => {
 			expect(folders[0].status).toEqual("ok");
 			expect(folders[0].view).toEqual("grid");
 		}
+	});
+
+	test("should not return pendingShares for non-manager viewer", async () => {
+		mockExtractUserEmailFromAuthToken("test+1@permanent.org");
+		const response = await agent
+			.get("/api/v2/folders?folderIds[]=2")
+			.expect(200);
+		const {
+			body: { items: folders },
+		} = response as { body: { items: Folder[] } };
+		expect(folders.length).toEqual(1);
+		expect(folders[0]?.pendingShares).toBeNull();
 	});
 
 	test("should retrieve multiple folders if requested", async () => {

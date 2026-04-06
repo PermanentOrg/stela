@@ -134,6 +134,14 @@ record:
       type: array
       items:
         $ref: "./record.yaml#/share"
+    pendingShares:
+      nullable: true
+      type: array
+      description: >
+        Pending share invitations on this record. Returns an array for users
+        with manager or higher access to the record's archive; null otherwise.
+      items:
+        $ref: "../models/share.yaml#/pendingShare"
     archive:
       type: object
       required:

@@ -105,6 +105,28 @@ aggregated_shares AS (
   GROUP BY share.folder_linkid
 ),
 
+aggregated_pending_shares AS (
+  SELECT
+    invite_share.folder_linkid,
+    ARRAY_AGG(JSONB_BUILD_OBJECT(
+      'id', invite_share.invite_shareid::TEXT,
+      'email', invite.email,
+      'accessRole', invite_share.accessrole
+    )) AS pending_shares_as_json
+  FROM invite_share
+  INNER JOIN invite ON invite_share.inviteid = invite.inviteid
+  INNER JOIN
+    folder_link
+    ON invite_share.folder_linkid = folder_link.folder_linkid
+  INNER JOIN
+    candidate_records
+    ON folder_link.recordid = candidate_records.recordid
+  WHERE
+    invite_share.status = 'status.invite.pending'
+    AND invite.status = 'status.invite.pending'
+  GROUP BY invite_share.folder_linkid
+),
+
 ancestor_unrestricted_share_tokens (
   parentfolder_linkid,
   recordid,
@@ -189,6 +211,24 @@ SELECT DISTINCT ON (record.recordid)
   aggregated_tags.tags,
   archive.archivenbr AS "archiveArchiveNumber",
   aggregated_shares.shares_as_json AS shares,
+  CASE
+    WHEN
+      EXISTS (
+        SELECT 1
+        FROM account_archive
+        INNER JOIN account
+          ON
+            account_archive.accountid = account.accountid
+            AND account.primaryemail = :accountEmail
+        WHERE
+          account_archive.archiveid = record.archiveid
+          AND account_archive.status = 'status.generic.ok'
+          AND account_archive.accessrole IN (
+            'access.role.owner', 'access.role.manager'
+          )
+      )
+      THEN aggregated_pending_shares.pending_shares_as_json
+  END AS "pendingShares",
   JSON_BUILD_OBJECT(
     '200',
     record.thumburl200,
@@ -291,6 +331,9 @@ LEFT JOIN
 LEFT JOIN
   aggregated_shares
   ON folder_link.folder_linkid = aggregated_shares.folder_linkid
+LEFT JOIN
+  aggregated_pending_shares
+  ON folder_link.folder_linkid = aggregated_pending_shares.folder_linkid
 LEFT JOIN
   aggregated_ancestor_unrestricted_share_tokens
   ON record.recordid = aggregated_ancestor_unrestricted_share_tokens.recordid

@@ -1,5 +1,5 @@
 import type { FileType } from "@stela/permanent_models";
-import type { Share } from "../share/models";
+import type { PendingShare, Share } from "../share/models";
 import type { Tag } from "../tag/models";
 import type { Location } from "../common/models";
 
@@ -37,6 +37,7 @@ export interface ArchiveRecord {
 	tags: Tag[];
 	archiveArchiveNumber: string;
 	shares: Share[];
+	pendingShares: PendingShare[] | null;
 	location: Location;
 	archive: {
 		id: string;
@@ -84,6 +85,7 @@ export interface ArchiveRecordRow {
 	tags: Tag[];
 	archiveArchiveNumber: string;
 	shares: Share[];
+	pendingShares: PendingShare[] | null;
 	location: Location;
 	archive: {
 		id: string;
