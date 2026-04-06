@@ -100,7 +100,7 @@ resource "aws_lambda_function" "trigger_archivematica_dev_lambda" {
 
   vpc_config {
     security_group_ids = [var.dev_security_group_id]
-    subnet_ids         = var.subnet_ids
+    subnet_ids         = var.private_subnet_ids
   }
 
   environment {
@@ -112,6 +112,7 @@ resource "aws_lambda_function" "trigger_archivematica_dev_lambda" {
       ARCHIVEMATICA_API_KEY              = var.dev_archivematica_api_key
       ARCHIVEMATICA_ORIGINAL_LOCATION_ID = var.dev_archivematica_original_location_id
       ARCHIVEMATICA_PROCESSING_WORKFLOW  = var.dev_archivematica_processing_workflow
+      NODE_OPTIONS                       = "--import ./packages/trigger_archivematica/dist/instrument.js"
     }
   }
 }

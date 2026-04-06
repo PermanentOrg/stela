@@ -92,7 +92,7 @@ resource "aws_lambda_function" "metadata_attacher_lambda" {
 
   vpc_config {
     security_group_ids = [var.prod_security_group_id]
-    subnet_ids         = var.subnet_ids
+    subnet_ids         = var.private_subnet_ids
   }
 
   environment {
@@ -100,6 +100,7 @@ resource "aws_lambda_function" "metadata_attacher_lambda" {
       ENV          = var.env
       SENTRY_DSN   = var.sentry_dsn
       DATABASE_URL = var.prod_database_url
+      NODE_OPTIONS = "--import ./packages/metadata_attacher/dist/instrument.js"
     }
   }
 }

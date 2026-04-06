@@ -100,7 +100,7 @@ resource "aws_lambda_function" "account_space_update_staging_lambda" {
 
   vpc_config {
     security_group_ids = [var.staging_security_group_id]
-    subnet_ids         = var.subnet_ids
+    subnet_ids         = var.private_subnet_ids
   }
 
   environment {
@@ -108,6 +108,7 @@ resource "aws_lambda_function" "account_space_update_staging_lambda" {
       ENV          = var.staging_env
       SENTRY_DSN   = var.sentry_dsn
       DATABASE_URL = var.staging_database_url
+      NODE_OPTIONS = "--import ./packages/account_space_updater/dist/instrument.js"
     }
   }
 }

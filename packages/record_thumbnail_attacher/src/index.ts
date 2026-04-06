@@ -28,7 +28,9 @@ export const handler: SQSHandler = Sentry.wrapHandler(
 						thumbnail256CloudPath: key,
 					});
 					if (result.rows.length === 0) {
-						logger.error(`Failed to updated record for file: ${fileId}`);
+						const message = `Failed to update record for file: ${fileId}`;
+						logger.error(message);
+						Sentry.captureMessage(message);
 					}
 				} catch (error) {
 					logger.error(error);

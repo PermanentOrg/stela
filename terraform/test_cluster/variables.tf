@@ -38,6 +38,12 @@ variable "subnet_ids" {
   default     = ["subnet-a3f202fa", "subnet-fc843999", "subnet-0fc91a78"]
 }
 
+variable "private_subnet_ids" {
+  description = "Private Subnet IDs"
+  type        = list(string)
+  default     = ["subnet-099a37d295b0be5f3", "subnet-07c4b166dea11651e", "subnet-0df893089f3ade679"]
+}
+
 variable "image_overrides" {
   description = "The set of images that should be updated in a deploy"
   type        = map(string)
