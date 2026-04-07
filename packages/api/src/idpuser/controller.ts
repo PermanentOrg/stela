@@ -5,7 +5,6 @@ import {
 	type NextFunction,
 } from "express";
 import { verifyUserAuthentication } from "../middleware";
-import { isValidationError } from "../validators/validator_util";
 import { validateBodyFromAuthentication } from "../validators";
 import {
 	validateSendEnableCodeRequest,
@@ -34,10 +33,6 @@ idpUserController.get(
 
 			res.send(response);
 		} catch (err) {
-			if (isValidationError(err)) {
-				res.status(HTTP_STATUS.CLIENT_ERROR.BAD_REQUEST).json({ error: err });
-				return;
-			}
 			next(err);
 		}
 	},
@@ -52,10 +47,6 @@ idpUserController.post(
 			await sendEnableCode(req.body);
 			res.send(HTTP_STATUS.SUCCESSFUL.OK);
 		} catch (err) {
-			if (isValidationError(err)) {
-				res.status(HTTP_STATUS.CLIENT_ERROR.BAD_REQUEST).json({ error: err });
-				return;
-			}
 			next(err);
 		}
 	},
@@ -70,10 +61,6 @@ idpUserController.post(
 			await addTwoFactorMethod(req.body);
 			res.status(HTTP_STATUS.SUCCESSFUL.OK).send();
 		} catch (err) {
-			if (isValidationError(err)) {
-				res.status(HTTP_STATUS.CLIENT_ERROR.BAD_REQUEST).json({ error: err });
-				return;
-			}
 			next(err);
 		}
 	},
@@ -88,10 +75,6 @@ idpUserController.post(
 			await sendDisableCode(req.body);
 			res.send(HTTP_STATUS.SUCCESSFUL.OK);
 		} catch (err) {
-			if (isValidationError(err)) {
-				res.status(HTTP_STATUS.CLIENT_ERROR.BAD_REQUEST).json({ error: err });
-				return;
-			}
 			next(err);
 		}
 	},
@@ -106,10 +89,6 @@ idpUserController.post(
 			await removeTwoFactorMethod(req.body);
 			res.send(HTTP_STATUS.SUCCESSFUL.OK);
 		} catch (err) {
-			if (isValidationError(err)) {
-				res.status(HTTP_STATUS.CLIENT_ERROR.BAD_REQUEST).json({ error: err });
-				return;
-			}
 			next(err);
 		}
 	},

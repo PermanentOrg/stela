@@ -7,7 +7,6 @@ import {
 	verifyUserAuthentication,
 	verifyAdminAuthentication,
 } from "../../middleware";
-import { isValidationError } from "../../validators/validator_util";
 import {
 	validateUpdateTagsRequest,
 	validateBodyFromAuthentication,
@@ -29,10 +28,6 @@ accountController.put(
 			await accountService.updateTags(req.body);
 			res.json({});
 		} catch (err) {
-			if (isValidationError(err)) {
-				res.status(HTTP_STATUS.CLIENT_ERROR.BAD_REQUEST).json({ error: err });
-				return;
-			}
 			next(err);
 		}
 	},
@@ -48,10 +43,6 @@ accountController.get(
 			);
 			res.json(signupDetails);
 		} catch (err) {
-			if (isValidationError(err)) {
-				res.status(HTTP_STATUS.CLIENT_ERROR.BAD_REQUEST).json({ error: err });
-				return;
-			}
 			next(err);
 		}
 	},
@@ -74,10 +65,6 @@ accountController.delete(
 
 			res.status(HTTP_STATUS.SUCCESSFUL.NO_CONTENT).send();
 		} catch (err) {
-			if (isValidationError(err)) {
-				res.status(HTTP_STATUS.CLIENT_ERROR.BAD_REQUEST).json({ error: err });
-				return;
-			}
 			next(err);
 		}
 	},
@@ -96,12 +83,6 @@ accountController.post(
 
 			res.status(HTTP_STATUS.SUCCESSFUL.OK).json(result);
 		} catch (err) {
-			if (isValidationError(err)) {
-				res
-					.status(HTTP_STATUS.CLIENT_ERROR.BAD_REQUEST)
-					.json({ error: err.message });
-				return;
-			}
 			next(err);
 		}
 	},

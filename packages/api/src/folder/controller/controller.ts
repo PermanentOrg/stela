@@ -20,7 +20,6 @@ import {
 	validateFolderRequest,
 	validateGetFoldersQuery,
 } from "../validators";
-import { isValidationError } from "../../validators/validator_util";
 import {
 	validateOptionalAuthenticationValues,
 	validatePaginationParameters,
@@ -51,12 +50,6 @@ folderController.patch(
 
 			res.status(HTTP_STATUS.SUCCESSFUL.OK).send({ data: folder });
 		} catch (err) {
-			if (isValidationError(err)) {
-				res
-					.status(HTTP_STATUS.CLIENT_ERROR.BAD_REQUEST)
-					.json({ error: err.message });
-				return;
-			}
 			next(err);
 		}
 	},
@@ -77,12 +70,6 @@ folderController.get(
 			);
 			res.status(HTTP_STATUS.SUCCESSFUL.OK).send({ items: folders });
 		} catch (err) {
-			if (isValidationError(err)) {
-				res
-					.status(HTTP_STATUS.CLIENT_ERROR.BAD_REQUEST)
-					.json({ error: err.message });
-				return;
-			}
 			next(err);
 		}
 	},
@@ -105,12 +92,6 @@ folderController.get(
 			);
 			res.status(HTTP_STATUS.SUCCESSFUL.OK).send(response);
 		} catch (err) {
-			if (isValidationError(err)) {
-				res
-					.status(HTTP_STATUS.CLIENT_ERROR.BAD_REQUEST)
-					.json({ error: err.message });
-				return;
-			}
 			next(err);
 		}
 	},
@@ -129,12 +110,6 @@ folderController.get(
 			);
 			res.status(HTTP_STATUS.SUCCESSFUL.OK).send({ items: shareLinks });
 		} catch (err) {
-			if (isValidationError(err)) {
-				res
-					.status(HTTP_STATUS.CLIENT_ERROR.BAD_REQUEST)
-					.json({ error: err.message });
-				return;
-			}
 			next(err);
 		}
 	},

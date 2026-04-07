@@ -1,13 +1,11 @@
 import { Router } from "express";
 import type { Request, Response, NextFunction } from "express";
-import { logger } from "@stela/logger";
 import {
 	verifyUserAuthentication,
 	verifyUserOrAdminOrDelegatedCallAuthentication,
 	extractIp,
 } from "../middleware";
 import { validateCreateEventRequest } from "./validators";
-import { isValidationError } from "../validators/validator_util";
 import { validateBodyFromAuthentication } from "../validators/shared";
 import { createEvent, getChecklistEvents } from "./service";
 import { HTTP_STATUS } from "@pdc/http-status-codes";
@@ -28,13 +26,6 @@ eventController.post(
 			await createEvent(req.body);
 			res.status(HTTP_STATUS.SUCCESSFUL.OK).json({});
 		} catch (err) {
-			logger.error(err);
-			if (isValidationError(err)) {
-				res
-					.status(HTTP_STATUS.CLIENT_ERROR.BAD_REQUEST)
-					.json({ error: err.message });
-				return;
-			}
 			next(err);
 		}
 	},
@@ -49,12 +40,6 @@ eventController.get(
 			const response = await getChecklistEvents(req.body.emailFromAuthToken);
 			res.status(HTTP_STATUS.SUCCESSFUL.OK).json({ checklistItems: response });
 		} catch (err) {
-			if (isValidationError(err)) {
-				res
-					.status(HTTP_STATUS.CLIENT_ERROR.BAD_REQUEST)
-					.json({ error: err.message });
-				return;
-			}
 			next(err);
 		}
 	},

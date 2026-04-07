@@ -10,7 +10,6 @@ import {
 	validateUpdateShareLinkRequest,
 	validateGetShareLinksParameters,
 } from "./validators";
-import { isValidationError } from "../validators/validator_util";
 import { shareLinkService } from "./service";
 import { validateBodyFromAuthentication } from "../validators";
 import { validateOptionalAuthenticationValues } from "../validators/shared";
@@ -27,10 +26,6 @@ shareLinkController.post(
 			const response = await shareLinkService.createShareLink(req.body);
 			res.status(HTTP_STATUS.SUCCESSFUL.CREATED).json({ data: response });
 		} catch (err) {
-			if (isValidationError(err)) {
-				res.status(HTTP_STATUS.CLIENT_ERROR.BAD_REQUEST).json({ error: err });
-				return;
-			}
 			next(err);
 		}
 	},
@@ -48,10 +43,6 @@ shareLinkController.patch(
 			);
 			res.status(HTTP_STATUS.SUCCESSFUL.OK).json({ data: updatedShareLink });
 		} catch (err) {
-			if (isValidationError(err)) {
-				res.status(HTTP_STATUS.CLIENT_ERROR.BAD_REQUEST).json({ error: err });
-				return;
-			}
 			next(err);
 		}
 	},
@@ -79,10 +70,6 @@ shareLinkController.get(
 			);
 			res.status(HTTP_STATUS.SUCCESSFUL.OK).json({ items: shareLinks });
 		} catch (err) {
-			if (isValidationError(err)) {
-				res.status(HTTP_STATUS.CLIENT_ERROR.BAD_REQUEST).json({ error: err });
-				return;
-			}
 			next(err);
 		}
 	},
@@ -100,10 +87,6 @@ shareLinkController.delete(
 			);
 			res.sendStatus(HTTP_STATUS.SUCCESSFUL.NO_CONTENT);
 		} catch (err) {
-			if (isValidationError(err)) {
-				res.status(HTTP_STATUS.CLIENT_ERROR.BAD_REQUEST).json({ error: err });
-				return;
-			}
 			next(err);
 		}
 	},

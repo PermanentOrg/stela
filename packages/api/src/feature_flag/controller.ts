@@ -1,7 +1,6 @@
 import { Router } from "express";
 import type { Request, Response, NextFunction } from "express";
 
-import { logger } from "@stela/logger";
 import { featureService } from "./service";
 import { createFeatureService } from "./service/create";
 import { updateFeatureService } from "./service/update";
@@ -10,7 +9,6 @@ import {
 	extractUserIsAdminFromAuthToken,
 	verifyAdminAuthentication,
 } from "../middleware";
-import { isValidationError } from "../validators/validator_util";
 import {
 	validateCreateFeatureFlagRequest,
 	validateUpdateFeatureFlagRequest,
@@ -30,13 +28,6 @@ featureController.get(
 			const featureFlags = await featureService.getFeatureFlags(req.body.admin);
 			res.json({ items: featureFlags });
 		} catch (err) {
-			if (isValidationError(err)) {
-				res
-					.status(HTTP_STATUS.CLIENT_ERROR.BAD_REQUEST)
-					.json({ error: err.message });
-				return;
-			}
-			logger.error(err);
 			next(err);
 		}
 	},
@@ -53,12 +44,6 @@ featureController.post(
 			);
 			res.status(HTTP_STATUS.SUCCESSFUL.OK).send({ data: insertedFeatureFlag });
 		} catch (err) {
-			if (isValidationError(err)) {
-				res
-					.status(HTTP_STATUS.CLIENT_ERROR.BAD_REQUEST)
-					.json({ error: err.message });
-				return;
-			}
 			next(err);
 		}
 	},
@@ -77,12 +62,6 @@ featureController.put(
 			);
 			res.status(HTTP_STATUS.SUCCESSFUL.OK).send({ data: featureFlag });
 		} catch (err) {
-			if (isValidationError(err)) {
-				res
-					.status(HTTP_STATUS.CLIENT_ERROR.BAD_REQUEST)
-					.json({ error: err.message });
-				return;
-			}
 			next(err);
 		}
 	},
@@ -97,12 +76,6 @@ featureController.delete(
 			await deleteFeatureService.deleteFeatureFlag(req.params.featureId);
 			res.status(HTTP_STATUS.SUCCESSFUL.NO_CONTENT).send();
 		} catch (err) {
-			if (isValidationError(err)) {
-				res
-					.status(HTTP_STATUS.CLIENT_ERROR.BAD_REQUEST)
-					.json({ error: err.message });
-				return;
-			}
 			next(err);
 		}
 	},

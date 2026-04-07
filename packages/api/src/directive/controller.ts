@@ -14,8 +14,6 @@ import {
 	validateBodyFromAuthentication,
 } from "./validators";
 import { validateBodyFromAdminAuthentication } from "../validators";
-import { isValidationError } from "../validators/validator_util";
-import { HTTP_STATUS } from "@pdc/http-status-codes";
 
 export const directiveController = Router();
 directiveController.post(
@@ -27,10 +25,6 @@ directiveController.post(
 			const directive = await directiveService.createDirective(req.body);
 			res.json(directive);
 		} catch (err) {
-			if (isValidationError(err)) {
-				res.status(HTTP_STATUS.CLIENT_ERROR.BAD_REQUEST).json({ error: err });
-				return;
-			}
 			next(err);
 		}
 	},
@@ -49,10 +43,6 @@ directiveController.put(
 			);
 			res.json(directive);
 		} catch (err) {
-			if (isValidationError(err)) {
-				res.status(HTTP_STATUS.CLIENT_ERROR.BAD_REQUEST).json({ error: err });
-				return;
-			}
 			next(err);
 		}
 	},
@@ -70,10 +60,6 @@ directiveController.post(
 			);
 			res.json(responseBody);
 		} catch (err) {
-			if (isValidationError(err)) {
-				res.status(HTTP_STATUS.CLIENT_ERROR.BAD_REQUEST).json({ error: err });
-				return;
-			}
 			next(err);
 		}
 	},
@@ -92,10 +78,6 @@ directiveController.get(
 			);
 			res.json(responseBody);
 		} catch (err) {
-			if (isValidationError(err)) {
-				res.status(HTTP_STATUS.CLIENT_ERROR.BAD_REQUEST).json({ error: err });
-				return;
-			}
 			next(err);
 		}
 	},
