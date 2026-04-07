@@ -8,7 +8,6 @@ import {
 	validateRecalculateRecordThumbnailRequest,
 	validateAccountSetNullSubjectsRequest,
 } from "./validators";
-import { isValidationError } from "../validators/validator_util";
 
 export const adminController = Router();
 adminController.post(
@@ -29,10 +28,6 @@ adminController.post(
 				res.json(results);
 			}
 		} catch (err) {
-			if (isValidationError(err)) {
-				res.status(HTTP_STATUS.CLIENT_ERROR.BAD_REQUEST).json({ error: err });
-				return;
-			}
 			next(err);
 		}
 	},
@@ -49,10 +44,6 @@ adminController.post(
 			);
 			res.json(response);
 		} catch (err) {
-			if (isValidationError(err)) {
-				res.status(HTTP_STATUS.CLIENT_ERROR.BAD_REQUEST).json({ error: err });
-				return;
-			}
 			next(err);
 		}
 	},

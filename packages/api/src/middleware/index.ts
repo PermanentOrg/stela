@@ -8,3 +8,4 @@ export {
 	extractShareTokenFromHeaders,
 } from "./authentication";
 export { extractIp } from "./extract_ip";
+export { handleValidationError } from "./handleValidationError";

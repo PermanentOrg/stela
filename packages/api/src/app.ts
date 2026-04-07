@@ -6,6 +6,7 @@ import expressWinston from "express-winston";
 import { logger } from "@stela/logger";
 import { apiRoutes } from "./routes";
 import { handleError } from "./middleware/handleError";
+import { handleValidationError } from "./middleware/handleValidationError";
 
 const env = process.env["ENV"] ?? "";
 
@@ -37,6 +38,7 @@ app.use((req, _res, next) => {
 });
 
 app.use("/api/v2", apiRoutes);
+app.use(handleValidationError);
 Sentry.setupExpressErrorHandler(app);
 app.use(handleError);
 

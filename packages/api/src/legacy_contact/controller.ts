@@ -7,9 +7,7 @@ import {
 	validateBodyFromAuthentication,
 	validateUpdateLegacyContactParams,
 } from "./validators";
-import { isValidationError } from "../validators/validator_util";
 import { legacyContactService } from "./service";
-import { HTTP_STATUS } from "@pdc/http-status-codes";
 
 export const legacyContactController = Router();
 legacyContactController.post(
@@ -23,10 +21,6 @@ legacyContactController.post(
 			);
 			res.json(legacyContact);
 		} catch (err) {
-			if (isValidationError(err)) {
-				res.status(HTTP_STATUS.CLIENT_ERROR.BAD_REQUEST).json({ error: err });
-				return;
-			}
 			next(err);
 		}
 	},
@@ -44,10 +38,6 @@ legacyContactController.get(
 				);
 			res.json(legacyContacts);
 		} catch (err) {
-			if (isValidationError(err)) {
-				res.status(HTTP_STATUS.CLIENT_ERROR.BAD_REQUEST).json({ error: err });
-				return;
-			}
 			next(err);
 		}
 	},
@@ -66,10 +56,6 @@ legacyContactController.put(
 			);
 			res.json(legacyContact);
 		} catch (err) {
-			if (isValidationError(err)) {
-				res.status(HTTP_STATUS.CLIENT_ERROR.BAD_REQUEST).json({ error: err });
-				return;
-			}
 			next(err);
 		}
 	},

@@ -12,7 +12,6 @@ import {
 	validateSearchQuery,
 	validatePatchArchiveBody,
 } from "../validators";
-import { isValidationError } from "../../validators/validator_util";
 import { archiveService } from "../service";
 import { HTTP_STATUS } from "@pdc/http-status-codes";
 
@@ -56,10 +55,6 @@ archiveController.get(
 			);
 			res.json(response);
 		} catch (err) {
-			if (isValidationError(err)) {
-				res.status(HTTP_STATUS.CLIENT_ERROR.BAD_REQUEST).json({ error: err });
-				return;
-			}
 			next(err);
 		}
 	},
@@ -79,10 +74,6 @@ archiveController.patch(
 			);
 			res.json({ data: archive });
 		} catch (err) {
-			if (isValidationError(err)) {
-				res.status(HTTP_STATUS.CLIENT_ERROR.BAD_REQUEST).json({ error: err });
-				return;
-			}
 			next(err);
 		}
 	},
@@ -114,10 +105,6 @@ archiveController.get(
 			);
 			res.json(accountStorage);
 		} catch (err) {
-			if (isValidationError(err)) {
-				res.status(HTTP_STATUS.CLIENT_ERROR.BAD_REQUEST).json({ error: err });
-				return;
-			}
 			next(err);
 		}
 	},
@@ -190,10 +177,6 @@ archiveController.get(
 			);
 			res.json({ items: folders });
 		} catch (err) {
-			if (isValidationError(err)) {
-				res.status(HTTP_STATUS.CLIENT_ERROR.BAD_REQUEST).json({ error: err });
-				return;
-			}
 			next(err);
 		}
 	},

@@ -2,7 +2,6 @@ import { Router } from "express";
 import type { Request, Response, NextFunction } from "express";
 import { verifyAdminAuthentication } from "../middleware/authentication";
 import { validateCreatePromoRequest } from "./validators";
-import { isValidationError } from "../validators/validator_util";
 import { createPromo, getPromos } from "./service";
 import { HTTP_STATUS } from "@pdc/http-status-codes";
 
@@ -17,12 +16,6 @@ promoController.post(
 			await createPromo(req.body);
 			res.status(HTTP_STATUS.SUCCESSFUL.OK).send({});
 		} catch (err) {
-			if (isValidationError(err)) {
-				res
-					.status(HTTP_STATUS.CLIENT_ERROR.BAD_REQUEST)
-					.json({ error: err.message });
-				return;
-			}
 			next(err);
 		}
 	},

@@ -5,7 +5,6 @@ import {
 	validateStoragePurchaseRequest,
 	validateStripeWebhookBody,
 } from "./validators";
-import { isValidationError } from "../validators/validator_util";
 import { initiateStoragePurchase, handleStripeWebhook } from "./service";
 import { HTTP_STATUS } from "@pdc/http-status-codes";
 
@@ -26,12 +25,6 @@ storagePurchaseController.post(
 			await handleStripeWebhook(req.body, signature);
 			res.status(HTTP_STATUS.SUCCESSFUL.OK).end();
 		} catch (err) {
-			if (isValidationError(err)) {
-				res
-					.status(HTTP_STATUS.CLIENT_ERROR.BAD_REQUEST)
-					.json({ error: err.message });
-				return;
-			}
 			next(err);
 		}
 	},
@@ -46,12 +39,6 @@ storagePurchaseController.post(
 			const result = await initiateStoragePurchase(req.body);
 			res.status(HTTP_STATUS.SUCCESSFUL.CREATED).json({ data: result });
 		} catch (err) {
-			if (isValidationError(err)) {
-				res
-					.status(HTTP_STATUS.CLIENT_ERROR.BAD_REQUEST)
-					.json({ error: err.message });
-				return;
-			}
 			next(err);
 		}
 	},

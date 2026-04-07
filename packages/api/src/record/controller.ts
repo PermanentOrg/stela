@@ -19,7 +19,6 @@ import {
 	validateBodyFromAuthentication,
 	validateOptionalAuthenticationValues,
 } from "../validators/shared";
-import { isValidationError } from "../validators/validator_util";
 import { HTTP_STATUS } from "@pdc/http-status-codes";
 
 export const recordController = Router();
@@ -40,12 +39,6 @@ recordController.get(
 			});
 			res.send(records);
 		} catch (error) {
-			if (isValidationError(error)) {
-				res
-					.status(HTTP_STATUS.CLIENT_ERROR.BAD_REQUEST)
-					.json({ error: error.message });
-				return;
-			}
 			next(error);
 		}
 	},
@@ -67,12 +60,6 @@ recordController.get(
 			});
 			res.send({ data: records[0] });
 		} catch (error) {
-			if (isValidationError(error)) {
-				res
-					.status(HTTP_STATUS.CLIENT_ERROR.BAD_REQUEST)
-					.json({ error: error.message });
-				return;
-			}
 			next(error);
 		}
 	},
@@ -94,12 +81,6 @@ recordController.patch(
 
 			res.status(HTTP_STATUS.SUCCESSFUL.OK).send({ data: record });
 		} catch (err) {
-			if (isValidationError(err)) {
-				res
-					.status(HTTP_STATUS.CLIENT_ERROR.BAD_REQUEST)
-					.json({ error: err.message });
-				return;
-			}
 			next(err);
 		}
 	},
@@ -118,12 +99,6 @@ recordController.get(
 			);
 			res.status(HTTP_STATUS.SUCCESSFUL.OK).send({ items: shareLinks });
 		} catch (err) {
-			if (isValidationError(err)) {
-				res
-					.status(HTTP_STATUS.CLIENT_ERROR.BAD_REQUEST)
-					.json({ error: err.message });
-				return;
-			}
 			next(err);
 		}
 	},
