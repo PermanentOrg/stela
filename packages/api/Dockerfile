@@ -41,4 +41,4 @@ RUN npm install --workspace @stela/api
 ENV PORT=80
 EXPOSE 80
 
-CMD node packages/api/dist/index.js
+CMD node -r newrelic packages/api/dist/index.js
