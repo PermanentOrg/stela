@@ -16,7 +16,7 @@ app.set("query parser", "extended");
 
 app.use(
 	cors({
-		origin: `https://${env === "production" ? "www" : `app.${env}`}.permanent.org`,
+		origin: `https://${env === "production" ? "app" : `app.${env}`}.permanent.org`,
 	}),
 );
 

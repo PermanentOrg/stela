@@ -122,7 +122,7 @@ variable "prod_fusionauth_sftp_application_id" {
 variable "legacy_backend_prod_host_url" {
   description = "Host URL of the legacy PHP backend"
   type        = string
-  default     = "https://permanent.org/api"
+  default     = "https://app.permanent.org/api"
 }
 
 variable "prod_legacy_backend_shared_secret" {
@@ -247,7 +247,7 @@ variable "backblaze_bucket" {
 variable "site_url" {
   description = "The URL of the site"
   type        = string
-  default     = "www.permanent.org"
+  default     = "app.permanent.org"
 }
 
 variable "archivematica_original_location_id" {
