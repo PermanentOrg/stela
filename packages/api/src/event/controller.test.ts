@@ -3,7 +3,7 @@ import type { NextFunction } from "express";
 import createError from "http-errors";
 import { db } from "../database";
 import { mixpanelClient } from "../mixpanel";
-import { publisherClient } from "../publisher_client";
+import { publisherClient } from "@stela/publisher-utils";
 import { app } from "../app";
 import {
 	verifyUserAuthentication,
@@ -19,7 +19,7 @@ import {
 jest.mock("../database");
 jest.mock("../middleware");
 jest.mock("../mixpanel");
-jest.mock("../publisher_client");
+jest.mock("@stela/publisher-utils");
 
 const testSubject = "fcb2b59b-df07-4e79-ad20-bf7f067a965e";
 const testEmail = "test+1@permanent.org";

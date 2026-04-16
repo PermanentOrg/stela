@@ -34,10 +34,10 @@ const batchPublishMessages = async (
 	);
 
 	const responses = await Promise.all(
-		chunksOfMessages.map(async (groupOfTenMessages) => {
+		chunksOfMessages.map(async (groupOfMessages) => {
 			const command = new PublishBatchCommand({
 				TopicArn: topicArn,
-				PublishBatchRequestEntries: groupOfTenMessages.map((message) => {
+				PublishBatchRequestEntries: groupOfMessages.map((message) => {
 					const entry: PublishBatchRequestEntry = {
 						Id: message.id,
 						Message: message.body,

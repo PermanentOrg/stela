@@ -3,7 +3,7 @@ import {
 	SNSClient,
 	type PublishBatchInput,
 } from "@aws-sdk/client-sns";
-import { publisherClient } from "./publisher_client";
+import { publisherClient } from "./index";
 
 const mockSend = jest.fn();
 jest.createMockFromModule("@aws-sdk/client-sns");

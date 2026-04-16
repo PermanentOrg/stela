@@ -4,14 +4,14 @@ import createError from "http-errors";
 import { logger } from "@stela/logger";
 import { app } from "../app";
 import { db } from "../database";
-import { lowPriorityTopicArn, publisherClient } from "../publisher_client";
+import { lowPriorityTopicArn, publisherClient } from "@stela/publisher-utils";
 import { verifyAdminAuthentication } from "../middleware";
 import { mockVerifyAdminAuthentication } from "../../test/middleware_mocks";
 
 jest.mock("../database");
 jest.mock("@stela/logger");
 jest.mock("../middleware");
-jest.mock("../publisher_client");
+jest.mock("@stela/publisher-utils");
 
 describe("recalculateFolderThumbnails", () => {
 	const loadFixtures = async (): Promise<void> => {

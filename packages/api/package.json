@@ -35,7 +35,7 @@
 		"test:ci": "node --experimental-vm-modules ../../node_modules/jest/bin/jest.js --coverage"
 	},
 	"dependencies": {
-		"@aws-sdk/client-sns": "^3.1037.0",
+		"@stela/publisher-utils": "^1.0.0",
 		"@edtf-ts/core": "^0.4.2",
 		"@fusionauth/typescript-client": "^1.60.0",
 		"@mailchimp/mailchimp_marketing": "^3.0.80",

@@ -1,7 +1,7 @@
 import createError from "http-errors";
 import { logger } from "@stela/logger";
 import { db } from "../../database";
-import { publisherClient } from "../../publisher_client";
+import { publisherClient } from "@stela/publisher-utils";
 
 export const backfillLedger = async (archiveId: string): Promise<void> => {
 	const backfillRecords = await db

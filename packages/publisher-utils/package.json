@@ -1,0 +1,30 @@
+{
+	"name": "@stela/publisher-utils",
+	"version": "1.0.0",
+	"description": "Helper functions for publishing messages to AWS SNS, used by Permanent's backend services",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/PermanentOrg/stela.git"
+	},
+	"author": "Permanent.org",
+	"license": "AGPL-3.0",
+	"bugs": {
+		"url": "https://github.com/PermanentOrg/stela/issues"
+	},
+	"homepage": "https://permanent.org",
+	"engines": {
+		"node": ">=24.0"
+	},
+	"main": "dist/index.js",
+	"scripts": {
+		"check-types": "tsc --noEmit",
+		"check-format": "prettier --check ./src",
+		"eslint": "eslint --max-warnings 0 ./src --ext .ts",
+		"lint": "npm run check-format && npm run check-types && npm run eslint",
+		"build": "rm -rf dist/* && tsc -p tsconfig.build.json && tscp -p tsconfig.tscp.json",
+		"test": "node --experimental-vm-modules ../../node_modules/jest/bin/jest.js -i --silent=false"
+	},
+	"dependencies": {
+		"@aws-sdk/client-sns": "^3.1016.0"
+	}
+}

@@ -2,7 +2,7 @@ import createError from "http-errors";
 import { UAParser } from "ua-parser-js";
 import { logger } from "@stela/logger";
 import { db } from "../database";
-import { publisherClient } from "../publisher_client";
+import { publisherClient } from "@stela/publisher-utils";
 import { mixpanelClient } from "../mixpanel";
 import type { CreateEventRequest, ChecklistItem } from "./models";
 import {
