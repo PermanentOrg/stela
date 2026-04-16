@@ -33,6 +33,7 @@ jobs:
       ACCOUNT_SPACE_UPDATE_IMAGE_TAG: ${{ needs.generate_image_tags.outputs.ACCOUNT_SPACE_UPDATE_IMAGE_TAG }}
       TRIGGER_ARCHIVEMATICA_IMAGE_TAG: ${{ needs.generate_image_tags.outputs.TRIGGER_ARCHIVEMATICA_IMAGE_TAG }}
       METADATA_ATTACHER_LAMBDA_IMAGE_TAG: ${{ needs.generate_image_tags.outputs.METADATA_ATTACHER_LAMBDA_IMAGE_TAG }}
+      EVENT_SEND_IMAGE_TAG: ${{ needs.generate_image_tags.outputs.EVENT_SEND_IMAGE_TAG }}
     defaults:
       run:
         working-directory: ./terraform/test_cluster
@@ -56,6 +57,7 @@ jobs:
             \"access-copy-dev-lambda\"           = \"$ACCESS_COPY_LAMBDA_IMAGE_TAG\",
             \"account-space-update-dev-lambda\"  = \"$ACCOUNT_SPACE_UPDATE_IMAGE_TAG\",
             \"archivematica-cleanup-dev\"        = \"$AM_CLEANUP_IMAGE_TAG\",
+            \"event-send-dev\"                   = \"$EVENT_SEND_IMAGE_TAG\",
             \"file-url-refresh-dev\"             = \"$FILE_URL_REFRESH_IMAGE_TAG\",
             \"metadata-attacher-dev-lambda\"     = \"$METADATA_ATTACHER_LAMBDA_IMAGE_TAG\",
             \"record-thumbnail-dev-lambda\"      = \"$RECORD_THUMBNAIL_LAMBDA_IMAGE_TAG\",
@@ -70,6 +72,7 @@ jobs:
             \"access-copy-dev-lambda\"           = \"$ACCESS_COPY_LAMBDA_IMAGE_TAG\",
             \"account-space-update-dev-lambda\"  = \"$ACCOUNT_SPACE_UPDATE_IMAGE_TAG\",
             \"archivematica-cleanup-dev\"        = \"$AM_CLEANUP_IMAGE_TAG\",
+            \"event-send-dev\"                   = \"$EVENT_SEND_IMAGE_TAG\",
             \"file-url-refresh-dev\"             = \"$FILE_URL_REFRESH_IMAGE_TAG\",
             \"metadata-attacher-dev-lambda\"     = \"$METADATA_ATTACHER_LAMBDA_IMAGE_TAG\",
             \"record-thumbnail-dev-lambda\"      = \"$RECORD_THUMBNAIL_LAMBDA_IMAGE_TAG\",
