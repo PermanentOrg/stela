@@ -82,6 +82,29 @@ export const getItemAccessRole = async (
 	return accessRole;
 };
 
+export const getArchiveAccessRole = async (
+	archiveId: string,
+	callerEmail: string,
+): Promise<AccessRole> => {
+	const result = await db
+		.sql<{
+			accessRole: AccessRole;
+		}>("access.queries.get_archive_access_role", {
+			archiveId,
+			email: callerEmail,
+		})
+		.catch((err: unknown) => {
+			logger.error(err);
+			throw createError.InternalServerError("Failed to access database");
+		});
+
+	if (result.rows[0] === undefined) {
+		throw createError.NotFound();
+	}
+
+	return result.rows[0].accessRole;
+};
+
 export const getRecordAccessRole = async (
 	recordId: string,
 	callerEmail: string,
