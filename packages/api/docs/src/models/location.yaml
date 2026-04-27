@@ -5,23 +5,24 @@ location:
   properties:
     id:
       type: string
-    streetNumber:
+    name:
       type: string
-    streetName:
+    sublocation:
       type: string
-    locality:
-      type: string
-    county:
+    city:
       type: string
     state:
+      type: string
+    postalCode:
+      type: string
+    country:
       type: string
     latitude:
       type: number
     longitude:
       type: number
-    country:
+    altitudeMeters:
+      type: number
+    precision:
       type: string
-    countryCode:
-      type: string
-    displayName:
-      type: string
+      enum: [approximate, uncertain, unknown]
