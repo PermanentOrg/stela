@@ -771,6 +771,16 @@ describe("PATCH /records", () => {
 			.expect(400);
 	});
 
+	test("expect 400 error with detail if display time interval end is before start", async () => {
+		const response = await agent
+			.patch("/api/v2/records/1")
+			.send({ displayTime: "2020/2019" })
+			.expect(400);
+		expect(response.text).toContain(
+			"Interval start must be before or equal to end",
+		);
+	});
+
 	test("expect display time is updated", async () => {
 		await agent
 			.patch("/api/v2/records/1")
