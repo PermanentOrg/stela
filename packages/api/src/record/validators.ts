@@ -1,5 +1,5 @@
 import Joi from "joi";
-import { isValid as isValidEDTF } from "@edtf-ts/core";
+import { parse as parseEDTF } from "@edtf-ts/core";
 import type { PatchRecordRequest } from "./models";
 import { fieldsFromUserAuthentication } from "../validators";
 
@@ -47,11 +47,12 @@ export const validatePatchRecordRequest: (
 			displayName: Joi.string().min(1).optional(),
 			displayTime: Joi.string()
 				.custom((value: string) => {
-					if (isValidEDTF(value, 1)) {
+					const result = parseEDTF(value, 1);
+					if (result.success) {
 						return value;
-					} else {
-						throw new Error(`${value} is not valid Level 1 EDTF`);
 					}
+					const detail = result.errors.map((e) => e.message).join("; ");
+					throw new Error(`${value} is not valid Level 1 EDTF: ${detail}`);
 				})
 				.optional()
 				.allow(null),

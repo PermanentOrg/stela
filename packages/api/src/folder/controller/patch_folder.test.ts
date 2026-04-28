@@ -116,6 +116,16 @@ describe("patch folder", () => {
 			.expect(400);
 	});
 
+	test("expect 400 error with detail if displayTime interval end is before start", async () => {
+		const response = await agent
+			.patch("/api/v2/folders/2")
+			.send({ displayTime: "2020/2019" })
+			.expect(400);
+		expect(response.text).toContain(
+			"Interval start must be before or equal to end",
+		);
+	});
+
 	test("expect 400 error if display date is wrong type", async () => {
 		await agent
 			.patch("/api/v2/folders/1")
