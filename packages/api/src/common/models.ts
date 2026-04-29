@@ -9,14 +9,14 @@ export enum AccessRole {
 
 export interface Location {
 	id: string;
-	name?: string;
-	sublocation?: string;
-	city?: string;
+	streetNumber?: string;
+	streetName?: string;
+	locality?: string;
+	county?: string;
 	state?: string;
-	postalCode?: string;
-	country?: string;
 	latitude?: number;
 	longitude?: number;
-	altitudeMeters?: number;
-	precision?: "approximate" | "uncertain" | "unknown";
+	country?: string;
+	countryCode?: string;
+	displayName?: string;
 }
