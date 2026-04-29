@@ -9,6 +9,12 @@ INSERT INTO locn (
   country,
   countrycode,
   displayname,
+  name,
+  sublocation,
+  city,
+  postalcode,
+  altitudemeters,
+  locationprecision,
   status,
   type
 ) VALUES (
@@ -22,6 +28,12 @@ INSERT INTO locn (
   'France',
   'FR',
   'Jean Valjean''s House',
+  'Jean Valjean''s House',
+  '55 Rue Plumet',
+  'Paris',
+  '75007',
+  35.0,
+  'approximate',
   'status.generic.ok',
   'type.account.standard'
 );
