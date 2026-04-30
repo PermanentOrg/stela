@@ -20,6 +20,9 @@ pendingShare:
       type: string
     email:
       type: string
+    name:
+      type: string
+      nullable: true
     accessRole:
       type: string
 shareArchive:

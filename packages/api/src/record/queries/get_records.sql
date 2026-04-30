@@ -111,6 +111,7 @@ aggregated_pending_shares AS (
     ARRAY_AGG(JSONB_BUILD_OBJECT(
       'id', invite_share.invite_shareid::TEXT,
       'email', invite.email,
+      'name', invite.fullname,
       'accessRole', invite_share.accessrole
     )) AS pending_shares_as_json
   FROM invite_share

@@ -234,11 +234,13 @@ describe("GET /folder", () => {
 					expect.objectContaining({
 						id: "1",
 						email: "pending1@example.com",
+						name: "Carol Zhang",
 						accessRole: "access.role.viewer",
 					}),
 					expect.objectContaining({
 						id: "2",
 						email: "pending2@example.com",
+						name: "Juan Sotos",
 						accessRole: "access.role.editor",
 					}),
 				]) as unknown,
