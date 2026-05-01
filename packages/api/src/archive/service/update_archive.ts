@@ -20,7 +20,7 @@ export const updateArchive = async (
 		});
 	if (updateArchiveResult.rows[0] === undefined) {
 		throw new createError.NotFound(
-			"archive not found or you do not have permission to update it",
+			"warning.archive.not_found",
 		);
 	}
 	return updateArchiveResult.rows[0];
