@@ -42,6 +42,8 @@ export default defineConfig([
 
 			// This rule objects to most express middleware.
 			"require-atomic-updates": "off",
+
+			"@typescript-eslint/no-unnecessary-type-assertion": "off",
 		},
 	},
 	{
