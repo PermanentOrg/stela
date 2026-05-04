@@ -36,6 +36,8 @@ jobs:
           - package: archivematica_cleanup
           - package: archivematica-utils
           - package: s3-utils
+          - package: event_send
+            needs_devenv: true
     steps:
       # Always checkout stela
       - uses: actions/checkout@v6

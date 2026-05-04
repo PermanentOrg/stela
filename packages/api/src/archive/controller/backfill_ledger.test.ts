@@ -5,12 +5,12 @@ import { logger } from "@stela/logger";
 import { app } from "../../app";
 import { verifyAdminAuthentication } from "../../middleware";
 import { db } from "../../database";
-import { publisherClient } from "../../publisher_client";
+import { publisherClient } from "@stela/publisher-utils";
 import { mockVerifyAdminAuthentication } from "../../../test/middleware_mocks";
 
 jest.mock("../../database");
 jest.mock("../../middleware");
-jest.mock("../../publisher_client");
+jest.mock("@stela/publisher-utils");
 jest.mock("@stela/logger");
 
 const loadFixtures = async (): Promise<void> => {

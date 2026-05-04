@@ -2,7 +2,7 @@ import createError from "http-errors";
 import { logger } from "@stela/logger";
 import { db } from "../database";
 import type { Folder, ArchiveRecord } from "./models";
-import { publisherClient, lowPriorityTopicArn } from "../publisher_client";
+import { publisherClient, lowPriorityTopicArn } from "@stela/publisher-utils";
 
 const recalculateFolderThumbnails = async (
 	beginTimestamp: Date,

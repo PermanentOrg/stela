@@ -11,6 +11,7 @@ COPY tsconfig.json ./
 COPY jest.config.js ./
 COPY packages/api/package.json ./packages/api/package.json
 COPY packages/logger ./packages/logger
+COPY packages/publisher-utils ./packages/publisher-utils
 COPY packages/permanent_models ./packages/permanent_models
 
 RUN npm cache clean --force

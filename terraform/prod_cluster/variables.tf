@@ -53,6 +53,11 @@ variable "thumbnail_refresh_image" {
   type        = string
 }
 
+variable "event_send_image" {
+  description = "Tag of event send image to deploy"
+  type        = string
+}
+
 variable "file_url_refresh_image" {
   description = "Tag of file URL refresh image to deploy"
   type        = string

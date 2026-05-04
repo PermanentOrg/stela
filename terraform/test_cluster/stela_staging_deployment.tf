@@ -204,17 +204,6 @@ resource "kubernetes_deployment" "stela_staging" {
           }
 
           env {
-            name = "MIXPANEL_TOKEN"
-            value_from {
-              secret_key_ref {
-                name     = "staging-secrets"
-                key      = "MIXPANEL_TOKEN"
-                optional = false
-              }
-            }
-          }
-
-          env {
             name = "NEW_RELIC_LICENSE_KEY"
             value_from {
               secret_key_ref {

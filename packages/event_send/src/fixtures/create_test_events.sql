@@ -1,0 +1,62 @@
+INSERT INTO
+event (
+  entity,
+  action,
+  version,
+  actor_type,
+  actor_id,
+  entity_id,
+  ip,
+  user_agent,
+  body,
+  is_sent
+)
+VALUES
+(
+  'archive',
+  'create',
+  1,
+  'user',
+  '553f3cb8-b753-43ce-83af-4443a404741b',
+  '1',
+  NULL,
+  NULL,
+  '{}',
+  FALSE
+),
+(
+  'record',
+  'update',
+  1,
+  'user',
+  '553f3cb8-b753-43ce-83af-4443a404741b',
+  '2',
+  NULL,
+  NULL,
+  '{}',
+  FALSE
+),
+(
+  'folder',
+  'create',
+  1,
+  'user',
+  '553f3cb8-b753-43ce-83af-4443a404741b',
+  '3',
+  NULL,
+  NULL,
+  '{}',
+  TRUE
+),
+(
+  'account',
+  'create',
+  1,
+  'user',
+  '553f3cb8-b753-43ce-83af-4443a404741b',
+  '4',
+  '127.0.0.1',
+  'Mozilla/5.0 (iPhone; CPU iPhone OS 17_4 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/125.0.6422.33 Mobile/15E148 Safari/604.1',
+  '{"analytics": {"event": "Sign Up", "distinctId": "local:4", "data": {"accountId": "4"}}}',
+  FALSE
+);

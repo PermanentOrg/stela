@@ -36,6 +36,7 @@ This is an npm workspace monorepo (workspaces defined in the root `package.json`
 | `@stela/thumbnail_refresh` | Cron | Refreshes expired CDN thumbnail URLs |
 | `@stela/file_url_refresh` | Cron | Refreshes expired file URLs |
 | `@stela/archivematica_cleanup` | Cron | Cleans up archivematica processes |
+| `@stela/event_send` | Cron | Sends unsent events from the event table to SNS |
 
 ## Technology Stack
 

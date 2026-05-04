@@ -2,8 +2,6 @@ import request from "supertest";
 import type { NextFunction } from "express";
 import createError from "http-errors";
 import { db } from "../database";
-import { mixpanelClient } from "../mixpanel";
-import { publisherClient } from "../publisher_client";
 import { app } from "../app";
 import {
 	verifyUserAuthentication,
@@ -18,8 +16,7 @@ import {
 
 jest.mock("../database");
 jest.mock("../middleware");
-jest.mock("../mixpanel");
-jest.mock("../publisher_client");
+jest.mock("@stela/publisher-utils");
 
 const testSubject = "fcb2b59b-df07-4e79-ad20-bf7f067a965e";
 const testEmail = "test+1@permanent.org";
@@ -382,124 +379,6 @@ describe("POST /event", () => {
 		expect(result.rows).toHaveLength(1);
 	});
 
-	test("should forward the event to SNS", async () => {
-		await agent
-			.post("/api/v2/event")
-			.send({
-				entity: "account",
-				action: "create",
-				version: 1,
-				entityId: "123",
-				body: {},
-			})
-			.expect(200);
-
-		expect(publisherClient.publishMessage).toHaveBeenCalled();
-	});
-
-	test("should send Mixpanel event if body includes analytics", async () => {
-		await agent
-			.post("/api/v2/event")
-			.set(
-				"User-Agent",
-				"Mozilla/5.0 (iPhone; CPU iPhone OS 17_4 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/125.0.6422.33 Mobile/15E148 Safari/604.1",
-			)
-			.send({
-				entity: "account",
-				action: "create",
-				version: 1,
-				entityId: "123",
-				body: {
-					analytics: {
-						event: "Sign Up",
-						distinctId: "local:123",
-						data: {
-							accountId: "123",
-							email: "test+sign_up@permanent.org",
-						},
-					},
-				},
-			})
-			.expect(200);
-
-		expect(mixpanelClient.track).toHaveBeenCalledWith("Sign Up", {
-			distinct_id: "local:123",
-			accountId: "123",
-			email: "test+sign_up@permanent.org",
-			$email: "test+1@permanent.org",
-			$browser: "Mobile Chrome",
-			$device: "mobile",
-			$os: "iOS",
-			ip: testIp,
-		});
-	});
-
-	test("should send pass the caller email to Mixpanel when the caller is an admin", async () => {
-		mockVerifyUserOrAdminOrDelegatedCallAuthentication(
-			undefined,
-			undefined,
-			testEmail,
-			testSubject,
-		);
-		await agent
-			.post("/api/v2/event")
-			.set(
-				"User-Agent",
-				"Mozilla/5.0 (iPhone; CPU iPhone OS 17_4 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/125.0.6422.33 Mobile/15E148 Safari/604.1",
-			)
-			.send({
-				entity: "account",
-				action: "update",
-				version: 1,
-				entityId: "123",
-				body: {
-					analytics: {
-						event: "Account Frozen",
-						distinctId: "local:123",
-						data: {
-							accountId: "123",
-						},
-					},
-				},
-			})
-			.expect(200);
-
-		expect(mixpanelClient.track).toHaveBeenCalledWith("Account Frozen", {
-			distinct_id: "local:123",
-			accountId: "123",
-			$email: "test+1@permanent.org",
-			$browser: "Mobile Chrome",
-			$device: "mobile",
-			$os: "iOS",
-			ip: testIp,
-		});
-	});
-
-	test("should return 500 error if Mixpanel call fails", async () => {
-		jest.mocked(mixpanelClient.track).mockImplementation(() => {
-			throw new Error("Mixpanel error");
-		});
-		await agent
-			.post("/api/v2/event")
-			.send({
-				entity: "account",
-				action: "create",
-				version: 1,
-				entityId: "123",
-				body: {
-					analytics: {
-						event: "Sign Up",
-						distinctId: "local:123",
-						data: {
-							accountId: "123",
-							email: "test+sign_up@permanent.org",
-						},
-					},
-				},
-			})
-			.expect(500);
-	});
-
 	test("should return 500 error if database call fails", async () => {
 		jest.spyOn(db, "sql").mockImplementation(() => {
 			throw new Error("SQL error");
@@ -522,22 +401,6 @@ describe("POST /event", () => {
 				rows: [],
 			}),
 		);
-		await agent
-			.post("/api/v2/event")
-			.send({
-				entity: "account",
-				action: "create",
-				version: 1,
-				entityId: "123",
-				body: {},
-			})
-			.expect(500);
-	});
-
-	test("should return 500 error if SNS publish fails", async () => {
-		jest.spyOn(publisherClient, "publishMessage").mockImplementation(() => {
-			throw new Error("SNS error");
-		});
 		await agent
 			.post("/api/v2/event")
 			.send({

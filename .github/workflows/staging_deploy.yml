@@ -30,6 +30,9 @@ on:
       METADATA_ATTACHER_LAMBDA_IMAGE_TAG:
         type: string
         required: false
+      EVENT_SEND_IMAGE_TAG:
+        type: string
+        required: false
 jobs:
   run_tests:
     uses: ./.github/workflows/test.yml
@@ -53,6 +56,7 @@ jobs:
       ACCOUNT_SPACE_UPDATE_IMAGE_TAG: ${{ inputs.ACCOUNT_SPACE_UPDATE_IMAGE_TAG }}
       TRIGGER_ARCHIVEMATICA_IMAGE_TAG: ${{ inputs.TRIGGER_ARCHIVEMATICA_IMAGE_TAG }}
       METADATA_ATTACHER_LAMBDA_IMAGE_TAG: ${{ inputs.METADATA_ATTACHER_LAMBDA_IMAGE_TAG }}
+      EVENT_SEND_IMAGE_TAG: ${{ inputs.EVENT_SEND_IMAGE_TAG }}
 
   deploy:
     needs:
@@ -71,6 +75,7 @@ jobs:
       ACCOUNT_SPACE_UPDATE_IMAGE_TAG: ${{ inputs.ACCOUNT_SPACE_UPDATE_IMAGE_TAG || needs.generate_image_tags.outputs.ACCOUNT_SPACE_UPDATE_IMAGE_TAG }}
       TRIGGER_ARCHIVEMATICA_IMAGE_TAG: ${{ inputs.TRIGGER_ARCHIVEMATICA_IMAGE_TAG || needs.generate_image_tags.outputs.TRIGGER_ARCHIVEMATICA_IMAGE_TAG }}
       METADATA_ATTACHER_LAMBDA_IMAGE_TAG: ${{ inputs.METADATA_ATTACHER_LAMBDA_IMAGE_TAG || needs.generate_image_tags.outputs.METADATA_ATTACHER_LAMBDA_IMAGE_TAG }}
+      EVENT_SEND_IMAGE_TAG: ${{ inputs.EVENT_SEND_IMAGE_TAG || needs.generate_image_tags.outputs.EVENT_SEND_IMAGE_TAG }}
     defaults:
       run:
         working-directory: ./terraform/test_cluster
@@ -94,6 +99,7 @@ jobs:
             \"access-copy-staging-lambda\"           = \"$ACCESS_COPY_LAMBDA_IMAGE_TAG\",
             \"account-space-update-staging-lambda\"  = \"$ACCOUNT_SPACE_UPDATE_IMAGE_TAG\",
             \"archivematica-cleanup-staging\"        = \"$AM_CLEANUP_IMAGE_TAG\",
+            \"event-send-staging\"                   = \"$EVENT_SEND_IMAGE_TAG\",
             \"file-url-refresh-staging\"             = \"$FILE_URL_REFRESH_IMAGE_TAG\",
             \"metadata-attacher-staging-lambda\"     = \"$METADATA_ATTACHER_LAMBDA_IMAGE_TAG\",
             \"record-thumbnail-staging-lambda\"      = \"$RECORD_THUMBNAIL_LAMBDA_IMAGE_TAG\",
@@ -108,6 +114,7 @@ jobs:
             \"access-copy-staging-lambda\"           = \"$ACCESS_COPY_LAMBDA_IMAGE_TAG\",
             \"account-space-update-staging-lambda\"  = \"$ACCOUNT_SPACE_UPDATE_IMAGE_TAG\",
             \"archivematica-cleanup-staging\"        = \"$AM_CLEANUP_IMAGE_TAG\",
+            \"event-send-staging\"                   = \"$EVENT_SEND_IMAGE_TAG\",
             \"file-url-refresh-staging\"             = \"$FILE_URL_REFRESH_IMAGE_TAG\",
             \"metadata-attacher-staging-lambda\"     = \"$METADATA_ATTACHER_LAMBDA_IMAGE_TAG\",
             \"record-thumbnail-staging-lambda\"      = \"$RECORD_THUMBNAIL_LAMBDA_IMAGE_TAG\",
