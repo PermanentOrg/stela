@@ -45,7 +45,7 @@
 		"@stela/logger": "^1.0.0",
 		"@stela/permanent_models": "^1.0.0",
 		"cors": "^2.8.5",
-		"dotenv": "^17.2.3",
+		"dotenv": "^17.4.2",
 		"express": "^5.2.0",
 		"express-winston": "^4.1.0",
 		"http-errors": "^2.0.0",

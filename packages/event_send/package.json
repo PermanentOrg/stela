@@ -33,7 +33,7 @@
 		"@sentry/profiling-node": "^10.46.0",
 		"@stela/logger": "^1.0.0",
 		"@stela/publisher-utils": "^1.0.0",
-		"dotenv": "^17.2.3",
+		"dotenv": "^17.4.2",
 		"mixpanel": "^0.20.0",
 		"require-env-variable": "^4.0.2",
 		"tinypg": "^7.0.1",
