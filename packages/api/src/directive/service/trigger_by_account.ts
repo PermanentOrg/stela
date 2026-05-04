@@ -30,7 +30,7 @@ export const triggerAccountAdminDirectives = async (
 						message: directive.note,
 						isLegacyAction: true,
 					});
-					if (response.status === (HTTP_STATUS.SUCCESSFUL.OK as number)) {
+					if (response.status === HTTP_STATUS.SUCCESSFUL.OK.valueOf()) {
 						return {
 							archiveId: directive.archiveId,
 							directiveId: directive.directiveId,
