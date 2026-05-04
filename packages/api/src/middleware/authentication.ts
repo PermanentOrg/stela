@@ -51,7 +51,7 @@ const getOptionalValueFromAuthToken = async (
 				if (
 					isObjectWithStatusCode(err) &&
 					err.statusCode ===
-						(HTTP_STATUS.CLIENT_ERROR.TOO_MANY_REQUESTS as number)
+						HTTP_STATUS.CLIENT_ERROR.TOO_MANY_REQUESTS.valueOf()
 				) {
 					throw err;
 				}
