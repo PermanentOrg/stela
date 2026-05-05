@@ -73,14 +73,20 @@ describe("GET /folder/{id}/children", () => {
 				expect(folder.location).toBeDefined();
 				if (folder.location !== undefined) {
 					expect(folder.location.id).toEqual("1");
+					expect(folder.location.name).toEqual("Jean Valjean's House");
+					expect(folder.location.sublocation).toEqual("55 Rue Plumet");
+					expect(folder.location.city).toEqual("Paris");
+					expect(folder.location.state).toBeNull();
+					expect(folder.location.postalCode).toEqual("75007");
+					expect(folder.location.country).toEqual("France");
+					expect(folder.location.latitude).toEqual(48.838608548520966);
+					expect(folder.location.longitude).toEqual(2.3069214988665303);
+					expect(folder.location.altitudeMeters).toEqual(35.0);
+					expect(folder.location.precision).toEqual("approximate");
 					expect(folder.location.streetNumber).toEqual("55");
 					expect(folder.location.streetName).toEqual("Rue Plumet");
 					expect(folder.location.locality).toEqual("Paris");
 					expect(folder.location.county).toEqual("Ile-de-France");
-					expect(folder.location.state).toBeNull();
-					expect(folder.location.latitude).toEqual(48.838608548520966);
-					expect(folder.location.longitude).toEqual(2.3069214988665303);
-					expect(folder.location.country).toEqual("France");
 					expect(folder.location.countryCode).toEqual("FR");
 					expect(folder.location.displayName).toEqual("Jean Valjean's House");
 				}

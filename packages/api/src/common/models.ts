@@ -9,14 +9,23 @@ export enum AccessRole {
 
 export interface Location {
 	id: string;
+	name?: string;
+	sublocation?: string;
+	city?: string;
+	state?: string;
+	postalCode?: string;
+	country?: string;
+	latitude?: number;
+	longitude?: number;
+	altitudeMeters?: number;
+	precision?: "approximate" | "uncertain" | "unknown";
+	// The fields below are deprecated in our public API. They remain here
+	// because we still read and write them while clients migrate to the
+	// fields above.
 	streetNumber?: string;
 	streetName?: string;
 	locality?: string;
 	county?: string;
-	state?: string;
-	latitude?: number;
-	longitude?: number;
-	country?: string;
 	countryCode?: string;
 	displayName?: string;
 }
