@@ -447,7 +447,7 @@ describe("handler", () => {
 			expect(result.rows[0]?.type).toEqual("type.file.image.jpg");
 		});
 
-		test("should fall back to unknown type when content sniffing returns an unrecognized extension", async () => {
+		test("should not write a file row if the file extension is unrecognized", async () => {
 			jest
 				.mocked(detectFileType)
 				.mockResolvedValue({ ext: "xyz", mime: "application/xyz" });
@@ -457,10 +457,10 @@ describe("handler", () => {
 			const result = await db.query<{ type: string }>(
 				`SELECT type FROM file WHERE parentFileId = 100`,
 			);
-			expect(result.rows[0]?.type).toEqual("type.file.unknown.null");
+			expect(result.rows[0]).toEqual(undefined);
 		});
 
-		test("should fall back to unknown type when content sniffing cannot identify the file", async () => {
+		test("should not write a file row when content sniffing cannot identify the file", async () => {
 			jest.mocked(detectFileType).mockResolvedValue(undefined);
 
 			await handler(buildEvent(noExtKey), mock<Context>(), jest.fn());
@@ -468,10 +468,10 @@ describe("handler", () => {
 			const result = await db.query<{ type: string }>(
 				`SELECT type FROM file WHERE parentFileId = 100`,
 			);
-			expect(result.rows[0]?.type).toEqual("type.file.unknown.null");
+			expect(result.rows[0]).toEqual(undefined);
 		});
 
-		test("should fall back to unknown type when the S3 response body is not a stream", async () => {
+		test("should not write a file row when the S3 response body is not a stream", async () => {
 			mockS3Send.mockResolvedValue({ Body: undefined });
 
 			await handler(buildEvent(noExtKey), mock<Context>(), jest.fn());
@@ -479,7 +479,7 @@ describe("handler", () => {
 			const result = await db.query<{ type: string }>(
 				`SELECT type FROM file WHERE parentFileId = 100`,
 			);
-			expect(result.rows[0]?.type).toEqual("type.file.unknown.null");
+			expect(result.rows[0]).toEqual(undefined);
 		});
 	});
 
