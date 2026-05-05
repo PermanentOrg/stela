@@ -79,6 +79,7 @@ resource "aws_iam_role_policy" "access_copy_staging_lambda_policy" {
           "sqs:ReceiveMessage",
           "sqs:DeleteMessage",
           "sqs:GetQueueAttributes",
+          "s3:GetObject",
         ]
         Effect   = "Allow"
         Resource = ["*", aws_sqs_queue.access_copy_staging_queue.arn]

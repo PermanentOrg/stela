@@ -3,9 +3,11 @@ import { lookup as mimeLookup } from "mime-types";
 import * as path from "node:path";
 import { TinyPgError } from "tinypg";
 import * as Sentry from "@sentry/aws-serverless";
+import { S3Client, GetObjectCommand } from "@aws-sdk/client-s3";
 import {
 	constructSignedCdnUrl,
 	getS3ObjectFromS3Message,
+	getS3BucketFromS3Message,
 } from "@stela/s3-utils";
 import { getOriginalFileIdFromInformationPackagePath } from "@stela/archivematica-utils";
 import {
@@ -15,6 +17,8 @@ import {
 } from "@stela/file-utils";
 import { logger } from "@stela/logger";
 import { db } from "./database";
+import { Readable } from "node:stream";
+import { detectFileType } from "./file-type-utils";
 
 const duplicateArchivematicaFileError =
 	'duplicate key value violates unique constraint "unique_parent_file_id_format"';
@@ -22,6 +26,35 @@ const duplicateArchivematicaFileError =
 const removeFirstCharacter = (str: string): string => {
 	const secondCharacterIndex = 1;
 	return str.slice(secondCharacterIndex);
+};
+
+const getFileType = async (
+	fileExtension: string,
+	s3BucketName: string,
+	key: string,
+): Promise<string> => {
+	let type =
+		PermanentTypeByFileExtension[removeFirstCharacter(fileExtension)] ??
+		UnrecognizedExtensionPermanentType;
+
+	if (type === UnrecognizedExtensionPermanentType) {
+		const s3Client = new S3Client({
+			region: process.env["AWS_REGION"] ?? "",
+		});
+		const accessCopyResponse = await s3Client.send(
+			new GetObjectCommand({ Bucket: s3BucketName, Key: key }),
+		);
+		if (accessCopyResponse.Body instanceof Readable) {
+			const detectedFileType = await detectFileType(accessCopyResponse.Body);
+			type =
+				detectedFileType?.ext === undefined
+					? UnrecognizedExtensionPermanentType
+					: (PermanentTypeByFileExtension[detectedFileType.ext] ??
+						UnrecognizedExtensionPermanentType);
+		}
+	}
+
+	return type;
 };
 
 export const handler: SQSHandler = Sentry.wrapHandler(
@@ -58,10 +91,14 @@ export const handler: SQSHandler = Sentry.wrapHandler(
 				const cdnExpirationTime = new Date();
 				cdnExpirationTime.setFullYear(cdnExpirationTime.getFullYear() + 1);
 
-				const type =
-					// slice the leading . off the file extension
-					PermanentTypeByFileExtension[removeFirstCharacter(fileExtension)] ??
-					UnrecognizedExtensionPermanentType;
+				const s3Bucket = getS3BucketFromS3Message(message);
+				const type = await getFileType(fileExtension, s3Bucket.name, key);
+				if (type === UnrecognizedExtensionPermanentType) {
+					// If we'd successfully made a browser-compatible access copy, we'd
+					// be able to tell what type it is. Thus if we can't, there's no point
+					// in writing an access copy.
+					return;
+				}
 
 				await db
 					.sql("queries.insert_file", {
