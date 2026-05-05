@@ -93,6 +93,12 @@ export const handler: SQSHandler = Sentry.wrapHandler(
 
 				const s3Bucket = getS3BucketFromS3Message(message);
 				const type = await getFileType(fileExtension, s3Bucket.name, key);
+				if (type === UnrecognizedExtensionPermanentType) {
+					// If we'd successfully made a browser-compatible access copy, we'd
+					// be able to tell what type it is. Thus if we can't, there's no point
+					// in writing an access copy.
+					return;
+				}
 
 				await db
 					.sql("queries.insert_file", {
