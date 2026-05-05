@@ -16,6 +16,7 @@ export interface ShareArchive {
 export interface PendingShare {
 	id: string;
 	email: string;
+	name: string | null;
 	accessRole: AccessRole;
 }
 

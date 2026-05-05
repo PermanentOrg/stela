@@ -1,6 +1,7 @@
 INSERT INTO invite (
   inviteid,
   email,
+  fullname,
   byarchiveid,
   byaccountid,
   token,
@@ -11,6 +12,7 @@ INSERT INTO invite (
 ) VALUES (
   1,
   'pending1@example.com',
+  'Carol Zhang',
   1,
   2,
   'token-1',
@@ -22,6 +24,7 @@ INSERT INTO invite (
 (
   2,
   'pending2@example.com',
+  'Juan Sotos',
   1,
   2,
   'token-2',
@@ -33,6 +36,7 @@ INSERT INTO invite (
 (
   3,
   'revoked@example.com',
+  'Mary Lee',
   1,
   2,
   'token-3',
