@@ -42,6 +42,8 @@ const setupDatabase = async (): Promise<void> => {
 	await db.sql("record.fixtures.create_complete_test_folder_links");
 	await db.sql("record.fixtures.create_test_shareby_urls");
 	await db.sql("record.fixtures.create_test_invite_shares");
+	await db.sql("record.fixtures.create_test_account_space");
+	await db.sql("record.fixtures.create_test_archive_nbr");
 };
 
 const clearDatabase = async (): Promise<void> => {
@@ -61,7 +63,9 @@ const clearDatabase = async (): Promise<void> => {
 			shareby_url,
 			profile_item,
 			invite,
-			invite_share CASCADE`,
+			invite_share,
+			archive_nbr,
+			file CASCADE`,
 	);
 };
 
@@ -82,15 +86,15 @@ describe("GET /records/:recordId", () => {
 	const agent = request(app);
 	test("expect request to have an email from auth token if an auth token exists", async () => {
 		mockExtractUserEmailFromAuthToken("not an email");
-		await agent.get("/api/v2/record/1").expect(400);
+		await agent.get("/api/v2/record/10001").expect(400);
 	});
 	test("expect to receive a whole record", async () => {
-		const response = await agent.get("/api/v2/record/8").expect(200);
+		const response = await agent.get("/api/v2/record/10008").expect(200);
 		const {
 			body: { data: record },
 		} = response as { body: { data: ArchiveRecord } };
 		expect(record).toMatchObject({
-			recordId: "8",
+			recordId: "10008",
 			displayName: "Public File",
 			archiveId: "1",
 			archive: {
@@ -100,7 +104,7 @@ describe("GET /records/:recordId", () => {
 			archiveNumber: "0000-0008",
 			publicAt: "2023-06-21T00:00:00.000Z",
 			description: "A description of the image",
-			downloadName: "public_file.jpg",
+			downloadName: "Public File.jpg",
 			uploadFileName: "public_file.jpg",
 			uploadAccountId: "2",
 			size: 1024,
@@ -137,7 +141,7 @@ describe("GET /records/:recordId", () => {
 			},
 			files: [
 				{
-					fileId: "8",
+					fileId: "10008",
 					size: 1024,
 					format: "file.format.original",
 					type: "type.file.image.png",
@@ -149,7 +153,7 @@ describe("GET /records/:recordId", () => {
 					updatedAt: "2023-06-21T00:00:00+00:00",
 				},
 				{
-					fileId: "9",
+					fileId: "10009",
 					size: 2056,
 					format: "file.format.converted",
 					type: "type.file.image.jpg",
@@ -157,10 +161,10 @@ describe("GET /records/:recordId", () => {
 					updatedAt: "2023-06-21T00:00:00+00:00",
 				},
 			],
-			folderLinkId: "8",
+			folderLinkId: "10008",
 			folderLinkType: "type.folder_link.public",
 			parentFolderId: "1",
-			parentFolderLinkId: "9",
+			parentFolderLinkId: "10009",
 			parentFolderArchiveNumber: "0001-test",
 			tags: [
 				{
@@ -227,7 +231,7 @@ describe("GET /records/:recordId", () => {
 			throw testError;
 		});
 
-		await agent.get("/api/v2/record/14").expect(500);
+		await agent.get("/api/v2/record/10014").expect(500);
 		expect(logger.error).toHaveBeenCalledWith(testError);
 	});
 });
@@ -249,12 +253,12 @@ describe("GET /records", () => {
 	const agent = request(app);
 	test("expect request to have an email from auth token if an auth token exists", async () => {
 		mockExtractUserEmailFromAuthToken("not an email");
-		await agent.get("/api/v2/records?recordIds[]=1").expect(400);
+		await agent.get("/api/v2/records?recordIds[]=10001").expect(400);
 	});
 	test("expect request to have a share token from the headers if such a token exists", async () => {
 		mockExtractShareTokenFromHeaders("2849c711-e72e-41b5-bb49-b0b86a052668");
 		await agent
-			.get("/api/v2/records?recordIds[]=1")
+			.get("/api/v2/records?recordIds[]=10001")
 			.set("X-Permanent-Share-Token", "2849c711-e72e-41b5-bb49-b0b86a052668")
 			.expect(200);
 		expect(extractShareTokenFromHeaders).toHaveBeenCalled();
@@ -271,83 +275,83 @@ describe("GET /records", () => {
 	test("expect return a public record when not logged in", async () => {
 		mockExtractUserEmailFromAuthToken();
 		const response = await agent
-			.get("/api/v2/records?recordIds[]=1")
+			.get("/api/v2/records?recordIds[]=10001")
 			.expect(200);
 		const { body: records } = response as { body: ArchiveRecord[] };
 		expect(records.length).toEqual(1);
-		expect(records[0]?.recordId).toEqual("1");
+		expect(records[0]?.recordId).toEqual("10001");
 	});
 	test("expect to return a record", async () => {
 		const response = await agent
-			.get("/api/v2/records?recordIds[]=1")
+			.get("/api/v2/records?recordIds[]=10001")
 			.expect(200);
 		const { body: records } = response as { body: ArchiveRecord[] };
 		expect(records.length).toEqual(1);
-		expect(records[0]?.recordId).toEqual("1");
+		expect(records[0]?.recordId).toEqual("10001");
 	});
 	test("expect to return multiple records", async () => {
 		const response = await agent
-			.get("/api/v2/records?recordIds[]=1&recordIds[]=2")
+			.get("/api/v2/records?recordIds[]=10001&recordIds[]=10002")
 			.expect(200);
 		const { body: records } = response as { body: ArchiveRecord[] };
 		expect(records.length).toEqual(2);
 	});
 	test("expect to return multiple records in the order of the request", async () => {
 		const response = await agent
-			.get("/api/v2/records?recordIds[]=2&recordIds[]=1")
+			.get("/api/v2/records?recordIds[]=10002&recordIds[]=10001")
 			.expect(200);
 		const { body: records } = response as { body: ArchiveRecord[] };
 		expect(records.length).toEqual(2);
-		expect(records[0]?.recordId).toEqual("2");
-		expect(records[1]?.recordId).toEqual("1");
+		expect(records[0]?.recordId).toEqual("10002");
+		expect(records[1]?.recordId).toEqual("10001");
 	});
 	test("expect an empty response if the logged-in user does not own the record", async () => {
 		const response = await agent
-			.get("/api/v2/records?recordIds[]=7")
+			.get("/api/v2/records?recordIds[]=10007")
 			.expect(200);
 		const { body: records } = response as { body: ArchiveRecord[] };
 		expect(records.length).toEqual(0);
 	});
 	test("expect an empty response if the record is deleted", async () => {
 		const response = await agent
-			.get("/api/v2/records?recordIds[]=4")
+			.get("/api/v2/records?recordIds[]=10004")
 			.expect(200);
 		const { body: records } = response as { body: ArchiveRecord[] };
 		expect(records.length).toEqual(0);
 	});
 	test("expect to return a public record not owned by logged-in user", async () => {
 		const response = await agent
-			.get("/api/v2/records?recordIds[]=5")
+			.get("/api/v2/records?recordIds[]=10005")
 			.expect(200);
 		const { body: records } = response as { body: ArchiveRecord[] };
 		expect(records.length).toEqual(1);
-		expect(records[0]?.recordId).toEqual("5");
+		expect(records[0]?.recordId).toEqual("10005");
 	});
 	test("expect return a public record when not logged in", async () => {
 		mockExtractUserEmailFromAuthToken();
 		const response = await agent
-			.get("/api/v2/records?recordIds[]=1")
+			.get("/api/v2/records?recordIds[]=10001")
 			.expect(200);
 		const { body: records } = response as { body: ArchiveRecord[] };
 		expect(records.length).toEqual(1);
-		expect(records[0]?.recordId).toEqual("1");
+		expect(records[0]?.recordId).toEqual("10001");
 	});
 	test("expect return a private record when not logged in but providing a valid unlisted share token", async () => {
 		mockExtractUserEmailFromAuthToken();
 		mockExtractShareTokenFromHeaders("2849c711-e72e-41b5-bb49-b0b86a052668");
 		const response = await agent
-			.get("/api/v2/records?recordIds[]=2")
+			.get("/api/v2/records?recordIds[]=10002")
 			.set("X-Permanent-Share-Token", "2849c711-e72e-41b5-bb49-b0b86a052668")
 			.expect(200);
 		const { body: records } = response as { body: ArchiveRecord[] };
 		expect(records.length).toEqual(1);
-		expect(records[0]?.recordId).toEqual("2");
+		expect(records[0]?.recordId).toEqual("10002");
 	});
 	test("expect not to return a private record when not logged in and share token provided is not unlisted", async () => {
 		mockExtractUserEmailFromAuthToken();
 		mockExtractShareTokenFromHeaders("17e86544-30b3-4039-9f50-56681bcf3085");
 		const response = await agent
-			.get("/api/v2/records?recordIds[]=2")
+			.get("/api/v2/records?recordIds[]=10002")
 			.set("X-Permanent-Share-Token", "17e86544-30b3-4039-9f50-56681bcf3085")
 			.expect(200);
 		const { body: records } = response as { body: ArchiveRecord[] };
@@ -357,7 +361,7 @@ describe("GET /records", () => {
 		mockExtractUserEmailFromAuthToken();
 		mockExtractShareTokenFromHeaders("1753eb10-ca46-4964-890b-0d4cdca1a783");
 		const response = await agent
-			.get("/api/v2/records?recordIds[]=2")
+			.get("/api/v2/records?recordIds[]=10002")
 			.set("X-Permanent-Share-Token", "1753eb10-ca46-4964-890b-0d4cdca1a783")
 			.expect(200);
 		const { body: records } = response as { body: ArchiveRecord[] };
@@ -367,18 +371,18 @@ describe("GET /records", () => {
 		mockExtractUserEmailFromAuthToken();
 		mockExtractShareTokenFromHeaders("5b23ec69-3e37-4b83-9147-acf55d4654b5");
 		const response = await agent
-			.get("/api/v2/records?recordIds[]=2")
+			.get("/api/v2/records?recordIds[]=10002")
 			.set("X-Permanent-Share-Token", "5b23ec69-3e37-4b83-9147-acf55d4654b5")
 			.expect(200);
 		const { body: records } = response as { body: ArchiveRecord[] };
 		expect(records.length).toEqual(1);
-		expect(records[0]?.recordId).toEqual("2");
+		expect(records[0]?.recordId).toEqual("10002");
 	});
 	test("expect not to return a private record when share token for ancestor folder is not an unlisted share", async () => {
 		mockExtractUserEmailFromAuthToken();
 		mockExtractShareTokenFromHeaders("85018ca8-881e-4cb7-9a22-24f3e015f797");
 		const response = await agent
-			.get("/api/v2/records?recordIds[]=2")
+			.get("/api/v2/records?recordIds[]=10002")
 			.set("X-Permanent-Share-Token", "85018ca8-881e-4cb7-9a22-24f3e015f797")
 			.expect(200);
 		const { body: records } = response as { body: ArchiveRecord[] };
@@ -388,7 +392,7 @@ describe("GET /records", () => {
 		mockExtractUserEmailFromAuthToken();
 		mockExtractShareTokenFromHeaders("fbff79db-3814-4a1e-86be-ae1326cd56a3");
 		const response = await agent
-			.get("/api/v2/records?recordIds[]=2")
+			.get("/api/v2/records?recordIds[]=10002")
 			.set("X-Permanent-Share-Token", "fbff79db-3814-4a1e-86be-ae1326cd56a3")
 			.expect(200);
 		const { body: records } = response as { body: ArchiveRecord[] };
@@ -397,7 +401,7 @@ describe("GET /records", () => {
 	test("expect non-manager viewer to not receive pendingShares", async () => {
 		mockExtractUserEmailFromAuthToken("test+1@permanent.org");
 		const response = await agent
-			.get("/api/v2/records?recordIds[]=8")
+			.get("/api/v2/records?recordIds[]=10008")
 			.expect(200);
 		const { body: records } = response as { body: ArchiveRecord[] };
 		expect(records.length).toEqual(1);
@@ -406,7 +410,7 @@ describe("GET /records", () => {
 	test("expect unauthenticated viewer of public record to not receive pendingShares", async () => {
 		mockExtractUserEmailFromAuthToken();
 		const response = await agent
-			.get("/api/v2/records?recordIds[]=8")
+			.get("/api/v2/records?recordIds[]=10008")
 			.expect(200);
 		const { body: records } = response as { body: ArchiveRecord[] };
 		expect(records.length).toEqual(1);
@@ -415,7 +419,7 @@ describe("GET /records", () => {
 	test("expect not to return a private record when not logged in", async () => {
 		mockExtractUserEmailFromAuthToken();
 		const response = await agent
-			.get("/api/v2/records?recordIds[]=2")
+			.get("/api/v2/records?recordIds[]=10002")
 			.expect(200);
 		const { body: records } = response as { body: ArchiveRecord[] };
 		expect(records.length).toEqual(0);
@@ -425,22 +429,22 @@ describe("GET /records", () => {
 		// will all have equivalent entries in the access table. So we don't need to
 		// test that separately.
 		const response = await agent
-			.get("/api/v2/records?recordIds[]=6")
+			.get("/api/v2/records?recordIds[]=10006")
 			.expect(200);
 		const { body: records } = response as { body: ArchiveRecord[] };
 		expect(records.length).toEqual(1);
-		expect(records[0]?.recordId).toEqual("6");
+		expect(records[0]?.recordId).toEqual("10006");
 	});
 	test("expect to receive a whole record", async () => {
 		const response = await agent
-			.get("/api/v2/records?recordIds[]=8")
+			.get("/api/v2/records?recordIds[]=10008")
 			.expect(200);
 		const { body: records } = response as { body: ArchiveRecord[] };
 		const [record] = records;
 		expect(records.length).toEqual(1);
 		if (record !== undefined) {
 			expect(record).toMatchObject({
-				recordId: "8",
+				recordId: "10008",
 				displayName: "Public File",
 				archiveId: "1",
 				archive: {
@@ -450,7 +454,7 @@ describe("GET /records", () => {
 				archiveNumber: "0000-0008",
 				publicAt: "2023-06-21T00:00:00.000Z",
 				description: "A description of the image",
-				downloadName: "public_file.jpg",
+				downloadName: "Public File.jpg",
 				uploadFileName: "public_file.jpg",
 				uploadAccountId: "2",
 				size: 1024,
@@ -494,7 +498,7 @@ describe("GET /records", () => {
 				},
 				files: [
 					{
-						fileId: "8",
+						fileId: "10008",
 						size: 1024,
 						format: "file.format.original",
 						type: "type.file.image.png",
@@ -506,7 +510,7 @@ describe("GET /records", () => {
 						updatedAt: "2023-06-21T00:00:00+00:00",
 					},
 					{
-						fileId: "9",
+						fileId: "10009",
 						size: 2056,
 						format: "file.format.converted",
 						type: "type.file.image.jpg",
@@ -514,10 +518,10 @@ describe("GET /records", () => {
 						updatedAt: "2023-06-21T00:00:00+00:00",
 					},
 				],
-				folderLinkId: "8",
+				folderLinkId: "10008",
 				folderLinkType: "type.folder_link.public",
 				parentFolderId: "1",
-				parentFolderLinkId: "9",
+				parentFolderLinkId: "10009",
 				parentFolderArchiveNumber: "0001-test",
 				tags: [
 					{
@@ -579,7 +583,7 @@ describe("GET /records", () => {
 	});
 	test("expect to not return deleted files", async () => {
 		const response = await agent
-			.get("/api/v2/records?recordIds[]=9")
+			.get("/api/v2/records?recordIds[]=10009")
 			.expect(200);
 		const {
 			body: [record],
@@ -588,28 +592,28 @@ describe("GET /records", () => {
 	});
 	test("expect to not return a record in a deleted archive", async () => {
 		const response = await agent
-			.get("/api/v2/records?recordIds[]=10")
+			.get("/api/v2/records?recordIds[]=10010")
 			.expect(200);
 		const { body: records } = response as { body: ArchiveRecord[] };
 		expect(records.length).toEqual(0);
 	});
 	test("expect to not return a record for a pending archive member", async () => {
 		const response = await agent
-			.get("/api/v2/records?recordIds[]=11")
+			.get("/api/v2/records?recordIds[]=10011")
 			.expect(200);
 		const { body: records } = response as { body: ArchiveRecord[] };
 		expect(records.length).toEqual(0);
 	});
 	test("expect to not return a record with a deleted folder_link", async () => {
 		const response = await agent
-			.get("/api/v2/records?recordIds[]=12")
+			.get("/api/v2/records?recordIds[]=10012")
 			.expect(200);
 		const { body: records } = response as { body: ArchiveRecord[] };
 		expect(records.length).toEqual(0);
 	});
 	test("expect to not return a record with deleted access", async () => {
 		const response = await agent
-			.get("/api/v2/records?recordIds[]=13")
+			.get("/api/v2/records?recordIds[]=10013")
 			.expect(200);
 		const { body: records } = response as { body: ArchiveRecord[] };
 		expect(records.length).toEqual(0);
@@ -617,14 +621,14 @@ describe("GET /records", () => {
 	test("expect to not return a record shared with a deleted membership", async () => {
 		mockExtractUserEmailFromAuthToken("test+2@permanent.org");
 		const response = await agent
-			.get("/api/v2/records?recordIds[]=2")
+			.get("/api/v2/records?recordIds[]=10002")
 			.expect(200);
 		const { body: records } = response as { body: ArchiveRecord[] };
 		expect(records.length).toEqual(0);
 	});
 	test("expect to not return a record with a deleted parent folder", async () => {
 		const response = await agent
-			.get("/api/v2/records?recordIds[]=14")
+			.get("/api/v2/records?recordIds[]=10014")
 			.expect(200);
 		const { body: records } = response as { body: ArchiveRecord[] };
 		expect(records.length).toEqual(0);
@@ -635,7 +639,7 @@ describe("GET /records", () => {
 			throw testError;
 		});
 
-		await agent.get("/api/v2/records?recordIds[]=14").expect(500);
+		await agent.get("/api/v2/records?recordIds[]=10014").expect(500);
 		expect(logger.error).toHaveBeenCalledWith(testError);
 	});
 	test("expect to return records filtered by archiveId", async () => {
@@ -644,16 +648,16 @@ describe("GET /records", () => {
 		const recordIds = records.map((record) => record.recordId);
 		expect(recordIds).toHaveLength(5);
 		expect(recordIds).toEqual(
-			expect.arrayContaining(["1", "2", "3", "8", "9"]),
+			expect.arrayContaining(["10001", "10002", "10003", "10008", "10009"]),
 		);
 	});
 	test("expect archiveId and recordIds to act as an AND filter", async () => {
 		const response = await agent
-			.get("/api/v2/records?archiveId=1&recordIds[]=1")
+			.get("/api/v2/records?archiveId=1&recordIds[]=10001")
 			.expect(200);
 		const { body: records } = response as { body: ArchiveRecord[] };
 		expect(records.length).toEqual(1);
-		expect(records[0]?.recordId).toEqual("1");
+		expect(records[0]?.recordId).toEqual("10001");
 	});
 	test("expect archiveId with no matching records to return empty array", async () => {
 		const response = await agent
@@ -667,7 +671,7 @@ describe("GET /records", () => {
 		const { body: records } = response as { body: ArchiveRecord[] };
 		const recordIds = records.map((record) => record.recordId);
 		expect(recordIds).toHaveLength(2);
-		expect(recordIds).toEqual(expect.arrayContaining(["5", "6"]));
+		expect(recordIds).toEqual(expect.arrayContaining(["10005", "10006"]));
 	});
 	test("expect archiveId query without recordIds still requires archiveId", async () => {
 		await agent.get("/api/v2/records").expect(400);
@@ -678,7 +682,7 @@ describe("GET /records", () => {
 		const { body: records } = response as { body: ArchiveRecord[] };
 		const recordIds = records.map((record) => record.recordId);
 		expect(recordIds).toHaveLength(2);
-		expect(recordIds).toEqual(expect.arrayContaining(["1", "8"]));
+		expect(recordIds).toEqual(expect.arrayContaining(["10001", "10008"]));
 	});
 });
 
@@ -701,7 +705,7 @@ describe("PATCH /records", () => {
 	});
 
 	test("expect an empty query to cause a 400 error", async () => {
-		await agent.patch("/api/v2/records/1").send({}).expect(400);
+		await agent.patch("/api/v2/records/10001").send({}).expect(400);
 	});
 
 	test("expect non existent record to cause a 404 error", async () => {
@@ -716,19 +720,19 @@ describe("PATCH /records", () => {
 			"not an email",
 			"06a4c1dd-bee6-4fee-bcd5-419d06b936d9",
 		);
-		await agent.patch("/api/v2/records/1").expect(400);
+		await agent.patch("/api/v2/records/10001").expect(400);
 	});
 
 	test("expect location id is updated", async () => {
 		await agent
-			.patch("/api/v2/records/1")
+			.patch("/api/v2/records/10001")
 			.send({ locationId: 123 })
 			.expect(200);
 
 		const result = await db.query(
 			"SELECT locnid FROM record WHERE recordId = :recordId",
 			{
-				recordId: 1,
+				recordId: 10001,
 			},
 		);
 
@@ -737,14 +741,14 @@ describe("PATCH /records", () => {
 
 	test("expect location id is updated when set to null", async () => {
 		await agent
-			.patch("/api/v2/records/8")
+			.patch("/api/v2/records/10008")
 			.send({ locationId: null })
 			.expect(200);
 
 		const result = await db.query(
 			"SELECT locnid FROM record WHERE recordId = :recordId",
 			{
-				recordId: 8,
+				recordId: 10008,
 			},
 		);
 
@@ -753,14 +757,14 @@ describe("PATCH /records", () => {
 
 	test("expect description is updated when set to null", async () => {
 		await agent
-			.patch("/api/v2/records/8")
+			.patch("/api/v2/records/10008")
 			.send({ description: null })
 			.expect(200);
 
 		const result = await db.query(
 			"SELECT description FROM record WHERE recordId = :recordId",
 			{
-				recordId: 8,
+				recordId: 10008,
 			},
 		);
 
@@ -782,7 +786,7 @@ describe("PATCH /records", () => {
 
 	test("expect 400 error if location id is wrong type", async () => {
 		await agent
-			.patch("/api/v2/records/1")
+			.patch("/api/v2/records/10001")
 			.send({
 				locationId: false,
 			})
@@ -791,7 +795,7 @@ describe("PATCH /records", () => {
 
 	test("expect 400 error if display time is not valid Level 1 EDTF", async () => {
 		await agent
-			.patch("/api/v2/records/1")
+			.patch("/api/v2/records/10001")
 			.send({
 				displayTime: "2001-34", // This is Level 2 EDTF for "Q2 of 2001"
 			})
@@ -810,14 +814,14 @@ describe("PATCH /records", () => {
 
 	test("expect display time is updated", async () => {
 		await agent
-			.patch("/api/v2/records/1")
+			.patch("/api/v2/records/10001")
 			.send({ displayTime: "2001-21~" })
 			.expect(200);
 
 		const result = await db.query(
 			"SELECT originalfilecreationtime FROM record WHERE recordId = :recordId",
 			{
-				recordId: 1,
+				recordId: 10001,
 			},
 		);
 
@@ -826,14 +830,14 @@ describe("PATCH /records", () => {
 
 	test("expect display time is updated when set to null", async () => {
 		await agent
-			.patch("/api/v2/records/8")
+			.patch("/api/v2/records/10008")
 			.send({ displayTime: null })
 			.expect(200);
 
 		const result = await db.query(
 			"SELECT originalfilecreationtime FROM record WHERE recordId = :recordId",
 			{
-				recordId: 8,
+				recordId: 10008,
 			},
 		);
 
@@ -847,7 +851,7 @@ describe("PATCH /records", () => {
 		});
 
 		await agent
-			.patch("/api/v2/records/1")
+			.patch("/api/v2/records/10001")
 			.send({ locationId: 123 })
 			.expect(500);
 
@@ -859,7 +863,7 @@ describe("PATCH /records", () => {
 		const dbSpy = jest.spyOn(db, "sql");
 		when(dbSpy)
 			.calledWith("access.queries.get_record_access_role", {
-				itemId: "1",
+				itemId: "10001",
 				email: "test@permanent.org",
 			})
 			.mockImplementationOnce(
@@ -873,7 +877,7 @@ describe("PATCH /records", () => {
 				}),
 			)
 			.calledWith("record.queries.update_record", {
-				recordId: "1",
+				recordId: "10001",
 				displayName: undefined,
 				locationId: 123,
 				setLocationIdToNull: false,
@@ -885,7 +889,7 @@ describe("PATCH /records", () => {
 			.mockRejectedValueOnce(testError);
 
 		await agent
-			.patch("/api/v2/records/1")
+			.patch("/api/v2/records/10001")
 			.send({ locationId: 123 })
 			.expect(500);
 
@@ -898,7 +902,7 @@ describe("PATCH /records", () => {
 			"b5461dc2-1eb0-450e-b710-fef7b2cafe1e",
 		);
 		await agent
-			.patch("/api/v2/records/1")
+			.patch("/api/v2/records/10001")
 			.send({ locationId: 123 })
 			.expect(403);
 	});
@@ -909,7 +913,7 @@ describe("PATCH /records", () => {
 			"b5461dc2-1eb0-450e-b710-fef7b2cafe1e",
 		);
 		await agent
-			.patch("/api/v2/records/1")
+			.patch("/api/v2/records/10001")
 			.send({ locationId: 123 })
 			.expect(404);
 	});
@@ -918,7 +922,7 @@ describe("PATCH /records", () => {
 		const dbSpy = jest.spyOn(db, "sql");
 		when(dbSpy)
 			.calledWith("access.queries.get_record_access_role", {
-				itemId: "1",
+				itemId: "10001",
 				email: "test@permanent.org",
 			})
 			.mockImplementationOnce(
@@ -932,7 +936,7 @@ describe("PATCH /records", () => {
 				}),
 			)
 			.calledWith("record.queries.update_record", {
-				recordId: "1",
+				recordId: "10001",
 				displayName: undefined,
 				locationId: 123,
 				setLocationIdToNull: false,
@@ -948,21 +952,21 @@ describe("PATCH /records", () => {
 			);
 
 		await agent
-			.patch("/api/v2/records/1")
+			.patch("/api/v2/records/10001")
 			.send({ locationId: 123 })
 			.expect(404);
 	});
 
 	test("expect display name is updated", async () => {
 		await agent
-			.patch("/api/v2/records/1")
+			.patch("/api/v2/records/10001")
 			.send({ displayName: "New Name" })
 			.expect(200);
 
 		const result = await db.query(
 			"SELECT displayname FROM record WHERE recordId = :recordId",
 			{
-				recordId: 1,
+				recordId: 10001,
 			},
 		);
 
@@ -971,14 +975,14 @@ describe("PATCH /records", () => {
 
 	test("expect display name and description are updated together", async () => {
 		await agent
-			.patch("/api/v2/records/1")
+			.patch("/api/v2/records/10001")
 			.send({ displayName: "Updated Name", description: "Updated description" })
 			.expect(200);
 
 		const result = await db.query(
 			"SELECT displayname, description FROM record WHERE recordId = :recordId",
 			{
-				recordId: 1,
+				recordId: 10001,
 			},
 		);
 
@@ -990,7 +994,7 @@ describe("PATCH /records", () => {
 
 	test("expect all fields are updated together", async () => {
 		await agent
-			.patch("/api/v2/records/1")
+			.patch("/api/v2/records/10001")
 			.send({
 				displayName: "All Fields Name",
 				description: "All fields description",
@@ -1001,7 +1005,7 @@ describe("PATCH /records", () => {
 		const result = await db.query(
 			"SELECT displayname, description, locnid FROM record WHERE recordId = :recordId",
 			{
-				recordId: 1,
+				recordId: 10001,
 			},
 		);
 
@@ -1014,7 +1018,7 @@ describe("PATCH /records", () => {
 
 	test("expect 400 error if display name is empty string", async () => {
 		await agent
-			.patch("/api/v2/records/1")
+			.patch("/api/v2/records/10001")
 			.send({
 				displayName: "",
 			})
@@ -1023,7 +1027,7 @@ describe("PATCH /records", () => {
 
 	test("expect 400 error if display name is null", async () => {
 		await agent
-			.patch("/api/v2/records/1")
+			.patch("/api/v2/records/10001")
 			.send({
 				displayName: null,
 			})
@@ -1032,7 +1036,7 @@ describe("PATCH /records", () => {
 
 	test("expect 400 error if display name is wrong type", async () => {
 		await agent
-			.patch("/api/v2/records/1")
+			.patch("/api/v2/records/10001")
 			.send({
 				displayName: false,
 			})
@@ -1060,7 +1064,7 @@ describe("GET /records/{id}/share-links", () => {
 
 	test("expect to return share links for a record", async () => {
 		const response = await agent
-			.get("/api/v2/records/2/share-links")
+			.get("/api/v2/records/10002/share-links")
 			.expect(200);
 
 		const {
@@ -1070,7 +1074,7 @@ describe("GET /records/{id}/share-links", () => {
 
 		const shareLink = shareLinks.find((link) => link.id === "1");
 		expect(shareLink?.id).toEqual("1");
-		expect(shareLink?.itemId).toEqual("2");
+		expect(shareLink?.itemId).toEqual("10002");
 		expect(shareLink?.itemType).toEqual("record");
 		expect(shareLink?.token).toEqual("2849c711-e72e-41b5-bb49-b0b86a052668");
 		expect(shareLink?.permissionsLevel).toEqual("viewer");
@@ -1093,7 +1097,7 @@ describe("GET /records/{id}/share-links", () => {
 
 	test("expect empty list if user doesn't have access to the record's share links", async () => {
 		const response = await agent
-			.get("/api/v2/records/6/share-links")
+			.get("/api/v2/records/10006/share-links")
 			.expect(200);
 
 		const {
@@ -1108,7 +1112,7 @@ describe("GET /records/{id}/share-links", () => {
 			throw testError;
 		});
 
-		await agent.get("/api/v2/records/1/share-links").expect(500);
+		await agent.get("/api/v2/records/10001/share-links").expect(500);
 		expect(logger.error).toHaveBeenCalledWith(testError);
 	});
 
@@ -1118,11 +1122,11 @@ describe("GET /records/{id}/share-links", () => {
 			.mockImplementation(async (_, __, next: NextFunction) => {
 				next(createError.Unauthorized("Invalid auth token"));
 			});
-		await agent.get("/api/v2/records/1/share-links").expect(401);
+		await agent.get("/api/v2/records/10001/share-links").expect(401);
 	});
 
 	test("expect 400 if the header values are missing", async () => {
 		mockVerifyUserAuthentication();
-		await agent.get("/api/v2/records/1/share-links").expect(400);
+		await agent.get("/api/v2/records/10001/share-links").expect(400);
 	});
 });

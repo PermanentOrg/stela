@@ -58,7 +58,7 @@ INSERT INTO invite_share (
 ) VALUES (
   1,
   1,
-  8,
+  10008,
   'access.role.viewer',
   'status.invite.pending',
   'type.invite.share',
@@ -68,7 +68,7 @@ INSERT INTO invite_share (
 (
   2,
   2,
-  8,
+  10008,
   'access.role.editor',
   'status.invite.pending',
   'type.invite.share',
@@ -78,7 +78,7 @@ INSERT INTO invite_share (
 (
   3,
   3,
-  8,
+  10008,
   'access.role.viewer',
   'status.invite.pending',
   'type.invite.share',
