@@ -29,13 +29,13 @@ record (
 )
 VALUES
 (
-  8,
+  10008,
   1,
   '0000-0008',
   '2023-06-21T00:00:00.000Z',
   'Public File',
   'A description of the image',
-  'public_file.jpg',
+  'Public File.jpg',
   2,
   2,
   'public_file.jpg',

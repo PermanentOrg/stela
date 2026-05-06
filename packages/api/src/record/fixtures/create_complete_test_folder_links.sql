@@ -12,11 +12,11 @@ INSERT INTO folder_link (
 )
 VALUES
 (
-  8,
-  8,
+  10008,
+  10008,
   NULL,
   1,
-  9,
+  10009,
   1,
   1,
   'access.role.owner',

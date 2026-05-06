@@ -12,7 +12,7 @@ INSERT INTO file (
 )
 VALUES
 (
-  8,
+  10008,
   1,
   1024,
   'file.format.original',
@@ -28,7 +28,7 @@ VALUES
   '2023-06-21T00:00:00.000Z'
 ),
 (
-  9,
+  10009,
   1,
   2056,
   'file.format.converted',
