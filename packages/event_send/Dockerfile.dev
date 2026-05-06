@@ -1,0 +1,17 @@
+# Monorepo Dockerfile - must be built from repository root:
+#   docker build -f packages/event_send/Dockerfile.dev .
+FROM node:24-alpine
+WORKDIR /usr/local/apps/stela
+
+COPY package.json ./
+COPY package-lock.json ./
+COPY tsconfig.json ./
+COPY tsconfig.build.json ./
+COPY packages ./packages
+
+RUN npm install \
+    && npm install --dev \
+    && npm install -ws
+RUN npm run build -ws
+
+CMD sh -c 'while true; do node packages/event_send/dist/index.js; sleep 60; done'
