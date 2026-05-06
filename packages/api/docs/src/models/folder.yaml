@@ -28,6 +28,82 @@ folder:
       type: integer
     location:
       $ref: "../models/location.yaml#/location"
+    locationDisplayName:
+      type: string
+      nullable: true
+    locationGeoCodeLookup:
+      type: string
+      nullable: true
+    locationStreetNumber:
+      type: string
+      nullable: true
+    locationStreetName:
+      type: string
+      nullable: true
+    locationPostalCode:
+      type: string
+      nullable: true
+    locationLocality:
+      type: string
+      nullable: true
+    locationAdminOneName:
+      type: string
+      nullable: true
+    locationAdminOneCode:
+      type: string
+      nullable: true
+    locationAdminTwoName:
+      type: string
+      nullable: true
+    locationAdminTwoCode:
+      type: string
+      nullable: true
+    locationCountry:
+      type: string
+      nullable: true
+    locationCountryCode:
+      type: string
+      nullable: true
+    locationGeometryType:
+      type: string
+      nullable: true
+    locationLatitude:
+      type: number
+      nullable: true
+    locationLongitude:
+      type: number
+      nullable: true
+    locationBoundSouth:
+      type: number
+      nullable: true
+    locationBoundWest:
+      type: number
+      nullable: true
+    locationBoundNorth:
+      type: number
+      nullable: true
+    locationBoundEast:
+      type: number
+      nullable: true
+    locationGeometryAsArray:
+      type: string
+      nullable: true
+    locationGeoCodeType:
+      type: string
+      nullable: true
+    locationSublocation:
+      type: string
+      nullable: true
+    locationAltitudeMeters:
+      type: number
+      nullable: true
+    locationLocationPrecision:
+      type: string
+      enum: [approximate, uncertain, unknown]
+      nullable: true
+    locationRawMetadata:
+      type: object
+      nullable: true
     parentFolder:
       type: object
       properties:

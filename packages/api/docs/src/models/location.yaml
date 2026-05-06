@@ -1,10 +1,7 @@
 location:
   description: A geographic location object
   type: object
-  required: [id]
   properties:
-    id:
-      type: string
     name:
       type: string
     sublocation:

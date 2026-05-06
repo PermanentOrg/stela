@@ -200,7 +200,6 @@ describe("GET /folder", () => {
 			expect(folders[0].size).toEqual(0);
 			expect(folders[0].location).toBeDefined();
 			if (folders[0].location !== undefined) {
-				expect(folders[0].location.id).toEqual("1");
 				expect(folders[0].location.name).toEqual("Jean Valjean's House");
 				expect(folders[0].location.sublocation).toEqual("55 Rue Plumet");
 				expect(folders[0].location.city).toEqual("Paris");

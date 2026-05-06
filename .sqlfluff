@@ -13,7 +13,7 @@ param_style = colon
 spacing_within = touch:inline
 
 [sqlfluff:rules:references.keywords]
-ignore_words = name, owner, type, trigger, shares, location
+ignore_words = name, owner, type, trigger, shares, location, precision
 
 [sqlfluff:rules:capitalisation.functions]
 extended_capitalisation_policy = upper

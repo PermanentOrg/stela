@@ -102,8 +102,9 @@ records/{id}:
             properties:
               displayName:
                 type: string
-              locationId:
-                type: integer
+              location:
+                $ref: "../models/location.yaml#/location"
+                nullable: true
               description:
                 type: string
               displayTime:

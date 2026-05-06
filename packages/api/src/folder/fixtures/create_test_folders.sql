@@ -14,7 +14,6 @@ folder (
   thumburl1000,
   thumburl2000,
   thumbnail256,
-  locnid,
   updateddt,
   description,
   displaydt,
@@ -23,7 +22,20 @@ folder (
   displaytimelowerbound,
   imageratio,
   sort,
-  view
+  view,
+  location_displayname,
+  location_streetnumber,
+  location_streetname,
+  location_locality,
+  location_admintwoname,
+  location_latitude,
+  location_longitude,
+  location_country,
+  location_countrycode,
+  location_sublocation,
+  location_postalcode,
+  location_altitudemeters,
+  location_locationprecision
 )
 VALUES
 (
@@ -50,7 +62,7 @@ VALUES
   NULL,
   NULL,
   NULL,
-  NULL
+  NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
 ),
 (
   2,
@@ -67,7 +79,6 @@ VALUES
   'https://test-folder-thumbnail-1000',
   'https://test-folder-thumbnail-2000',
   'https://test-folder-thumbnail-256',
-  1,
   '2025-01-01',
   'A test folder',
   '2025-01-01',
@@ -76,7 +87,20 @@ VALUES
   '2025-01-01',
   1.00,
   'sort.alphabetical_asc',
-  'folder.view.grid'
+  'folder.view.grid',
+  'Jean Valjean''s House',
+  '55',
+  'Rue Plumet',
+  'Paris',
+  'Ile-de-France',
+  48.838608548520966,
+  2.3069214988665303,
+  'France',
+  'FR',
+  '55 Rue Plumet',
+  '75007',
+  35.0,
+  'approximate'
 ),
 (
   3,
@@ -102,7 +126,7 @@ VALUES
   NULL,
   NULL,
   NULL,
-  NULL
+  NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
 ),
 (
   4,
@@ -128,7 +152,7 @@ VALUES
   NULL,
   NULL,
   NULL,
-  NULL
+  NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
 ),
 (
   5,
@@ -154,7 +178,7 @@ VALUES
   NULL,
   NULL,
   NULL,
-  NULL
+  NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
 ),
 (
   6,
@@ -180,7 +204,7 @@ VALUES
   NULL,
   NULL,
   NULL,
-  NULL
+  NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
 ),
 (
   7,
@@ -206,7 +230,7 @@ VALUES
   NULL,
   NULL,
   NULL,
-  NULL
+  NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
 ),
 (
   8,
@@ -232,7 +256,7 @@ VALUES
   NULL,
   NULL,
   NULL,
-  NULL
+  NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
 ),
 (
   9,
@@ -258,7 +282,7 @@ VALUES
   NULL,
   NULL,
   NULL,
-  NULL
+  NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
 ),
 (
   10,
@@ -282,9 +306,9 @@ VALUES
   NULL,
   NULL,
   NULL,
-  NULL,
   'sort.alphabetical_asc',
-  NULL
+  NULL,
+  NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
 ),
 (
   11,
@@ -310,7 +334,7 @@ VALUES
   NULL,
   NULL,
   NULL,
-  NULL
+  NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
 ),
 (
   12,
@@ -336,7 +360,7 @@ VALUES
   NULL,
   NULL,
   NULL,
-  NULL
+  NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
 ),
 (
   13,
@@ -362,7 +386,7 @@ VALUES
   NULL,
   NULL,
   NULL,
-  NULL
+  NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
 ),
 (
   100,
@@ -388,7 +412,7 @@ VALUES
   NULL,
   NULL,
   NULL,
-  NULL
+  NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
 ),
 (
   101,
@@ -407,14 +431,14 @@ VALUES
   NULL,
   NULL,
   NULL,
-  NULL,
   '2020-01-01',
   NULL,
   NULL,
   '2025-01-01',
   NULL,
   NULL,
-  NULL
+  NULL,
+  NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
 ),
 (
   102,
@@ -433,12 +457,12 @@ VALUES
   NULL,
   NULL,
   NULL,
-  NULL,
   '2025-01-01',
   NULL,
   NULL,
   '2020-01-01',
   NULL,
   NULL,
-  NULL
+  NULL,
+  NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
 );

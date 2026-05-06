@@ -39,6 +39,31 @@ export interface ArchiveRecord {
 	shares: Share[];
 	pendingShares: PendingShare[] | null;
 	location: Location;
+	locationDisplayName: string | null;
+	locationGeoCodeLookup: string | null;
+	locationStreetNumber: string | null;
+	locationStreetName: string | null;
+	locationPostalCode: string | null;
+	locationLocality: string | null;
+	locationAdminOneName: string | null;
+	locationAdminOneCode: string | null;
+	locationAdminTwoName: string | null;
+	locationAdminTwoCode: string | null;
+	locationCountry: string | null;
+	locationCountryCode: string | null;
+	locationGeometryType: string | null;
+	locationLatitude: number | null;
+	locationLongitude: number | null;
+	locationBoundSouth: number | null;
+	locationBoundWest: number | null;
+	locationBoundNorth: number | null;
+	locationBoundEast: number | null;
+	locationGeometryAsArray: string | null;
+	locationGeoCodeType: string | null;
+	locationSublocation: string | null;
+	locationAltitudeMeters: number | null;
+	locationLocationPrecision: "approximate" | "uncertain" | "unknown" | null;
+	locationRawMetadata: object | null;
 	archive: {
 		id: string;
 		name?: string;
@@ -87,6 +112,31 @@ export interface ArchiveRecordRow {
 	shares: Share[];
 	pendingShares: PendingShare[] | null;
 	location: Location;
+	locationDisplayName: string | null;
+	locationGeoCodeLookup: string | null;
+	locationStreetNumber: string | null;
+	locationStreetName: string | null;
+	locationPostalCode: string | null;
+	locationLocality: string | null;
+	locationAdminOneName: string | null;
+	locationAdminOneCode: string | null;
+	locationAdminTwoName: string | null;
+	locationAdminTwoCode: string | null;
+	locationCountry: string | null;
+	locationCountryCode: string | null;
+	locationGeometryType: string | null;
+	locationLatitude: number | null;
+	locationLongitude: number | null;
+	locationBoundSouth: number | null;
+	locationBoundWest: number | null;
+	locationBoundNorth: number | null;
+	locationBoundEast: number | null;
+	locationGeometryAsArray: string | null;
+	locationGeoCodeType: string | null;
+	locationSublocation: string | null;
+	locationAltitudeMeters: number | null;
+	locationLocationPrecision: "approximate" | "uncertain" | "unknown" | null;
+	locationRawMetadata: object | null;
 	archive: {
 		id: string;
 		name?: string;
@@ -113,7 +163,7 @@ export interface ArchiveFile {
 
 export interface PatchRecordRequest {
 	emailFromAuthToken: string;
-	locationId?: bigint | null;
+	location?: Location | null;
 	description?: string | null;
 	displayName?: string;
 	displayTime?: string | null;
