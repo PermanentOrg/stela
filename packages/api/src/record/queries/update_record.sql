@@ -18,4 +18,4 @@ SET
 WHERE
   recordid = :recordId
 RETURNING
-  recordid;
+  recordid AS "recordId";

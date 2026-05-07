@@ -767,6 +767,19 @@ describe("PATCH /records", () => {
 		expect(result.rows[0]).toStrictEqual({ description: null });
 	});
 
+	test("expect a success response to include the updated record", async () => {
+		const response = await agent
+			.patch("/api/v2/records/8")
+			.send({ description: "new description" })
+			.expect(200);
+
+		const {
+			body: { data: record },
+		} = response as { body: { data: ArchiveRecord } };
+		expect(record.recordId).toStrictEqual("8");
+		expect(record.description).toStrictEqual("new description");
+	});
+
 	test("expect 400 error if location id is wrong type", async () => {
 		await agent
 			.patch("/api/v2/records/1")

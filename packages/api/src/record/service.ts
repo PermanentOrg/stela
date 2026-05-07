@@ -73,7 +73,7 @@ export const patchRecord = async (
 	await validateCanPatchRecord(recordId, recordData.emailFromAuthToken);
 
 	const result = await db
-		.sql<ArchiveRecordRow>("record.queries.update_record", {
+		.sql<{ recordId: string }>("record.queries.update_record", {
 			recordId,
 			displayName: recordData.displayName,
 			locationId: recordData.locationId,

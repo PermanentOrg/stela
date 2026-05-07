@@ -79,7 +79,7 @@ recordController.patch(
 				accountEmail: req.body.emailFromAuthToken,
 			});
 
-			res.status(HTTP_STATUS.SUCCESSFUL.OK).send({ data: record });
+			res.status(HTTP_STATUS.SUCCESSFUL.OK).send({ data: record[0] });
 		} catch (err) {
 			next(err);
 		}
