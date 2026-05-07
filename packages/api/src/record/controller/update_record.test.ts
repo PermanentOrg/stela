@@ -5,7 +5,7 @@ import { app } from "../../app";
 import { db } from "../../database";
 import { AccessRole } from "../../access/models";
 import { mockVerifyUserAuthentication } from "../../../test/middleware_mocks";
-import { ArchiveRecord } from "../models";
+import type { ArchiveRecord } from "../models";
 
 jest.mock("../../database");
 jest.mock("../../middleware");

@@ -62,4 +62,13 @@ VALUES
   0,
   'type.account.standard',
   'status.generic.deleted'
+),
+(
+  35,
+  2,
+  5,
+  'access.role.curator',
+  0,
+  'type.account.standard',
+  'status.generic.ok'
 );

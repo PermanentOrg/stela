@@ -190,4 +190,76 @@ VALUES
   'access.role.owner',
   'status.generic.ok',
   'type.folder_link.private'
+),
+(
+  10020,
+  NULL,
+  20,
+  NULL,
+  NULL,
+  2,
+  1,
+  'access.role.owner',
+  'status.generic.ok',
+  'type.folder_link.private'
+),
+(
+  10030,
+  NULL,
+  30,
+  NULL,
+  NULL,
+  1,
+  1,
+  'access.role.owner',
+  'status.generic.ok',
+  'type.folder_link.app'
+),
+(
+  10031,
+  NULL,
+  31,
+  NULL,
+  NULL,
+  1,
+  1,
+  'access.role.owner',
+  'status.generic.ok',
+  'type.folder_link.root.private'
+),
+(
+  10032,
+  NULL,
+  32,
+  NULL,
+  NULL,
+  1,
+  1,
+  'access.role.owner',
+  'status.generic.ok',
+  'type.folder_link.root.app'
+),
+(
+  10033,
+  NULL,
+  33,
+  NULL,
+  NULL,
+  1,
+  1,
+  'access.role.owner',
+  'status.generic.ok',
+  'type.folder_link.root.public'
+),
+(
+  10034,
+  NULL,
+  34,
+  NULL,
+  NULL,
+  5,
+  1,
+  'access.role.owner',
+  'status.generic.ok',
+  'type.folder_link.root.private'
 );

@@ -8,12 +8,19 @@ import {
 	extractShareTokenFromHeaders,
 	extractUserEmailFromAuthToken,
 	verifyUserAuthentication,
+	extractIp,
 } from "../../middleware";
-import { getRecords, patchRecord, getRecordShareLinks } from "../service";
+import {
+	getRecords,
+	patchRecord,
+	getRecordShareLinks,
+	createRecordCopy,
+} from "../service";
 import {
 	validateGetRecordQuery,
 	validatePatchRecordRequest,
 	validateSingleRecordParams,
+	validateCreateRecordCopyRequest,
 } from "../validators";
 import {
 	validateBodyFromAuthentication,
@@ -79,7 +86,7 @@ recordController.patch(
 				accountEmail: req.body.emailFromAuthToken,
 			});
 
-			res.status(HTTP_STATUS.SUCCESSFUL.OK).send({ data: record });
+			res.status(HTTP_STATUS.SUCCESSFUL.OK).send({ data: record[0] });
 		} catch (err) {
 			next(err);
 		}
@@ -98,6 +105,26 @@ recordController.get(
 				req.params.recordId,
 			);
 			res.status(HTTP_STATUS.SUCCESSFUL.OK).send({ items: shareLinks });
+		} catch (err) {
+			next(err);
+		}
+	},
+);
+
+recordController.post(
+	"/:recordId/copies",
+	verifyUserAuthentication,
+	extractIp,
+	async (req: Request, res: Response, next: NextFunction) => {
+		try {
+			validateSingleRecordParams(req.params);
+			validateCreateRecordCopyRequest(req.body);
+			const record = await createRecordCopy(
+				req.params.recordId,
+				req.body,
+				req.headers["user-agent"],
+			);
+			res.status(HTTP_STATUS.SUCCESSFUL.OK).send({ data: record });
 		} catch (err) {
 			next(err);
 		}

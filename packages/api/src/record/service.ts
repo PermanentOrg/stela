@@ -4,16 +4,23 @@ import { db } from "../database";
 import type {
 	ArchiveRecord,
 	ArchiveRecordRow,
+	CreateRecordCopyRequest,
 	PatchRecordRequest,
 } from "./models";
-import { getRecordAccessRole, accessRoleLessThan } from "../access/permission";
+import {
+	getRecordAccessRole,
+	accessRoleLessThan,
+	getArchiveAccessRole,
+} from "../access/permission";
 import { AccessRole } from "../access/models";
 import { shareLinkService } from "../share_link/service";
 import type { ShareLink } from "../share_link/models";
+import { getFolders } from "../folder/service";
+import { type Folder, PrettyFolderType } from "../folder/models";
 
 export const getRecords = async (requestQuery: {
 	recordIds: string[] | undefined;
-	archiveId: string | undefined;
+	archiveId?: string | undefined;
 	accountEmail: string | undefined;
 	shareToken?: string | undefined;
 }): Promise<ArchiveRecord[]> => {
@@ -92,6 +99,143 @@ export const patchRecord = async (
 		throw new createError.NotFound("Record not found");
 	}
 	return result.rows[0].recordId;
+};
+
+const validateHasPermissionToCopyRecord = async (
+	record: ArchiveRecord,
+	destinationFolder: Folder,
+	authenticatedEmail: string,
+): Promise<void> => {
+	const { archive: originArchive } = record;
+	const { archive: destinationArchive } = destinationFolder;
+	const destinationArchiveAccessRole = await getArchiveAccessRole(
+		destinationArchive.id,
+		authenticatedEmail,
+	);
+	if (originArchive.id !== destinationArchive.id) {
+		const originArchiveAccessRole = await getArchiveAccessRole(
+			originArchive.id,
+			authenticatedEmail,
+		);
+		if (accessRoleLessThan(originArchiveAccessRole, AccessRole.Owner)) {
+			throw new createError.Forbidden(
+				"User does not have permission to copy to another archive",
+			);
+		}
+	}
+	if (
+		[
+			PrettyFolderType.AppRoot,
+			PrettyFolderType.App,
+			PrettyFolderType.PublicRoot,
+			PrettyFolderType.Public,
+		].includes(destinationFolder.type) &&
+		accessRoleLessThan(destinationArchiveAccessRole, AccessRole.Manager)
+	) {
+		throw new createError.Forbidden(
+			"User does not have permission to copy to the public or app workspace",
+		);
+	} else if (
+		accessRoleLessThan(destinationArchiveAccessRole, AccessRole.Curator)
+	) {
+		throw new createError.Forbidden(
+			"User does not have permission to copy records",
+		);
+	}
+};
+
+export const createRecordCopy = async (
+	recordId: string,
+	requestBody: CreateRecordCopyRequest,
+	userAgent?: string,
+): Promise<ArchiveRecord> => {
+	const [record] = await getRecords({
+		recordIds: [recordId],
+		accountEmail: requestBody.emailFromAuthToken,
+	});
+	if (record === undefined) {
+		throw new createError.NotFound("Record not found");
+	}
+
+	const [destinationFolder] = await getFolders(
+		[requestBody.destinationFolderId],
+		requestBody.emailFromAuthToken,
+	);
+	if (destinationFolder === undefined) {
+		throw new createError.NotFound("Destination folder not found");
+	}
+
+	const { size: recordSize } = record;
+
+	await validateHasPermissionToCopyRecord(
+		record,
+		destinationFolder,
+		requestBody.emailFromAuthToken,
+	);
+
+	const copiedRecordId = await db.transaction(async (transactionDb) => {
+		const availableStorage = await transactionDb
+			.sql<{ spaceLeft: string }>(
+				"storage.queries.get_account_space_for_update",
+				{
+					email: requestBody.emailFromAuthToken,
+				},
+			)
+			.catch((err: unknown) => {
+				logger.error(err);
+				throw new createError.InternalServerError(
+					"Failed to look up account space",
+				);
+			});
+		if (availableStorage.rows[0] === undefined) {
+			logger.error("Empty response from account_space query");
+			throw new createError.InternalServerError(
+				"Failed to look up account space",
+			);
+		} else if (+availableStorage.rows[0].spaceLeft < recordSize) {
+			throw new createError.BadRequest("Not enough storage to make a copy");
+		}
+
+		const {
+			rows: [recordCopy],
+		} = await transactionDb
+			.sql<{ recordId: string }>("record.queries.copy_record", {
+				destinationArchiveId: destinationFolder.archive.id,
+				destinationFolderId: destinationFolder.folderId,
+				originalRecordId: record.recordId,
+				callerEmail: requestBody.emailFromAuthToken,
+				destinationIsPublic: [
+					PrettyFolderType.PublicRoot,
+					PrettyFolderType.Public,
+				].includes(destinationFolder.type),
+				callerIp: requestBody.ip,
+				callerUserAgent: userAgent,
+			})
+			.catch((err: unknown) => {
+				logger.error(err);
+				throw new createError.InternalServerError("Failed to copy record");
+			});
+		if (recordCopy === undefined) {
+			logger.error("Failed to copy record");
+			throw new createError.InternalServerError("Failed to copy record");
+		}
+		return recordCopy.recordId;
+	});
+
+	const copy = await getRecords({
+		recordIds: [copiedRecordId],
+		accountEmail: requestBody.emailFromAuthToken,
+	});
+	if (copy[0] === undefined) {
+		logger.error(
+			`Cannot find newly created record copy with ID ${copiedRecordId}`,
+		);
+		throw new createError.InternalServerError(
+			"Cannot find newly created record copy",
+		);
+	}
+
+	return copy[0];
 };
 
 export const getRecordShareLinks = async (

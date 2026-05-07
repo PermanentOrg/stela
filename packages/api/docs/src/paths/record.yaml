@@ -159,3 +159,44 @@ records-id-share-links:
         $ref: "../errors.yaml#/404"
       "500":
         $ref: "../errors.yaml#/500"
+records-id-copies:
+  parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: string
+  post:
+    summary: Create a copy of a record
+    security:
+      - bearerHttpAuthentication: []
+    tags:
+      - records
+    operationId: create-record-copy
+    requestBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [destinationFolderId]
+            properties:
+              destinationFolderId:
+                type: string
+    responses:
+      "200":
+        description: The copy of the record
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                data:
+                  $ref: "../models/record.yaml#/record"
+      "400":
+        $ref: "../errors.yaml#/400"
+      "403":
+        $ref: "../errors.yaml#/403"
+      "404":
+        $ref: "../errors.yaml#/404"
+      "500":
+        $ref: "../errors.yaml#/500"
