@@ -14,7 +14,7 @@ export interface ArchiveRecord {
 	uploadFileName: string;
 	uploadAccountId: string;
 	uploadPayerAccountId?: string;
-	size?: number;
+	size: number;
 	displayDate?: string;
 	displayTime?: string;
 	fileCreatedAt?: string;
@@ -117,6 +117,13 @@ export interface PatchRecordRequest {
 	description?: string | null;
 	displayName?: string;
 	displayTime?: string | null;
+}
+
+export interface CreateRecordCopyRequest {
+	emailFromAuthToken: string;
+	userSubjectFromAuthToken: string;
+	destinationFolderId: string;
+	ip: string;
 }
 
 export enum RecordStatus {

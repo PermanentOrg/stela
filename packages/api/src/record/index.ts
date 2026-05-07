@@ -1,1 +1,1 @@
-export { recordController } from "./controller";
+export { recordController } from "./controller/controller";
