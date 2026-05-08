@@ -19,9 +19,12 @@ const getRandomAlphanumericString = (length: number): string => {
 export const issueGift = async (
 	requestBody: GiftStorageRequest,
 ): Promise<GiftStorageResponse> => {
+	const recipientEmails = requestBody.recipientEmails.map((email: string) =>
+		email.toLowerCase(),
+	);
 	const existingAccountEmailResult = await db
 		.sql<{ email: string }>("storage.queries.get_existing_account_emails", {
-			emails: requestBody.recipientEmails,
+			emails: recipientEmails,
 		})
 		.catch((err: unknown) => {
 			logger.error(err);
@@ -32,7 +35,7 @@ export const issueGift = async (
 	const existingAccountEmails = existingAccountEmailResult.rows.map(
 		(row) => row.email,
 	);
-	const newEmails = requestBody.recipientEmails.filter(
+	const newEmails = recipientEmails.filter(
 		(email) => !existingAccountEmails.includes(email),
 	);
 

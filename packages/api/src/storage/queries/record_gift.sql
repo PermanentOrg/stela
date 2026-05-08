@@ -11,7 +11,7 @@ to_account AS (
   FROM
     account
   WHERE
-    primaryemail = ANY(:toEmails)
+    LOWER(primaryemail) = ANY(:toEmails)
 ),
 
 from_account_space AS (

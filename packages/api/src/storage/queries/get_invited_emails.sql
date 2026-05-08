@@ -1,5 +1,5 @@
-SELECT email
+SELECT LOWER(email) AS email
 FROM
   invite
 WHERE
-  email = ANY(:emails);
+  LOWER(email) = ANY(:emails);
