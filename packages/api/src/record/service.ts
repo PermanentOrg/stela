@@ -1,5 +1,6 @@
 import createError from "http-errors";
 import { logger } from "@stela/logger";
+import type { TinyPg } from "tinypg";
 import { db } from "../database";
 import type {
 	ArchiveRecord,
@@ -17,6 +18,7 @@ import { shareLinkService } from "../share_link/service";
 import type { ShareLink } from "../share_link/models";
 import { getFolders } from "../folder/service";
 import { type Folder, PrettyFolderType } from "../folder/models";
+import { insertLocation, updateLocation } from "../location/service";
 
 export const getRecords = async (requestQuery: {
 	recordIds: string[] | undefined;
@@ -73,32 +75,77 @@ const validateCanPatchRecord = async (
 	}
 };
 
+const getRecordLocationId = async (
+	recordId: string,
+	client: TinyPg,
+): Promise<string | null> => {
+	const result = await client
+		.sql<{ locationId: string | null }>(
+			"record.queries.get_record_location_id",
+			{
+				recordId,
+			},
+		)
+		.catch((err: unknown) => {
+			logger.error(err);
+			throw new createError.InternalServerError("Failed to look up record");
+		});
+	const { rows } = result;
+	const [row] = rows;
+	if (row === undefined) {
+		throw new createError.NotFound(`Record ${recordId} not found`);
+	}
+	return row.locationId;
+};
+
 export const patchRecord = async (
 	recordId: string,
 	recordData: PatchRecordRequest,
 ): Promise<string> => {
 	await validateCanPatchRecord(recordId, recordData.emailFromAuthToken);
 
-	const result = await db
-		.sql<{ recordId: string }>("record.queries.update_record", {
-			recordId,
-			displayName: recordData.displayName,
-			locationId: recordData.locationId,
-			setLocationIdToNull: recordData.locationId === null,
-			description: recordData.description,
-			setDescriptionToNull: recordData.description === null,
-			displayTime: recordData.displayTime,
-			setDisplayTimeToNull: recordData.displayTime === null,
-		})
-		.catch((err: unknown) => {
-			logger.error(err);
-			throw new createError.InternalServerError("Failed to update record");
-		});
+	return await db.transaction(async (transactionDb) => {
+		let { locationId } = recordData;
+		if (recordData.location !== undefined) {
+			const currentLocationId = await getRecordLocationId(
+				recordId,
+				transactionDb,
+			);
+			if (currentLocationId === null) {
+				locationId = BigInt(
+					await insertLocation(recordData.location, transactionDb),
+				);
+			} else {
+				await updateLocation(
+					currentLocationId,
+					recordData.location,
+					transactionDb,
+				);
+				locationId = BigInt(currentLocationId);
+			}
+		}
 
-	if (result.rows[0] === undefined) {
-		throw new createError.NotFound("Record not found");
-	}
-	return result.rows[0].recordId;
+		const result = await transactionDb
+			.sql<{ recordId: string }>("record.queries.update_record", {
+				recordId,
+				displayName: recordData.displayName,
+				locationId,
+				setLocationIdToNull: locationId === null,
+				description: recordData.description,
+				setDescriptionToNull: recordData.description === null,
+				displayTime: recordData.displayTime,
+				setDisplayTimeToNull: recordData.displayTime === null,
+			})
+			.catch((err: unknown) => {
+				logger.error(err);
+				throw new createError.InternalServerError("Failed to update record");
+			});
+
+		if (result.rows[0] === undefined) {
+			throw new createError.NotFound("Record not found");
+		}
+		return result.rows[0].recordId;
+	});
 };
 
 const validateHasPermissionToCopyRecord = async (

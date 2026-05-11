@@ -1,4 +1,4 @@
-import type { AccessRole } from "../common/models";
+import type { AccessRole } from "../access/models";
 
 export interface Share {
 	id: string;

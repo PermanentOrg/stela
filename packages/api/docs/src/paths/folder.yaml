@@ -65,6 +65,8 @@ folder-id:
               displayTime:
                 type: string
                 format: edtf
+              location:
+                $ref: "../models/location.yaml#/locationInput"
     responses:
       "200":
         description: The updated folder

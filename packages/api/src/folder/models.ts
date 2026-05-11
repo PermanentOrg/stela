@@ -1,7 +1,7 @@
 import type { PendingShare, Share } from "../share/models";
 import type { Tag } from "../tag/models";
 import type { ArchiveRecord } from "../record/models";
-import type { Location } from "../common/models";
+import type { Location, LocationInput } from "../location/models";
 
 export type FolderChildItem = ArchiveRecord | Folder;
 
@@ -126,6 +126,7 @@ export interface PatchFolderRequest {
 	displayDate?: string | null;
 	displayEndDate?: string | null;
 	displayTime?: string | null;
+	location?: LocationInput;
 }
 
 export enum FolderStatus {

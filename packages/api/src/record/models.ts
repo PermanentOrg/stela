@@ -1,7 +1,7 @@
 import type { FileType } from "@stela/permanent_models";
 import type { PendingShare, Share } from "../share/models";
 import type { Tag } from "../tag/models";
-import type { Location } from "../common/models";
+import type { Location, LocationInput } from "../location/models";
 
 export interface ArchiveRecord {
 	recordId: string;
@@ -114,6 +114,7 @@ export interface ArchiveFile {
 export interface PatchRecordRequest {
 	emailFromAuthToken: string;
 	locationId?: bigint | null;
+	location?: LocationInput;
 	description?: string | null;
 	displayName?: string;
 	displayTime?: string | null;
