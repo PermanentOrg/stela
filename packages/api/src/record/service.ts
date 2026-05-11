@@ -10,6 +10,31 @@ import { getRecordAccessRole, accessRoleLessThan } from "../access/permission";
 import { AccessRole } from "../access/models";
 import { shareLinkService } from "../share_link/service";
 import type { ShareLink } from "../share_link/models";
+import type { Location } from "../common/models";
+
+const orNull = <T>(v: T | undefined | null): T | null => v ?? null;
+
+const buildLocationUpdateParams = (
+	location: Location | undefined,
+): Record<string, string | number | null> => {
+	const loc = location ?? {};
+	return {
+		locationDisplayName: orNull(loc.displayName ?? loc.name),
+		locationSublocation: orNull(loc.sublocation),
+		locationLocality: orNull(loc.locality ?? loc.city),
+		locationAdminOneName: orNull(loc.state),
+		locationAdminTwoName: orNull(loc.county),
+		locationPostalCode: orNull(loc.postalCode),
+		locationCountry: orNull(loc.country),
+		locationCountryCode: orNull(loc.countryCode),
+		locationStreetNumber: orNull(loc.streetNumber),
+		locationStreetName: orNull(loc.streetName),
+		locationLatitude: orNull(loc.latitude),
+		locationLongitude: orNull(loc.longitude),
+		locationAltitudeMeters: orNull(loc.altitudeMeters),
+		locationLocationPrecision: orNull(loc.precision),
+	};
+};
 
 export const getRecords = async (requestQuery: {
 	recordIds: string[] | undefined;
@@ -72,12 +97,14 @@ export const patchRecord = async (
 ): Promise<string> => {
 	await validateCanPatchRecord(recordId, recordData.emailFromAuthToken);
 
+	const setLocationToNull = recordData.location === null;
+	const location = recordData.location ?? undefined;
 	const result = await db
 		.sql<ArchiveRecordRow>("record.queries.update_record", {
 			recordId,
 			displayName: recordData.displayName,
-			locationId: recordData.locationId,
-			setLocationIdToNull: recordData.locationId === null,
+			setLocationToNull,
+			...buildLocationUpdateParams(location),
 			description: recordData.description,
 			setDescriptionToNull: recordData.description === null,
 			displayTime: recordData.displayTime,

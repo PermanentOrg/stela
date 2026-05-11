@@ -72,7 +72,6 @@ describe("GET /folder/{id}/children", () => {
 				expect(folder.size).toEqual(0);
 				expect(folder.location).toBeDefined();
 				if (folder.location !== undefined) {
-					expect(folder.location.id).toEqual("1");
 					expect(folder.location.name).toEqual("Jean Valjean's House");
 					expect(folder.location.sublocation).toEqual("55 Rue Plumet");
 					expect(folder.location.city).toEqual("Paris");

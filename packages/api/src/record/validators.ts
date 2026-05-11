@@ -42,7 +42,30 @@ export const validatePatchRecordRequest: (
 	const validation = Joi.object()
 		.keys({
 			...fieldsFromUserAuthentication,
-			locationId: Joi.number().integer().optional().allow(null),
+			location: Joi.object()
+				.keys({
+					name: Joi.string().optional().allow(null),
+					sublocation: Joi.string().optional().allow(null),
+					city: Joi.string().optional().allow(null),
+					state: Joi.string().optional().allow(null),
+					postalCode: Joi.string().optional().allow(null),
+					country: Joi.string().optional().allow(null),
+					latitude: Joi.number().optional().allow(null),
+					longitude: Joi.number().optional().allow(null),
+					altitudeMeters: Joi.number().optional().allow(null),
+					precision: Joi.string()
+						.valid("approximate", "uncertain", "unknown")
+						.optional()
+						.allow(null),
+					streetNumber: Joi.string().optional().allow(null),
+					streetName: Joi.string().optional().allow(null),
+					locality: Joi.string().optional().allow(null),
+					county: Joi.string().optional().allow(null),
+					countryCode: Joi.string().optional().allow(null),
+					displayName: Joi.string().optional().allow(null),
+				})
+				.optional()
+				.allow(null),
 			description: Joi.string().optional().allow(null),
 			displayName: Joi.string().min(1).optional(),
 			displayTime: Joi.string()
@@ -59,7 +82,7 @@ export const validatePatchRecordRequest: (
 		})
 		// We can't use .min(1) here due to the auth fields being in the body
 		// See: https://github.com/PermanentOrg/stela/issues/407
-		.or("locationId", "description", "displayName", "displayTime")
+		.or("location", "description", "displayName", "displayTime")
 		.unknown(false)
 		.validate(data);
 

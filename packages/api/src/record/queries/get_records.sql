@@ -243,40 +243,38 @@ SELECT DISTINCT ON (record.recordid)
     record.thumbnail256
   ) AS "thumbnailUrls",
   JSON_BUILD_OBJECT(
-    'id',
-    locn.locnid::TEXT,
     'name',
-    locn.name,
+    record.location_displayname,
     'sublocation',
-    locn.sublocation,
+    record.location_sublocation,
     'city',
-    locn.city,
+    record.location_locality,
     'state',
-    locn.adminonename,
+    record.location_adminonename,
     'postalCode',
-    locn.postalcode,
+    record.location_postalcode,
     'country',
-    locn.country,
+    record.location_country,
     'latitude',
-    locn.latitude,
+    record.location_latitude,
     'longitude',
-    locn.longitude,
+    record.location_longitude,
     'altitudeMeters',
-    locn.altitudemeters,
+    record.location_altitudemeters,
     'precision',
-    locn.locationprecision,
+    record.location_locationprecision,
     'streetNumber',
-    locn.streetnumber,
+    record.location_streetnumber,
     'streetName',
-    locn.streetname,
+    record.location_streetname,
     'locality',
-    locn.locality,
+    record.location_locality,
     'county',
-    locn.admintwoname,
+    record.location_admintwoname,
     'countryCode',
-    locn.countrycode,
+    record.location_countrycode,
     'displayName',
-    locn.displayname
+    record.location_displayname
   ) AS location,
   JSON_BUILD_OBJECT(
     'id',
@@ -315,9 +313,6 @@ INNER JOIN
 LEFT JOIN
   aggregated_tags
   ON record.recordid = aggregated_tags.refid
-LEFT JOIN
-  locn
-  ON record.locnid = locn.locnid
 INNER JOIN
   folder_link
   ON

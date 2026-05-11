@@ -8,7 +8,6 @@ export enum AccessRole {
 }
 
 export interface Location {
-	id: string;
 	name?: string;
 	sublocation?: string;
 	city?: string;

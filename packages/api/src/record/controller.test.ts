@@ -26,7 +26,6 @@ const setupDatabase = async (): Promise<void> => {
 	await db.sql("record.fixtures.create_test_accounts");
 	await db.sql("record.fixtures.create_test_archives");
 	await db.sql("record.fixtures.create_test_account_archives");
-	await db.sql("record.fixtures.create_test_locations");
 	await db.sql("record.fixtures.create_test_records");
 	await db.sql("record.fixtures.create_complete_test_record");
 	await db.sql("record.fixtures.create_test_folders");
@@ -117,7 +116,6 @@ describe("GET /records/:recordId", () => {
 			updatedAt: "2023-06-21T00:00:00.000Z",
 			altText: "An image",
 			location: {
-				id: "1",
 				name: "Jean Valjean's House",
 				sublocation: "55 Rue Plumet",
 				city: "Paris",
@@ -719,36 +717,45 @@ describe("PATCH /records", () => {
 		await agent.patch("/api/v2/records/1").expect(400);
 	});
 
-	test("expect location id is updated", async () => {
+	test("expect location is updated", async () => {
 		await agent
 			.patch("/api/v2/records/1")
-			.send({ locationId: 123 })
+			.send({
+				location: {
+					name: "Test Place",
+					city: "Pittsburgh",
+					latitude: 40.44,
+					longitude: -79.99,
+				},
+			})
 			.expect(200);
 
 		const result = await db.query(
-			"SELECT locnid FROM record WHERE recordId = :recordId",
-			{
-				recordId: 1,
-			},
+			"SELECT location_displayname, location_locality, location_latitude, location_longitude " +
+				"FROM record WHERE recordId = :recordId",
+			{ recordId: 1 },
 		);
 
-		expect(result.rows[0]).toEqual({ locnid: "123" });
+		expect(result.rows[0]).toEqual({
+			location_displayname: "Test Place",
+			location_locality: "Pittsburgh",
+			location_latitude: 40.44,
+			location_longitude: -79.99,
+		});
 	});
 
-	test("expect location id is updated when set to null", async () => {
-		await agent
-			.patch("/api/v2/records/8")
-			.send({ locationId: null })
-			.expect(200);
+	test("expect location is cleared when set to null", async () => {
+		await agent.patch("/api/v2/records/8").send({ location: null }).expect(200);
 
 		const result = await db.query(
-			"SELECT locnid FROM record WHERE recordId = :recordId",
-			{
-				recordId: 8,
-			},
+			"SELECT location_displayname, location_latitude FROM record WHERE recordId = :recordId",
+			{ recordId: 8 },
 		);
 
-		expect(result.rows[0]).toStrictEqual({ locnid: null });
+		expect(result.rows[0]).toStrictEqual({
+			location_displayname: null,
+			location_latitude: null,
+		});
 	});
 
 	test("expect description is updated when set to null", async () => {
@@ -767,11 +774,11 @@ describe("PATCH /records", () => {
 		expect(result.rows[0]).toStrictEqual({ description: null });
 	});
 
-	test("expect 400 error if location id is wrong type", async () => {
+	test("expect 400 error if location is wrong type", async () => {
 		await agent
 			.patch("/api/v2/records/1")
 			.send({
-				locationId: false,
+				location: false,
 			})
 			.expect(400);
 	});
@@ -835,7 +842,7 @@ describe("PATCH /records", () => {
 
 		await agent
 			.patch("/api/v2/records/1")
-			.send({ locationId: 123 })
+			.send({ location: { name: "Test" } })
 			.expect(500);
 
 		expect(logger.error).toHaveBeenCalledWith(testError);
@@ -862,8 +869,21 @@ describe("PATCH /records", () => {
 			.calledWith("record.queries.update_record", {
 				recordId: "1",
 				displayName: undefined,
-				locationId: 123,
-				setLocationIdToNull: false,
+				setLocationToNull: false,
+				locationDisplayName: "Test",
+				locationSublocation: null,
+				locationLocality: null,
+				locationAdminOneName: null,
+				locationAdminTwoName: null,
+				locationPostalCode: null,
+				locationCountry: null,
+				locationCountryCode: null,
+				locationStreetNumber: null,
+				locationStreetName: null,
+				locationLatitude: null,
+				locationLongitude: null,
+				locationAltitudeMeters: null,
+				locationLocationPrecision: null,
 				description: undefined,
 				setDescriptionToNull: false,
 				displayTime: undefined,
@@ -873,7 +893,7 @@ describe("PATCH /records", () => {
 
 		await agent
 			.patch("/api/v2/records/1")
-			.send({ locationId: 123 })
+			.send({ location: { name: "Test" } })
 			.expect(500);
 
 		expect(logger.error).toHaveBeenCalledWith(testError);
@@ -886,7 +906,7 @@ describe("PATCH /records", () => {
 		);
 		await agent
 			.patch("/api/v2/records/1")
-			.send({ locationId: 123 })
+			.send({ location: { name: "Test" } })
 			.expect(403);
 	});
 
@@ -897,7 +917,7 @@ describe("PATCH /records", () => {
 		);
 		await agent
 			.patch("/api/v2/records/1")
-			.send({ locationId: 123 })
+			.send({ location: { name: "Test" } })
 			.expect(404);
 	});
 
@@ -921,8 +941,21 @@ describe("PATCH /records", () => {
 			.calledWith("record.queries.update_record", {
 				recordId: "1",
 				displayName: undefined,
-				locationId: 123,
-				setLocationIdToNull: false,
+				setLocationToNull: false,
+				locationDisplayName: "Test",
+				locationSublocation: null,
+				locationLocality: null,
+				locationAdminOneName: null,
+				locationAdminTwoName: null,
+				locationPostalCode: null,
+				locationCountry: null,
+				locationCountryCode: null,
+				locationStreetNumber: null,
+				locationStreetName: null,
+				locationLatitude: null,
+				locationLongitude: null,
+				locationAltitudeMeters: null,
+				locationLocationPrecision: null,
 				description: undefined,
 				setDescriptionToNull: false,
 				displayTime: undefined,
@@ -936,7 +969,7 @@ describe("PATCH /records", () => {
 
 		await agent
 			.patch("/api/v2/records/1")
-			.send({ locationId: 123 })
+			.send({ location: { name: "Test" } })
 			.expect(404);
 	});
 
@@ -981,12 +1014,12 @@ describe("PATCH /records", () => {
 			.send({
 				displayName: "All Fields Name",
 				description: "All fields description",
-				locationId: 456,
+				location: { name: "All Fields Place" },
 			})
 			.expect(200);
 
 		const result = await db.query(
-			"SELECT displayname, description, locnid FROM record WHERE recordId = :recordId",
+			"SELECT displayname, description, location_displayname FROM record WHERE recordId = :recordId",
 			{
 				recordId: 1,
 			},
@@ -995,7 +1028,7 @@ describe("PATCH /records", () => {
 		expect(result.rows[0]).toEqual({
 			displayname: "All Fields Name",
 			description: "All fields description",
-			locnid: "456",
+			location_displayname: "All Fields Place",
 		});
 	});
 

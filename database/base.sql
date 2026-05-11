@@ -867,7 +867,6 @@ CREATE TABLE public.folder (
     description text,
     special text,
     sort text,
-    locnid bigint,
     view text,
     viewproperty text,
     thumbarchivenbr text,
@@ -882,7 +881,32 @@ CREATE TABLE public.folder (
     type text,
     publicdt timestamp with time zone,
     createddt timestamp with time zone,
-    updateddt timestamp with time zone
+    updateddt timestamp with time zone,
+    location_displayname text,
+    location_geocodelookup text,
+    location_streetnumber text,
+    location_streetname text,
+    location_postalcode text,
+    location_locality text,
+    location_adminonename text,
+    location_adminonecode text,
+    location_admintwoname text,
+    location_admintwocode text,
+    location_country text,
+    location_countrycode text,
+    location_geometrytype text,
+    location_latitude double precision,
+    location_longitude double precision,
+    location_boundsouth double precision,
+    location_boundwest double precision,
+    location_boundnorth double precision,
+    location_boundeast double precision,
+    location_geometryasarray text,
+    location_geocodetype text,
+    location_sublocation text,
+    location_altitudemeters double precision,
+    location_locationprecision text CONSTRAINT folder_location_locationprecision_check CHECK (location_locationprecision IS NULL OR location_locationprecision IN ('approximate', 'uncertain', 'unknown')),
+    location_rawmetadata jsonb
 );
 
 
@@ -1637,7 +1661,6 @@ CREATE TABLE public.record (
     derivedenddt timestamp with time zone,
     derivedcreateddt timestamp with time zone,
     timezoneid bigint,
-    locnid bigint,
     view text,
     viewproperty text,
     imageratio numeric(6,2),
@@ -1655,7 +1678,32 @@ CREATE TABLE public.record (
     type text NOT NULL,
     processeddt timestamp with time zone,
     createddt timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    updateddt timestamp with time zone
+    updateddt timestamp with time zone,
+    location_displayname text,
+    location_geocodelookup text,
+    location_streetnumber text,
+    location_streetname text,
+    location_postalcode text,
+    location_locality text,
+    location_adminonename text,
+    location_adminonecode text,
+    location_admintwoname text,
+    location_admintwocode text,
+    location_country text,
+    location_countrycode text,
+    location_geometrytype text,
+    location_latitude double precision,
+    location_longitude double precision,
+    location_boundsouth double precision,
+    location_boundwest double precision,
+    location_boundnorth double precision,
+    location_boundeast double precision,
+    location_geometryasarray text,
+    location_geocodetype text,
+    location_sublocation text,
+    location_altitudemeters double precision,
+    location_locationprecision text CONSTRAINT record_location_locationprecision_check CHECK (location_locationprecision IS NULL OR location_locationprecision IN ('approximate', 'uncertain', 'unknown')),
+    location_rawmetadata jsonb
 );
 
 
@@ -3460,13 +3508,6 @@ CREATE INDEX idx_19281_folder_archiveid ON public.folder USING btree (archiveid)
 
 
 --
--- Name: idx_19281_folder_locnid; Type: INDEX; Schema: public; Owner: postgres
---
-
-CREATE INDEX idx_19281_folder_locnid ON public.folder USING btree (locnid);
-
-
---
 -- Name: idx_19281_folder_timezoneid; Type: INDEX; Schema: public; Owner: postgres
 --
 
@@ -3835,13 +3876,6 @@ CREATE INDEX idx_19402_processeddt ON public.record USING btree (processeddt);
 --
 
 CREATE INDEX idx_19402_publicdt ON public.record USING btree (publicdt);
-
-
---
--- Name: idx_19402_record_locnid; Type: INDEX; Schema: public; Owner: postgres
---
-
-CREATE INDEX idx_19402_record_locnid ON public.record USING btree (locnid);
 
 
 --

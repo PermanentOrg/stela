@@ -113,7 +113,7 @@ export interface ArchiveFile {
 
 export interface PatchRecordRequest {
 	emailFromAuthToken: string;
-	locationId?: bigint | null;
+	location?: Location | null;
 	description?: string | null;
 	displayName?: string;
 	displayTime?: string | null;

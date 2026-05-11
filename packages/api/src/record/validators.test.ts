@@ -7,7 +7,7 @@ describe("validatePatchRecordRequest", () => {
 			validatePatchRecordRequest({
 				emailFromAuthToken: "user@example.com",
 				userSubjectFromAuthToken: "5c3473b6-cf2e-4c55-a80e-8db51d1bc5fd",
-				locationId: 123,
+				location: { name: "Pittsburgh" },
 				description: "description",
 			});
 		} catch (err) {
@@ -22,7 +22,7 @@ describe("validatePatchRecordRequest", () => {
 			validatePatchRecordRequest({
 				emailFromAuthToken: "user@example.com",
 				userSubjectFromAuthToken: "5c3473b6-cf2e-4c55-a80e-8db51d1bc5fd",
-				locationId: 123,
+				location: { name: "Pittsburgh" },
 			});
 		} catch (err) {
 			error = err;
@@ -36,7 +36,7 @@ describe("validatePatchRecordRequest", () => {
 			validatePatchRecordRequest({
 				emailFromAuthToken: "user@example.com",
 				userSubjectFromAuthToken: "5c3473b6-cf2e-4c55-a80e-8db51d1bc5fd",
-				locationId: null,
+				location: null,
 				description: null,
 			});
 		} catch (err) {
@@ -46,13 +46,13 @@ describe("validatePatchRecordRequest", () => {
 		}
 	});
 
-	test("should raise an error if locationId is wrong type", () => {
+	test("should raise an error if location is wrong type", () => {
 		let error = null;
 		try {
 			validatePatchRecordRequest({
 				emailFromAuthToken: "user@example.com",
 				userSubjectFromAuthToken: "5c3473b6-cf2e-4c55-a80e-8db51d1bc5fd",
-				locationId: true,
+				location: true,
 			});
 		} catch (err) {
 			error = err;

@@ -24,8 +24,20 @@ record (
   createddt,
   updateddt,
   alttext,
-  locnid,
-  originalfilecreationtime
+  originalfilecreationtime,
+  location_displayname,
+  location_streetnumber,
+  location_streetname,
+  location_locality,
+  location_admintwoname,
+  location_latitude,
+  location_longitude,
+  location_country,
+  location_countrycode,
+  location_sublocation,
+  location_postalcode,
+  location_altitudemeters,
+  location_locationprecision
 )
 VALUES
 (
@@ -53,6 +65,18 @@ VALUES
   '2023-06-21T00:00:00.000Z',
   '2023-06-21T00:00:00.000Z',
   'An image',
-  1,
-  '1985-04-12T23:20:30Z'
+  '1985-04-12T23:20:30Z',
+  'Jean Valjean''s House',
+  '55',
+  'Rue Plumet',
+  'Paris',
+  'Ile-de-France',
+  48.838608548520966,
+  2.3069214988665303,
+  'France',
+  'FR',
+  '55 Rue Plumet',
+  '75007',
+  35.0,
+  'approximate'
 );

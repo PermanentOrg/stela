@@ -244,40 +244,38 @@ SELECT
       THEN aggregated_pending_shares.pending_shares_as_json
   END AS "pendingShares",
   JSON_BUILD_OBJECT(
-    'id',
-    locn.locnid::text,
     'name',
-    locn.name,
+    folder.location_displayname,
     'sublocation',
-    locn.sublocation,
+    folder.location_sublocation,
     'city',
-    locn.city,
+    folder.location_locality,
     'state',
-    locn.adminonename,
+    folder.location_adminonename,
     'postalCode',
-    locn.postalcode,
+    folder.location_postalcode,
     'country',
-    locn.country,
+    folder.location_country,
     'latitude',
-    locn.latitude,
+    folder.location_latitude,
     'longitude',
-    locn.longitude,
+    folder.location_longitude,
     'altitudeMeters',
-    locn.altitudemeters,
+    folder.location_altitudemeters,
     'precision',
-    locn.locationprecision,
+    folder.location_locationprecision,
     'streetNumber',
-    locn.streetnumber,
+    folder.location_streetnumber,
     'streetName',
-    locn.streetname,
+    folder.location_streetname,
     'locality',
-    locn.locality,
+    folder.location_locality,
     'county',
-    locn.admintwoname,
+    folder.location_admintwoname,
     'countryCode',
-    locn.countrycode,
+    folder.location_countrycode,
     'displayName',
-    locn.displayname
+    folder.location_displayname
   ) AS location,
   JSON_BUILD_OBJECT(
     'id',
@@ -350,10 +348,6 @@ LEFT JOIN
   aggregated_tags
   ON
     folder.folderid = aggregated_tags.refid
-LEFT JOIN
-  locn
-  ON
-    folder.locnid = locn.locnid
 LEFT JOIN
   account_by_share
   ON
