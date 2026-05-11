@@ -272,7 +272,7 @@ describe("/storage/gift", () => {
 		const initialRecipientSpace = await getAccountSpace(recipientOneAccountId);
 		await agent
 			.post("/api/v2/storage/gift")
-			.send({ storageAmount: 1, recipientEmails: ["test+1@permanent.org"] })
+			.send({ storageAmount: 1, recipientEmails: ["Test+1@permanent.org"] })
 			.expect(200);
 		await checkLedgerEntries({
 			gifterAccountId: senderAccountId,
@@ -431,7 +431,7 @@ describe("/storage/gift", () => {
 		await db.sql("storage.fixtures.create_test_emails");
 		await db.sql("storage.fixtures.create_test_invites");
 
-		const newUserEmails = ["test+already_invited@permanent.org"];
+		const newUserEmails = ["Test+Already_Invited@permanent.org"];
 
 		await agent
 			.post("/api/v2/storage/gift")
