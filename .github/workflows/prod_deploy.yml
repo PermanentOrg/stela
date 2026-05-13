@@ -24,6 +24,7 @@ jobs:
       TRIGGER_ARCHIVEMATICA_IMAGE_TAG: ${{ needs.generate_image_tags.outputs.TRIGGER_ARCHIVEMATICA_IMAGE_TAG }}
       METADATA_ATTACHER_LAMBDA_IMAGE_TAG: ${{ needs.generate_image_tags.outputs.METADATA_ATTACHER_LAMBDA_IMAGE_TAG }}
       EVENT_SEND_IMAGE_TAG: ${{ needs.generate_image_tags.outputs.EVENT_SEND_IMAGE_TAG }}
+      FILE_COPIER_LAMBDA_IMAGE_TAG: ${{ needs.generate_image_tags.outputs.FILE_COPIER_LAMBDA_IMAGE_TAG }}
     secrets: inherit
 
   deploy_prod:
@@ -43,6 +44,7 @@ jobs:
       TRIGGER_ARCHIVEMATICA_IMAGE_TAG: ${{ needs.generate_image_tags.outputs.TRIGGER_ARCHIVEMATICA_IMAGE_TAG }}
       METADATA_ATTACHER_LAMBDA_IMAGE_TAG: ${{ needs.generate_image_tags.outputs.METADATA_ATTACHER_LAMBDA_IMAGE_TAG }}
       EVENT_SEND_IMAGE_TAG: ${{ needs.generate_image_tags.outputs.EVENT_SEND_IMAGE_TAG }}
+      FILE_COPIER_LAMBDA_IMAGE_TAG: ${{ needs.generate_image_tags.outputs.FILE_COPIER_LAMBDA_IMAGE_TAG }}
     defaults:
       run:
         working-directory: ./terraform/prod_cluster
@@ -71,7 +73,8 @@ jobs:
           -var="account_space_updater_lambda_image=$ACCOUNT_SPACE_UPDATE_IMAGE_TAG" \
           -var="trigger_archivematica_lambda_image=$TRIGGER_ARCHIVEMATICA_IMAGE_TAG" \
           -var="metadata_attacher_lambda_image=$METADATA_ATTACHER_LAMBDA_IMAGE_TAG" \
-          -var="event_send_image=$EVENT_SEND_IMAGE_TAG"
+          -var="event_send_image=$EVENT_SEND_IMAGE_TAG" \
+          -var="file_copier_lambda_image=$FILE_COPIER_LAMBDA_IMAGE_TAG"
       - name: Terraform Apply
         run: |
           terraform apply -auto-approve -input=false \
@@ -84,4 +87,5 @@ jobs:
           -var="account_space_updater_lambda_image=$ACCOUNT_SPACE_UPDATE_IMAGE_TAG" \
           -var="trigger_archivematica_lambda_image=$TRIGGER_ARCHIVEMATICA_IMAGE_TAG" \
           -var="metadata_attacher_lambda_image=$METADATA_ATTACHER_LAMBDA_IMAGE_TAG" \
-          -var="event_send_image=$EVENT_SEND_IMAGE_TAG"
+          -var="event_send_image=$EVENT_SEND_IMAGE_TAG" \
+          -var="file_copier_lambda_image=$FILE_COPIER_LAMBDA_IMAGE_TAG"

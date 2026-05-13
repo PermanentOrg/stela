@@ -83,6 +83,11 @@ variable "metadata_attacher_lambda_image" {
   type        = string
 }
 
+variable "file_copier_lambda_image" {
+  description = "Tag of file copier lambda image to deploy"
+  type        = string
+}
+
 variable "prod_security_group_id" {
   description = "ID of the Production security group"
   type        = string

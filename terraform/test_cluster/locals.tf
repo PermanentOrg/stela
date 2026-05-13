@@ -4,6 +4,7 @@ locals {
     "account-space-update-dev-lambda",
     "archivematica-cleanup-dev",
     "event-send-dev",
+    "file-copier-dev-lambda",
     "file-url-refresh-dev",
     "metadata-attacher-dev-lambda",
     "record-thumbnail-dev-lambda",
@@ -16,6 +17,7 @@ locals {
     "account-space-update-staging-lambda",
     "archivematica-cleanup-staging",
     "event-send-staging",
+    "file-copier-staging-lambda",
     "file-url-refresh-staging",
     "metadata-attacher-staging-lambda",
     "record-thumbnail-staging-lambda",
@@ -44,6 +46,8 @@ locals {
     account-space-update-staging-lambda  = try(data.aws_lambda_function.account_space_update_staging_lambda[0].image_uri, null)
     access-copy-dev-lambda               = try(data.aws_lambda_function.access_copy_dev_lambda[0].image_uri, null)
     access-copy-staging-lambda           = try(data.aws_lambda_function.access_copy_staging_lambda[0].image_uri, null)
+    file-copier-dev-lambda               = try(data.aws_lambda_function.file_copier_dev_lambda[0].image_uri, null)
+    file-copier-staging-lambda           = try(data.aws_lambda_function.file_copier_staging_lambda[0].image_uri, null)
     metadata-attacher-dev-lambda         = try(data.aws_lambda_function.metadata_attacher_dev_lambda[0].image_uri, null)
     metadata-attacher-staging-lambda     = try(data.aws_lambda_function.metadata_attacher_staging_lambda[0].image_uri, null)
     record-thumbnail-dev-lambda          = try(data.aws_lambda_function.record_thumbnail_dev_lambda[0].image_uri, null)

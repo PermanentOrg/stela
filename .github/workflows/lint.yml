@@ -43,6 +43,7 @@ jobs:
           - package: s3-utils
           - package: thumbnail_refresh
           - package: trigger_archivematica
+          - package: file_copier
     steps:
       - uses: actions/checkout@v6
 

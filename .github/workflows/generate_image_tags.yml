@@ -28,6 +28,8 @@ on:
         value: ${{ jobs.generate_image_tags.outputs.METADATA_ATTACHER_LAMBDA_IMAGE_TAG }}
       EVENT_SEND_IMAGE_TAG:
         value: ${{ jobs.generate_image_tags.outputs.EVENT_SEND_IMAGE_TAG }}
+      FILE_COPIER_LAMBDA_IMAGE_TAG:
+        value: ${{ jobs.generate_image_tags.outputs.FILE_COPIER_LAMBDA_IMAGE_TAG }}
 jobs:
   generate_image_tags:
     runs-on: ubuntu-24.04
@@ -42,6 +44,7 @@ jobs:
       TRIGGER_ARCHIVEMATICA_IMAGE_TAG: ${{ steps.generate_trigger_archivematica_image_tag.outputs.TRIGGER_ARCHIVEMATICA_IMAGE_TAG }}
       METADATA_ATTACHER_LAMBDA_IMAGE_TAG: ${{ steps.generate_metadata_attacher_lambda_image_tag.outputs.METADATA_ATTACHER_LAMBDA_IMAGE_TAG }}
       EVENT_SEND_IMAGE_TAG: ${{ steps.generate_event_send_image_tag.outputs.EVENT_SEND_IMAGE_TAG }}
+      FILE_COPIER_LAMBDA_IMAGE_TAG: ${{ steps.generate_file_copier_lambda_image_tag.outputs.FILE_COPIER_LAMBDA_IMAGE_TAG }}
     steps:
       - uses: actions/checkout@v6
       - name: Set ECR domain env var
@@ -99,3 +102,6 @@ jobs:
       - name: Generate Event Send Image Tag
         id: generate_event_send_image_tag
         run: echo "EVENT_SEND_IMAGE_TAG=$ECR_DOMAIN/stela:event_send-$TAG_SUFFIX-$ABBREVIATED_COMMIT_HASH" >> "$GITHUB_OUTPUT"
+      - name: Generate File Copier Lambda Image Tag
+        id: generate_file_copier_lambda_image_tag
+        run: echo "FILE_COPIER_LAMBDA_IMAGE_TAG=$ECR_DOMAIN/stela:file_copier_lambda-$TAG_SUFFIX-$ABBREVIATED_COMMIT_HASH" >> "$GITHUB_OUTPUT"
