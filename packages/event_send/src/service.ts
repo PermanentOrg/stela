@@ -66,6 +66,7 @@ export const sendEvents = async (): Promise<void> => {
 	const messages = events.rows.map((event) => ({
 		id: event.id,
 		body: JSON.stringify({
+			id: event.id,
 			entity: event.entity,
 			action: event.action,
 			version: event.version,
