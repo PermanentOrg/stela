@@ -62,7 +62,7 @@ describe("leaveArchive", () => {
 
 		expect(accountArchiveBeforeLeaveResult.rows.length).toBe(1);
 
-		await agent.delete("/api/v2/account/archive/1").expect(204);
+		await agent.delete("/api/v2/accounts/archive/1").expect(204);
 
 		const accountArchiveAfterLeaveResult = await db.query(
 			selectAccountArchiveRow,
@@ -72,25 +72,25 @@ describe("leaveArchive", () => {
 	});
 
 	test("should throw 404 error if account archive relationship is not found", async () => {
-		await agent.delete("/api/v2/account/archive/2022").expect(404);
+		await agent.delete("/api/v2/accounts/archive/2022").expect(404);
 	});
 
 	test("should throw 400 error if the account owns the archive", async () => {
-		await agent.delete("/api/v2/account/archive/2").expect(400);
+		await agent.delete("/api/v2/accounts/archive/2").expect(400);
 	});
 
 	test("should log an event", async () => {
 		const eventsBeforeLeave = await db.query(selectEventRow);
 		expect(eventsBeforeLeave.rows.length).toBe(0);
 
-		await agent.delete("/api/v2/account/archive/1").expect(204);
+		await agent.delete("/api/v2/accounts/archive/1").expect(204);
 
 		expect(createEvent).toHaveBeenCalled();
 	});
 
 	test("should return a bad request error if the request is invalid", async () => {
 		mockVerifyUserAuthentication("test+1@permanent.org");
-		await agent.delete("/api/v2/account/archive/1").expect(400);
+		await agent.delete("/api/v2/accounts/archive/1").expect(400);
 	});
 
 	test("should return a 500 error if the deletion database call fails", async () => {
@@ -105,6 +105,6 @@ describe("leaveArchive", () => {
 					rows: [],
 				}),
 			);
-		await agent.delete("/api/v2/account/archive/1").expect(500);
+		await agent.delete("/api/v2/accounts/archive/1").expect(500);
 	});
 });

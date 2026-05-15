@@ -59,7 +59,7 @@ describe("/account/storage-adjustments", () => {
 	});
 
 	test("should call verifyAdminAuthentication", async () => {
-		await agent.post(`/api/v2/account/${testAccountId}/storage-adjustments`);
+		await agent.post(`/api/v2/accounts/${testAccountId}/storage-adjustments`);
 		expect(verifyAdminAuthentication).toHaveBeenCalled();
 	});
 
@@ -69,7 +69,7 @@ describe("/account/storage-adjustments", () => {
 			"13bb917e-7c75-4971-a8ee-b22e82432888",
 		);
 		await agent
-			.post(`/api/v2/account/${testAccountId}/storage-adjustments`)
+			.post(`/api/v2/accounts/${testAccountId}/storage-adjustments`)
 			.expect(400);
 	});
 
@@ -79,34 +79,34 @@ describe("/account/storage-adjustments", () => {
 			"13bb917e-7c75-4971-a8ee-b22e82432888",
 		);
 		await agent
-			.post(`/api/v2/account/${testAccountId}/storage-adjustments`)
+			.post(`/api/v2/accounts/${testAccountId}/storage-adjustments`)
 			.expect(400);
 	});
 
 	test("should return invalid request status if subject from auth token is missing", async () => {
 		mockVerifyAdminAuthentication("admin@permanent.org");
 		await agent
-			.post(`/api/v2/account/${testAccountId}/storage-adjustments`)
+			.post(`/api/v2/accounts/${testAccountId}/storage-adjustments`)
 			.expect(400);
 	});
 
 	test("should return invalid request status if subject from auth token is not a uuid", async () => {
 		mockVerifyAdminAuthentication("admin@permanent.org", "not_a_uuid");
 		await agent
-			.post(`/api/v2/account/${testAccountId}/storage-adjustments`)
+			.post(`/api/v2/accounts/${testAccountId}/storage-adjustments`)
 			.expect(400);
 	});
 
 	test("should return invalid request status if storageAmount is missing", async () => {
 		await agent
-			.post(`/api/v2/account/${testAccountId}/storage-adjustments`)
+			.post(`/api/v2/accounts/${testAccountId}/storage-adjustments`)
 			.send({})
 			.expect(400);
 	});
 
 	test("should return invalid request status if storageAmount is not a number", async () => {
 		await agent
-			.post(`/api/v2/account/${testAccountId}/storage-adjustments`)
+			.post(`/api/v2/accounts/${testAccountId}/storage-adjustments`)
 			.send({
 				storageAmount: "not_a_number",
 			})
@@ -115,14 +115,14 @@ describe("/account/storage-adjustments", () => {
 
 	test("should return invalid request status if storageAmount is not an integer", async () => {
 		await agent
-			.post(`/api/v2/account/${testAccountId}/storage-adjustments`)
+			.post(`/api/v2/accounts/${testAccountId}/storage-adjustments`)
 			.send({ storageAmount: 5.5 })
 			.expect(400);
 	});
 
 	test("should return 404 if account does not exist", async () => {
 		await agent
-			.post(`/api/v2/account/10000000/storage-adjustments`)
+			.post(`/api/v2/accounts/10000000/storage-adjustments`)
 			.send({ storageAmount: 5 })
 			.expect(404);
 	});
@@ -131,7 +131,7 @@ describe("/account/storage-adjustments", () => {
 		const initialAccountSpace = await getAccountSpace(testAccountId);
 
 		const response = await agent
-			.post(`/api/v2/account/${testAccountId}/storage-adjustments`)
+			.post(`/api/v2/accounts/${testAccountId}/storage-adjustments`)
 			.send({ storageAmount: 5 })
 			.expect(200);
 
@@ -156,7 +156,7 @@ describe("/account/storage-adjustments", () => {
 		const initialAccountSpace = await getAccountSpace(testAccountId);
 
 		const response = await agent
-			.post(`/api/v2/account/${testAccountId}/storage-adjustments`)
+			.post(`/api/v2/accounts/${testAccountId}/storage-adjustments`)
 			.send({ storageAmount: -1 })
 			.expect(200);
 
@@ -181,7 +181,7 @@ describe("/account/storage-adjustments", () => {
 		const initialAccountSpace = await getAccountSpace(testAccountId);
 
 		const response = await agent
-			.post(`/api/v2/account/${testAccountId}/storage-adjustments`)
+			.post(`/api/v2/accounts/${testAccountId}/storage-adjustments`)
 			.send({ storageAmount: 3 })
 			.expect(200);
 
@@ -203,7 +203,7 @@ describe("/account/storage-adjustments", () => {
 		const initialAccountSpace = await getAccountSpace(testAccountId);
 
 		await agent
-			.post(`/api/v2/account/${testAccountId}/storage-adjustments`)
+			.post(`/api/v2/accounts/${testAccountId}/storage-adjustments`)
 			.send({ storageAmount: 5 })
 			.expect(200);
 
@@ -284,7 +284,7 @@ describe("/account/storage-adjustments", () => {
 			.mockRejectedValueOnce(testError);
 
 		await agent
-			.post(`/api/v2/account/${testAccountId}/storage-adjustments`)
+			.post(`/api/v2/accounts/${testAccountId}/storage-adjustments`)
 			.send({ storageAmount: 5 })
 			.expect(500);
 
@@ -293,7 +293,7 @@ describe("/account/storage-adjustments", () => {
 
 	test("should handle zero storage adjustment", async () => {
 		await agent
-			.post(`/api/v2/account/${testAccountId}/storage-adjustments`)
+			.post(`/api/v2/accounts/${testAccountId}/storage-adjustments`)
 			.send({ storageAmount: 0 })
 			.expect(400);
 	});

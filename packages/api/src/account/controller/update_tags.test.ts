@@ -46,7 +46,7 @@ describe("updateTags", () => {
 			.mocked(MailchimpMarketing.lists.updateListMemberTags)
 			.mockResolvedValue(null);
 
-		await agent.put("/api/v2/account/tags").send(requestBody).expect(200);
+		await agent.put("/api/v2/accounts/tags").send(requestBody).expect(200);
 
 		expect(MailchimpMarketing.lists.updateListMemberTags).toHaveBeenCalledWith(
 			expectedListId,
@@ -66,7 +66,7 @@ describe("updateTags", () => {
 				instance: "",
 			});
 		await agent
-			.put("/api/v2/account/tags")
+			.put("/api/v2/accounts/tags")
 			.send({
 				emailFromAuthToken: "test@permanent.org",
 				addTags: ["tag1", "tag2"],
@@ -77,7 +77,7 @@ describe("updateTags", () => {
 
 	test("should throw a bad request error if the request body is invalid", async () => {
 		await agent
-			.put("/api/v2/account/tags")
+			.put("/api/v2/accounts/tags")
 			.send({
 				emailFromAuthToken: "test@permanent.org",
 				addTags: [1, 2, 4],

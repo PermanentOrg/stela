@@ -19,7 +19,8 @@ const apiRoutes = express.Router();
 apiRoutes.get("/health", healthController.getHealth);
 apiRoutes.use("/directive", directiveController);
 apiRoutes.use("/legacy-contact", legacyContactController);
-apiRoutes.use("/account", accountController);
+apiRoutes.use("/accounts", accountController);
+apiRoutes.use("/account", accountController); // Deprecated path maintained to avoid breaking changes
 apiRoutes.use("/archives", archiveController);
 apiRoutes.use("/archive", archiveController); // Deprecated path maintained to avoid breaking changes
 apiRoutes.use("/admin", adminController);
