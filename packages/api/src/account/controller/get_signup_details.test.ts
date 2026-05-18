@@ -33,7 +33,7 @@ describe("getSignupDetails", () => {
 	});
 
 	test("should return an account's signup details", async () => {
-		const response = await agent.get("/api/v2/account/signup").expect(200);
+		const response = await agent.get("/api/v2/accounts/signup").expect(200);
 		const { body: signupDetails } = response as { body: SignupDetails };
 		expect(signupDetails.token).toEqual("earlyb1rd");
 	});
@@ -43,7 +43,7 @@ describe("getSignupDetails", () => {
 			"not_an_account@permanent.org",
 			"b5461dc2-1eb0-450e-b710-fef7b2cafe1e",
 		);
-		await agent.get("/api/v2/account/signup").expect(404);
+		await agent.get("/api/v2/accounts/signup").expect(404);
 	});
 
 	test("should throw an error if the account has no signup details", async () => {
@@ -51,7 +51,7 @@ describe("getSignupDetails", () => {
 			"test+1@permanent.org",
 			"b5461dc2-1eb0-450e-b710-fef7b2cafe1e",
 		);
-		await agent.get("/api/v2/account/signup").expect(404);
+		await agent.get("/api/v2/accounts/signup").expect(404);
 	});
 
 	test("should throw an error if database call fails unexpectedly", async () => {
@@ -62,12 +62,12 @@ describe("getSignupDetails", () => {
 					.fn()
 					.mockRejectedValueOnce(new Error("out of cheese - redo from start")),
 			);
-		await agent.get("/api/v2/account/signup").expect(500);
+		await agent.get("/api/v2/accounts/signup").expect(500);
 		expect(logger.error).toHaveBeenCalled();
 	});
 
 	test("should return a bad request error if the request is invalid", async () => {
 		mockVerifyUserAuthentication("test+1@permanent.org");
-		await agent.get("/api/v2/account/signup").expect(400);
+		await agent.get("/api/v2/accounts/signup").expect(400);
 	});
 });
