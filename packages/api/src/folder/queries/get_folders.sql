@@ -76,7 +76,7 @@ aggregated_pending_shares AS (
   SELECT
     invite_share.folder_linkid,
     ARRAY_AGG(JSONB_BUILD_OBJECT(
-      'id', invite_share.invite_shareid::text,
+      'id', invite.inviteid::text,
       'email', invite.email,
       'name', invite.fullname,
       'accessRole', invite_share.accessrole
