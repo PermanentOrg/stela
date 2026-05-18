@@ -14,7 +14,7 @@ record (
 )
 VALUES
 (
-  1,
+  10001,
   1,
   '0000-0001',
   '2023-06-21',
@@ -27,7 +27,7 @@ VALUES
   'type.record.image'
 ),
 (
-  2,
+  10002,
   1,
   NULL,
   NULL,
@@ -40,7 +40,7 @@ VALUES
   'type.record.image'
 ),
 (
-  3,
+  10003,
   1,
   NULL,
   CURRENT_TIMESTAMP + '1 day'::interval,
@@ -53,7 +53,7 @@ VALUES
   'type.record.image'
 ),
 (
-  4,
+  10004,
   1,
   NULL,
   '2023-06-21',
@@ -66,7 +66,7 @@ VALUES
   'type.record.image'
 ),
 (
-  5,
+  10005,
   2,
   NULL,
   '2023-06-21',
@@ -79,7 +79,7 @@ VALUES
   'type.record.image'
 ),
 (
-  6,
+  10006,
   2,
   NULL,
   NULL,
@@ -92,7 +92,7 @@ VALUES
   'type.record.image'
 ),
 (
-  7,
+  10007,
   2,
   NULL,
   NULL,
@@ -105,7 +105,7 @@ VALUES
   'type.record.image'
 ),
 (
-  9,
+  10009,
   1,
   NULL,
   NULL,
@@ -118,7 +118,7 @@ VALUES
   'type.record.image'
 ),
 (
-  10,
+  10010,
   4,
   NULL,
   NULL,
@@ -131,7 +131,7 @@ VALUES
   'type.record.image'
 ),
 (
-  11,
+  10011,
   3,
   NULL,
   NULL,
@@ -144,7 +144,7 @@ VALUES
   'type.record.image'
 ),
 (
-  12,
+  10012,
   1,
   NULL,
   NULL,
@@ -157,7 +157,7 @@ VALUES
   'type.record.image'
 ),
 (
-  13,
+  10013,
   2,
   NULL,
   NULL,
@@ -170,7 +170,7 @@ VALUES
   'type.record.image'
 ),
 (
-  14,
+  10014,
   1,
   NULL,
   NULL,

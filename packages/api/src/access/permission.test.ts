@@ -1,5 +1,6 @@
 import createError from "http-errors";
 import {
+	getArchiveAccessRole,
 	getRecordAccessRole,
 	getFolderAccessRole,
 	isItemPublic,
@@ -24,6 +25,70 @@ const clearDatabase = async (): Promise<void> => {
 		"TRUNCATE account, archive, account_archive, record, folder, access, folder_link CASCADE",
 	);
 };
+
+describe("getArchiveAccessRole", () => {
+	beforeEach(async () => {
+		await clearDatabase();
+		await loadFixtures();
+	});
+
+	afterEach(async () => {
+		jest.restoreAllMocks();
+		await clearDatabase();
+	});
+
+	test("should get access role from account_archive", async () => {
+		const accessRole = await getArchiveAccessRole("1", "test@permanent.org");
+		expect(accessRole).toEqual(AccessRole.Owner);
+	});
+
+	test("should throw a not found error if account has no membership in the archive", async () => {
+		let error = null;
+		try {
+			await getArchiveAccessRole("2", "test@permanent.org");
+		} catch (err) {
+			error = err;
+		} finally {
+			expect(error).toEqual(createError.NotFound());
+		}
+	});
+
+	test("should ignore deleted account_archives", async () => {
+		let error = null;
+		try {
+			await getArchiveAccessRole("4", "test@permanent.org");
+		} catch (err) {
+			error = err;
+		} finally {
+			expect(error).toEqual(createError.NotFound());
+		}
+	});
+
+	test("should ignore deleted accounts", async () => {
+		let error = null;
+		try {
+			await getArchiveAccessRole("1", "test+2@permanent.org");
+		} catch (err) {
+			error = err;
+		} finally {
+			expect(error).toEqual(createError.NotFound());
+		}
+	});
+
+	test("should throw internal server error if the database call fails", async () => {
+		jest.spyOn(db, "sql").mockRejectedValue(new Error("Test error"));
+		let error = null;
+		try {
+			await getArchiveAccessRole("1", "test@permanent.org");
+		} catch (err) {
+			error = err;
+		} finally {
+			expect(error).toEqual(
+				createError.InternalServerError("Failed to access database"),
+			);
+		}
+	});
+});
 
 describe("getRecordAccessRole", () => {
 	beforeEach(async () => {

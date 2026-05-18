@@ -12,7 +12,7 @@ shareby_url (
 )
 VALUES (
   1,
-  3,
+  10003,
   '2849c711-e72e-41b5-bb49-b0b86a052668',
   'https://local.permanent.org/share/2849c711-e72e-41b5-bb49-b0b86a052668',
   2,
@@ -23,7 +23,7 @@ VALUES (
 ),
 (
   2,
-  3,
+  10003,
   '17e86544-30b3-4039-9f50-56681bcf3085',
   'https://local.permanent.org/share/17e86544-30b3-4039-9f50-56681bcf3085',
   2,
@@ -34,7 +34,7 @@ VALUES (
 ),
 (
   3,
-  3,
+  10003,
   '1753eb10-ca46-4964-890b-0d4cdca1a783',
   'https://local.permanent.org/share/1753eb10-ca46-4964-890b-0d4cdca1a783',
   2,
@@ -45,7 +45,7 @@ VALUES (
 ),
 (
   4,
-  16,
+  10016,
   '5b23ec69-3e37-4b83-9147-acf55d4654b5',
   'https://local.permanent.org/share/5b23ec69-3e37-4b83-9147-acf55d4654b5',
   2,
@@ -56,7 +56,7 @@ VALUES (
 ),
 (
   5,
-  16,
+  10016,
   '85018ca8-881e-4cb7-9a22-24f3e015f797',
   'https://local.permanent.org/share/85018ca8-881e-4cb7-9a22-24f3e015f797',
   2,
@@ -67,7 +67,7 @@ VALUES (
 ),
 (
   6,
-  16,
+  10016,
   'fbff79db-3814-4a1e-86be-ae1326cd56a3',
   'https://local.permanent.org/share/fbff79db-3814-4a1e-86be-ae1326cd56a3',
   2,
@@ -78,7 +78,7 @@ VALUES (
 ),
 (
   7,
-  1,
+  10001,
   '87d6eb1b-9086-40be-9f12-894ec4bdd862',
   'https://local.permanent.org/share/87d6eb1b-9086-40be-9f12-894ec4bdd862',
   3,

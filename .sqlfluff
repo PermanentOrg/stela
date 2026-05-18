@@ -2,6 +2,7 @@
 dialect = postgres
 ignore = templating
 templater = placeholder
+exclude_rules = ST03
 
 [sqlfluff:indentation]
 tab_space_size = 2
@@ -13,7 +14,7 @@ param_style = colon
 spacing_within = touch:inline
 
 [sqlfluff:rules:references.keywords]
-ignore_words = name, owner, type, trigger, shares, location
+ignore_words = name, owner, type, trigger, shares, location, action, version, position
 
 [sqlfluff:rules:capitalisation.functions]
 extended_capitalisation_policy = upper

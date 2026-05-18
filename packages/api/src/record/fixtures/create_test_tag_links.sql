@@ -3,7 +3,7 @@ tag_link (tagid, refid, reftable, status, type, createddt, updateddt)
 VALUES
 (
   1,
-  1,
+  10001,
   'record',
   'status.generic.ok',
   'type.generic.placeholder',
@@ -12,7 +12,7 @@ VALUES
 ),
 (
   2,
-  2,
+  10002,
   'record',
   'status.generic.ok',
   'type.generic.placeholder',
@@ -21,7 +21,7 @@ VALUES
 ),
 (
   3,
-  3,
+  10003,
   'record',
   'status.generic.ok',
   'type.generic.placeholder',
@@ -30,7 +30,7 @@ VALUES
 ),
 (
   4,
-  4,
+  10004,
   'record',
   'status.generic.ok',
   'type.generic.placeholder',
@@ -39,7 +39,7 @@ VALUES
 ),
 (
   5,
-  1,
+  10001,
   'record',
   'status.generic.ok',
   'type.generic.placeholder',
@@ -48,7 +48,7 @@ VALUES
 ),
 (
   6,
-  1,
+  10001,
   'record',
   'status.generic.deleted',
   'type.generic.placeholder',
@@ -57,7 +57,7 @@ VALUES
 ),
 (
   7,
-  5,
+  10005,
   'record',
   'status.generic.ok',
   'type.generic.placeholder',
@@ -111,7 +111,7 @@ VALUES
 ),
 (
   14,
-  8,
+  10008,
   'record',
   'status.generic.ok',
   'type.generic.placeholder',
@@ -120,7 +120,7 @@ VALUES
 ),
 (
   15,
-  8,
+  10008,
   'record',
   'status.generic.ok',
   'type.generic.placeholder',
@@ -129,7 +129,7 @@ VALUES
 ),
 (
   16,
-  8,
+  10008,
   'record',
   'status.generic.ok',
   'type.generic.placeholder',
@@ -138,7 +138,7 @@ VALUES
 ),
 (
   5,
-  8,
+  10008,
   'record',
   'status.generic.ok',
   'type.generic.placeholder',
@@ -147,7 +147,7 @@ VALUES
 ),
 (
   2,
-  8,
+  10008,
   'record',
   'status.generic.deleted',
   'type.generic.placeholder',

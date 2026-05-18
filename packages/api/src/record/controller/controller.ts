@@ -8,17 +8,24 @@ import {
 	extractShareTokenFromHeaders,
 	extractUserEmailFromAuthToken,
 	verifyUserAuthentication,
-} from "../middleware";
-import { getRecords, patchRecord, getRecordShareLinks } from "./service";
+	extractIp,
+} from "../../middleware";
+import {
+	getRecords,
+	patchRecord,
+	getRecordShareLinks,
+	createRecordCopy,
+} from "../service";
 import {
 	validateGetRecordQuery,
 	validatePatchRecordRequest,
 	validateSingleRecordParams,
-} from "./validators";
+	validateCreateRecordCopyRequest,
+} from "../validators";
 import {
 	validateBodyFromAuthentication,
 	validateOptionalAuthenticationValues,
-} from "../validators/shared";
+} from "../../validators/shared";
 import { HTTP_STATUS } from "@pdc/http-status-codes";
 
 export const recordController = Router();
@@ -98,6 +105,26 @@ recordController.get(
 				req.params.recordId,
 			);
 			res.status(HTTP_STATUS.SUCCESSFUL.OK).send({ items: shareLinks });
+		} catch (err) {
+			next(err);
+		}
+	},
+);
+
+recordController.post(
+	"/:recordId/copies",
+	verifyUserAuthentication,
+	extractIp,
+	async (req: Request, res: Response, next: NextFunction) => {
+		try {
+			validateSingleRecordParams(req.params);
+			validateCreateRecordCopyRequest(req.body);
+			const record = await createRecordCopy(
+				req.params.recordId,
+				req.body,
+				req.headers["user-agent"],
+			);
+			res.status(HTTP_STATUS.SUCCESSFUL.OK).send({ data: record });
 		} catch (err) {
 			next(err);
 		}

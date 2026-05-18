@@ -7,7 +7,7 @@ INSERT INTO access (
   createddt,
   updateddt
 ) VALUES (
-  1,
+  10001,
   1,
   'access.role.viewer',
   'status.generic.ok',
@@ -16,7 +16,7 @@ INSERT INTO access (
   CURRENT_TIMESTAMP
 ),
 (
-  14,
+  10014,
   1,
   'access.role.viewer',
   'status.generic.deleted',
@@ -25,7 +25,7 @@ INSERT INTO access (
   CURRENT_TIMESTAMP
 ),
 (
-  3,
+  10003,
   4,
   'access.role.viewer',
   'status.generic.ok',

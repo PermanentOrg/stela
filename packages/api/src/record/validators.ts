@@ -1,6 +1,6 @@
 import Joi from "joi";
 import { parse as parseEDTF } from "@edtf-ts/core";
-import type { PatchRecordRequest } from "./models";
+import type { CreateRecordCopyRequest, PatchRecordRequest } from "./models";
 import { fieldsFromUserAuthentication } from "../validators";
 
 export const validateGetRecordQuery: (
@@ -63,6 +63,24 @@ export const validatePatchRecordRequest: (
 		.unknown(false)
 		.validate(data);
 
+	if (validation.error !== undefined) {
+		throw validation.error;
+	}
+};
+
+export const validateCreateRecordCopyRequest: (
+	data: unknown,
+) => asserts data is CreateRecordCopyRequest = (
+	data: unknown,
+): asserts data is CreateRecordCopyRequest => {
+	const validation = Joi.object()
+		.keys({
+			...fieldsFromUserAuthentication,
+			destinationFolderId: Joi.string().required(),
+			ip: Joi.string().required(),
+		})
+		.unknown(false)
+		.validate(data);
 	if (validation.error !== undefined) {
 		throw validation.error;
 	}

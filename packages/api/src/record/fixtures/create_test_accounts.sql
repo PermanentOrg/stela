@@ -16,7 +16,7 @@ VALUES
   '{}',
   'type.account.standard',
   'Jack Rando',
-  null
+  'b5461dc2-1eb0-450e-b710-fef7b2cafe1e'
 ),
 (
   3,

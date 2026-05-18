@@ -143,4 +143,76 @@ VALUES
   CURRENT_TIMESTAMP,
   'type.folder.root.private',
   'https://test-folder-thumbnail'
+),
+(
+  20,
+  2,
+  NULL,
+  'Copy Test Folder',
+  'Copy Test Folder',
+  NULL,
+  'status.generic.ok',
+  CURRENT_TIMESTAMP,
+  'type.folder.private',
+  NULL
+),
+(
+  30,
+  1,
+  NULL,
+  'App Folder',
+  'App Folder',
+  NULL,
+  'status.generic.ok',
+  CURRENT_TIMESTAMP,
+  'type.folder.app',
+  NULL
+),
+(
+  31,
+  1,
+  NULL,
+  'Private Root Folder',
+  'Private Root Folder',
+  NULL,
+  'status.generic.ok',
+  CURRENT_TIMESTAMP,
+  'type.folder.root.private',
+  NULL
+),
+(
+  32,
+  1,
+  NULL,
+  'App Root Folder',
+  'App Root Folder',
+  NULL,
+  'status.generic.ok',
+  CURRENT_TIMESTAMP,
+  'type.folder.root.app',
+  NULL
+),
+(
+  33,
+  1,
+  '2023-06-21',
+  'Public Root Folder',
+  'Public Root Folder',
+  NULL,
+  'status.generic.ok',
+  CURRENT_TIMESTAMP,
+  'type.folder.root.public',
+  NULL
+),
+(
+  34,
+  5,
+  '2023-06-21',
+  'Private Root Folder',
+  'Private Root Folder',
+  NULL,
+  'status.generic.ok',
+  CURRENT_TIMESTAMP,
+  'type.folder.root.private',
+  NULL
 );

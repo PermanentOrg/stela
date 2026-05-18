@@ -56,6 +56,8 @@ paths:
     $ref: "./paths/record.yaml#/records~1{id}"
   /records/{id}/share-links:
     $ref: "./paths/record.yaml#/records-id-share-links"
+  /records/{id}/copies:
+    $ref: "./paths/record.yaml#/records-id-copies"
   /folders:
     $ref: "./paths/folder.yaml#/folders"
   /folder/{id}:
