@@ -41,6 +41,57 @@ account:
         $ref: "../errors.yaml#/400"
       "500":
         $ref: "../errors.yaml#/500"
+  get:
+    summary: Get account objects. Requires admin authentication.
+    parameters:
+      - name: accountIds
+        in: query
+        required: false
+        description: |
+          An array of account IDs to retrieve.
+          If this parameter is provided, accountEmails must not be provided
+        schema:
+          type: array
+          items:
+            type: string
+      - name: accountEmails
+        in: query
+        required: false
+        description: |
+          An array of account emails to retrieve.
+          If this parameter is provided, accountIds must not be provided
+        schema:
+          type: array
+          items:
+            type: string
+    operationId: getAccount
+    security:
+      - bearerHttpAuthentication: []
+    tags:
+      - accounts
+      - admin
+    responses:
+      "200":
+        description: >
+          The accounts requested.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                items:
+                  type: array
+                  items:
+                    $ref: "../models/account.yaml#/account"
+                pagination:
+                  $ref: "../models/pagination_metadata.yaml#/pagination"
+      "400":
+        $ref: "../errors.yaml#/400"
+      "401":
+        $ref: "../errors.yaml#/401"
+      "500":
+        $ref: "../errors.yaml#/500"
+
 storage-adjustment:
   post:
     parameters:

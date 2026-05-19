@@ -10,15 +10,35 @@ import {
 import {
 	validateUpdateTagsRequest,
 	validateBodyFromAuthentication,
+	validateBodyFromAdminAuthentication,
 	validateLeaveArchiveParams,
 	validateLeaveArchiveRequest,
 	validateCreateStorageAdjustmentRequest,
 	validateCreateStorageAdjustmentParams,
+	validateGetAccountsQuery,
 } from "../validators";
-import { accountService, createStorageAdjustment } from "../service";
+import {
+	accountService,
+	createStorageAdjustment,
+	getAccounts,
+} from "../service";
 import type { LeaveArchiveRequest } from "../models";
 
 export const accountController = Router();
+accountController.get(
+	"/",
+	verifyAdminAuthentication,
+	async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+		try {
+			validateBodyFromAdminAuthentication(req.body);
+			validateGetAccountsQuery(req.query);
+			const result = await getAccounts(req.query);
+			res.status(HTTP_STATUS.SUCCESSFUL.OK).json(result);
+		} catch (err) {
+			next(err);
+		}
+	},
+);
 accountController.put(
 	"/tags",
 	verifyUserAuthentication,
