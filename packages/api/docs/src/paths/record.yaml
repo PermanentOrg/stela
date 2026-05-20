@@ -104,6 +104,12 @@ records/{id}:
                 type: string
               locationId:
                 type: integer
+                deprecated: true
+                description: |
+                  Deprecated. Prefer `location` instead, which lets clients send
+                  nested location data without managing location IDs directly.
+              location:
+                $ref: "../models/location.yaml#/locationInput"
               description:
                 type: string
               displayTime:

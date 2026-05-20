@@ -44,3 +44,37 @@ location:
     displayName:
       type: string
       deprecated: true
+locationInput:
+  description: |
+    Geographic location data for an item (folder or record). Sent without an id;
+    the server creates a new location row if the item has none, or updates the
+    existing one if it does. At least one field must be provided.
+  type: object
+  minProperties: 1
+  additionalProperties: false
+  properties:
+    name:
+      type: string
+    sublocation:
+      type: string
+    city:
+      type: string
+    state:
+      type: string
+    postalCode:
+      type: string
+    country:
+      type: string
+    latitude:
+      type: number
+      minimum: -90
+      maximum: 90
+    longitude:
+      type: number
+      minimum: -180
+      maximum: 180
+    altitudeMeters:
+      type: number
+    precision:
+      type: string
+      enum: [approximate, uncertain, unknown]

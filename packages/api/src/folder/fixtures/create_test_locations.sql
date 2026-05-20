@@ -37,3 +37,8 @@ INSERT INTO locn (
   'status.generic.ok',
   'type.account.standard'
 );
+
+SELECT SETVAL(
+  'locn_locnid_seq',
+  (SELECT COALESCE(MAX(locnid), 1) FROM locn)
+);

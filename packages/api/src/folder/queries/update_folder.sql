@@ -13,6 +13,7 @@ SET
     WHEN :setDisplayTimeToNull THEN NULL
     ELSE COALESCE(:displayTime, displaytime)
   END,
+  locnid = COALESCE(:locationId::bigint, locnid),
   updateddt = CURRENT_TIMESTAMP
 WHERE
   folderid = :folderId

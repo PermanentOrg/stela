@@ -2,6 +2,7 @@ import Joi from "joi";
 import { parse as parseEDTF } from "@edtf-ts/core";
 import type { CreateRecordCopyRequest, PatchRecordRequest } from "./models";
 import { fieldsFromUserAuthentication } from "../validators";
+import { locationInputSchema } from "../location/validators";
 
 export const validateGetRecordQuery: (
 	data: unknown,
@@ -43,6 +44,7 @@ export const validatePatchRecordRequest: (
 		.keys({
 			...fieldsFromUserAuthentication,
 			locationId: Joi.number().integer().optional().allow(null),
+			location: locationInputSchema.optional(),
 			description: Joi.string().optional().allow(null),
 			displayName: Joi.string().min(1).optional(),
 			displayTime: Joi.string()
@@ -59,7 +61,8 @@ export const validatePatchRecordRequest: (
 		})
 		// We can't use .min(1) here due to the auth fields being in the body
 		// See: https://github.com/PermanentOrg/stela/issues/407
-		.or("locationId", "description", "displayName", "displayTime")
+		.or("locationId", "location", "description", "displayName", "displayTime")
+		.oxor("locationId", "location")
 		.unknown(false)
 		.validate(data);
 

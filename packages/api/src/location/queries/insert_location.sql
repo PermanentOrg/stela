@@ -1,0 +1,39 @@
+INSERT INTO locn (
+  name,
+  sublocation,
+  city,
+  adminonename,
+  postalcode,
+  country,
+  latitude,
+  longitude,
+  altitudemeters,
+  locationprecision,
+  streetnumber,
+  streetname,
+  locality,
+  status,
+  type,
+  createddt,
+  updateddt
+)
+VALUES (
+  :name,
+  :sublocation,
+  :city,
+  :state,
+  :postalCode,
+  :country,
+  :latitude,
+  :longitude,
+  :altitudeMeters,
+  :precision,
+  :streetNumber,
+  :streetName,
+  :locality,
+  'status.generic.ok',
+  'type.generic.placeholder',
+  CURRENT_TIMESTAMP,
+  CURRENT_TIMESTAMP
+)
+RETURNING locnid::text AS "locationId";

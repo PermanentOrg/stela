@@ -102,13 +102,13 @@ describe("PATCH /records", () => {
 			.expect(200);
 
 		const result = await db.query(
-			"SELECT locnid FROM record WHERE recordId = :recordId",
+			`SELECT locnid AS "locationId" FROM record WHERE recordId = :recordId`,
 			{
 				recordId: 10001,
 			},
 		);
 
-		expect(result.rows[0]).toEqual({ locnid: "123" });
+		expect(result.rows[0]).toEqual({ locationId: "123" });
 	});
 
 	test("expect location id is updated when set to null", async () => {
@@ -118,13 +118,13 @@ describe("PATCH /records", () => {
 			.expect(200);
 
 		const result = await db.query(
-			"SELECT locnid FROM record WHERE recordId = :recordId",
+			`SELECT locnid AS "locationId" FROM record WHERE recordId = :recordId`,
 			{
 				recordId: 10008,
 			},
 		);
 
-		expect(result.rows[0]).toStrictEqual({ locnid: null });
+		expect(result.rows[0]).toStrictEqual({ locationId: null });
 	});
 
 	test("expect description is updated when set to null", async () => {
@@ -375,7 +375,7 @@ describe("PATCH /records", () => {
 			.expect(200);
 
 		const result = await db.query(
-			"SELECT displayname, description, locnid FROM record WHERE recordId = :recordId",
+			`SELECT displayname, description, locnid AS "locationId" FROM record WHERE recordId = :recordId`,
 			{
 				recordId: 10001,
 			},
@@ -384,7 +384,7 @@ describe("PATCH /records", () => {
 		expect(result.rows[0]).toEqual({
 			displayname: "All Fields Name",
 			description: "All fields description",
-			locnid: "456",
+			locationId: "456",
 		});
 	});
 
@@ -413,5 +413,140 @@ describe("PATCH /records", () => {
 				displayName: false,
 			})
 			.expect(400);
+	});
+
+	test("expect a nested location to update the existing location row", async () => {
+		await agent
+			.patch("/api/v2/records/10008")
+			.send({
+				location: {
+					name: "New Place",
+					city: "Lyon",
+					country: "France",
+					latitude: 45.764,
+					longitude: 4.8357,
+					precision: "approximate",
+				},
+			})
+			.expect(200);
+
+		const recordResult = await db.query(
+			`SELECT locnid AS "locationId" FROM record WHERE recordid = :recordId`,
+			{ recordId: 10008 },
+		);
+		expect(recordResult.rows[0]).toEqual({ locationId: "1" });
+
+		const locationResult = await db.query(
+			"SELECT name, city, country, latitude, longitude, locationprecision FROM locn WHERE locnid = 1",
+		);
+		expect(locationResult.rows[0]).toEqual({
+			name: "New Place",
+			city: "Lyon",
+			country: "France",
+			latitude: 45.764,
+			longitude: 4.8357,
+			locationprecision: "approximate",
+		});
+	});
+
+	test("expect a nested location partial update to preserve untouched fields", async () => {
+		await agent
+			.patch("/api/v2/records/10008")
+			.send({ location: { city: "Marseille" } })
+			.expect(200);
+
+		const locationResult = await db.query(
+			"SELECT name, city FROM locn WHERE locnid = 1",
+		);
+		expect(locationResult.rows[0]).toEqual({
+			name: "Jean Valjean's House",
+			city: "Marseille",
+		});
+	});
+
+	test("expect a nested location to create a new location when record has none", async () => {
+		await agent
+			.patch("/api/v2/records/10001")
+			.send({
+				location: {
+					name: "Brand New Place",
+					city: "Marseille",
+					country: "France",
+					latitude: 43.2965,
+					longitude: 5.3698,
+					precision: "approximate",
+				},
+			})
+			.expect(200);
+
+		const recordResult = await db.query<{ locationId: string }>(
+			`SELECT locnid AS "locationId" FROM record WHERE recordid = :recordId`,
+			{ recordId: 10001 },
+		);
+		const newLocationId = recordResult.rows[0]?.locationId;
+		expect(newLocationId).not.toBeNull();
+		expect(newLocationId).not.toBe("1");
+
+		const locationResult = await db.query(
+			"SELECT name, city, country FROM locn WHERE locnid = :locationId",
+			{ locationId: newLocationId },
+		);
+		expect(locationResult.rows[0]).toEqual({
+			name: "Brand New Place",
+			city: "Marseille",
+			country: "France",
+		});
+	});
+
+	test("expect 400 error if location and locationId are both provided", async () => {
+		await agent
+			.patch("/api/v2/records/10001")
+			.send({
+				locationId: 1,
+				location: { name: "Conflicting" },
+			})
+			.expect(400);
+	});
+
+	test("expect 400 error if location is an empty object", async () => {
+		await agent
+			.patch("/api/v2/records/10001")
+			.send({ location: {} })
+			.expect(400);
+	});
+
+	test("expect 404 if record disappears between access check and location lookup", async () => {
+		const sqlSpy = jest.spyOn(db, "sql");
+		when(sqlSpy)
+			.calledWith("record.queries.get_record_location_id", {
+				recordId: "10001",
+			})
+			.mockImplementationOnce(
+				jest.fn().mockResolvedValue({
+					rows: [],
+				}),
+			);
+
+		await agent
+			.patch("/api/v2/records/10001")
+			.send({ location: { name: "Test" } })
+			.expect(404);
+	});
+
+	test("expect 500 if the record location lookup query fails", async () => {
+		const testError = new Error("test error");
+		const sqlSpy = jest.spyOn(db, "sql");
+		when(sqlSpy)
+			.calledWith("record.queries.get_record_location_id", {
+				recordId: "10001",
+			})
+			.mockImplementationOnce(jest.fn().mockRejectedValue(testError));
+
+		await agent
+			.patch("/api/v2/records/10001")
+			.send({ location: { name: "Test" } })
+			.expect(500);
+
+		expect(logger.error).toHaveBeenCalledWith(testError);
 	});
 });

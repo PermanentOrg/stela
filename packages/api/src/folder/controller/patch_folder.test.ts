@@ -162,6 +162,7 @@ describe("patch folder", () => {
 				setDisplayEndDateToNull: false,
 				displayTime: undefined,
 				setDisplayTimeToNull: false,
+				locationId: null,
 			})
 			.mockImplementation(async () => {
 				throw testError;
@@ -194,6 +195,31 @@ describe("patch folder", () => {
 			.expect(500);
 
 		expect(logger.error).toHaveBeenCalledWith(testError);
+	});
+
+	test("expect 404 if update_folder returns no rows", async () => {
+		const sqlSpy = jest.spyOn(db, "sql");
+		when(sqlSpy)
+			.calledWith("folder.queries.update_folder", {
+				folderId: "1",
+				displayDate: "2024-09-26T15:09:52.000Z",
+				setDisplayDateToNull: false,
+				displayEndDate: undefined,
+				setDisplayEndDateToNull: false,
+				displayTime: undefined,
+				setDisplayTimeToNull: false,
+				locationId: null,
+			})
+			.mockImplementationOnce(
+				jest.fn().mockResolvedValue({
+					rows: [],
+				}),
+			);
+
+		await agent
+			.patch("/api/v2/folders/1")
+			.send({ displayDate: "2024-09-26T15:09:52.000Z" })
+			.expect(404);
 	});
 
 	test("expect to log error and return 404 if database update is ok but the database select has empty result", async () => {
@@ -238,6 +264,187 @@ describe("patch folder", () => {
 			.patch("/api/v2/folders/1")
 			.send({ displayDate: "2024-09-26T15:09:52" })
 			.expect(404);
+	});
+
+	describe("nested location updates", () => {
+		test("expect a nested location to update the existing location row", async () => {
+			await agent
+				.patch("/api/v2/folders/2")
+				.send({
+					location: {
+						name: "New Place",
+						city: "Lyon",
+						country: "France",
+						latitude: 45.764,
+						longitude: 4.8357,
+						precision: "approximate",
+					},
+				})
+				.expect(200);
+
+			const folderResult = await db.query(
+				`SELECT locnid AS "locationId" FROM folder WHERE folderid = :folderId`,
+				{ folderId: 2 },
+			);
+			expect(folderResult.rows[0]).toEqual({ locationId: "1" });
+
+			const locationResult = await db.query(
+				"SELECT name, city, country, latitude, longitude, locationprecision FROM locn WHERE locnid = 1",
+			);
+			expect(locationResult.rows[0]).toEqual({
+				name: "New Place",
+				city: "Lyon",
+				country: "France",
+				latitude: 45.764,
+				longitude: 4.8357,
+				locationprecision: "approximate",
+			});
+		});
+
+		test("expect a nested location partial update to preserve untouched fields", async () => {
+			await agent
+				.patch("/api/v2/folders/2")
+				.send({ location: { city: "Marseille" } })
+				.expect(200);
+
+			const locationResult = await db.query(
+				"SELECT name, city FROM locn WHERE locnid = 1",
+			);
+			expect(locationResult.rows[0]).toEqual({
+				name: "Jean Valjean's House",
+				city: "Marseille",
+			});
+		});
+
+		test("expect a nested location to create a new location when folder has none", async () => {
+			await agent
+				.patch("/api/v2/folders/1")
+				.send({
+					location: {
+						name: "Brand New Place",
+						city: "Marseille",
+						country: "France",
+						latitude: 43.2965,
+						longitude: 5.3698,
+						precision: "approximate",
+					},
+				})
+				.expect(200);
+
+			const folderResult = await db.query<{ locationId: string }>(
+				`SELECT locnid AS "locationId" FROM folder WHERE folderid = :folderId`,
+				{ folderId: 1 },
+			);
+			const newLocationId = folderResult.rows[0]?.locationId;
+			expect(newLocationId).not.toBeNull();
+			expect(newLocationId).not.toBe("1");
+
+			const locationResult = await db.query(
+				"SELECT name, city, country FROM locn WHERE locnid = :locationId",
+				{ locationId: newLocationId },
+			);
+			expect(locationResult.rows[0]).toEqual({
+				name: "Brand New Place",
+				city: "Marseille",
+				country: "France",
+			});
+		});
+
+		test("expect 400 error if location is an empty object", async () => {
+			await agent.patch("/api/v2/folders/1").send({ location: {} }).expect(400);
+		});
+
+		test("expect 404 if folder disappears between access check and location lookup", async () => {
+			const sqlSpy = jest.spyOn(db, "sql");
+			when(sqlSpy)
+				.calledWith("folder.queries.get_folder_location_id", { folderId: "1" })
+				.mockImplementationOnce(
+					jest.fn().mockResolvedValue({
+						rows: [],
+					}),
+				);
+
+			await agent
+				.patch("/api/v2/folders/1")
+				.send({ location: { name: "Test" } })
+				.expect(404);
+		});
+
+		test("expect 500 if the folder location lookup query fails", async () => {
+			const testError = new Error("test error");
+			const sqlSpy = jest.spyOn(db, "sql");
+			when(sqlSpy)
+				.calledWith("folder.queries.get_folder_location_id", { folderId: "1" })
+				.mockImplementationOnce(jest.fn().mockRejectedValue(testError));
+
+			await agent
+				.patch("/api/v2/folders/1")
+				.send({ location: { name: "Test" } })
+				.expect(500);
+
+			expect(logger.error).toHaveBeenCalledWith(testError);
+		});
+
+		test("expect 400 error if a location field is the wrong type", async () => {
+			await agent
+				.patch("/api/v2/folders/1")
+				.send({ location: { latitude: "not a number" } })
+				.expect(400);
+		});
+
+		test("expect deprecated location fields to be rejected", async () => {
+			await agent
+				.patch("/api/v2/folders/2")
+				.send({
+					location: {
+						streetNumber: "1600",
+						streetName: "Pennsylvania Avenue",
+					},
+				})
+				.expect(400);
+		});
+
+		test("expect legacy columns to be derived from new fields on insert", async () => {
+			await agent
+				.patch("/api/v2/folders/1")
+				.send({
+					location: {
+						name: "The White House",
+						sublocation: "1600 Pennsylvania Avenue",
+						city: "Washington",
+						state: "DC",
+						country: "United States",
+					},
+				})
+				.expect(200);
+
+			const locationResult = await db.query<{
+				locnid: string;
+				streetnumber: string | null;
+				streetname: string | null;
+				locality: string | null;
+			}>(
+				`SELECT locnid::text AS locnid, streetnumber, streetname, locality
+				 FROM locn ORDER BY locnid DESC LIMIT 1`,
+			);
+			expect(locationResult.rows[0]).toMatchObject({
+				streetnumber: "1600",
+				streetname: "Pennsylvania Avenue",
+				locality: "Washington",
+			});
+		});
+
+		test("expect derived legacy columns to be updated when their source fields are patched", async () => {
+			await agent
+				.patch("/api/v2/folders/2")
+				.send({ location: { city: "Marseille" } })
+				.expect(200);
+
+			const locationResult = await db.query(
+				"SELECT locality FROM locn WHERE locnid = 1",
+			);
+			expect(locationResult.rows[0]).toEqual({ locality: "Marseille" });
+		});
 	});
 
 	describe("displaytimelowerbound tests", () => {

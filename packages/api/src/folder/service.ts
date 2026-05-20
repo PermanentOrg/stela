@@ -1,5 +1,6 @@
 import createError from "http-errors";
 import { logger } from "@stela/logger";
+import type { TinyPg } from "tinypg";
 import { db } from "../database";
 import type {
 	FolderRow,
@@ -23,6 +24,7 @@ import { AccessRole } from "../access/models";
 import { getRecords } from "../record/service";
 import { shareLinkService } from "../share_link/service";
 import type { ShareLink } from "../share_link/models";
+import { insertLocation, updateLocation } from "../location/service";
 
 export const prettifyFolderSortType = (
 	sortType: FolderSortOrder,
@@ -210,31 +212,75 @@ const validateCanPatchFolder = async (
 	}
 };
 
+const getFolderLocationId = async (
+	folderId: string,
+	client: TinyPg,
+): Promise<string | null> => {
+	const result = await client
+		.sql<{ locationId: string | null }>(
+			"folder.queries.get_folder_location_id",
+			{
+				folderId,
+			},
+		)
+		.catch((err: unknown) => {
+			logger.error(err);
+			throw new createError.InternalServerError("Failed to look up folder");
+		});
+	const { rows } = result;
+	const [row] = rows;
+	if (row === undefined) {
+		throw new createError.NotFound(`Folder ${folderId} not found`);
+	}
+	return row.locationId;
+};
+
 export const patchFolder = async (
 	folderId: string,
 	folderData: PatchFolderRequest,
 ): Promise<string> => {
 	await validateCanPatchFolder(folderId, folderData.emailFromAuthToken);
 
-	const result = await db
-		.sql<{ folderId: string }>("folder.queries.update_folder", {
-			folderId,
-			displayDate: folderData.displayDate,
-			setDisplayDateToNull: folderData.displayDate === null,
-			displayEndDate: folderData.displayEndDate,
-			setDisplayEndDateToNull: folderData.displayEndDate === null,
-			displayTime: folderData.displayTime,
-			setDisplayTimeToNull: folderData.displayTime === null,
-		})
-		.catch((err: unknown) => {
-			logger.error(err);
-			throw new createError.InternalServerError("Failed to update folder");
-		});
+	return await db.transaction(async (transactionDb) => {
+		let locationId: string | null = null;
+		if (folderData.location !== undefined) {
+			const currentLocationId = await getFolderLocationId(
+				folderId,
+				transactionDb,
+			);
+			if (currentLocationId === null) {
+				locationId = await insertLocation(folderData.location, transactionDb);
+			} else {
+				await updateLocation(
+					currentLocationId,
+					folderData.location,
+					transactionDb,
+				);
+				locationId = currentLocationId;
+			}
+		}
 
-	if (result.rows[0] === undefined) {
-		throw new createError.NotFound("Folder not found");
-	}
-	return result.rows[0].folderId;
+		const result = await transactionDb
+			.sql<{ folderId: string }>("folder.queries.update_folder", {
+				folderId,
+				displayDate: folderData.displayDate,
+				setDisplayDateToNull: folderData.displayDate === null,
+				displayEndDate: folderData.displayEndDate,
+				setDisplayEndDateToNull: folderData.displayEndDate === null,
+				displayTime: folderData.displayTime,
+				setDisplayTimeToNull: folderData.displayTime === null,
+				locationId,
+			})
+			.catch((err: unknown) => {
+				logger.error(err);
+				throw new createError.InternalServerError("Failed to update folder");
+			});
+
+		if (result.rows[0] === undefined) {
+			throw new createError.NotFound("Folder not found");
+		}
+		return result.rows[0].folderId;
+	});
 };
 
 export const getFolderShareLinks = async (

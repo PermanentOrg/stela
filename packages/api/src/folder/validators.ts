@@ -2,6 +2,7 @@ import Joi from "joi";
 import { parse as parseEDTF } from "@edtf-ts/core";
 import type { PatchFolderRequest } from "./models";
 import { fieldsFromUserAuthentication } from "../validators";
+import { locationInputSchema } from "../location/validators";
 
 export const validateFolderRequest: (
 	data: unknown,
@@ -39,8 +40,9 @@ export const validatePatchFolderRequest: (
 				})
 				.optional()
 				.allow(null),
+			location: locationInputSchema.optional(),
 		})
-		.or("displayDate", "displayEndDate", "displayTime")
+		.or("displayDate", "displayEndDate", "displayTime", "location")
 		.validate(data);
 
 	if (validation.error !== undefined) {
