@@ -12,7 +12,6 @@ import {
 	type UpdateTagsRequest,
 	type SignupDetails,
 	type GetAccountArchiveResult,
-	type GetCurrentAccountArchiveResult,
 	type LeaveArchiveRequest,
 	type CreateStorageAdjustmentRequest,
 	type StorageAdjustment,
@@ -256,29 +255,11 @@ const getAccountArchive = async (
 	return accountArchiveResult.rows[0];
 };
 
-const getCurrentAccountArchiveMemberships = async (
-	email: string,
-): Promise<GetCurrentAccountArchiveResult[]> => {
-	const currentAccountArchiveResult = await db
-		.sql<GetCurrentAccountArchiveResult>(
-			"account.queries.get_current_account_archive_memberships",
-			{ email },
-		)
-		.catch((err: unknown) => {
-			logger.error(err);
-			throw new createError.InternalServerError(
-				"Failed to retrieve current account archive memberships",
-			);
-		});
-	return currentAccountArchiveResult.rows;
-};
-
 export const accountService = {
 	getSignupDetails,
 	leaveArchive,
 	updateTags,
 	getAccountArchive,
-	getCurrentAccountArchiveMemberships,
 };
 
 export const createStorageAdjustment = async (
