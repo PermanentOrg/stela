@@ -2,14 +2,17 @@ import Joi from "joi";
 import type {
 	CreateStorageAdjustmentRequest,
 	UpdateTagsRequest,
+	GetAccountsQuery,
 } from "./models";
 import {
 	fieldsFromUserAuthentication,
 	fieldsFromAdminAuthentication,
 	validateBodyFromAuthentication,
+	validateBodyFromAdminAuthentication,
 } from "../validators";
+import { paginationFields } from "../validators/shared";
 
-export { validateBodyFromAuthentication };
+export { validateBodyFromAuthentication, validateBodyFromAdminAuthentication };
 
 export const validateUpdateTagsRequest: (
 	data: unknown,
@@ -83,6 +86,28 @@ export const validateCreateStorageAdjustmentRequest: (
 			...fieldsFromAdminAuthentication,
 			storageAmount: Joi.number().integer().not(0).required(),
 		})
+		.validate(data);
+	if (validation.error !== undefined) {
+		throw validation.error;
+	}
+};
+
+export const validateGetAccountsQuery: (
+	data: unknown,
+) => asserts data is GetAccountsQuery = (
+	data: unknown,
+): asserts data is GetAccountsQuery => {
+	const validation = Joi.object()
+		.keys({
+			...paginationFields,
+			accountIds: Joi.alternatives()
+				.try(Joi.string(), Joi.array().items(Joi.string()))
+				.optional(),
+			accountEmails: Joi.alternatives()
+				.try(Joi.string().email(), Joi.array().items(Joi.string().email()))
+				.optional(),
+		})
+		.xor("accountIds", "accountEmails")
 		.validate(data);
 	if (validation.error !== undefined) {
 		throw validation.error;

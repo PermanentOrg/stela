@@ -24,6 +24,11 @@ export const fieldsFromUserOrAdminAuthentication = Joi.object()
 	.nand("userEmailFromAuthToken", "adminSubjectFromAuthToken")
 	.nand("adminEmailFromAuthToken", "userSubjectFromAuthToken");
 
+export const paginationFields = {
+	cursor: Joi.string(),
+	pageSize: Joi.number().integer().min(MINIMUM_PAGE_SIZE).required(),
+};
+
 export const validateBodyFromAuthentication: (
 	data: unknown,
 ) => asserts data is {
@@ -101,12 +106,7 @@ export const validatePaginationParameters: (
 ) => asserts data is { cursor?: string; pageSize: number } = (
 	data: unknown,
 ): asserts data is { cursor?: string; pageSize: number } => {
-	const validation = Joi.object()
-		.keys({
-			cursor: Joi.string(),
-			pageSize: Joi.number().integer().min(MINIMUM_PAGE_SIZE).required(),
-		})
-		.validate(data);
+	const validation = Joi.object().keys(paginationFields).validate(data);
 
 	if (validation.error !== undefined) {
 		throw validation.error;

@@ -79,6 +79,16 @@ account:
           type: string
         country:
           type: string
+    status:
+      type: string
+      enum:
+        - ok
+        - invited
+    type:
+      type: string
+      enum:
+        - standard
+        - test
     settings:
       type: object
       required: [hideChecklist, allowSftpDeletion, notificationsEnabled]

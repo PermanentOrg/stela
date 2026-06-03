@@ -8,15 +8,122 @@ import { ACCESS_ROLE, EVENT_ACTION, EVENT_ENTITY, GB } from "../constants";
 import { createEvent } from "../event/service";
 import type { CreateEventRequest } from "../event/models";
 
-import type {
-	UpdateTagsRequest,
-	SignupDetails,
-	GetAccountArchiveResult,
-	LeaveArchiveRequest,
-	GetCurrentAccountArchiveResult,
-	CreateStorageAdjustmentRequest,
-	StorageAdjustment,
+import {
+	type UpdateTagsRequest,
+	type SignupDetails,
+	type GetAccountArchiveResult,
+	type LeaveArchiveRequest,
+	type CreateStorageAdjustmentRequest,
+	type StorageAdjustment,
+	type Account,
+	type AccountRow,
+	type GetAccountsQuery,
+	type GetAccountsResponse,
+	AccountType,
+	PrettyAccountType,
+	AccountStatus,
+	PrettyAccountStatus,
 } from "./models";
+
+const prettifyAccountType = (accountType: AccountType): PrettyAccountType => {
+	switch (accountType) {
+		case AccountType.Standard:
+			return PrettyAccountType.Standard;
+		case AccountType.Test:
+			return PrettyAccountType.Test;
+	}
+};
+
+const prettifyAccountStatus = (
+	accountStatus: AccountStatus,
+): PrettyAccountStatus => {
+	switch (accountStatus) {
+		case AccountStatus.Ok:
+			return PrettyAccountStatus.Ok;
+		case AccountStatus.Invited:
+			return PrettyAccountStatus.Invited;
+	}
+};
+
+const accountRowToAccount = (row: AccountRow): Account => ({
+	id: row.id,
+	primaryEmail: {
+		address: row.primaryEmailAddress,
+		verified: row.emailStatus === "status.auth.ok",
+	},
+	...(row.primaryPhoneNumber !== null && {
+		primaryPhone: {
+			number: row.primaryPhoneNumber,
+			verified: row.phoneStatus === "status.auth.ok",
+		},
+	}),
+	fullName: row.fullName,
+	...(row.defaultArchiveId !== null && {
+		defaultArchiveId: row.defaultArchiveId,
+	}),
+	address: {
+		lineOne: row.addressLineOne,
+		lineTwo: row.addressLineTwo,
+		city: row.city,
+		state: row.state,
+		zip: row.zip,
+		country: row.country,
+	},
+	settings: {
+		hideChecklist: row.hideChecklist,
+		allowSftpDeletion: row.allowSftpDeletion,
+		notificationsEnabled: {
+			sms: row.notificationPreferences.textPreference,
+			email: row.notificationPreferences.emailPreference,
+			inApp: row.notificationPreferences.inAppPreference,
+		},
+	},
+	status: prettifyAccountStatus(row.status),
+	type: prettifyAccountType(row.type),
+});
+
+export const getAccounts = async (
+	query: GetAccountsQuery,
+): Promise<GetAccountsResponse> => {
+	const filterByIds = query.accountIds !== undefined;
+	const accountIds = Array.isArray(query.accountIds)
+		? query.accountIds
+		: query.accountIds === undefined
+			? []
+			: [query.accountIds];
+	const accountEmails = Array.isArray(query.accountEmails)
+		? query.accountEmails.map((e) => e.toLowerCase())
+		: query.accountEmails === undefined
+			? []
+			: [query.accountEmails.toLowerCase()];
+
+	const result = await db
+		.sql<AccountRow & { totalPages: number }>("account.queries.get_accounts", {
+			filterByIds,
+			accountIds,
+			accountEmails,
+			cursor: query.cursor,
+			pageSize: query.pageSize,
+		})
+		.catch((err: unknown) => {
+			logger.error(err);
+			throw new createError.InternalServerError("Failed to retrieve accounts");
+		});
+
+	const accounts = result.rows.map(accountRowToAccount);
+	const nextCursor = accounts[accounts.length - 1]?.id;
+	return {
+		items: accounts,
+		pagination: {
+			nextCursor,
+			nextPage:
+				nextCursor === undefined
+					? undefined
+					: `https://${process.env["SITE_URL"] ?? ""}/api/v2/accounts?pageSize=${query.pageSize}&cursor=${nextCursor}`,
+			totalPages: result.rows[0] === undefined ? 0 : result.rows[0].totalPages,
+		},
+	};
+};
 
 const updateTags = async (requestBody: UpdateTagsRequest): Promise<void> => {
 	const tags = (requestBody.addTags ?? [])
@@ -148,29 +255,11 @@ const getAccountArchive = async (
 	return accountArchiveResult.rows[0];
 };
 
-const getCurrentAccountArchiveMemberships = async (
-	email: string,
-): Promise<GetCurrentAccountArchiveResult[]> => {
-	const currentAccountArchiveResult = await db
-		.sql<GetCurrentAccountArchiveResult>(
-			"account.queries.get_current_account_archive_memberships",
-			{ email },
-		)
-		.catch((err: unknown) => {
-			logger.error(err);
-			throw new createError.InternalServerError(
-				"Failed to retrieve current account archive memberships",
-			);
-		});
-	return currentAccountArchiveResult.rows;
-};
-
 export const accountService = {
 	getSignupDetails,
 	leaveArchive,
 	updateTags,
 	getAccountArchive,
-	getCurrentAccountArchiveMemberships,
 };
 
 export const createStorageAdjustment = async (
