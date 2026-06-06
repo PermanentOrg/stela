@@ -55,7 +55,7 @@ export interface EmbeddedMetadata {
 	MediaInfo:
 		| {
 				media: {
-					track: TrackMetadata[];
+					track: TrackMetadata[] | TrackMetadata;
 				};
 		  }
 		| undefined;

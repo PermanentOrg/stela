@@ -157,10 +157,13 @@ const getVideoMetadataFromMediaInfo = (
 			creationTimeInEdtf: string | undefined;
 	  }
 	| undefined => {
-	const tracks = embeddedMetadata.MediaInfo?.media.track;
-	if (tracks === undefined) {
+	const tracksFromMediaInfo = embeddedMetadata.MediaInfo?.media.track;
+	if (tracksFromMediaInfo === undefined) {
 		return undefined;
 	}
+	const tracks = Array.isArray(tracksFromMediaInfo)
+		? tracksFromMediaInfo
+		: [tracksFromMediaInfo];
 
 	const generalTracks = tracks.filter(
 		(track: TrackMetadata) => track.StreamKind === "General",

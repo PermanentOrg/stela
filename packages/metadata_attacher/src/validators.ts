@@ -35,7 +35,9 @@ const embeddedMetadataSchema = Joi.object({
 		.unknown(true),
 	MediaInfo: Joi.object({
 		media: Joi.object({
-			track: Joi.array().items(trackMetadataSchema).required(),
+			track: Joi.alternatives()
+				.try(Joi.array().items(trackMetadataSchema), trackMetadataSchema)
+				.required(),
 		})
 			.required()
 			.unknown(true),
