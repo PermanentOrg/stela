@@ -5,34 +5,6 @@ import { isObjectWithStatusCode } from "./handleError";
 import { HTTP_STATUS } from "@pdc/http-status-codes";
 
 const emailKey = "email";
-const subjectKey = "sub";
-
-const getValueFromAuthToken = async (
-	authenticationToken: string,
-	key: "email" | "sub",
-	applicationId: string,
-): Promise<string> => {
-	const introspectionResponse = await fusionAuthClient.introspectAccessToken(
-		applicationId,
-		authenticationToken,
-	);
-	if (!introspectionResponse.wasSuccessful()) {
-		throw new createError.Unauthorized(
-			`Token validation failed: ${
-				introspectionResponse.exception.message ?? ""
-			}`,
-		);
-	}
-	if (
-		!introspectionResponse.response.active ||
-		typeof introspectionResponse.response[key] !== "string" ||
-		introspectionResponse.response[key] === ""
-	) {
-		throw new createError.Unauthorized("Invalid token");
-	}
-
-	return introspectionResponse.response[key];
-};
 
 const getOptionalValueFromAuthToken = async (
 	authenticationToken: string,
@@ -129,6 +101,38 @@ const getAuthTokenFromRequest = (
 	return secondWordInAuthorizationHeader ?? "";
 };
 
+const getSubjectAndEmailFromUserAuthToken = async (
+	authenticationToken: string,
+): Promise<{ subject: string; email: string }> => {
+	try {
+		return await getValuesFromAuthToken(
+			authenticationToken,
+			process.env["FUSIONAUTH_BACKEND_APPLICATION_ID"] ?? "",
+		);
+	} catch (err) {
+		if (
+			isObjectWithStatusCode(err) &&
+			err.statusCode === HTTP_STATUS.CLIENT_ERROR.UNAUTHORIZED.valueOf()
+		) {
+			return await getValuesFromAuthToken(
+				authenticationToken,
+				process.env["FUSIONAUTH_SFTP_APPLICATION_ID"] ?? "",
+			);
+		}
+		throw err;
+	}
+};
+
+const getSubjectAndEmailFromAdminAuthToken = async (
+	authenticationToken: string,
+): Promise<{ subject: string; email: string }> => {
+	const { subject, email } = await getValuesFromAuthToken(
+		authenticationToken,
+		process.env["FUSIONAUTH_ADMIN_APPLICATION_ID"] ?? "",
+	);
+	return { subject, email };
+};
+
 const verifyUserAuthentication = async (
 	req: Request<
 		unknown,
@@ -146,10 +150,8 @@ const verifyUserAuthentication = async (
 		if (authenticationToken === "") {
 			throw new createError.Unauthorized("Invalid Authorization header format");
 		}
-		const { email, subject } = await getValuesFromAuthToken(
-			authenticationToken,
-			process.env["FUSIONAUTH_BACKEND_APPLICATION_ID"] ?? "",
-		);
+		const { subject, email } =
+			await getSubjectAndEmailFromUserAuthToken(authenticationToken);
 		req.body.emailFromAuthToken = email;
 		req.body.userSubjectFromAuthToken = subject;
 		next();
@@ -204,37 +206,23 @@ const verifyUserOrAdminAuthentication = async (
 			throw new createError.Unauthorized("Invalid Authorization header format");
 		}
 		try {
-			const subject = await getValueFromAuthToken(
-				authenticationToken,
-				subjectKey,
-				process.env["FUSIONAUTH_BACKEND_APPLICATION_ID"] ?? "",
-			);
-			const email = await getValueFromAuthToken(
-				authenticationToken,
-				emailKey,
-				process.env["FUSIONAUTH_BACKEND_APPLICATION_ID"] ?? "",
-			);
+			const { subject, email } =
+				await getSubjectAndEmailFromUserAuthToken(authenticationToken);
 			req.body.userSubjectFromAuthToken = subject;
 			req.body.userEmailFromAuthToken = email;
 			next();
-		} catch (_) {
-			try {
-				const subject = await getValueFromAuthToken(
-					authenticationToken,
-					subjectKey,
-					process.env["FUSIONAUTH_ADMIN_APPLICATION_ID"] ?? "",
-				);
-				const email = await getValueFromAuthToken(
-					authenticationToken,
-					emailKey,
-					process.env["FUSIONAUTH_ADMIN_APPLICATION_ID"] ?? "",
-				);
+		} catch (err) {
+			if (
+				isObjectWithStatusCode(err) &&
+				err.statusCode === HTTP_STATUS.CLIENT_ERROR.UNAUTHORIZED.valueOf()
+			) {
+				const { subject, email } =
+					await getSubjectAndEmailFromAdminAuthToken(authenticationToken);
 				req.body.adminSubjectFromAuthToken = subject;
 				req.body.adminEmailFromAuthToken = email;
 				next();
-			} catch (innerErr) {
-				next(innerErr);
 			}
+			next(err);
 		}
 	} catch (err) {
 		next(err);

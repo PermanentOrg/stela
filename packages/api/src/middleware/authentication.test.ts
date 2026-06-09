@@ -261,6 +261,76 @@ describe("verifyUserAuthentication", () => {
 			},
 		);
 	});
+
+	test("should add email and subject to the request body if the SFTP token is valid", async () => {
+		const request = createRequest({
+			headers: { Authorization: "Bearer test" },
+		});
+		jest
+			.spyOn(fusionAuthClient, "introspectAccessToken")
+			.mockImplementationOnce(async () => failedIntrospectionResponse)
+			.mockImplementationOnce(async () => successfulIntrospectionResponse);
+		await verifyUserAuthentication(request, createResponse(), jest.fn());
+
+		const {
+			body: { emailFromAuthToken, userSubjectFromAuthToken },
+		} = request as {
+			body: { emailFromAuthToken: string; userSubjectFromAuthToken: string };
+		};
+		expect(emailFromAuthToken).toBe(testEmail);
+		expect(userSubjectFromAuthToken).toBe(testSubject);
+	});
+
+	test("should throw unauthorized if both backend and SFTP tokens are invalid", async () => {
+		const request = createRequest({
+			headers: { Authorization: "Bearer test" },
+		});
+		jest
+			.spyOn(fusionAuthClient, "introspectAccessToken")
+			.mockImplementation(async () => failedIntrospectionResponse);
+		await verifyUserAuthentication(
+			request,
+			createResponse(),
+			(err: unknown) => {
+				expect(typeof err).toBe("object");
+				expect(err).not.toBeNull();
+				if (typeof err === "object" && err !== null) {
+					expect("statusCode" in err).toBe(true);
+					if ("statusCode" in err) {
+						expect(err.statusCode).toBe(401);
+					}
+				}
+			},
+		);
+	});
+
+	test("should throw 429 if first introspect call returns 429", async () => {
+		const request = createRequest({
+			headers: { Authorization: "Bearer test" },
+		});
+		const testError = Object.assign(new Error("Rate Limit Exceeded"), {
+			statusCode: 429,
+		});
+		jest
+			.spyOn(fusionAuthClient, "introspectAccessToken")
+			.mockImplementationOnce(async () => {
+				throw testError;
+			});
+		await verifyUserAuthentication(
+			request,
+			createResponse(),
+			(err: unknown) => {
+				expect(typeof err).toBe("object");
+				expect(err).not.toBeNull();
+				if (typeof err === "object" && err !== null) {
+					expect("statusCode" in err).toBe(true);
+					if ("statusCode" in err) {
+						expect(err.statusCode).toBe(429);
+					}
+				}
+			},
+		);
+	});
 });
 
 describe("verifyAdminAuthentication", () => {
@@ -317,6 +387,10 @@ describe("verifyAdminAuthentication", () => {
 });
 
 describe("verifyUserOrAdminAuthentication", () => {
+	beforeEach(() => {
+		jest.clearAllMocks();
+		jest.resetAllMocks();
+	});
 	test("should add subject and email to the request body if user token is valid", async () => {
 		const request = createRequest({
 			headers: { Authorization: "Bearer test" },
@@ -347,6 +421,7 @@ describe("verifyUserOrAdminAuthentication", () => {
 		});
 		jest
 			.spyOn(fusionAuthClient, "introspectAccessToken")
+			.mockImplementationOnce(async () => expiredTokenIntrospectionResponse)
 			.mockImplementationOnce(async () => expiredTokenIntrospectionResponse)
 			.mockImplementationOnce(async () => successfulIntrospectionResponse);
 
@@ -388,6 +463,32 @@ describe("verifyUserOrAdminAuthentication", () => {
 				}
 			},
 		);
+	});
+
+	test("should add subject and email to the request body if SFTP token is valid", async () => {
+		const request = createRequest({
+			headers: { Authorization: "Bearer test" },
+		});
+		jest
+			.spyOn(fusionAuthClient, "introspectAccessToken")
+			.mockImplementationOnce(async () => expiredTokenIntrospectionResponse)
+			.mockImplementationOnce(async () => successfulIntrospectionResponse)
+			.mockImplementationOnce(async () => successfulIntrospectionResponse);
+
+		await verifyUserOrAdminAuthentication(request, createResponse(), jest.fn());
+		const {
+			body: { userSubjectFromAuthToken, userEmailFromAuthToken },
+		} = request as {
+			body: {
+				userSubjectFromAuthToken: string;
+				userEmailFromAuthToken: string;
+			};
+		};
+		expect(userSubjectFromAuthToken).toBe(testSubject);
+		expect(userEmailFromAuthToken).toBe(testEmail);
+		expect(
+			fieldsFromUserOrAdminAuthentication.validate(request.body).error,
+		).toBeFalsy();
 	});
 
 	test("should throw unauthorized if both tokens are expired", async () => {
@@ -786,6 +887,7 @@ describe("verifyUserOrAdminOrDelegatedCallAuthentication", () => {
 		});
 		jest
 			.spyOn(fusionAuthClient, "introspectAccessToken")
+			.mockImplementationOnce(async () => expiredTokenIntrospectionResponse)
 			.mockImplementationOnce(async () => expiredTokenIntrospectionResponse)
 			.mockImplementationOnce(async () => successfulIntrospectionResponse);
 
