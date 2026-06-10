@@ -24,14 +24,21 @@ folder:
   properties:
     id:
       type: string
+    archiveNumber:
+      nullable: true
+      type: string
     size:
       type: integer
     location:
       $ref: "../models/location.yaml#/location"
+    folderLinkId:
+      type: string
     parentFolder:
       type: object
       properties:
         id:
+          type: string
+        folderLinkId:
           type: string
     shares:
       type: array
@@ -87,6 +94,15 @@ folder:
           type: array
           items:
             type: string
+        folderLinkIds:
+          type: array
+          items:
+            type: string
+        archiveNumbers:
+          type: array
+          items:
+            type: string
+            nullable: true
     publicAt:
       type: string
       format: date-time

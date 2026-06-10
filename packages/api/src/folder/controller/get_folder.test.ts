@@ -197,6 +197,8 @@ describe("GET /folder", () => {
 		expect(folders[0]).toBeDefined();
 		if (folders[0] !== undefined) {
 			expect(folders[0].folderId).toEqual("2");
+			expect(folders[0].folderLinkId).toEqual("1");
+			expect(folders[0].archiveNumber).toEqual("0001-0002");
 			expect(folders[0].size).toEqual(0);
 			expect(folders[0].location).toBeDefined();
 			if (folders[0].location !== undefined) {
@@ -219,6 +221,7 @@ describe("GET /folder", () => {
 				expect(folders[0].location.displayName).toEqual("Jean Valjean's House");
 			}
 			expect(folders[0].parentFolder?.id).toEqual("10");
+			expect(folders[0].parentFolder?.folderLinkId).toEqual("10");
 			expect(folders[0].shares).toBeDefined();
 			if (folders[0].shares !== undefined) {
 				expect(folders[0].shares.length).toEqual(1);
@@ -277,6 +280,11 @@ describe("GET /folder", () => {
 			expect(folders[0].paths.names.length).toEqual(2);
 			expect(folders[0].paths.names[0]).toEqual("My Files");
 			expect(folders[0].paths.names[1]).toEqual("Private Folder");
+			expect(folders[0].paths.folderLinkIds[0]).toEqual("10");
+			expect(folders[0].paths.folderLinkIds[1]).toEqual("1");
+			expect(folders[0].paths.archiveNumbers[0]).toEqual("0001-0010");
+			expect(folders[0].paths.archiveNumbers[1]).toEqual("0001-0002");
+			expect(folders[0].paths.names[1]).toEqual("Private Folder");
 			expect(folders[0].publicAt).toBeNull();
 			expect(folders[0].sort).toEqual("alphabetical-ascending");
 			expect(folders[0].thumbnailUrls).toBeDefined();
@@ -301,6 +309,16 @@ describe("GET /folder", () => {
 			expect(folders[0].status).toEqual("ok");
 			expect(folders[0].view).toEqual("grid");
 		}
+	});
+
+	test("should not return parent object for a root level folder", async () => {
+		const response = await agent
+			.get("/api/v2/folders?folderIds[]=7")
+			.expect(200);
+		const {
+			body: { items: folders },
+		} = response as { body: { items: Folder[] } };
+		expect(folders[0]?.parentFolder).toBeNull();
 	});
 
 	test("should not return pendingShares for non-manager viewer", async () => {

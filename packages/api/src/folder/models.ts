@@ -16,10 +16,12 @@ export interface GetFolderChildrenResponse {
 
 export interface FolderRow {
 	folderId: string;
+	archiveNumber: string | null;
 	size: string | null;
 	location?: Location;
 	parentFolder?: {
 		id: string;
+		folderLinkId: string;
 	};
 	shares?: Share[];
 	pendingShares: PendingShare[] | null;
@@ -39,6 +41,8 @@ export interface FolderRow {
 	imageRatio?: string;
 	paths: {
 		names: string[];
+		folderLinkIds: string[];
+		archiveNumbers: Array<string | null>;
 	};
 	publicAt?: string;
 	sort: FolderSortOrder;
@@ -65,10 +69,12 @@ export interface ThumbnailUrls {
 
 export interface Folder {
 	folderId: string;
+	archiveNumber: string | null;
 	size: number | null;
 	location?: Location;
 	parentFolder?: {
 		id: string;
+		folderLinkId: string;
 	};
 	shares?: Share[];
 	pendingShares: PendingShare[] | null;
@@ -88,6 +94,8 @@ export interface Folder {
 	imageRatio?: number;
 	paths: {
 		names: string[];
+		folderLinkIds: string[];
+		archiveNumbers: Array<string | null>;
 	};
 	publicAt?: string;
 	sort: PrettyFolderSortOrder;

@@ -3,7 +3,9 @@ WITH RECURSIVE folder_path AS (
     folder.folderid AS original_folder_id,
     folder.folderid,
     folder_link.parentfolderid,
+    folder_link.folder_linkid::text,
     folder.displayname,
+    folder.archivenbr,
     1 AS height
   FROM folder
   INNER JOIN folder_link ON folder.folderid = folder_link.folderid
@@ -15,7 +17,9 @@ WITH RECURSIVE folder_path AS (
     folder_path.original_folder_id,
     folder.folderid,
     folder_link.parentfolderid,
+    folder_link.folder_linkid::text,
     folder.displayname,
+    folder.archivenbr,
     folder_path.height + 1 AS height
   FROM folder_path
   INNER JOIN folder_link ON folder_path.parentfolderid = folder_link.folderid
@@ -26,7 +30,9 @@ WITH RECURSIVE folder_path AS (
 aggregated_path AS (
   SELECT
     original_folder_id AS folderid,
-    ARRAY_AGG(displayname ORDER BY height DESC) AS name_path
+    ARRAY_AGG(displayname ORDER BY height DESC) AS name_path,
+    ARRAY_AGG(archivenbr ORDER BY height DESC) AS archive_number_path,
+    ARRAY_AGG(folder_linkid ORDER BY height DESC) AS folder_link_id_path
   FROM folder_path
   GROUP BY
     original_folder_id
@@ -207,6 +213,7 @@ account_by_share AS (
 
 SELECT
   folder.folderid AS "folderId",
+  folder.archivenbr AS "archiveNumber",
   folder_size.allfilesizedeep AS size,
   aggregated_shares.folder_shares AS shares,
   aggregated_tags.tags,
@@ -279,10 +286,16 @@ SELECT
     'displayName',
     locn.displayname
   ) AS location,
-  JSON_BUILD_OBJECT(
-    'id',
-    folder_link.parentfolderid::text
-  ) AS "parentFolder",
+  CASE
+    WHEN folder_link.parentfolderid IS NOT NULL
+      THEN
+        JSON_BUILD_OBJECT(
+          'id',
+          folder_link.parentfolderid::text,
+          'folderLinkId',
+          folder_link.parentfolder_linkid::text
+        )
+  END AS "parentFolder",
   JSON_BUILD_OBJECT(
     'id',
     folder.archiveid::text,
@@ -291,7 +304,11 @@ SELECT
   ) AS archive,
   JSONB_BUILD_OBJECT(
     'names',
-    aggregated_path.name_path
+    aggregated_path.name_path,
+    'folderLinkIds',
+    aggregated_path.folder_link_id_path,
+    'archiveNumbers',
+    aggregated_path.archive_number_path
   ) AS paths,
   JSON_BUILD_OBJECT(
     '200',
