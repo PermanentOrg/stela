@@ -21,6 +21,10 @@ export const handler: SQSHandler = Sentry.wrapHandler(
 				const fileId = getOriginalFileIdFromInformationPackagePath(key);
 				const thumbnailUrl = constructSignedCdnUrl(key);
 
+				const testMessage = `Attaching thumbnail for original file ${fileId}`;
+				logger.error(testMessage);
+				Sentry.captureMessage(testMessage);
+
 				try {
 					const result = await db.sql("queries.update_record_thumbnail_data", {
 						fileId,
