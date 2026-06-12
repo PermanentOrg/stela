@@ -109,10 +109,10 @@ describe("patch folder", () => {
 		expect(result.rows[0]).toEqual({ displaytime: null });
 	});
 
-	test("expect 400 error when displayTime is not valid Level 1 EDTF", async () => {
+	test("expect 400 error when displayTime is not valid Level 2 EDTF", async () => {
 		await agent
 			.patch("/api/v2/folders/2")
-			.send({ displayTime: "2024-33" })
+			.send({ displayTime: "2024-42" })
 			.expect(400);
 	});
 
@@ -985,6 +985,338 @@ describe("patch folder", () => {
 			);
 
 			expect(result.rows[0]).toStrictEqual({ displaytimelowerbound: null });
+		});
+
+		test("expect displaytimelowerbound is set for southern hemisphere spring (YYYY-29)", async () => {
+			await agent
+				.patch("/api/v2/folder/1")
+				.send({ displayTime: "2024-29" })
+				.expect(200);
+
+			const result = await db.query(
+				"SELECT to_char(displaytimelowerbound, 'YYYY-MM-DD HH24:MI:SS') as displaytimelowerbound FROM folder WHERE folderid = :folderId",
+				{ folderId: 1 },
+			);
+
+			expect(result.rows[0]).toEqual({
+				displaytimelowerbound: "2024-09-01 00:00:00",
+			});
+		});
+
+		test("expect displaytimelowerbound is set for southern hemisphere summer (YYYY-30)", async () => {
+			await agent
+				.patch("/api/v2/folder/1")
+				.send({ displayTime: "2024-30" })
+				.expect(200);
+
+			const result = await db.query(
+				"SELECT to_char(displaytimelowerbound, 'YYYY-MM-DD HH24:MI:SS') as displaytimelowerbound FROM folder WHERE folderid = :folderId",
+				{ folderId: 1 },
+			);
+
+			expect(result.rows[0]).toEqual({
+				displaytimelowerbound: "2024-12-01 00:00:00",
+			});
+		});
+
+		test("expect displaytimelowerbound is set for southern hemisphere autumn (YYYY-31)", async () => {
+			await agent
+				.patch("/api/v2/folder/1")
+				.send({ displayTime: "2024-31" })
+				.expect(200);
+
+			const result = await db.query(
+				"SELECT to_char(displaytimelowerbound, 'YYYY-MM-DD HH24:MI:SS') as displaytimelowerbound FROM folder WHERE folderid = :folderId",
+				{ folderId: 1 },
+			);
+
+			expect(result.rows[0]).toEqual({
+				displaytimelowerbound: "2024-03-01 00:00:00",
+			});
+		});
+
+		test("expect displaytimelowerbound is set for southern hemisphere winter (YYYY-32)", async () => {
+			await agent
+				.patch("/api/v2/folder/1")
+				.send({ displayTime: "2024-32" })
+				.expect(200);
+
+			const result = await db.query(
+				"SELECT to_char(displaytimelowerbound, 'YYYY-MM-DD HH24:MI:SS') as displaytimelowerbound FROM folder WHERE folderid = :folderId",
+				{ folderId: 1 },
+			);
+
+			expect(result.rows[0]).toEqual({
+				displaytimelowerbound: "2024-06-01 00:00:00",
+			});
+		});
+
+		test("expect displaytimelowerbound is set for quarter 1 (YYYY-33)", async () => {
+			await agent
+				.patch("/api/v2/folder/1")
+				.send({ displayTime: "2024-33" })
+				.expect(200);
+
+			const result = await db.query(
+				"SELECT to_char(displaytimelowerbound, 'YYYY-MM-DD HH24:MI:SS') as displaytimelowerbound FROM folder WHERE folderid = :folderId",
+				{ folderId: 1 },
+			);
+
+			expect(result.rows[0]).toEqual({
+				displaytimelowerbound: "2024-01-01 00:00:00",
+			});
+		});
+
+		test("expect displaytimelowerbound is set for quarter 2 (YYYY-34)", async () => {
+			await agent
+				.patch("/api/v2/folder/1")
+				.send({ displayTime: "2024-34" })
+				.expect(200);
+
+			const result = await db.query(
+				"SELECT to_char(displaytimelowerbound, 'YYYY-MM-DD HH24:MI:SS') as displaytimelowerbound FROM folder WHERE folderid = :folderId",
+				{ folderId: 1 },
+			);
+
+			expect(result.rows[0]).toEqual({
+				displaytimelowerbound: "2024-04-01 00:00:00",
+			});
+		});
+
+		test("expect displaytimelowerbound is set for quarter 3 (YYYY-35)", async () => {
+			await agent
+				.patch("/api/v2/folder/1")
+				.send({ displayTime: "2024-35" })
+				.expect(200);
+
+			const result = await db.query(
+				"SELECT to_char(displaytimelowerbound, 'YYYY-MM-DD HH24:MI:SS') as displaytimelowerbound FROM folder WHERE folderid = :folderId",
+				{ folderId: 1 },
+			);
+
+			expect(result.rows[0]).toEqual({
+				displaytimelowerbound: "2024-07-01 00:00:00",
+			});
+		});
+
+		test("expect displaytimelowerbound is set for quarter 4 (YYYY-36)", async () => {
+			await agent
+				.patch("/api/v2/folder/1")
+				.send({ displayTime: "2024-36" })
+				.expect(200);
+
+			const result = await db.query(
+				"SELECT to_char(displaytimelowerbound, 'YYYY-MM-DD HH24:MI:SS') as displaytimelowerbound FROM folder WHERE folderid = :folderId",
+				{ folderId: 1 },
+			);
+
+			expect(result.rows[0]).toEqual({
+				displaytimelowerbound: "2024-10-01 00:00:00",
+			});
+		});
+
+		test("expect displaytimelowerbound is set for quadrimester 1 (YYYY-37)", async () => {
+			await agent
+				.patch("/api/v2/folder/1")
+				.send({ displayTime: "2024-37" })
+				.expect(200);
+
+			const result = await db.query(
+				"SELECT to_char(displaytimelowerbound, 'YYYY-MM-DD HH24:MI:SS') as displaytimelowerbound FROM folder WHERE folderid = :folderId",
+				{ folderId: 1 },
+			);
+
+			expect(result.rows[0]).toEqual({
+				displaytimelowerbound: "2024-01-01 00:00:00",
+			});
+		});
+
+		test("expect displaytimelowerbound is set for quadrimester 2 (YYYY-38)", async () => {
+			await agent
+				.patch("/api/v2/folder/1")
+				.send({ displayTime: "2024-38" })
+				.expect(200);
+
+			const result = await db.query(
+				"SELECT to_char(displaytimelowerbound, 'YYYY-MM-DD HH24:MI:SS') as displaytimelowerbound FROM folder WHERE folderid = :folderId",
+				{ folderId: 1 },
+			);
+
+			expect(result.rows[0]).toEqual({
+				displaytimelowerbound: "2024-05-01 00:00:00",
+			});
+		});
+
+		test("expect displaytimelowerbound is set for quadrimester 3 (YYYY-39)", async () => {
+			await agent
+				.patch("/api/v2/folder/1")
+				.send({ displayTime: "2024-39" })
+				.expect(200);
+
+			const result = await db.query(
+				"SELECT to_char(displaytimelowerbound, 'YYYY-MM-DD HH24:MI:SS') as displaytimelowerbound FROM folder WHERE folderid = :folderId",
+				{ folderId: 1 },
+			);
+
+			expect(result.rows[0]).toEqual({
+				displaytimelowerbound: "2024-09-01 00:00:00",
+			});
+		});
+
+		test("expect displaytimelowerbound is set for semestral 1 (YYYY-40)", async () => {
+			await agent
+				.patch("/api/v2/folder/1")
+				.send({ displayTime: "2024-40" })
+				.expect(200);
+
+			const result = await db.query(
+				"SELECT to_char(displaytimelowerbound, 'YYYY-MM-DD HH24:MI:SS') as displaytimelowerbound FROM folder WHERE folderid = :folderId",
+				{ folderId: 1 },
+			);
+
+			expect(result.rows[0]).toEqual({
+				displaytimelowerbound: "2024-01-01 00:00:00",
+			});
+		});
+
+		test("expect displaytimelowerbound is set for semestral 2 (YYYY-41)", async () => {
+			await agent
+				.patch("/api/v2/folder/1")
+				.send({ displayTime: "2024-41" })
+				.expect(200);
+
+			const result = await db.query(
+				"SELECT to_char(displaytimelowerbound, 'YYYY-MM-DD HH24:MI:SS') as displaytimelowerbound FROM folder WHERE folderid = :folderId",
+				{ folderId: 1 },
+			);
+
+			expect(result.rows[0]).toEqual({
+				displaytimelowerbound: "2024-07-01 00:00:00",
+			});
+		});
+
+		test("expect displaytimelowerbound is set for significant digits (1950S2)", async () => {
+			await agent
+				.patch("/api/v2/folder/1")
+				.send({ displayTime: "1950S2" })
+				.expect(200);
+
+			const result = await db.query(
+				"SELECT to_char(displaytimelowerbound, 'YYYY-MM-DD HH24:MI:SS') as displaytimelowerbound FROM folder WHERE folderid = :folderId",
+				{ folderId: 1 },
+			);
+
+			expect(result.rows[0]).toEqual({
+				displaytimelowerbound: "1950-01-01 00:00:00",
+			});
+		});
+
+		test("expect displaytimelowerbound is infinity for positive exponential year beyond PostgreSQL range (Y17E7)", async () => {
+			await agent
+				.patch("/api/v2/folder/1")
+				.send({ displayTime: "Y17E7" })
+				.expect(200);
+
+			const result = await db.query(
+				"SELECT displaytimelowerbound FROM folder WHERE folderid = :folderId",
+				{ folderId: 1 },
+			);
+
+			expect(result.rows[0]).toEqual({ displaytimelowerbound: Infinity });
+		});
+
+		test("expect displaytimelowerbound is -infinity for negative exponential year beyond PostgreSQL range (Y-17E7)", async () => {
+			await agent
+				.patch("/api/v2/folder/1")
+				.send({ displayTime: "Y-17E7" })
+				.expect(200);
+
+			const result = await db.query(
+				"SELECT displaytimelowerbound FROM folder WHERE folderid = :folderId",
+				{ folderId: 1 },
+			);
+
+			expect(result.rows[0]).toEqual({ displaytimelowerbound: -Infinity });
+		});
+
+		test("expect displaytimelowerbound is set for uncertain year component (?YYYY-MM-DD)", async () => {
+			await agent
+				.patch("/api/v2/folder/1")
+				.send({ displayTime: "?2004-06-11" })
+				.expect(200);
+
+			const result = await db.query(
+				"SELECT to_char(displaytimelowerbound, 'YYYY-MM-DD HH24:MI:SS') as displaytimelowerbound FROM folder WHERE folderid = :folderId",
+				{ folderId: 1 },
+			);
+
+			expect(result.rows[0]).toEqual({
+				displaytimelowerbound: "2004-06-11 00:00:00",
+			});
+		});
+
+		test("expect displaytimelowerbound is set for uncertain month component (YYYY-?MM-DD)", async () => {
+			await agent
+				.patch("/api/v2/folder/1")
+				.send({ displayTime: "2004-?06-11" })
+				.expect(200);
+
+			const result = await db.query(
+				"SELECT to_char(displaytimelowerbound, 'YYYY-MM-DD HH24:MI:SS') as displaytimelowerbound FROM folder WHERE folderid = :folderId",
+				{ folderId: 1 },
+			);
+
+			expect(result.rows[0]).toEqual({
+				displaytimelowerbound: "2004-06-11 00:00:00",
+			});
+		});
+
+		test("expect displaytimelowerbound is set for approximate day component (YYYY-MM-~DD)", async () => {
+			await agent
+				.patch("/api/v2/folder/1")
+				.send({ displayTime: "2004-06-~11" })
+				.expect(200);
+
+			const result = await db.query(
+				"SELECT to_char(displaytimelowerbound, 'YYYY-MM-DD HH24:MI:SS') as displaytimelowerbound FROM folder WHERE folderid = :folderId",
+				{ folderId: 1 },
+			);
+
+			expect(result.rows[0]).toEqual({
+				displaytimelowerbound: "2004-06-11 00:00:00",
+			});
+		});
+
+		test("expect displaytimelowerbound is set for set of years ({YYYY,YYYY,YYYY..YYYY})", async () => {
+			await agent
+				.patch("/api/v2/folder/1")
+				.send({ displayTime: "{1667,1668,1670..1672}" })
+				.expect(200);
+
+			const result = await db.query(
+				"SELECT to_char(displaytimelowerbound, 'YYYY-MM-DD HH24:MI:SS') as displaytimelowerbound FROM folder WHERE folderid = :folderId",
+				{ folderId: 1 },
+			);
+
+			expect(result.rows[0]).toEqual({
+				displaytimelowerbound: "1667-01-01 00:00:00",
+			});
+		});
+
+		test("expect displaytimelowerbound is set for list of years ([YYYY,YYYY,YYYY..YYYY])", async () => {
+			await agent
+				.patch("/api/v2/folder/1")
+				.send({ displayTime: "[1667,1668,1670..1672]" })
+				.expect(200);
+
+			const result = await db.query(
+				"SELECT to_char(displaytimelowerbound, 'YYYY-MM-DD HH24:MI:SS') as displaytimelowerbound FROM folder WHERE folderid = :folderId",
+				{ folderId: 1 },
+			);
+
+			expect(result.rows[0]).toEqual({
+				displaytimelowerbound: "1667-01-01 00:00:00",
+			});
 		});
 	});
 });

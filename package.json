@@ -7,7 +7,8 @@
 		"build": "npm run build --ws",
 		"lint": "npm run lint --ws",
 		"test": "npm run test --ws --if-present",
-		"format": "npm run format --ws --if-present"
+		"format": "npm run format --ws --if-present",
+		"postinstall": "if test -d node_modules/@edtf-ts/core; then patch-package; fi"
 	},
 	"workspaces": [
 		"./packages/logger",
@@ -41,6 +42,9 @@
 	"homepage": "https://permanent.org",
 	"engines": {
 		"node": ">=24.0"
+	},
+	"dependencies": {
+		"patch-package": "^8.0.1"
 	},
 	"devDependencies": {
 		"@redocly/cli": "^2.33.2",

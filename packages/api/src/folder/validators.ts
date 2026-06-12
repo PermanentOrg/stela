@@ -3,6 +3,7 @@ import { parse as parseEDTF } from "@edtf-ts/core";
 import type { PatchFolderRequest } from "./models";
 import { fieldsFromUserAuthentication } from "../validators";
 import { locationInputSchema } from "../location/validators";
+import { EDTF_LEVEL_2 } from "../constants";
 
 export const validateFolderRequest: (
 	data: unknown,
@@ -31,12 +32,12 @@ export const validatePatchFolderRequest: (
 			displayEndDate: Joi.string().optional().allow(null),
 			displayTime: Joi.string()
 				.custom((value: string) => {
-					const result = parseEDTF(value, 1);
+					const result = parseEDTF(value, EDTF_LEVEL_2);
 					if (result.success) {
 						return value;
 					}
 					const detail = result.errors.map((e) => e.message).join("; ");
-					throw new Error(`${value} is not valid Level 1 EDTF: ${detail}`);
+					throw new Error(`${value} is not valid Level 2 EDTF: ${detail}`);
 				})
 				.optional()
 				.allow(null),

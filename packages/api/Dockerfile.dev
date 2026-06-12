@@ -8,6 +8,7 @@ COPY package-lock.json ./
 COPY tsconfig.json ./
 COPY tsconfig.build.json ./
 COPY packages ./packages
+COPY patches ./patches
 COPY .env ./
 
 RUN npm cache clean --force
