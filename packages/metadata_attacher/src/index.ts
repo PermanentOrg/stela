@@ -127,10 +127,13 @@ const getPhotoMetadata = (
 					rdfMetadata["ExifIFD:DateTimeOriginal"],
 					rdfMetadata["ExifIFD:OffsetTimeOriginal"],
 				);
+	const { "IPTC:Keywords": iptcKeywords } = rdfMetadata;
 	const tags =
-		rdfMetadata["IPTC:Keywords"] === undefined
+		iptcKeywords === undefined
 			? undefined
-			: rdfMetadata["IPTC:Keywords"]["rdf:Bag"]["rdf:li"];
+			: typeof iptcKeywords === "string"
+				? [iptcKeywords]
+				: iptcKeywords["rdf:Bag"]["rdf:li"];
 
 	return {
 		creationTime:

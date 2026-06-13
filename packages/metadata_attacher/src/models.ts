@@ -33,6 +33,7 @@ export interface RdfMetadata {
 	"IPTC:ObjectName": string | undefined;
 	"IPTC:Caption-Abstract": string | undefined;
 	"IPTC:Keywords":
+		| string
 		| {
 				"rdf:Bag": {
 					"rdf:li": string[];
