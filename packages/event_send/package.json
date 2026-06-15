@@ -37,6 +37,6 @@
 		"mixpanel": "^0.20.0",
 		"require-env-variable": "^4.0.2",
 		"tinypg": "^7.0.1",
-		"ua-parser-js": "^2.0.5"
+		"ua-parser-js": "^2.0.10"
 	}
 }
