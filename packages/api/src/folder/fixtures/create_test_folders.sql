@@ -58,7 +58,7 @@ VALUES
   NULL,
   'Private Folder',
   'Private Folder',
-  NULL,
+  '0001-0002',
   'status.generic.ok',
   '2025-01-01',
   'type.folder.private',

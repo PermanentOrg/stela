@@ -45,7 +45,7 @@ VALUES (
 ),
 (
   4,
-  3,
+  10,
   '56f7c246-e4ec-41f3-b117-6df4c9377075',
   'https://local.permanent.org/share/56f7c246-e4ec-41f3-b117-6df4c9377075',
   2,
