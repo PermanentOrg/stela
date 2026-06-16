@@ -36,7 +36,7 @@
 	},
 	"dependencies": {
 		"@stela/publisher-utils": "^1.0.0",
-		"@edtf-ts/core": "^0.4.2",
+		"@edtf-ts/core": "^0.5.0",
 		"@fusionauth/typescript-client": "^1.60.0",
 		"@mailchimp/mailchimp_marketing": "^3.0.80",
 		"@mailchimp/mailchimp_transactional": "1.1.2",

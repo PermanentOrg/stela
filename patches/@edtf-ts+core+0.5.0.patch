@@ -1,0 +1,50 @@
+diff --git a/node_modules/@edtf-ts/core/dist/index.cjs b/node_modules/@edtf-ts/core/dist/index.cjs
+index 8158ce6..7f99b83 100644
+--- a/node_modules/@edtf-ts/core/dist/index.cjs
++++ b/node_modules/@edtf-ts/core/dist/index.cjs
+@@ -972,11 +972,16 @@ var DEFAULT_SEASON_MAPPINGS = {
+   // September-November
+   24: { startMonth: 12, endMonth: 2, name: "Winter" },
+   // December-February (crosses year)
++  // Northern Hemisphere seasons
++  25: { startMonth: 3, endMonth: 5, name: "Spring (NH)" },
++  26: { startMonth: 6, endMonth: 8, name: "Summer (NH)" },
++  27: { startMonth: 9, endMonth: 11, name: "Autumn (NH)" },
++  28: { startMonth: 12, endMonth: 2, name: "Winter (NH)" },
+   // Southern Hemisphere seasons (offset by 6 months)
+-  25: { startMonth: 9, endMonth: 11, name: "Spring (SH)" },
+-  26: { startMonth: 12, endMonth: 2, name: "Summer (SH)" },
+-  27: { startMonth: 3, endMonth: 5, name: "Autumn (SH)" },
+-  28: { startMonth: 6, endMonth: 8, name: "Winter (SH)" },
++  29: { startMonth: 9, endMonth: 11, name: "Spring (SH)" },
++  30: { startMonth: 12, endMonth: 2, name: "Summer (SH)" },
++  31: { startMonth: 3, endMonth: 5, name: "Autumn (SH)" },
++  32: { startMonth: 6, endMonth: 8, name: "Winter (SH)" },
+   // Quarters
+   33: { startMonth: 1, endMonth: 3, name: "Quarter 1" },
+   // Q1
+diff --git a/node_modules/@edtf-ts/core/dist/index.js b/node_modules/@edtf-ts/core/dist/index.js
+index ae819a9..9762578 100644
+--- a/node_modules/@edtf-ts/core/dist/index.js
++++ b/node_modules/@edtf-ts/core/dist/index.js
+@@ -970,11 +970,16 @@ var DEFAULT_SEASON_MAPPINGS = {
+   // September-November
+   24: { startMonth: 12, endMonth: 2, name: "Winter" },
+   // December-February (crosses year)
++  // Northern Hemisphere seasons
++  25: { startMonth: 3, endMonth: 5, name: "Spring (NH)" },
++  26: { startMonth: 6, endMonth: 8, name: "Summer (NH)" },
++  27: { startMonth: 9, endMonth: 11, name: "Autumn (NH)" },
++  28: { startMonth: 12, endMonth: 2, name: "Winter (NH)" },
+   // Southern Hemisphere seasons (offset by 6 months)
+-  25: { startMonth: 9, endMonth: 11, name: "Spring (SH)" },
+-  26: { startMonth: 12, endMonth: 2, name: "Summer (SH)" },
+-  27: { startMonth: 3, endMonth: 5, name: "Autumn (SH)" },
+-  28: { startMonth: 6, endMonth: 8, name: "Winter (SH)" },
++  29: { startMonth: 9, endMonth: 11, name: "Spring (SH)" },
++  30: { startMonth: 12, endMonth: 2, name: "Summer (SH)" },
++  31: { startMonth: 3, endMonth: 5, name: "Autumn (SH)" },
++  32: { startMonth: 6, endMonth: 8, name: "Winter (SH)" },
+   // Quarters
+   33: { startMonth: 1, endMonth: 3, name: "Quarter 1" },
+   // Q1

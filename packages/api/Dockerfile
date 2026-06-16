@@ -9,6 +9,7 @@ COPY tsconfig.build.json ./
 COPY tsconfig.json ./
 COPY jest.config.js ./
 COPY packages ./packages
+COPY patches ./patches
 
 RUN npm install
 RUN npm install -ws
@@ -29,6 +30,7 @@ RUN echo -e $AWS_RDS_CERT_BUNDLE > /etc/ca-certificates/rds-us-west-2-ca-bundle.
 
 COPY --from=builder /usr/local/apps/stela/packages/api/dist ./packages/api/dist
 COPY --from=builder /usr/local/apps/stela/packages/api/package.json ./packages/api/package.json
+COPY --from=builder /usr/local/apps/stela/patches ./patches
 COPY --from=builder /usr/local/apps/stela/packages/logger/dist ./packages/logger/dist
 COPY --from=builder /usr/local/apps/stela/packages/logger/package.json ./packages/logger/package.json
 COPY --from=builder /usr/local/apps/stela/packages/publisher-utils/dist ./packages/publisher-utils/dist
@@ -38,6 +40,7 @@ COPY --from=builder /usr/local/apps/stela/packages/permanent_models/package.json
 COPY --from=builder /usr/local/apps/stela/package.json ./package.json
 COPY --from=builder /usr/local/apps/stela/package-lock.json ./package-lock.json
 
+RUN npm install --workspaces=false
 RUN npm install --workspace @stela/api
 
 ENV PORT=80

@@ -9,6 +9,7 @@ COPY tsconfig.build.json ./
 COPY tsconfig.json ./
 COPY jest.config.js ./
 COPY packages ./packages
+COPY patches ./patches
 
 RUN npm install
 RUN npm install -ws

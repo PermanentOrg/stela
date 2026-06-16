@@ -165,11 +165,11 @@ describe("PATCH /records", () => {
 			.expect(400);
 	});
 
-	test("expect 400 error if display time is not valid Level 1 EDTF", async () => {
+	test("expect 400 error if display time is not valid Level 2 EDTF", async () => {
 		await agent
 			.patch("/api/v2/records/10001")
 			.send({
-				displayTime: "2001-34", // This is Level 2 EDTF for "Q2 of 2001"
+				displayTime: "2001-42", // Beyond the valid sub-year range of 21-41
 			})
 			.expect(400);
 	});

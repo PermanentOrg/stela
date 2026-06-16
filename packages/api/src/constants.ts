@@ -1,6 +1,8 @@
 export const KB = 1024;
 export const GB = KB * KB * KB;
 
+export const EDTF_LEVEL_2 = 2;
+
 export const ACCESS_ROLE = {
 	Contributor: "access.role.contributor",
 	Curator: "access.role.curator",
