@@ -79,7 +79,7 @@ const getEmbeddedMetadataFromS3 = async (
 		throw Error("metadata file is empty");
 	}
 
-	const xmlParser = new XMLParser();
+	const xmlParser = new XMLParser({ parseTagValue: false });
 	const metadata: unknown = xmlParser.parse(metadataFileContents);
 	validateMetsMetadata(metadata);
 
