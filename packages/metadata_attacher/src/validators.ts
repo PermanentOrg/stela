@@ -6,11 +6,16 @@ const rdfMetadataSchema = Joi.object({
 	"File:MIMEType": Joi.string().required(),
 	"IPTC:ObjectName": Joi.string().optional().empty(""),
 	"IPTC:Caption-Abstract": Joi.string().optional().empty(""),
-	"IPTC:Keywords": Joi.object({
-		"rdf:Bag": Joi.object({
-			"rdf:li": Joi.array().items(Joi.string()).required(),
-		}).required(),
-	}).optional(),
+	"IPTC:Keywords": Joi.alternatives()
+		.try(
+			Joi.string(),
+			Joi.object({
+				"rdf:Bag": Joi.object({
+					"rdf:li": Joi.array().items(Joi.string()).required(),
+				}).required(),
+			}),
+		)
+		.optional(),
 	"ExifIFD:Title": Joi.string().optional().empty(""),
 	"ExifIFD:UserComment": Joi.string().optional().empty(""),
 	"ExifIFD:Comments": Joi.string().optional().empty(""),
