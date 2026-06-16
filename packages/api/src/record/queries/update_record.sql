@@ -10,9 +10,9 @@ SET
     WHEN :setDescriptionToNull THEN NULL
     ELSE COALESCE(:description, description)
   END,
-  originalfilecreationtime = CASE
+  displaytime = CASE
     WHEN :setDisplayTimeToNull THEN NULL
-    ELSE COALESCE(:displayTime, originalfilecreationtime)
+    ELSE COALESCE(:displayTime, displaytime)
   END,
   updateddt = CURRENT_TIMESTAMP
 WHERE

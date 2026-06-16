@@ -43,7 +43,7 @@ describe("handler", () => {
 				displayName: string;
 				description: string | null;
 				derivedTimestamp: Date | null;
-				originalFileCreationTime: string | null;
+				displayTime: string | null;
 				tags: string[];
 				altText: string | null;
 		  }
@@ -53,7 +53,7 @@ describe("handler", () => {
 			displayName: string;
 			description: string | null;
 			derivedTimestamp: Date | null;
-			originalFileCreationTime: string | null;
+			displayTime: string | null;
 			tags: string[];
 			altText: string | null;
 		}>(
@@ -62,7 +62,7 @@ describe("handler", () => {
 				record.displayname AS "displayName",
 				record.description,
 				record.deriveddt AS "derivedTimestamp",
-				record.originalfilecreationtime AS "originalFileCreationTime",
+				record.displaytime AS "displayTime",
 				array_remove(array_agg(tag.name), NULL) AS "tags",
 				alttext AS "altText"
 			FROM
@@ -201,9 +201,7 @@ describe("handler", () => {
 		expect(recordMetadata?.derivedTimestamp).toEqual(
 			new Date("2023-06-15T21:30:00.000Z"),
 		);
-		expect(recordMetadata?.originalFileCreationTime).toEqual(
-			"2023-06-15T21:30:00Z",
-		);
+		expect(recordMetadata?.displayTime).toEqual("2023-06-15T21:30:00Z");
 		expect(recordMetadata?.tags.sort()).toEqual(
 			["nature", "landscape", "sunset"].sort(),
 		);
@@ -614,7 +612,7 @@ describe("handler", () => {
 			"This is a test image description",
 		);
 		expect(recordMetadata?.derivedTimestamp).toEqual(null);
-		expect(recordMetadata?.originalFileCreationTime).toEqual(null);
+		expect(recordMetadata?.displayTime).toEqual(null);
 		expect(recordMetadata?.tags.sort()).toEqual(
 			["nature", "landscape", "sunset"].sort(),
 		);
@@ -670,9 +668,7 @@ describe("handler", () => {
 		const recordMetadata = await getRecordMetadata("1");
 		expect(recordMetadata).toBeDefined();
 		expect(recordMetadata?.derivedTimestamp).toEqual(null);
-		expect(recordMetadata?.originalFileCreationTime).toEqual(
-			"2023-06-15T21:30:00",
-		);
+		expect(recordMetadata?.displayTime).toEqual("2023-06-15T21:30:00");
 	});
 
 	test("should extract a single IPTC keyword provided as a string", async () => {
@@ -831,9 +827,7 @@ describe("handler", () => {
 		expect(recordMetadata?.derivedTimestamp).toEqual(
 			new Date("2024-03-15T10:30:00.000Z"),
 		);
-		expect(recordMetadata?.originalFileCreationTime).toEqual(
-			"2024-03-15T10:30:00Z",
-		);
+		expect(recordMetadata?.displayTime).toEqual("2024-03-15T10:30:00Z");
 		expect(recordMetadata?.displayName).toEqual("test_file.jpg");
 		expect(recordMetadata?.description).toEqual(null);
 		expect(recordMetadata?.tags.length).toEqual(0);
@@ -893,9 +887,7 @@ describe("handler", () => {
 		expect(recordMetadata?.derivedTimestamp).toEqual(
 			new Date("2023-08-20T14:15:30.000Z"),
 		);
-		expect(recordMetadata?.originalFileCreationTime).toEqual(
-			"2023-08-20T14:15:30Z",
-		);
+		expect(recordMetadata?.displayTime).toEqual("2023-08-20T14:15:30Z");
 		expect(recordMetadata?.displayName).toEqual("test_file.jpg");
 		expect(recordMetadata?.description).toEqual(null);
 		expect(recordMetadata?.tags.length).toEqual(0);
@@ -955,9 +947,7 @@ describe("handler", () => {
 		expect(recordMetadata?.derivedTimestamp).toEqual(
 			new Date("2024-05-20T08:45:00.000Z"),
 		);
-		expect(recordMetadata?.originalFileCreationTime).toEqual(
-			"2024-05-20T08:45:00Z",
-		);
+		expect(recordMetadata?.displayTime).toEqual("2024-05-20T08:45:00Z");
 		expect(recordMetadata?.displayName).toEqual("test_file.jpg");
 		expect(recordMetadata?.description).toEqual(null);
 		expect(recordMetadata?.tags.length).toEqual(0);
@@ -1066,7 +1056,7 @@ describe("handler", () => {
 		const recordMetadata = await getRecordMetadata("1");
 		expect(recordMetadata).toBeDefined();
 		expect(recordMetadata?.derivedTimestamp).toEqual(null);
-		expect(recordMetadata?.originalFileCreationTime).toEqual(null);
+		expect(recordMetadata?.displayTime).toEqual(null);
 		expect(recordMetadata?.displayName).toEqual("test_file.jpg");
 		expect(recordMetadata?.description).toEqual(null);
 		expect(recordMetadata?.tags.length).toEqual(0);
