@@ -191,13 +191,13 @@ describe("PATCH /records", () => {
 			.expect(200);
 
 		const result = await db.query(
-			"SELECT originalfilecreationtime FROM record WHERE recordId = :recordId",
+			"SELECT displaytime FROM record WHERE recordId = :recordId",
 			{
 				recordId: 10001,
 			},
 		);
 
-		expect(result.rows[0]).toEqual({ originalfilecreationtime: "2001-21~" });
+		expect(result.rows[0]).toEqual({ displaytime: "2001-21~" });
 	});
 
 	test("expect display time is updated when set to null", async () => {
@@ -207,13 +207,13 @@ describe("PATCH /records", () => {
 			.expect(200);
 
 		const result = await db.query(
-			"SELECT originalfilecreationtime FROM record WHERE recordId = :recordId",
+			"SELECT displaytime FROM record WHERE recordId = :recordId",
 			{
 				recordId: 10008,
 			},
 		);
 
-		expect(result.rows[0]).toEqual({ originalfilecreationtime: null });
+		expect(result.rows[0]).toEqual({ displaytime: null });
 	});
 
 	test("expect to log error and return 500 if database permissions query fails", async () => {

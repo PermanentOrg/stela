@@ -25,7 +25,7 @@ record (
   updateddt,
   alttext,
   locnid,
-  originalfilecreationtime
+  displaytime
 )
 VALUES
 (

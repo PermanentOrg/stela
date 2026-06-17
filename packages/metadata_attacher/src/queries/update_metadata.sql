@@ -72,7 +72,7 @@ SET
 		END,
 	description = COALESCE(description, :descriptionFromEmbeddedMetadata),
 	deriveddt = COALESCE(deriveddt, :timestampFromEmbeddedMetadata),
-	originalfilecreationtime = COALESCE(originalfilecreationtime, :timeFromEmbeddedMetadata),
+	displaytime = COALESCE(displaytime, :timeFromEmbeddedMetadata),
 	alttext = COALESCE(alttext, :altTextFromEmbeddedMetadata)
 WHERE
 	record.recordid = (SELECT recordid FROM record_to_update);
