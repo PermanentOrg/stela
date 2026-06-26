@@ -1,9 +1,10 @@
 import * as path from "node:path";
 import { TinyPg } from "tinypg";
 
-// Use worker-specific databases to enable parallel test execution
-// Each Jest worker gets its own isolated database
-const workerId = process.env["JEST_WORKER_ID"] ?? "1";
+// Use pool-slot-specific databases to enable parallel test execution.
+// VITEST_POOL_ID is the pool-slot index (1…maxThreads), reused across files.
+// VITEST_WORKER_ID is a globally unique per-file ID and must NOT be used here.
+const workerId = process.env["VITEST_POOL_ID"] ?? "1";
 const dbName = `test_permanent_worker_${workerId}`;
 
 const db = new TinyPg({

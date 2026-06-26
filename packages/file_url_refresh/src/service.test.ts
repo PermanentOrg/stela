@@ -1,11 +1,12 @@
 import { logger } from "@stela/logger";
+import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 import { constructSignedCdnUrl } from "@stela/s3-utils";
 import { refreshFileUrls } from "./service";
 import { db } from "./database";
 
-jest.mock("@stela/logger");
-jest.mock("@stela/s3-utils");
-jest.mock("./database");
+vi.mock("@stela/logger");
+vi.mock("@stela/s3-utils");
+vi.mock("./database");
 
 interface FileData {
 	accessUrl: string;
@@ -77,20 +78,20 @@ describe("refreshThumbnails", () => {
 		"https://testcdn.permanent.org/originals/1/1?Expires=2757200650&Policy=new-test-policy&Signature=new-test-signature&Key-Pair-Id=test-key-pair&response-content-disposition=attachment; filename=public_file.png";
 
 	beforeEach(async () => {
-		jest
-			.mocked(constructSignedCdnUrl)
-			.mockImplementation((_: string, fileName?: string) => {
+		vi.mocked(constructSignedCdnUrl).mockImplementation(
+			(_: string, fileName?: string) => {
 				if (fileName === undefined) {
 					return testDownloadUrl;
 				}
 				return testFileUrl;
-			});
+			},
+		);
 		await loadFixtures();
 	});
 
 	afterEach(async () => {
-		jest.restoreAllMocks();
-		jest.clearAllMocks();
+		vi.restoreAllMocks();
+		vi.clearAllMocks();
 		await clearDatabase();
 	});
 
@@ -184,7 +185,7 @@ describe("refreshThumbnails", () => {
 	test("should log and rethrow an error if database call to find items fails", async () => {
 		expect.assertions(2);
 		const errorMessage = "out of cheese - redo from start";
-		jest.spyOn(db, "sql").mockRejectedValue(errorMessage);
+		vi.spyOn(db, "sql").mockRejectedValue(errorMessage);
 		await refreshFileUrls().catch((err: unknown) => {
 			expect(err).toEqual(errorMessage);
 		});
@@ -193,10 +194,9 @@ describe("refreshThumbnails", () => {
 
 	test("should log error if an individual update fails", async () => {
 		const errorMessage = "out of cheese - redo from start";
-		jest
-			.spyOn(db, "sql")
+		vi.spyOn(db, "sql")
 			.mockImplementationOnce(
-				jest.fn().mockResolvedValue({
+				vi.fn().mockResolvedValue({
 					rows: [
 						{
 							id: "1",

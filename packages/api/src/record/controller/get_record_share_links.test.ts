@@ -1,4 +1,5 @@
 import type { NextFunction } from "express";
+import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 import createError from "http-errors";
 import { logger } from "@stela/logger";
 import request from "supertest";
@@ -8,9 +9,9 @@ import { verifyUserAuthentication } from "../../middleware";
 import type { ShareLink } from "../../share_link/models";
 import { mockVerifyUserAuthentication } from "../../../test/middleware_mocks";
 
-jest.mock("../../database");
-jest.mock("../../middleware");
-jest.mock("@stela/logger");
+vi.mock("../../database");
+vi.mock("../../middleware");
+vi.mock("@stela/logger");
 
 const setupDatabase = async (): Promise<void> => {
 	await db.sql("record.fixtures.create_test_accounts");
@@ -73,8 +74,8 @@ describe("GET /records/{id}/share-links", () => {
 
 	afterEach(async () => {
 		await clearDatabase();
-		jest.restoreAllMocks();
-		jest.clearAllMocks();
+		vi.restoreAllMocks();
+		vi.clearAllMocks();
 	});
 
 	test("expect to return share links for a record", async () => {
@@ -123,7 +124,7 @@ describe("GET /records/{id}/share-links", () => {
 
 	test("expect to log error and return 500 if database lookup fails", async () => {
 		const testError = new Error("test error");
-		jest.spyOn(db, "sql").mockImplementation(async () => {
+		vi.spyOn(db, "sql").mockImplementation(async () => {
 			throw testError;
 		});
 
@@ -132,11 +133,11 @@ describe("GET /records/{id}/share-links", () => {
 	});
 
 	test("expect 401 if not authenticated", async () => {
-		jest
-			.mocked(verifyUserAuthentication)
-			.mockImplementation(async (_, __, next: NextFunction) => {
+		vi.mocked(verifyUserAuthentication).mockImplementation(
+			async (_, __, next: NextFunction) => {
 				next(createError.Unauthorized("Invalid auth token"));
-			});
+			},
+		);
 		await agent.get("/api/v2/records/10001/share-links").expect(401);
 	});
 

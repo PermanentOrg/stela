@@ -1,3 +1,4 @@
+import { beforeEach, describe, expect, test, vi } from "vitest";
 import {
 	PublishBatchCommand,
 	SNSClient,
@@ -5,23 +6,24 @@ import {
 } from "@aws-sdk/client-sns";
 import { publisherClient } from "./index";
 
-const mockSend = jest.fn();
-jest.createMockFromModule("@aws-sdk/client-sns");
-jest.mock("@aws-sdk/client-sns");
+const mockSend = vi.fn();
+vi.mock("@aws-sdk/client-sns");
+vi.mock("@aws-sdk/client-sns");
 
 describe("batchPublishMessages", () => {
 	beforeEach(() => {
-		jest.clearAllMocks();
+		vi.clearAllMocks();
 	});
 	test("should publish messages in batches", async () => {
-		jest.mocked(SNSClient).mockImplementation(
-			jest.fn().mockReturnValue({
-				send: mockSend.mockResolvedValue({ Failed: [] }),
+		vi.mocked(SNSClient).mockImplementation(
+			vi.fn().mockReturnValue({
+				send: mockSend,
 			}),
 		);
+		mockSend.mockResolvedValue({ Failed: [] });
 
-		jest.mocked(PublishBatchCommand).mockImplementation(
-			jest.fn().mockImplementation((input: PublishBatchInput) => ({
+		vi.mocked(PublishBatchCommand).mockImplementation(
+			vi.fn().mockImplementation((input: PublishBatchInput) => ({
 				__input: input,
 			})),
 		);
@@ -134,8 +136,8 @@ describe("batchPublishMessages", () => {
 	});
 
 	test("should report failures", async () => {
-		jest.mocked(SNSClient).mockImplementation(
-			jest.fn().mockReturnValue({
+		vi.mocked(SNSClient).mockImplementation(
+			vi.fn().mockReturnValue({
 				send: mockSend.mockResolvedValue({ Failed: [{ Id: "1" }] }),
 			}),
 		);
@@ -169,10 +171,10 @@ describe("batchPublishMessages", () => {
 		} = process;
 		process.env["AWS_ENDPOINT_URL"] = "http://localhost:4566";
 
-		const mockSNSClient = jest.fn().mockReturnValue({
+		const mockSNSClient = vi.fn().mockReturnValue({
 			send: mockSend.mockResolvedValue({ Failed: [] }),
 		});
-		jest.mocked(SNSClient).mockImplementation(mockSNSClient);
+		vi.mocked(SNSClient).mockImplementation(mockSNSClient);
 
 		const messages = [{ id: "1", body: "message 1" }];
 
@@ -193,12 +195,12 @@ describe("batchPublishMessages", () => {
 
 describe("publishMessage", () => {
 	beforeEach(() => {
-		jest.clearAllMocks();
+		vi.clearAllMocks();
 	});
 
 	test("should publish a message", async () => {
-		jest.mocked(SNSClient).mockImplementation(
-			jest.fn().mockReturnValue({
+		vi.mocked(SNSClient).mockImplementation(
+			vi.fn().mockReturnValue({
 				send: mockSend.mockResolvedValue({ Failed: [] }),
 			}),
 		);
@@ -208,8 +210,8 @@ describe("publishMessage", () => {
 	});
 
 	test("should include message attributes if provided", async () => {
-		jest.mocked(SNSClient).mockImplementation(
-			jest.fn().mockReturnValue({
+		vi.mocked(SNSClient).mockImplementation(
+			vi.fn().mockReturnValue({
 				send: mockSend.mockResolvedValue({ Failed: [] }),
 			}),
 		);
@@ -222,40 +224,30 @@ describe("publishMessage", () => {
 				Action: "login",
 			},
 		});
-		const {
-			mock: {
-				calls: [publishCommand],
-			},
-		} = mockSend as { mock: { calls: PublishBatchCommand[] } };
-		expect(publishCommand).toBeDefined();
-		if (publishCommand !== undefined) {
-			expect(publishCommand.input).toEqual(
-				new PublishBatchCommand({
-					TopicArn: "topic",
-					PublishBatchRequestEntries: [
-						{
-							Id: "1",
-							Message: "message",
-							MessageAttributes: {
-								Entity: {
-									DataType: "String",
-									StringValue: "account",
-								},
-								Action: {
-									DataType: "String",
-									StringValue: "login",
-								},
-							},
+		expect(vi.mocked(PublishBatchCommand)).toHaveBeenCalledWith({
+			TopicArn: "topic",
+			PublishBatchRequestEntries: [
+				{
+					Id: "1",
+					Message: "message",
+					MessageAttributes: {
+						Entity: {
+							DataType: "String",
+							StringValue: "account",
 						},
-					],
-				}).input,
-			);
-		}
+						Action: {
+							DataType: "String",
+							StringValue: "login",
+						},
+					},
+				},
+			],
+		});
 	});
 
 	test("should throw an error if the message fails to publish", async () => {
-		jest.mocked(SNSClient).mockImplementation(
-			jest.fn().mockReturnValue({
+		vi.mocked(SNSClient).mockImplementation(
+			vi.fn().mockReturnValue({
 				send: mockSend.mockResolvedValue({ Failed: [{ Id: "1" }] }),
 			}),
 		);

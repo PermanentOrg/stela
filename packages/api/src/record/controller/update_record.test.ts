@@ -1,15 +1,17 @@
-import { when } from "jest-when";
+import { when } from "vitest-when";
+import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 import { logger } from "@stela/logger";
 import request from "supertest";
 import { app } from "../../app";
 import { db } from "../../database";
 import { AccessRole } from "../../access/models";
 import { mockVerifyUserAuthentication } from "../../../test/middleware_mocks";
+import { mockSqlCall } from "../../../test/mock_sql";
 import type { ArchiveRecord } from "../models";
 
-jest.mock("../../database");
-jest.mock("../../middleware");
-jest.mock("@stela/logger");
+vi.mock("../../database");
+vi.mock("../../middleware");
+vi.mock("@stela/logger");
 
 const setupDatabase = async (): Promise<void> => {
 	await db.sql("record.fixtures.create_test_accounts");
@@ -72,8 +74,8 @@ describe("PATCH /records", () => {
 
 	afterEach(async () => {
 		await clearDatabase();
-		jest.restoreAllMocks();
-		jest.clearAllMocks();
+		vi.restoreAllMocks();
+		vi.resetAllMocks();
 	});
 
 	test("expect an empty query to cause a 400 error", async () => {
@@ -218,7 +220,7 @@ describe("PATCH /records", () => {
 
 	test("expect to log error and return 500 if database permissions query fails", async () => {
 		const testError = new Error("test error");
-		jest.spyOn(db, "sql").mockImplementation(async () => {
+		vi.spyOn(db, "sql").mockImplementation(async () => {
 			throw testError;
 		});
 
@@ -232,14 +234,14 @@ describe("PATCH /records", () => {
 
 	test("expect to log error and return 500 if database update query fails", async () => {
 		const testError = new Error("test error");
-		const dbSpy = jest.spyOn(db, "sql");
+		const dbSpy = vi.spyOn(db, "sql");
 		when(dbSpy)
 			.calledWith("access.queries.get_record_access_role", {
 				itemId: "10001",
 				email: "test@permanent.org",
 			})
-			.mockImplementationOnce(
-				jest.fn().mockResolvedValueOnce({
+			.thenDo(
+				vi.fn().mockResolvedValue({
 					rows: [
 						{
 							archiveAccessRole: AccessRole.Owner,
@@ -247,7 +249,8 @@ describe("PATCH /records", () => {
 						},
 					],
 				}),
-			)
+			);
+		when(dbSpy)
 			.calledWith("record.queries.update_record", {
 				recordId: "10001",
 				displayName: undefined,
@@ -258,7 +261,7 @@ describe("PATCH /records", () => {
 				displayTime: undefined,
 				setDisplayTimeToNull: false,
 			})
-			.mockRejectedValueOnce(testError);
+			.thenReject(testError);
 
 		await agent
 			.patch("/api/v2/records/10001")
@@ -291,14 +294,14 @@ describe("PATCH /records", () => {
 	});
 
 	test("expect to return 404 if database update updates nothing", async () => {
-		const dbSpy = jest.spyOn(db, "sql");
+		const dbSpy = vi.spyOn(db, "sql");
 		when(dbSpy)
 			.calledWith("access.queries.get_record_access_role", {
 				itemId: "10001",
 				email: "test@permanent.org",
 			})
-			.mockImplementationOnce(
-				jest.fn().mockResolvedValueOnce({
+			.thenDo(
+				vi.fn().mockResolvedValue({
 					rows: [
 						{
 							archiveAccessRole: AccessRole.Owner,
@@ -306,7 +309,8 @@ describe("PATCH /records", () => {
 						},
 					],
 				}),
-			)
+			);
+		when(dbSpy)
 			.calledWith("record.queries.update_record", {
 				recordId: "10001",
 				displayName: undefined,
@@ -317,11 +321,7 @@ describe("PATCH /records", () => {
 				displayTime: undefined,
 				setDisplayTimeToNull: false,
 			})
-			.mockImplementationOnce(
-				jest.fn().mockResolvedValueOnce({
-					rows: [],
-				}),
-			);
+			.thenDo(vi.fn().mockResolvedValue({ rows: [] }));
 
 		await agent
 			.patch("/api/v2/records/10001")
@@ -516,16 +516,12 @@ describe("PATCH /records", () => {
 	});
 
 	test("expect 404 if record disappears between access check and location lookup", async () => {
-		const sqlSpy = jest.spyOn(db, "sql");
-		when(sqlSpy)
-			.calledWith("record.queries.get_record_location_id", {
-				recordId: "10001",
-			})
-			.mockImplementationOnce(
-				jest.fn().mockResolvedValue({
-					rows: [],
-				}),
-			);
+		mockSqlCall(
+			db,
+			"record.queries.get_record_location_id",
+			{ recordId: "10001" },
+			{ resolve: { rows: [] } },
+		);
 
 		await agent
 			.patch("/api/v2/records/10001")
@@ -535,12 +531,12 @@ describe("PATCH /records", () => {
 
 	test("expect 500 if the record location lookup query fails", async () => {
 		const testError = new Error("test error");
-		const sqlSpy = jest.spyOn(db, "sql");
-		when(sqlSpy)
-			.calledWith("record.queries.get_record_location_id", {
-				recordId: "10001",
-			})
-			.mockImplementationOnce(jest.fn().mockRejectedValue(testError));
+		mockSqlCall(
+			db,
+			"record.queries.get_record_location_id",
+			{ recordId: "10001" },
+			{ reject: testError },
+		);
 
 		await agent
 			.patch("/api/v2/records/10001")

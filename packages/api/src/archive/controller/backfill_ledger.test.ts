@@ -1,4 +1,5 @@
 import request from "supertest";
+import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 import type { NextFunction } from "express";
 import createError from "http-errors";
 import { logger } from "@stela/logger";
@@ -8,10 +9,10 @@ import { db } from "../../database";
 import { publisherClient } from "@stela/publisher-utils";
 import { mockVerifyAdminAuthentication } from "../../../test/middleware_mocks";
 
-jest.mock("../../database");
-jest.mock("../../middleware");
-jest.mock("@stela/publisher-utils");
-jest.mock("@stela/logger");
+vi.mock("../../database");
+vi.mock("../../middleware");
+vi.mock("@stela/publisher-utils");
+vi.mock("@stela/logger");
 
 const loadFixtures = async (): Promise<void> => {
 	await db.sql("archive.fixtures.create_test_accounts");
@@ -31,12 +32,12 @@ describe("POST /:archiveId/backfill-ledger", () => {
 			"82bd483e-914b-4bfe-abf9-92ffe86d7803",
 		);
 		await loadFixtures();
-		jest.spyOn(publisherClient, "publishMessage").mockResolvedValue();
+		vi.spyOn(publisherClient, "publishMessage").mockResolvedValue();
 	});
 
 	afterEach(async () => {
 		await clearDatabase();
-		jest.clearAllMocks();
+		vi.clearAllMocks();
 	});
 
 	test("should backfill ledger records successfully", async () => {
@@ -75,11 +76,11 @@ describe("POST /:archiveId/backfill-ledger", () => {
 	});
 
 	test("should require admin authentication", async () => {
-		jest
-			.mocked(verifyAdminAuthentication)
-			.mockImplementation(async (_, __, next: NextFunction) => {
+		vi.mocked(verifyAdminAuthentication).mockImplementation(
+			async (_, __, next: NextFunction) => {
 				next(createError.Unauthorized("Invalid token"));
-			});
+			},
+		);
 
 		await agent.post("/api/v2/archive/1/backfill-ledger").expect(401);
 		expect(publisherClient.publishMessage).not.toHaveBeenCalled();
@@ -92,7 +93,7 @@ describe("POST /:archiveId/backfill-ledger", () => {
 
 	test("should handle database query errors", async () => {
 		const testError = new Error("Database error");
-		jest.spyOn(db, "sql").mockRejectedValueOnce(testError);
+		vi.spyOn(db, "sql").mockRejectedValueOnce(testError);
 
 		await agent.post("/api/v2/archive/1/backfill-ledger").expect(500);
 		expect(logger.error).toHaveBeenCalledWith(testError);
@@ -101,9 +102,7 @@ describe("POST /:archiveId/backfill-ledger", () => {
 
 	test("should handle publisher client errors", async () => {
 		const testError = new Error("Publisher error");
-		jest
-			.mocked(publisherClient.publishMessage)
-			.mockRejectedValueOnce(testError);
+		vi.mocked(publisherClient.publishMessage).mockRejectedValueOnce(testError);
 
 		await agent.post("/api/v2/archive/1/backfill-ledger").expect(500);
 		expect(logger.error).toHaveBeenCalledWith(testError);

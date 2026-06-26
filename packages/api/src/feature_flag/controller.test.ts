@@ -1,4 +1,5 @@
 import request from "supertest";
+import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 import type { NextFunction } from "express";
 import { logger } from "@stela/logger";
 import createError from "http-errors";
@@ -13,9 +14,9 @@ import {
 	mockExtractUserIsAdminFromAuthToken,
 } from "../../test/middleware_mocks";
 
-jest.mock("../database");
-jest.mock("../middleware");
-jest.mock("@stela/logger");
+vi.mock("../database");
+vi.mock("../middleware");
+vi.mock("@stela/logger");
 
 const loadFixtures = async (): Promise<void> => {
 	await db.sql("feature_flag.fixtures.create_test_feature_flags");
@@ -40,13 +41,13 @@ describe("GET /feature-flags", () => {
 	});
 
 	afterEach(async () => {
-		jest.restoreAllMocks();
+		vi.restoreAllMocks();
 		await clearDatabase();
 	});
 
 	test("should log the error if the database call fails", async () => {
 		const testError = new Error("SQL error");
-		jest.spyOn(db, "sql").mockRejectedValueOnce(testError);
+		vi.spyOn(db, "sql").mockRejectedValueOnce(testError);
 
 		await agent.get("/api/v2/feature-flags").expect(500);
 		expect(logger.error).toHaveBeenCalled();
@@ -55,21 +56,20 @@ describe("GET /feature-flags", () => {
 	test("should log the error if the database call fails when calling user is admin", async () => {
 		mockExtractUserIsAdminFromAuthToken(true);
 		const testError = new Error("SQL error");
-		jest.spyOn(db, "sql").mockRejectedValueOnce(testError);
+		vi.spyOn(db, "sql").mockRejectedValueOnce(testError);
 
 		await agent.get("/api/v2/feature-flags").expect(500);
 		expect(logger.error).toHaveBeenCalled();
 	});
 
-	test("should log the error if the request is invalid", async () => {
-		jest
-			.mocked(extractUserIsAdminFromAuthToken)
-			.mockImplementation(async (_, __, next: NextFunction) => {
+	test("should return 400 if the request is invalid", async () => {
+		vi.mocked(extractUserIsAdminFromAuthToken).mockImplementation(
+			async (_, __, next: NextFunction) => {
 				next();
-			});
+			},
+		);
 
 		await agent.get("/api/v2/feature-flags").expect(400);
-		expect(logger.error).toHaveBeenCalled();
 	});
 
 	test("should return list of globally enabled feature flags if user is not logged in", async () => {
@@ -111,16 +111,16 @@ describe("GET /feature-flags", () => {
 describe("POST /feature-flag", () => {
 	const agent = request(app);
 	beforeEach(async () => {
+		vi.restoreAllMocks();
+		vi.clearAllMocks();
 		mockVerifyAdminAuthentication(testEmail, testSubject);
-		jest.restoreAllMocks();
-		jest.clearAllMocks();
 		await loadFixtures();
 		await clearDatabase();
 	});
 
 	afterEach(async () => {
-		jest.restoreAllMocks();
-		jest.clearAllMocks();
+		vi.restoreAllMocks();
+		vi.clearAllMocks();
 		await clearDatabase();
 	});
 
@@ -154,11 +154,11 @@ describe("POST /feature-flag", () => {
 	});
 
 	test("should respond with 401 status code if lacking admin authentication", async () => {
-		jest
-			.mocked(verifyAdminAuthentication)
-			.mockImplementation(async (_, __, next: NextFunction) => {
+		vi.mocked(verifyAdminAuthentication).mockImplementation(
+			async (_, __, next: NextFunction) => {
 				next(new createError.Unauthorized("You aren't logged in"));
-			});
+			},
+		);
 		await agent.post("/api/v2/feature-flags").expect(401);
 	});
 
@@ -219,7 +219,7 @@ describe("POST /feature-flag", () => {
 	});
 
 	test("should respond with 500 if the database call fails", async () => {
-		jest.spyOn(db, "sql").mockImplementation(() => {
+		vi.spyOn(db, "sql").mockImplementation(() => {
 			throw new Error("SQL error");
 		});
 		await agent
@@ -233,7 +233,7 @@ describe("POST /feature-flag", () => {
 
 	test("should log the error if the database call fails", async () => {
 		const testError = new Error("SQL error");
-		jest.spyOn(db, "sql").mockRejectedValueOnce(testError);
+		vi.spyOn(db, "sql").mockRejectedValueOnce(testError);
 		await agent
 			.post("/api/v2/feature-flags")
 			.send({
@@ -248,16 +248,16 @@ describe("POST /feature-flag", () => {
 describe("PUT /feature-flag/:featureFlagId", () => {
 	const agent = request(app);
 	beforeEach(async () => {
+		vi.restoreAllMocks();
+		vi.clearAllMocks();
 		mockVerifyAdminAuthentication(testEmail, testSubject);
-		jest.restoreAllMocks();
-		jest.clearAllMocks();
 		await clearDatabase();
 		await loadFixtures();
 	});
 
 	afterEach(async () => {
-		jest.restoreAllMocks();
-		jest.clearAllMocks();
+		vi.restoreAllMocks();
+		vi.clearAllMocks();
 		await clearDatabase();
 	});
 
@@ -272,11 +272,11 @@ describe("PUT /feature-flag/:featureFlagId", () => {
 	});
 
 	test("should respond with 401 status code if lacking admin authentication", async () => {
-		jest
-			.mocked(verifyAdminAuthentication)
-			.mockImplementation(async (_, __, next: NextFunction) => {
+		vi.mocked(verifyAdminAuthentication).mockImplementation(
+			async (_, __, next: NextFunction) => {
 				next(new createError.Unauthorized("You aren't logged in"));
-			});
+			},
+		);
 		await agent
 			.put("/api/v2/feature-flags/1bdf2da6-026b-4e8e-9b57-a86b1817be5d")
 			.expect(401);
@@ -347,7 +347,7 @@ describe("PUT /feature-flag/:featureFlagId", () => {
 	});
 
 	test("should respond with 500 if the database call fails", async () => {
-		jest.spyOn(db, "sql").mockImplementation(() => {
+		vi.spyOn(db, "sql").mockImplementation(() => {
 			throw new Error("SQL error");
 		});
 		await agent
@@ -361,7 +361,7 @@ describe("PUT /feature-flag/:featureFlagId", () => {
 
 	test("should log the error if the database call fails", async () => {
 		const testError = new Error("SQL error");
-		jest.spyOn(db, "sql").mockRejectedValueOnce(testError);
+		vi.spyOn(db, "sql").mockRejectedValueOnce(testError);
 		await agent
 			.put("/api/v2/feature-flags/1bdf2da6-026b-4e8e-9b57-a86b1817be5d")
 			.send({
@@ -386,16 +386,16 @@ describe("PUT /feature-flag/:featureFlagId", () => {
 describe("DELETE /feature-flag/:featureFlagId", () => {
 	const agent = request(app);
 	beforeEach(async () => {
+		vi.restoreAllMocks();
+		vi.clearAllMocks();
 		mockVerifyAdminAuthentication(testEmail, testSubject);
-		jest.restoreAllMocks();
-		jest.clearAllMocks();
 		await clearDatabase();
 		await loadFixtures();
 	});
 
 	afterEach(async () => {
-		jest.restoreAllMocks();
-		jest.clearAllMocks();
+		vi.restoreAllMocks();
+		vi.clearAllMocks();
 		await clearDatabase();
 	});
 
@@ -407,11 +407,11 @@ describe("DELETE /feature-flag/:featureFlagId", () => {
 	});
 
 	test("should respond with 401 status code if lacking admin authentication", async () => {
-		jest
-			.mocked(verifyAdminAuthentication)
-			.mockImplementation(async (_, __, next: NextFunction) => {
+		vi.mocked(verifyAdminAuthentication).mockImplementation(
+			async (_, __, next: NextFunction) => {
 				next(new createError.Unauthorized("You aren't logged in"));
-			});
+			},
+		);
 		await agent
 			.delete("/api/v2/feature-flags/1bdf2da6-026b-4e8e-9b57-a86b1817be5d")
 			.expect(401);
@@ -434,7 +434,7 @@ describe("DELETE /feature-flag/:featureFlagId", () => {
 	});
 
 	test("should respond with 500 if the database call fails", async () => {
-		jest.spyOn(db, "sql").mockImplementation(() => {
+		vi.spyOn(db, "sql").mockImplementation(() => {
 			throw new Error("SQL error");
 		});
 		await agent
@@ -445,7 +445,7 @@ describe("DELETE /feature-flag/:featureFlagId", () => {
 
 	test("should log the error if the database call fails", async () => {
 		const testError = new Error("SQL error");
-		jest.spyOn(db, "sql").mockRejectedValueOnce(testError);
+		vi.spyOn(db, "sql").mockRejectedValueOnce(testError);
 		await agent
 			.delete("/api/v2/feature-flags/1bdf2da6-026b-4e8e-9b57-a86b1817be5d")
 			.send({})

@@ -1,11 +1,12 @@
 import { getSignedUrl } from "aws-cloudfront-sign";
+import { describe, expect, test, vi } from "vitest";
 import {
 	constructSignedCdnUrl,
 	getS3ObjectFromS3Message,
 	getS3BucketFromS3Message,
 } from "./index";
 
-jest.mock("aws-cloudfront-sign");
+vi.mock("aws-cloudfront-sign");
 
 describe("constructSignedCDNURL", () => {
 	test("calls getSignedUrl correctly when no fileName is provided", () => {

@@ -1,4 +1,5 @@
 import type { MessagesSendSuccessResponse } from "@mailchimp/mailchimp_transactional";
+import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 import {
 	sendLegacyContactNotification,
 	sendArchiveStewardNotification,
@@ -9,11 +10,11 @@ import {
 import { MailchimpTransactional } from "../mailchimp";
 import { db } from "../database";
 
-jest.mock("../database");
-jest.mock("../mailchimp", () => ({
+vi.mock("../database");
+vi.mock("../mailchimp", () => ({
 	MailchimpTransactional: {
 		messages: {
-			sendTemplate: jest.fn(),
+			sendTemplate: vi.fn(),
 		},
 	},
 }));
@@ -44,7 +45,7 @@ describe("sendLegacyContactNotification", () => {
 
 	afterEach(async () => {
 		await clearDatabase();
-		jest.clearAllMocks();
+		vi.clearAllMocks();
 	});
 
 	test("should send legacy contact notification successfully", async () => {
@@ -56,9 +57,9 @@ describe("sendLegacyContactNotification", () => {
 				reject_reason: null,
 			},
 		];
-		jest
-			.mocked(MailchimpTransactional.messages.sendTemplate)
-			.mockResolvedValueOnce(mockResponse);
+		vi.mocked(
+			MailchimpTransactional.messages.sendTemplate,
+		).mockResolvedValueOnce(mockResponse);
 
 		await sendLegacyContactNotification(testLegacyContactId);
 
@@ -105,7 +106,7 @@ describe("sendArchiveNotification", () => {
 
 	afterEach(async () => {
 		await clearDatabase();
-		jest.clearAllMocks();
+		vi.clearAllMocks();
 	});
 
 	test("should send archive steward notification successfully", async () => {
@@ -117,9 +118,9 @@ describe("sendArchiveNotification", () => {
 				reject_reason: null,
 			},
 		];
-		jest
-			.mocked(MailchimpTransactional.messages.sendTemplate)
-			.mockResolvedValueOnce(mockResponse);
+		vi.mocked(
+			MailchimpTransactional.messages.sendTemplate,
+		).mockResolvedValueOnce(mockResponse);
 
 		await sendArchiveStewardNotification(testDirectiveId);
 
@@ -161,7 +162,7 @@ describe("sendArchiveNotification", () => {
 
 describe("sendEmail", () => {
 	afterEach(() => {
-		jest.clearAllMocks();
+		vi.clearAllMocks();
 	});
 
 	test("should successfully call Mailchimp", async () => {
@@ -173,9 +174,9 @@ describe("sendEmail", () => {
 				reject_reason: null,
 			},
 		];
-		jest
-			.mocked(MailchimpTransactional.messages.sendTemplate)
-			.mockResolvedValueOnce(mockResponse);
+		vi.mocked(
+			MailchimpTransactional.messages.sendTemplate,
+		).mockResolvedValueOnce(mockResponse);
 
 		await sendEmail("legacy-contact-added", {
 			fromName: "Jack Rando",
@@ -210,9 +211,9 @@ describe("sendEmail", () => {
 
 	test("should throw an error if no email is sent", async () => {
 		const mockResponse: MessagesSendSuccessResponse[] = [];
-		jest
-			.mocked(MailchimpTransactional.messages.sendTemplate)
-			.mockResolvedValueOnce(mockResponse);
+		vi.mocked(
+			MailchimpTransactional.messages.sendTemplate,
+		).mockResolvedValueOnce(mockResponse);
 
 		await expect(
 			sendEmail("legacy-contact-added", {
@@ -236,9 +237,9 @@ describe("sendEmail", () => {
 				_id: "test",
 			},
 		];
-		jest
-			.mocked(MailchimpTransactional.messages.sendTemplate)
-			.mockResolvedValueOnce(mockResponse);
+		vi.mocked(
+			MailchimpTransactional.messages.sendTemplate,
+		).mockResolvedValueOnce(mockResponse);
 
 		await expect(
 			sendEmail("legacy-contact-added", {
@@ -257,14 +258,14 @@ describe("sendEmail", () => {
 		const mockResponse = {
 			config: {},
 			isAxiosError: true,
-			toJSON: jest.fn(),
+			toJSON: vi.fn(),
 			response: {
 				status: 500,
 			},
 		};
-		jest
-			.mocked(MailchimpTransactional.messages.sendTemplate)
-			.mockImplementationOnce(jest.fn().mockResolvedValueOnce(mockResponse));
+		vi.mocked(
+			MailchimpTransactional.messages.sendTemplate,
+		).mockImplementationOnce(vi.fn().mockResolvedValueOnce(mockResponse));
 
 		await expect(
 			sendEmail("legacy-contact-added", {
@@ -293,7 +294,7 @@ describe("sendInvitationNotification", () => {
 
 	afterEach(async () => {
 		await clearDatabase();
-		jest.clearAllMocks();
+		vi.clearAllMocks();
 	});
 
 	test("send invite email should call mailchimp successfully", async () => {
@@ -305,9 +306,9 @@ describe("sendInvitationNotification", () => {
 				reject_reason: null,
 			},
 		];
-		jest
-			.mocked(MailchimpTransactional.messages.sendTemplate)
-			.mockResolvedValueOnce(mockResponse);
+		vi.mocked(
+			MailchimpTransactional.messages.sendTemplate,
+		).mockResolvedValueOnce(mockResponse);
 
 		await sendInvitationNotification({
 			fromEmail: senderEmail,
@@ -376,7 +377,7 @@ describe("sendGiftNotification", () => {
 
 	afterEach(async () => {
 		await clearDatabase();
-		jest.clearAllMocks();
+		vi.clearAllMocks();
 	});
 
 	test("send gift email should call mailchimp successfully", async () => {
@@ -388,9 +389,9 @@ describe("sendGiftNotification", () => {
 				reject_reason: null,
 			},
 		];
-		jest
-			.mocked(MailchimpTransactional.messages.sendTemplate)
-			.mockResolvedValueOnce(mockResponse);
+		vi.mocked(
+			MailchimpTransactional.messages.sendTemplate,
+		).mockResolvedValueOnce(mockResponse);
 
 		await sendGiftNotification(
 			senderEmail,

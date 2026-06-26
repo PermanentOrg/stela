@@ -1,3 +1,4 @@
+import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 import { logger } from "@stela/logger";
 import request from "supertest";
 import { app } from "../../app";
@@ -8,9 +9,9 @@ import {
 	mockExtractUserEmailFromAuthToken,
 } from "../../../test/middleware_mocks";
 
-jest.mock("../../database");
-jest.mock("../../middleware");
-jest.mock("@stela/logger");
+vi.mock("../../database");
+vi.mock("../../middleware");
+vi.mock("@stela/logger");
 
 const setupDatabase = async (): Promise<void> => {
 	await db.sql("record.fixtures.create_test_accounts");
@@ -69,8 +70,8 @@ describe("GET /records/:recordId", () => {
 
 	afterEach(async () => {
 		await clearDatabase();
-		jest.restoreAllMocks();
-		jest.clearAllMocks();
+		vi.restoreAllMocks();
+		vi.clearAllMocks();
 	});
 
 	const agent = request(app);
@@ -217,7 +218,7 @@ describe("GET /records/:recordId", () => {
 	});
 	test("expect to log error and return 500 if database lookup fails", async () => {
 		const testError = new Error("test error");
-		jest.spyOn(db, "sql").mockImplementation(async () => {
+		vi.spyOn(db, "sql").mockImplementation(async () => {
 			throw testError;
 		});
 

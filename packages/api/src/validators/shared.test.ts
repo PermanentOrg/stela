@@ -6,6 +6,7 @@ import {
 	validateOptionalAuthenticationValues,
 	validatePaginationParameters,
 } from "./shared";
+import { describe, expect, test } from "vitest";
 
 describe("validateBodyFromAuthentication", () => {
 	test("should find no errors in valid parameter set", () => {

@@ -1,13 +1,14 @@
 import request from "supertest";
+import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 import { logger } from "@stela/logger";
 import { app } from "../../app";
 import { db } from "../../database";
 import { archiveService } from "../service/index";
 import { mockVerifyAdminAuthentication } from "../../../test/middleware_mocks";
 
-jest.mock("../../database");
-jest.mock("../../middleware");
-jest.mock("@stela/logger");
+vi.mock("../../database");
+vi.mock("../../middleware");
+vi.mock("@stela/logger");
 
 const loadFixtures = async (): Promise<void> => {
 	await db.sql("archive.fixtures.create_test_accounts");
@@ -47,7 +48,7 @@ describe("getFeatured", () => {
 
 	test("should throw InternalServerError if database query fails", async () => {
 		const testError = new Error("error: out of cheese - redo from start");
-		jest.spyOn(db, "sql").mockRejectedValueOnce(testError);
+		vi.spyOn(db, "sql").mockRejectedValueOnce(testError);
 		await agent.delete("/api/v2/archive/3/unfeature").expect(500);
 		expect(logger.error).toHaveBeenCalledWith(testError);
 	});

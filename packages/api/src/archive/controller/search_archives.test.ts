@@ -1,4 +1,5 @@
 import request from "supertest";
+import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 import { logger } from "@stela/logger";
 import { app } from "../../app";
 import { db } from "../../database";
@@ -8,9 +9,9 @@ import {
 	mockExtractUserEmailFromAuthToken,
 } from "../../../test/middleware_mocks";
 
-jest.mock("../../database");
-jest.mock("@stela/logger");
-jest.mock("../../middleware");
+vi.mock("../../database");
+vi.mock("@stela/logger");
+vi.mock("../../middleware");
 
 const loadFixtures = async (): Promise<void> => {
 	await db.sql("archive.fixtures.create_test_accounts");
@@ -36,7 +37,7 @@ describe("searchArchives", () => {
 
 	afterEach(async () => {
 		await clearDatabase();
-		jest.clearAllMocks();
+		vi.clearAllMocks();
 	});
 
 	test("should search archives without authentication and return only public archives", async () => {
@@ -180,7 +181,7 @@ describe("searchArchives", () => {
 		mockExtractUserIsAdminFromAuthToken(false);
 		mockExtractUserEmailFromAuthToken(undefined);
 		const testError = new Error("error: out of cheese - redo from start");
-		jest.spyOn(db, "sql").mockRejectedValueOnce(testError);
+		vi.spyOn(db, "sql").mockRejectedValueOnce(testError);
 		await agent.get("/api/v2/archive?searchQuery=test&pageSize=10").expect(500);
 		expect(logger.error).toHaveBeenCalledWith(testError);
 	});

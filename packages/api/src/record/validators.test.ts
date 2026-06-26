@@ -1,4 +1,5 @@
 import { validatePatchRecordRequest } from "./validators";
+import { describe, expect, test } from "vitest";
 
 describe("validatePatchRecordRequest", () => {
 	test("should find no errors in a valid request", () => {

@@ -1,4 +1,5 @@
 import request from "supertest";
+import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 import type { NextFunction } from "express";
 import createError from "http-errors";
 import { logger } from "@stela/logger";
@@ -8,10 +9,10 @@ import { lowPriorityTopicArn, publisherClient } from "@stela/publisher-utils";
 import { verifyAdminAuthentication } from "../middleware";
 import { mockVerifyAdminAuthentication } from "../../test/middleware_mocks";
 
-jest.mock("../database");
-jest.mock("@stela/logger");
-jest.mock("../middleware");
-jest.mock("@stela/publisher-utils");
+vi.mock("../database");
+vi.mock("@stela/logger");
+vi.mock("../middleware");
+vi.mock("@stela/publisher-utils");
 
 describe("recalculateFolderThumbnails", () => {
 	const loadFixtures = async (): Promise<void> => {
@@ -28,7 +29,7 @@ describe("recalculateFolderThumbnails", () => {
 			"test@permanent.org",
 			"5c3473b6-cf2e-4c55-a80e-8db51d1bc5fd",
 		);
-		jest.clearAllMocks();
+		vi.clearAllMocks();
 		await clearDatabase();
 		await loadFixtures();
 	});
@@ -38,9 +39,10 @@ describe("recalculateFolderThumbnails", () => {
 	});
 
 	test("should send messages for folders created before the cutoff", async () => {
-		jest
-			.spyOn(publisherClient, "batchPublishMessages")
-			.mockResolvedValueOnce({ failedMessages: [], messagesSent: 6 });
+		vi.spyOn(publisherClient, "batchPublishMessages").mockResolvedValueOnce({
+			failedMessages: [],
+			messagesSent: 6,
+		});
 		const result = await agent
 			.post("/api/v2/admin/folder/recalculate_thumbnails")
 			.send({
@@ -52,7 +54,7 @@ describe("recalculateFolderThumbnails", () => {
 			mock: {
 				calls: [callsToBatchPublish],
 			},
-		} = jest.mocked(publisherClient.batchPublishMessages);
+		} = vi.mocked(publisherClient.batchPublishMessages);
 		expect(callsToBatchPublish).toBeDefined();
 		if (callsToBatchPublish !== undefined) {
 			expect(callsToBatchPublish[1].length).toBe(6);
@@ -61,9 +63,10 @@ describe("recalculateFolderThumbnails", () => {
 	});
 
 	test("should respond with 500 error if messages fail to send", async () => {
-		jest
-			.spyOn(publisherClient, "batchPublishMessages")
-			.mockResolvedValueOnce({ failedMessages: ["1", "2"], messagesSent: 2 });
+		vi.spyOn(publisherClient, "batchPublishMessages").mockResolvedValueOnce({
+			failedMessages: ["1", "2"],
+			messagesSent: 2,
+		});
 		const result = await agent
 			.post("/api/v2/admin/folder/recalculate_thumbnails")
 			.send({
@@ -76,7 +79,7 @@ describe("recalculateFolderThumbnails", () => {
 
 	test("should respond with internal server error if database call fails", async () => {
 		const testError = new Error("out of cheese - redo from start");
-		jest.spyOn(db, "sql").mockRejectedValueOnce(testError);
+		vi.spyOn(db, "sql").mockRejectedValueOnce(testError);
 		await agent
 			.post("/api/v2/admin/folder/recalculate_thumbnails")
 			.send({
@@ -89,9 +92,9 @@ describe("recalculateFolderThumbnails", () => {
 
 	test("should respond with internal server error if message publishing fails", async () => {
 		const testError = new Error("out of cheese - redo from start");
-		jest
-			.spyOn(publisherClient, "batchPublishMessages")
-			.mockRejectedValueOnce(testError);
+		vi.spyOn(publisherClient, "batchPublishMessages").mockRejectedValueOnce(
+			testError,
+		);
 		await agent
 			.post("/api/v2/admin/folder/recalculate_thumbnails")
 			.send({
@@ -126,7 +129,7 @@ describe("set_null_subjects", () => {
 			"test@permanent.org",
 			"5c3473b6-cf2e-4c55-a80e-8db51d1bc5fd",
 		);
-		jest.clearAllMocks();
+		vi.clearAllMocks();
 		await clearDatabase();
 		await loadFixtures();
 	});
@@ -143,11 +146,11 @@ describe("set_null_subjects", () => {
 	});
 
 	test("should respond with 401 if not authenticated", async () => {
-		jest
-			.mocked(verifyAdminAuthentication)
-			.mockImplementation(async (_, __, next: NextFunction) => {
+		vi.mocked(verifyAdminAuthentication).mockImplementation(
+			async (_, __, next: NextFunction) => {
 				next(new createError.Unauthorized("Invalid token"));
-			});
+			},
+		);
 		await agent
 			.post("/api/v2/admin/account/set_null_subjects")
 			.send({})
@@ -318,7 +321,7 @@ describe("set_null_subjects", () => {
 
 	test("should call logger.error if database call fails", async () => {
 		const testError = new Error("out of cheese - redo from start");
-		jest.spyOn(db, "sql").mockRejectedValueOnce(testError);
+		vi.spyOn(db, "sql").mockRejectedValueOnce(testError);
 
 		const testEmailOne = "test@permanent.org";
 		await agent
@@ -337,7 +340,7 @@ describe("set_null_subjects", () => {
 
 	test("should return emails for which the update failed", async () => {
 		const testError = new Error("out of cheese - redo from start");
-		jest.spyOn(db, "sql").mockRejectedValueOnce(testError);
+		vi.spyOn(db, "sql").mockRejectedValueOnce(testError);
 
 		const testEmailOne = "test@permanent.org";
 		const testEmailTwo = "test+2@permanent.org";
@@ -384,7 +387,7 @@ describe("/record/:recordId/recalculate_thumbnail", () => {
 			"test@permanent.org",
 			"5c3473b6-cf2e-4c55-a80e-8db51d1bc5fd",
 		);
-		jest.clearAllMocks();
+		vi.clearAllMocks();
 		await clearDatabase();
 		await loadFixtures();
 	});
@@ -394,18 +397,18 @@ describe("/record/:recordId/recalculate_thumbnail", () => {
 	});
 
 	test("should response with 401 if not authenticated as an admin", async () => {
-		jest
-			.mocked(verifyAdminAuthentication)
-			.mockImplementation(async (_, __, next: NextFunction) => {
+		vi.mocked(verifyAdminAuthentication).mockImplementation(
+			async (_, __, next: NextFunction) => {
 				next(new createError.Unauthorized("Invalid token"));
-			});
+			},
+		);
 		await agent
 			.post("/api/v2/admin/record/1/recalculate_thumbnail")
 			.expect(401);
 	});
 
 	test("should publish a message with correct parameters", async () => {
-		jest.mocked(publisherClient.batchPublishMessages).mockResolvedValueOnce({
+		vi.mocked(publisherClient.batchPublishMessages).mockResolvedValueOnce({
 			failedMessages: [],
 			messagesSent: 1,
 		});
@@ -418,7 +421,7 @@ describe("/record/:recordId/recalculate_thumbnail", () => {
 			mock: {
 				calls: [firstCallToBatchPublish],
 			},
-		} = jest.mocked(publisherClient.batchPublishMessages);
+		} = vi.mocked(publisherClient.batchPublishMessages);
 		expect(firstCallToBatchPublish).toBeDefined();
 		if (firstCallToBatchPublish !== undefined) {
 			const [, [firstMessage]] = firstCallToBatchPublish;
@@ -449,9 +452,10 @@ describe("/record/:recordId/recalculate_thumbnail", () => {
 	});
 
 	test("should respond with 500 if the message fails to send", async () => {
-		jest
-			.spyOn(publisherClient, "batchPublishMessages")
-			.mockResolvedValueOnce({ failedMessages: ["1"], messagesSent: 0 });
+		vi.spyOn(publisherClient, "batchPublishMessages").mockResolvedValueOnce({
+			failedMessages: ["1"],
+			messagesSent: 0,
+		});
 		await agent
 			.post("/api/v2/admin/record/1/recalculate_thumbnail")
 			.expect(500);
@@ -459,7 +463,7 @@ describe("/record/:recordId/recalculate_thumbnail", () => {
 
 	test("should respond with 500  and log the error if the database call fails", async () => {
 		const testError = new Error("out of cheese - redo from start");
-		jest.spyOn(db, "sql").mockRejectedValueOnce(testError);
+		vi.spyOn(db, "sql").mockRejectedValueOnce(testError);
 
 		await agent
 			.post("/api/v2/admin/record/1/recalculate_thumbnail")
@@ -484,7 +488,7 @@ describe("/folder/delete-orphaned-folders", () => {
 			"test@permanent.org",
 			"5c3473b6-cf2e-4c55-a80e-8db51d1bc5fd",
 		);
-		jest.mocked(publisherClient.batchPublishMessages).mockResolvedValue({
+		vi.mocked(publisherClient.batchPublishMessages).mockResolvedValue({
 			failedMessages: [],
 			messagesSent: 2,
 		});
@@ -496,15 +500,15 @@ describe("/folder/delete-orphaned-folders", () => {
 		await db.query(
 			"TRUNCATE account, archive, folder, record, folder_link CASCADE",
 		);
-		jest.clearAllMocks();
+		vi.clearAllMocks();
 	});
 
 	test("should respond with 401 if not authenticated as an admin", async () => {
-		jest
-			.mocked(verifyAdminAuthentication)
-			.mockImplementation(async (_, __, next: NextFunction) => {
+		vi.mocked(verifyAdminAuthentication).mockImplementation(
+			async (_, __, next: NextFunction) => {
 				next(new createError.Unauthorized("Invalid token"));
-			});
+			},
+		);
 		await agent
 			.post("/api/v2/admin/folder/delete-orphaned-folders")
 			.expect(401);
@@ -540,9 +544,9 @@ describe("/folder/delete-orphaned-folders", () => {
 
 	test("should respond with a 500 error if publishing fails", async () => {
 		const testError = new Error("Out of cheese - redo from start");
-		jest
-			.mocked(publisherClient.batchPublishMessages)
-			.mockRejectedValue(testError);
+		vi.mocked(publisherClient.batchPublishMessages).mockRejectedValue(
+			testError,
+		);
 
 		await agent
 			.post("/api/v2/admin/folder/delete-orphaned-folders")
@@ -552,7 +556,7 @@ describe("/folder/delete-orphaned-folders", () => {
 
 	test("should respond with a 500 error if database call fails", async () => {
 		const testError = new Error("Out of cheese - redo from start");
-		jest.spyOn(db, "sql").mockRejectedValue(testError);
+		vi.spyOn(db, "sql").mockRejectedValue(testError);
 
 		await agent
 			.post("/api/v2/admin/folder/delete-orphaned-folders")

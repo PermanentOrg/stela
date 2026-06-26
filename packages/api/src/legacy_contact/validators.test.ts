@@ -3,6 +3,7 @@ import {
 	validateUpdateLegacyContactParams,
 	validateUpdateLegacyContactRequest,
 } from "./validators";
+import { describe, expect, test } from "vitest";
 
 describe("validateCreateLegacyContactRequest", () => {
 	test("should find no errors in a valid request", () => {

@@ -1,4 +1,5 @@
 import { isValidationError } from "./validator_util";
+import { describe, expect, test } from "vitest";
 
 describe("isValidationError", () => {
 	test("should recognize a ValidationError", () => {
