@@ -1,4 +1,5 @@
 import createError from "http-errors";
+import { vi } from "vitest";
 import {
 	getArchiveAccessRole,
 	getRecordAccessRole,
@@ -8,7 +9,7 @@ import {
 import { AccessRole } from "./models";
 import { db } from "../database";
 
-jest.mock("../database");
+vi.mock("../database");
 
 const loadFixtures = async (): Promise<void> => {
 	await db.sql("access.fixtures.create_test_accounts");
@@ -33,7 +34,7 @@ describe("getArchiveAccessRole", () => {
 	});
 
 	afterEach(async () => {
-		jest.restoreAllMocks();
+		vi.restoreAllMocks();
 		await clearDatabase();
 	});
 
@@ -76,7 +77,7 @@ describe("getArchiveAccessRole", () => {
 	});
 
 	test("should throw internal server error if the database call fails", async () => {
-		jest.spyOn(db, "sql").mockRejectedValue(new Error("Test error"));
+		vi.spyOn(db, "sql").mockRejectedValue(new Error("Test error"));
 		let error = null;
 		try {
 			await getArchiveAccessRole("1", "test@permanent.org");
@@ -97,7 +98,7 @@ describe("getRecordAccessRole", () => {
 	});
 
 	afterEach(async () => {
-		jest.restoreAllMocks();
+		vi.restoreAllMocks();
 		await clearDatabase();
 	});
 
@@ -183,7 +184,7 @@ describe("getRecordAccessRole", () => {
 	});
 
 	test("should throw internal server error if the database call fails", async () => {
-		jest.spyOn(db, "sql").mockRejectedValue(new Error("Test error"));
+		vi.spyOn(db, "sql").mockRejectedValue(new Error("Test error"));
 		let error = null;
 		try {
 			await getRecordAccessRole("1", "test@permanent.org");
@@ -197,8 +198,8 @@ describe("getRecordAccessRole", () => {
 	});
 
 	test("should throw not found error if the all access roles returned are null", async () => {
-		jest.spyOn(db, "sql").mockImplementation(
-			jest.fn().mockResolvedValue({
+		vi.spyOn(db, "sql").mockImplementation(
+			vi.fn().mockResolvedValue({
 				rows: [
 					{ archiveAccessRole: null, shareAccessRole: null },
 					{ archiveAccessRole: null, shareAccessRole: null },
@@ -315,7 +316,7 @@ describe("isItemPublic", () => {
 	});
 
 	afterEach(async () => {
-		jest.restoreAllMocks();
+		vi.restoreAllMocks();
 		await clearDatabase();
 	});
 	test("should return true for a public record", async () => {
@@ -335,7 +336,7 @@ describe("isItemPublic", () => {
 		expect(isPublic).toEqual(false);
 	});
 	test("should throw a 500 error if database call fails", async () => {
-		jest.spyOn(db, "sql").mockRejectedValue(new Error("Test error"));
+		vi.spyOn(db, "sql").mockRejectedValue(new Error("Test error"));
 		let error = null;
 		try {
 			await isItemPublic("1", "folder");

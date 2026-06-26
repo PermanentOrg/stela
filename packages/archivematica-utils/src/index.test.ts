@@ -1,9 +1,10 @@
+import { vi } from "vitest";
 import {
 	getOriginalFileIdFromInformationPackagePath,
 	triggerArchivematicaProcessing,
 } from "./index";
 
-global.fetch = jest.fn();
+global.fetch = vi.fn();
 
 describe("getFileIdFromInformationPackagePath", () => {
 	test("should return the file ID if the file ID is a number", () => {

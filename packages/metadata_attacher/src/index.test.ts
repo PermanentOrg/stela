@@ -1,14 +1,15 @@
 import type { Context } from "aws-lambda";
-import { mock } from "jest-mock-extended";
+import { vi } from "vitest";
+import { mock } from "vitest-mock-extended";
 import { S3Client } from "@aws-sdk/client-s3";
 import * as fs from "node:fs/promises";
 import * as path from "node:path";
 import { logger } from "@stela/logger";
 import { db } from "./database";
 import { handler } from "./index";
-jest.mock("./database");
-jest.mock("@stela/logger");
-jest.mock("@aws-sdk/client-s3");
+vi.mock("./database");
+vi.mock("@stela/logger");
+vi.mock("@aws-sdk/client-s3");
 
 describe("handler", () => {
 	const loadFixtures = async (): Promise<void> => {
@@ -83,22 +84,22 @@ describe("handler", () => {
 		return metadata.rows[0];
 	};
 
-	const mockS3Send = jest.fn();
+	const mockS3Send = vi.fn();
 
 	beforeEach(async () => {
 		await loadFixtures();
 		mockS3Send.mockClear();
-		jest.mocked(S3Client).mockImplementation(
-			jest.fn().mockReturnValue({
-				send: mockS3Send,
-			}),
+		vi.mocked(S3Client).mockImplementation(
+			class {
+				send = mockS3Send;
+			} as unknown as typeof S3Client,
 		);
 	});
 
 	afterEach(async () => {
 		await clearDatabase();
-		jest.clearAllMocks();
-		jest.restoreAllMocks();
+		vi.clearAllMocks();
+		vi.restoreAllMocks();
 	});
 
 	test("should skip non-METS files", async () => {
@@ -138,7 +139,7 @@ describe("handler", () => {
 			],
 		};
 
-		await handler(event, mock<Context>(), jest.fn());
+		await handler(event, mock<Context>(), vi.fn());
 
 		// Verify that S3 was not called
 		expect(mockS3Send).not.toHaveBeenCalled();
@@ -148,7 +149,7 @@ describe("handler", () => {
 		const metsContent = await loadMetsFile("sample_mets.xml");
 		mockS3Send.mockResolvedValue({
 			Body: {
-				transformToString: jest.fn().mockResolvedValue(metsContent),
+				transformToString: vi.fn().mockResolvedValue(metsContent),
 			},
 		});
 
@@ -188,7 +189,7 @@ describe("handler", () => {
 			],
 		};
 
-		await handler(event, mock<Context>(), jest.fn());
+		await handler(event, mock<Context>(), vi.fn());
 
 		expect(mockS3Send).toHaveBeenCalledTimes(1);
 
@@ -214,7 +215,7 @@ describe("handler", () => {
 		const metsContent = await loadMetsFile("sample_mets.xml");
 		mockS3Send.mockResolvedValue({
 			Body: {
-				transformToString: jest.fn().mockResolvedValue(metsContent),
+				transformToString: vi.fn().mockResolvedValue(metsContent),
 			},
 		});
 
@@ -258,7 +259,7 @@ describe("handler", () => {
 			],
 		};
 
-		await handler(event, mock<Context>(), jest.fn());
+		await handler(event, mock<Context>(), vi.fn());
 
 		expect(mockS3Send).toHaveBeenCalledTimes(1);
 
@@ -271,7 +272,7 @@ describe("handler", () => {
 		const metsContent = await loadMetsFile("sample_mets.xml");
 		mockS3Send.mockResolvedValue({
 			Body: {
-				transformToString: jest.fn().mockResolvedValue(metsContent),
+				transformToString: vi.fn().mockResolvedValue(metsContent),
 			},
 		});
 
@@ -315,7 +316,7 @@ describe("handler", () => {
 			],
 		};
 
-		await handler(event, mock<Context>(), jest.fn());
+		await handler(event, mock<Context>(), vi.fn());
 
 		expect(mockS3Send).toHaveBeenCalledTimes(1);
 
@@ -328,7 +329,7 @@ describe("handler", () => {
 		const metsContent = await loadMetsFile("minimal_mets.xml");
 		mockS3Send.mockResolvedValue({
 			Body: {
-				transformToString: jest.fn().mockResolvedValue(metsContent),
+				transformToString: vi.fn().mockResolvedValue(metsContent),
 			},
 		});
 
@@ -368,7 +369,7 @@ describe("handler", () => {
 			],
 		};
 
-		await handler(event, mock<Context>(), jest.fn());
+		await handler(event, mock<Context>(), vi.fn());
 
 		const recordMetadata = await getRecordMetadata("1");
 		expect(recordMetadata).toBeDefined();
@@ -382,7 +383,7 @@ describe("handler", () => {
 		const metsContent = await loadMetsFile("sample_mets.xml");
 		mockS3Send.mockResolvedValue({
 			Body: {
-				transformToString: jest.fn().mockResolvedValue(metsContent),
+				transformToString: vi.fn().mockResolvedValue(metsContent),
 			},
 		});
 
@@ -453,7 +454,7 @@ describe("handler", () => {
 			],
 		};
 
-		await handler(event, mock<Context>(), jest.fn());
+		await handler(event, mock<Context>(), vi.fn());
 
 		expect(mockS3Send).toHaveBeenCalledTimes(1);
 	});
@@ -499,7 +500,7 @@ describe("handler", () => {
 			],
 		};
 
-		await expect(handler(event, mock<Context>(), jest.fn())).rejects.toThrow(
+		await expect(handler(event, mock<Context>(), vi.fn())).rejects.toThrow(
 			"metadata file is empty",
 		);
 	});
@@ -509,7 +510,7 @@ describe("handler", () => {
 
 		mockS3Send.mockResolvedValue({
 			Body: {
-				transformToString: jest.fn().mockResolvedValue(metsContent),
+				transformToString: vi.fn().mockResolvedValue(metsContent),
 			},
 		});
 
@@ -549,7 +550,7 @@ describe("handler", () => {
 			],
 		};
 
-		await expect(handler(event, mock<Context>(), jest.fn())).rejects.toThrow(
+		await expect(handler(event, mock<Context>(), vi.fn())).rejects.toThrow(
 			"Wrong number of administrative metadata sections for original file; expected 1, got 2",
 		);
 	});
@@ -559,7 +560,7 @@ describe("handler", () => {
 
 		mockS3Send.mockResolvedValue({
 			Body: {
-				transformToString: jest.fn().mockResolvedValue(metsContent),
+				transformToString: vi.fn().mockResolvedValue(metsContent),
 			},
 		});
 
@@ -599,7 +600,7 @@ describe("handler", () => {
 			],
 		};
 
-		await handler(event, mock<Context>(), jest.fn());
+		await handler(event, mock<Context>(), vi.fn());
 
 		expect(logger.info).toHaveBeenCalledWith(
 			"Invalid timestamp: not_a_timestamp",
@@ -623,7 +624,7 @@ describe("handler", () => {
 
 		mockS3Send.mockResolvedValue({
 			Body: {
-				transformToString: jest.fn().mockResolvedValue(metsContent),
+				transformToString: vi.fn().mockResolvedValue(metsContent),
 			},
 		});
 
@@ -663,7 +664,7 @@ describe("handler", () => {
 			],
 		};
 
-		await handler(event, mock<Context>(), jest.fn());
+		await handler(event, mock<Context>(), vi.fn());
 
 		const recordMetadata = await getRecordMetadata("1");
 		expect(recordMetadata).toBeDefined();
@@ -675,7 +676,7 @@ describe("handler", () => {
 		const metsContent = await loadMetsFile("single_keyword_mets.xml");
 		mockS3Send.mockResolvedValue({
 			Body: {
-				transformToString: jest.fn().mockResolvedValue(metsContent),
+				transformToString: vi.fn().mockResolvedValue(metsContent),
 			},
 		});
 
@@ -715,7 +716,7 @@ describe("handler", () => {
 			],
 		};
 
-		await handler(event, mock<Context>(), jest.fn());
+		await handler(event, mock<Context>(), vi.fn());
 
 		const recordMetadata = await getRecordMetadata("1");
 		expect(recordMetadata).toBeDefined();
@@ -726,12 +727,12 @@ describe("handler", () => {
 		const metsContent = await loadMetsFile("sample_mets.xml");
 		mockS3Send.mockResolvedValue({
 			Body: {
-				transformToString: jest.fn().mockResolvedValue(metsContent),
+				transformToString: vi.fn().mockResolvedValue(metsContent),
 			},
 		});
 
 		const dbError = new Error("Database connection failed");
-		jest.spyOn(db, "sql").mockRejectedValue(dbError);
+		vi.spyOn(db, "sql").mockRejectedValue(dbError);
 
 		const event = {
 			Records: [
@@ -769,7 +770,7 @@ describe("handler", () => {
 			],
 		};
 
-		await expect(handler(event, mock<Context>(), jest.fn())).rejects.toThrow(
+		await expect(handler(event, mock<Context>(), vi.fn())).rejects.toThrow(
 			"Database connection failed",
 		);
 	});
@@ -778,7 +779,7 @@ describe("handler", () => {
 		const metsContent = await loadMetsFile("video_mediainfo.xml");
 		mockS3Send.mockResolvedValue({
 			Body: {
-				transformToString: jest.fn().mockResolvedValue(metsContent),
+				transformToString: vi.fn().mockResolvedValue(metsContent),
 			},
 		});
 
@@ -818,7 +819,7 @@ describe("handler", () => {
 			],
 		};
 
-		await handler(event, mock<Context>(), jest.fn());
+		await handler(event, mock<Context>(), vi.fn());
 
 		expect(mockS3Send).toHaveBeenCalledTimes(1);
 
@@ -838,7 +839,7 @@ describe("handler", () => {
 		const metsContent = await loadMetsFile("video_quicktime.xml");
 		mockS3Send.mockResolvedValue({
 			Body: {
-				transformToString: jest.fn().mockResolvedValue(metsContent),
+				transformToString: vi.fn().mockResolvedValue(metsContent),
 			},
 		});
 
@@ -878,7 +879,7 @@ describe("handler", () => {
 			],
 		};
 
-		await handler(event, mock<Context>(), jest.fn());
+		await handler(event, mock<Context>(), vi.fn());
 
 		expect(mockS3Send).toHaveBeenCalledTimes(1);
 
@@ -898,7 +899,7 @@ describe("handler", () => {
 		const metsContent = await loadMetsFile("video_mediainfo_single_track.xml");
 		mockS3Send.mockResolvedValue({
 			Body: {
-				transformToString: jest.fn().mockResolvedValue(metsContent),
+				transformToString: vi.fn().mockResolvedValue(metsContent),
 			},
 		});
 
@@ -938,7 +939,7 @@ describe("handler", () => {
 			],
 		};
 
-		await handler(event, mock<Context>(), jest.fn());
+		await handler(event, mock<Context>(), vi.fn());
 
 		expect(mockS3Send).toHaveBeenCalledTimes(1);
 
@@ -958,7 +959,7 @@ describe("handler", () => {
 		const metsContent = await loadMetsFile("numeric_caption_abstract.xml");
 		mockS3Send.mockResolvedValue({
 			Body: {
-				transformToString: jest.fn().mockResolvedValue(metsContent),
+				transformToString: vi.fn().mockResolvedValue(metsContent),
 			},
 		});
 
@@ -998,7 +999,7 @@ describe("handler", () => {
 			],
 		};
 
-		await handler(event, mock<Context>(), jest.fn());
+		await handler(event, mock<Context>(), vi.fn());
 
 		const recordMetadata = await getRecordMetadata("1");
 		expect(recordMetadata).toBeDefined();
@@ -1009,7 +1010,7 @@ describe("handler", () => {
 		const metsContent = await loadMetsFile("video_no_timestamp.xml");
 		mockS3Send.mockResolvedValue({
 			Body: {
-				transformToString: jest.fn().mockResolvedValue(metsContent),
+				transformToString: vi.fn().mockResolvedValue(metsContent),
 			},
 		});
 
@@ -1049,7 +1050,7 @@ describe("handler", () => {
 			],
 		};
 
-		await handler(event, mock<Context>(), jest.fn());
+		await handler(event, mock<Context>(), vi.fn());
 
 		expect(mockS3Send).toHaveBeenCalledTimes(1);
 

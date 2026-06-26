@@ -1,4 +1,5 @@
 import request from "supertest";
+import { vi } from "vitest";
 import createError from "http-errors";
 import type { NextFunction } from "express";
 import { app } from "../app";
@@ -8,15 +9,15 @@ import { fusionAuthClient } from "../fusionauth";
 import type { TwoFactorRequestResponse } from "./models";
 import { mockVerifyUserAuthentication } from "../../test/middleware_mocks";
 
-jest.mock("../database");
-jest.mock("../middleware");
-global.fetch = jest.fn();
-jest.mock("../fusionauth", () => ({
+vi.mock("../database");
+vi.mock("../middleware");
+global.fetch = vi.fn();
+vi.mock("../fusionauth", () => ({
 	fusionAuthClient: {
-		retrieveUserByEmail: jest.fn(),
-		sendTwoFactorCodeForEnableDisable: jest.fn(),
-		enableTwoFactor: jest.fn(),
-		disableTwoFactor: jest.fn(),
+		retrieveUserByEmail: vi.fn(),
+		sendTwoFactorCodeForEnableDisable: vi.fn(),
+		enableTwoFactor: vi.fn(),
+		disableTwoFactor: vi.fn(),
 	},
 }));
 
@@ -30,8 +31,8 @@ const mockRetrieveUserByEmail = (
 	successful: boolean,
 	exception?: { code: string; message: string },
 ): void => {
-	jest.mocked(fusionAuthClient.retrieveUserByEmail).mockImplementation(
-		jest.fn().mockResolvedValue({
+	vi.mocked(fusionAuthClient.retrieveUserByEmail).mockImplementation(
+		vi.fn().mockResolvedValue({
 			response: {
 				user: {
 					twoFactor: {
@@ -49,22 +50,22 @@ const mockSendTwoFactorCodeForEnableDisable = (
 	successful: boolean,
 	exception?: { code: string; message: string },
 ): void => {
-	jest
-		.mocked(fusionAuthClient.sendTwoFactorCodeForEnableDisable)
-		.mockImplementation(
-			jest.fn().mockResolvedValue({
-				wasSuccessful: () => successful,
-				exception,
-			}),
-		);
+	vi.mocked(
+		fusionAuthClient.sendTwoFactorCodeForEnableDisable,
+	).mockImplementation(
+		vi.fn().mockResolvedValue({
+			wasSuccessful: () => successful,
+			exception,
+		}),
+	);
 };
 
 const mockEnableTwoFactor = (
 	successful: boolean,
 	exception?: { code: string; message: string },
 ): void => {
-	jest.mocked(fusionAuthClient.enableTwoFactor).mockImplementation(
-		jest.fn().mockResolvedValue({
+	vi.mocked(fusionAuthClient.enableTwoFactor).mockImplementation(
+		vi.fn().mockResolvedValue({
 			wasSuccessful: () => successful,
 			exception,
 		}),
@@ -75,8 +76,8 @@ const mockDisableTwoFactor = (
 	successful: boolean,
 	exception?: { code: string; message: string },
 ): void => {
-	jest.mocked(fusionAuthClient.disableTwoFactor).mockImplementation(
-		jest.fn().mockResolvedValue({
+	vi.mocked(fusionAuthClient.disableTwoFactor).mockImplementation(
+		vi.fn().mockResolvedValue({
 			wasSuccessful: () => successful,
 			exception,
 		}),
@@ -94,7 +95,7 @@ describe("/idpuser", () => {
 	});
 
 	afterEach(async () => {
-		jest.restoreAllMocks();
+		vi.restoreAllMocks();
 	});
 
 	test("expect a non-404 response", async () => {
@@ -219,7 +220,7 @@ describe("idpuser/send-enable-code", () => {
 
 	afterEach(async () => {
 		await clearDatabase();
-		jest.restoreAllMocks();
+		vi.restoreAllMocks();
 	});
 
 	test("should return a 200 status if the request is successful", async () => {
@@ -230,11 +231,11 @@ describe("idpuser/send-enable-code", () => {
 	});
 
 	test("should return a 401 status if the request is not authenticated", async () => {
-		jest
-			.mocked(verifyUserAuthentication)
-			.mockImplementation(async (_, __, next: NextFunction) => {
+		vi.mocked(verifyUserAuthentication).mockImplementation(
+			async (_, __, next: NextFunction) => {
 				next(createError(401, "Unauthorized"));
-			});
+			},
+		);
 		await agent.post("/api/v2/idpuser/send-enable-code").expect(401);
 	});
 
@@ -313,7 +314,7 @@ describe("idpuser/send-enable-code", () => {
 	});
 
 	test("should return a 500 status if the database call fails", async () => {
-		jest.spyOn(db, "sql").mockRejectedValue(new Error("test_error"));
+		vi.spyOn(db, "sql").mockRejectedValue(new Error("test_error"));
 		await agent
 			.post("/api/v2/idpuser/send-enable-code")
 			.send({ method: "email", value: "test@permanent.org" })
@@ -334,8 +335,8 @@ describe("POST /idpuser/enable-two-factor", () => {
 
 	beforeEach(async () => {
 		await clearDatabase();
-		jest.clearAllMocks();
-		jest.resetAllMocks();
+		vi.clearAllMocks();
+		vi.resetAllMocks();
 		await loadFixtures();
 		mockVerifyUserAuthentication(
 			"test@permanent.org",
@@ -345,15 +346,15 @@ describe("POST /idpuser/enable-two-factor", () => {
 
 	afterEach(async () => {
 		await clearDatabase();
-		jest.restoreAllMocks();
+		vi.restoreAllMocks();
 	});
 
 	test("should return a 401 status if the caller is not authenticated", async () => {
-		jest
-			.mocked(verifyUserAuthentication)
-			.mockImplementation((_req, _res, _next: NextFunction) => {
+		vi.mocked(verifyUserAuthentication).mockImplementation(
+			(_req, _res, _next: NextFunction) => {
 				throw new createError.Unauthorized("Invalid token");
-			});
+			},
+		);
 		await agent
 			.post("/api/v2/idpuser/enable-two-factor")
 			.send({ code: "test_code", method: "sms", value: "000-000-0000" })
@@ -455,7 +456,7 @@ describe("POST /idpuser/enable-two-factor", () => {
 	});
 
 	test("should return status 500 if the database call fails", async () => {
-		jest.spyOn(db, "sql").mockRejectedValueOnce(new Error("Database error"));
+		vi.spyOn(db, "sql").mockRejectedValueOnce(new Error("Database error"));
 		await agent
 			.post("/api/v2/idpuser/enable-two-factor")
 			.send({
@@ -489,7 +490,7 @@ describe("idpuser/send-disable-code", () => {
 
 	afterEach(async () => {
 		await clearDatabase();
-		jest.restoreAllMocks();
+		vi.restoreAllMocks();
 	});
 
 	test("should return a 200 status if the request is successful", async () => {
@@ -500,11 +501,11 @@ describe("idpuser/send-disable-code", () => {
 	});
 
 	test("should return a 401 status if the request not authenticated", async () => {
-		jest
-			.mocked(verifyUserAuthentication)
-			.mockImplementation(async (_, __, next: NextFunction) => {
+		vi.mocked(verifyUserAuthentication).mockImplementation(
+			async (_, __, next: NextFunction) => {
 				next(createError(401, "Unauthorized"));
-			});
+			},
+		);
 		await agent
 			.post("/api/v2/idpuser/send-disable-code")
 			.send({ methodId: "test_method_id" })
@@ -571,7 +572,7 @@ describe("idpuser/send-disable-code", () => {
 	});
 
 	test("should return a 500 status if the database call fails", async () => {
-		jest.spyOn(db, "sql").mockRejectedValue(new Error("test_error"));
+		vi.spyOn(db, "sql").mockRejectedValue(new Error("test_error"));
 		await agent
 			.post("/api/v2/idpuser/send-disable-code")
 			.send({ methodId: "test_method_id" })
@@ -601,7 +602,7 @@ describe("/idpuser/disable-two-factor", () => {
 
 	afterEach(async () => {
 		await clearDatabase();
-		jest.restoreAllMocks();
+		vi.restoreAllMocks();
 	});
 
 	test("should return 200 status if the request is successful", async () => {
@@ -612,11 +613,11 @@ describe("/idpuser/disable-two-factor", () => {
 	});
 
 	test("should return 401 status if the request is not authenticated", async () => {
-		jest
-			.mocked(verifyUserAuthentication)
-			.mockImplementation(async (_, __, next: NextFunction) => {
+		vi.mocked(verifyUserAuthentication).mockImplementation(
+			async (_, __, next: NextFunction) => {
 				next(createError.Unauthorized("Invalid token"));
-			});
+			},
+		);
 		await agent
 			.post("/api/v2/idpuser/disable-two-factor")
 			.send({ methodId: "test_method_id", code: "test_code" })
@@ -688,7 +689,7 @@ describe("/idpuser/disable-two-factor", () => {
 	});
 
 	test("should return status 500 if the database call fails", async () => {
-		jest.spyOn(db, "sql").mockRejectedValueOnce(new Error("Database error"));
+		vi.spyOn(db, "sql").mockRejectedValueOnce(new Error("Database error"));
 		await agent
 			.post("/api/v2/idpuser/disable-two-factor")
 			.send({ methodId: "test_method_id", code: "test_code" })

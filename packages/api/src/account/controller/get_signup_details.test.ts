@@ -1,13 +1,14 @@
 import request from "supertest";
+import { vi } from "vitest";
 import { logger } from "@stela/logger";
 import { app } from "../../app";
 import { db } from "../../database";
 import type { SignupDetails } from "../models";
 import { mockVerifyUserAuthentication } from "../../../test/middleware_mocks";
 
-jest.mock("../../database");
-jest.mock("../../middleware");
-jest.mock("@stela/logger");
+vi.mock("../../database");
+vi.mock("../../middleware");
+vi.mock("@stela/logger");
 
 const loadFixtures = async (): Promise<void> => {
 	await db.sql("account.fixtures.create_test_accounts");
@@ -28,7 +29,7 @@ describe("getSignupDetails", () => {
 		await loadFixtures();
 	});
 	afterEach(async () => {
-		jest.clearAllMocks();
+		vi.clearAllMocks();
 		await clearDatabase();
 	});
 
@@ -55,13 +56,11 @@ describe("getSignupDetails", () => {
 	});
 
 	test("should throw an error if database call fails unexpectedly", async () => {
-		jest
-			.spyOn(db, "sql")
-			.mockImplementationOnce(
-				jest
-					.fn()
-					.mockRejectedValueOnce(new Error("out of cheese - redo from start")),
-			);
+		vi.spyOn(db, "sql").mockImplementationOnce(
+			vi
+				.fn()
+				.mockRejectedValueOnce(new Error("out of cheese - redo from start")),
+		);
 		await agent.get("/api/v2/accounts/signup").expect(500);
 		expect(logger.error).toHaveBeenCalled();
 	});

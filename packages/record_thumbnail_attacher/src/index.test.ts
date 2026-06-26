@@ -1,16 +1,20 @@
 import type { Context } from "aws-lambda";
-import { mock } from "jest-mock-extended";
+import { vi } from "vitest";
+import { mock } from "vitest-mock-extended";
 import { constructSignedCdnUrl } from "@stela/s3-utils";
 import { logger } from "@stela/logger";
 import { db } from "./database";
 import { handler } from "./index";
 
-jest.mock("./database");
-jest.mock("@stela/s3-utils", (): unknown => ({
-	...jest.requireActual("@stela/s3-utils"),
-	constructSignedCdnUrl: jest.fn(),
-}));
-jest.mock("@stela/logger");
+vi.mock("./database");
+vi.mock(import("@stela/s3-utils"), async (importOriginal) => {
+	const actual = await importOriginal();
+	return {
+		...actual,
+		constructSignedCdnUrl: vi.fn(),
+	};
+});
+vi.mock("@stela/logger");
 
 describe("handler", () => {
 	const loadFixtures = async (): Promise<void> => {
@@ -39,8 +43,8 @@ describe("handler", () => {
 
 	afterEach(async () => {
 		await clearDatabase();
-		jest.clearAllMocks();
-		jest.restoreAllMocks();
+		vi.clearAllMocks();
+		vi.restoreAllMocks();
 	});
 
 	test("should take no action if the file isn't a thumbnail", async () => {
@@ -79,7 +83,7 @@ describe("handler", () => {
 				},
 			],
 		};
-		await handler(event, mock<Context>(), jest.fn());
+		await handler(event, mock<Context>(), vi.fn());
 
 		const recordThumbnail256Result = await db.query<{
 			thumbnail256: string;
@@ -120,7 +124,7 @@ describe("handler", () => {
 		};
 		let error = null;
 		try {
-			await handler(event, mock<Context>(), jest.fn());
+			await handler(event, mock<Context>(), vi.fn());
 		} catch (err) {
 			error = err;
 		}
@@ -181,7 +185,7 @@ describe("handler", () => {
 		};
 		let error = null;
 		try {
-			await handler(event, mock<Context>(), jest.fn());
+			await handler(event, mock<Context>(), vi.fn());
 		} catch (err) {
 			error = err;
 		}
@@ -226,7 +230,7 @@ describe("handler", () => {
 		};
 		let error = null;
 		try {
-			await handler(event, mock<Context>(), jest.fn());
+			await handler(event, mock<Context>(), vi.fn());
 		} catch (err) {
 			error = err;
 		}
@@ -239,7 +243,7 @@ describe("handler", () => {
 		const testUrl =
 			"https://localcdn.permanent.org/_Liam/access_copies/e38e/8582/b417/430c/953d/5c7e/8040/1ae2/1_upload-cb45fa84-f0ea-4a9e-b1da-309e485a4f4a/thumbnails/710a1def-caf8-48f2-8eee-0848b4cfda10.jpg?&Expires=1739554780&Signature=testSignature&Key-Pair-Id=testKeyPairId";
 
-		jest.mocked(constructSignedCdnUrl).mockReturnValue(testUrl);
+		vi.mocked(constructSignedCdnUrl).mockReturnValue(testUrl);
 
 		const event = {
 			Records: [
@@ -276,7 +280,7 @@ describe("handler", () => {
 				},
 			],
 		};
-		await handler(event, mock<Context>(), jest.fn());
+		await handler(event, mock<Context>(), vi.fn());
 
 		const recordThumbnail256Result = await db.query<{
 			thumbnail256: string;
@@ -327,7 +331,7 @@ describe("handler", () => {
 		const testUrl =
 			"https://localcdn.permanent.org/_Liam/access_copies/e38e/8582/b417/430c/953d/5c7e/8040/1ae2/1_upload-cb45fa84-f0ea-4a9e-b1da-309e485a4f4a/thumbnails/710a1def-caf8-48f2-8eee-0848b4cfda10.jpg?&Expires=1739554780&Signature=testSignature&Key-Pair-Id=testKeyPairId";
 
-		jest.mocked(constructSignedCdnUrl).mockReturnValue(testUrl);
+		vi.mocked(constructSignedCdnUrl).mockReturnValue(testUrl);
 
 		const oneWeekFromNow = new Date();
 		oneWeekFromNow.setDate(oneWeekFromNow.getDate() + 7);
@@ -376,7 +380,7 @@ describe("handler", () => {
 				},
 			],
 		};
-		await handler(event, mock<Context>(), jest.fn());
+		await handler(event, mock<Context>(), vi.fn());
 
 		const recordThumbnail256Result = await db.query<{
 			thumbDt: string;
@@ -407,10 +411,10 @@ describe("handler", () => {
 		const testUrl =
 			"https://localcdn.permanent.org/_Liam/access_copies/e38e/8582/b417/430c/953d/5c7e/8040/1ae2/1_upload-cb45fa84-f0ea-4a9e-b1da-309e485a4f4a/thumbnails/710a1def-caf8-48f2-8eee-0848b4cfda10.jpg?&Expires=1739554780&Signature=testSignature&Key-Pair-Id=testKeyPairId";
 
-		jest.mocked(constructSignedCdnUrl).mockReturnValue(testUrl);
+		vi.mocked(constructSignedCdnUrl).mockReturnValue(testUrl);
 
 		const dbError = new Error("Database error");
-		jest.spyOn(db, "sql").mockRejectedValue(dbError);
+		vi.spyOn(db, "sql").mockRejectedValue(dbError);
 
 		const event = {
 			Records: [
@@ -448,7 +452,7 @@ describe("handler", () => {
 			],
 		};
 		try {
-			await handler(event, mock<Context>(), jest.fn());
+			await handler(event, mock<Context>(), vi.fn());
 		} catch (_) {
 			// Do nothing
 		}

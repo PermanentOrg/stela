@@ -8,7 +8,7 @@ COPY package.json ./
 COPY package-lock.json ./
 COPY tsconfig.build.json ./
 COPY tsconfig.json ./
-COPY jest.config.js ./
+COPY vitest.config.ts ./
 COPY patches ./patches
 COPY packages/api/package.json ./packages/api/package.json
 COPY packages/logger ./packages/logger

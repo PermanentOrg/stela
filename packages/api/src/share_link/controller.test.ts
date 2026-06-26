@@ -1,8 +1,9 @@
 import request from "supertest";
+import { vi } from "vitest";
 import type { Request, Response, NextFunction } from "express";
 import createError from "http-errors";
 import { v4 as uuidv4 } from "uuid";
-import { when } from "jest-when";
+import { when } from "vitest-when";
 import { app } from "../app";
 import {
 	extractUserEmailFromAuthToken,
@@ -15,9 +16,9 @@ import {
 	mockExtractUserEmailFromAuthToken,
 } from "../../test/middleware_mocks";
 
-jest.mock("../database");
-jest.mock("../middleware");
-jest.mock("uuid");
+vi.mock("../database");
+vi.mock("../middleware");
+vi.mock("uuid");
 
 const loadFixtures = async (): Promise<void> => {
 	await db.sql("share_link.fixtures.create_test_accounts");
@@ -80,7 +81,7 @@ describe("POST /share-links", () => {
 	const testUuid = "3afb2671-bc26-4928-9ea9-0ad4cb735f11";
 
 	beforeEach(async () => {
-		jest.mocked(uuidv4).mockImplementation(jest.fn().mockReturnValue(testUuid));
+		vi.mocked(uuidv4).mockImplementation(vi.fn().mockReturnValue(testUuid));
 		mockVerifyUserAuthentication(
 			"test@permanent.org",
 			"315aedc2-67d5-4144-9f0d-ee547d98af9c",
@@ -89,8 +90,8 @@ describe("POST /share-links", () => {
 	});
 
 	afterEach(async () => {
-		jest.restoreAllMocks();
-		jest.clearAllMocks();
+		vi.restoreAllMocks();
+		vi.resetAllMocks();
 		await clearDatabase();
 	});
 
@@ -115,11 +116,11 @@ describe("POST /share-links", () => {
 	});
 
 	test("should return 401 if the caller is not authenticated", async () => {
-		jest
-			.mocked(verifyUserAuthentication)
-			.mockImplementation(async (_, __, next: NextFunction) => {
+		vi.mocked(verifyUserAuthentication).mockImplementation(
+			async (_, __, next: NextFunction) => {
 				next(new createError.Unauthorized("Invalid token"));
-			});
+			},
+		);
 		await agent.post("/api/v2/share-links").expect(401);
 	});
 
@@ -262,7 +263,7 @@ describe("POST /share-links", () => {
 
 	test("should return a 500 error if the database call fails", async () => {
 		const testError = new Error("Test error");
-		const dbSpy = jest.spyOn(db, "sql");
+		const dbSpy = vi.spyOn(db, "sql");
 		when(dbSpy)
 			.calledWith("share_link.queries.create_share_link", {
 				itemId: "2",
@@ -276,7 +277,7 @@ describe("POST /share-links", () => {
 				shareUrl: `https://${process.env["SITE_URL"] ?? ""}/share/${testUuid}`,
 				email: "test@permanent.org",
 			})
-			.mockRejectedValue(testError);
+			.thenReject(testError);
 		await agent
 			.post("/api/v2/share-links")
 			.send({
@@ -287,7 +288,7 @@ describe("POST /share-links", () => {
 	});
 
 	test("should return a 404 error if the database returns an empty result", async () => {
-		const dbSpy = jest.spyOn(db, "sql");
+		const dbSpy = vi.spyOn(db, "sql");
 		when(dbSpy)
 			.calledWith("share_link.queries.create_share_link", {
 				itemId: "2",
@@ -301,7 +302,7 @@ describe("POST /share-links", () => {
 				shareUrl: `https://${process.env["SITE_URL"] ?? ""}/share/${testUuid}`,
 				email: "test@permanent.org",
 			})
-			.mockImplementation(jest.fn().mockResolvedValue({ rows: [] }));
+			.thenDo(vi.fn().mockResolvedValue({ rows: [] }));
 		await agent
 			.post("/api/v2/share-links")
 			.send({
@@ -345,8 +346,8 @@ describe("PATCH /share-links/{id}", () => {
 	});
 
 	afterEach(async () => {
-		jest.restoreAllMocks();
-		jest.clearAllMocks();
+		vi.restoreAllMocks();
+		vi.resetAllMocks();
 		await clearDatabase();
 	});
 
@@ -358,11 +359,11 @@ describe("PATCH /share-links/{id}", () => {
 	});
 
 	test("should return 401 if the caller is unauthenticated", async () => {
-		jest
-			.mocked(verifyUserAuthentication)
-			.mockImplementation(async (_, __, next: NextFunction) => {
+		vi.mocked(verifyUserAuthentication).mockImplementation(
+			async (_, __, next: NextFunction) => {
 				next(new createError.Unauthorized("Invalid token"));
-			});
+			},
+		);
 		await agent.patch("/api/v2/share-links/1").send({}).expect(401);
 	});
 
@@ -534,7 +535,7 @@ describe("PATCH /share-links/{id}", () => {
 	});
 
 	test("should return 500 if the query to retrieve the share link fails", async () => {
-		jest.spyOn(db, "sql").mockRejectedValue(new Error("Test error"));
+		vi.spyOn(db, "sql").mockRejectedValue(new Error("Test error"));
 		await agent
 			.patch("/api/v2/share-links/1000")
 			.send({
@@ -547,7 +548,7 @@ describe("PATCH /share-links/{id}", () => {
 	});
 
 	test("should return 500 if the query to update the share link fails", async () => {
-		const dbSpy = jest.spyOn(db, "sql");
+		const dbSpy = vi.spyOn(db, "sql");
 		when(dbSpy)
 			.calledWith("share_link.queries.update_share_link", {
 				permissionsLevel: "access.role.editor",
@@ -560,7 +561,7 @@ describe("PATCH /share-links/{id}", () => {
 				shareLinkId: "1000",
 				email: "test@permanent.org",
 			})
-			.mockRejectedValue(new Error("Test error"));
+			.thenReject(new Error("Test error"));
 		await agent
 			.patch("/api/v2/share-links/1000")
 			.send({
@@ -581,7 +582,7 @@ describe("GET /share-links", () => {
 	});
 
 	afterEach(async () => {
-		jest.restoreAllMocks();
+		vi.restoreAllMocks();
 		await clearDatabase();
 	});
 
@@ -590,17 +591,15 @@ describe("GET /share-links", () => {
 	});
 
 	test("should return 401 if the caller's auth token is invalid", async () => {
-		jest
-			.mocked(extractUserEmailFromAuthToken)
-			.mockImplementation(
-				async (
-					_: Request<unknown, unknown, { emailFromAuthToken?: string }>,
-					__: Response,
-					next: NextFunction,
-				) => {
-					next(new createError.Unauthorized("Invalid token"));
-				},
-			);
+		vi.mocked(extractUserEmailFromAuthToken).mockImplementation(
+			async (
+				_: Request<unknown, unknown, { emailFromAuthToken?: string }>,
+				__: Response,
+				next: NextFunction,
+			) => {
+				next(new createError.Unauthorized("Invalid token"));
+			},
+		);
 		await agent.get("/api/v2/share-links?shareLinkIds[]=1").expect(401);
 	});
 
@@ -699,9 +698,9 @@ describe("GET /share-links", () => {
 	});
 
 	test("should return a 500 error if the database call fails", async () => {
-		jest
-			.spyOn(db, "sql")
-			.mockRejectedValue(new Error("out of cheese - redo from start"));
+		vi.spyOn(db, "sql").mockRejectedValue(
+			new Error("out of cheese - redo from start"),
+		);
 		await agent.get("/api/v2/share-links?shareLinkIds[]=1000").expect(500);
 	});
 });
@@ -726,11 +725,11 @@ describe("DELETE /share-links", () => {
 	});
 
 	test("should return 401 if the caller is unauthenticated", async () => {
-		jest
-			.mocked(verifyUserAuthentication)
-			.mockImplementation(async (__, _, next: NextFunction) => {
+		vi.mocked(verifyUserAuthentication).mockImplementation(
+			async (__, _, next: NextFunction) => {
 				next(new createError.Unauthorized("Invalid token"));
-			});
+			},
+		);
 		await agent.delete("/api/v2/share-links/1000").expect(401);
 	});
 
@@ -740,6 +739,7 @@ describe("DELETE /share-links", () => {
 	});
 
 	test("should delete the share link", async () => {
+		mockExtractUserEmailFromAuthToken("test@permanent.org");
 		await agent.delete("/api/v2/share-links/1000").expect(204);
 		const response = await agent
 			.get("/api/v2/share-links?shareLinkIds[]=1000")
@@ -764,7 +764,7 @@ describe("DELETE /share-links", () => {
 	});
 
 	test("should return 500 if the database call fails", async () => {
-		jest.spyOn(db, "sql").mockRejectedValue(new Error("Test error"));
+		vi.spyOn(db, "sql").mockRejectedValue(new Error("Test error"));
 		await agent.delete("/api/v2/share-links/1000").expect(500);
 	});
 });

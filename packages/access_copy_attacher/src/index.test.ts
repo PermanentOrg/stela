@@ -1,5 +1,6 @@
 import type { Context, SQSEvent } from "aws-lambda";
-import { mock } from "jest-mock-extended";
+import { vi } from "vitest";
+import { mock } from "vitest-mock-extended";
 import { Readable } from "node:stream";
 import { S3Client } from "@aws-sdk/client-s3";
 import { detectFileType } from "./file-type-utils";
@@ -8,16 +9,19 @@ import { constructSignedCdnUrl } from "@stela/s3-utils";
 import { db } from "./database";
 import { handler } from "./index";
 
-jest.mock("./database");
-jest.mock("@stela/logger");
-jest.mock("@aws-sdk/client-s3");
-jest.mock("./file-type-utils", () => ({
-	detectFileType: jest.fn(),
+vi.mock("./database");
+vi.mock("@stela/logger");
+vi.mock("@aws-sdk/client-s3");
+vi.mock("./file-type-utils", () => ({
+	detectFileType: vi.fn(),
 }));
-jest.mock("@stela/s3-utils", (): unknown => ({
-	...jest.requireActual("@stela/s3-utils"),
-	constructSignedCdnUrl: jest.fn(),
-}));
+vi.mock(import("@stela/s3-utils"), async (importOriginal) => {
+	const actual = await importOriginal();
+	return {
+		...actual,
+		constructSignedCdnUrl: vi.fn(),
+	};
+});
 
 describe("handler", () => {
 	const loadFixtures = async (): Promise<void> => {
@@ -46,8 +50,8 @@ describe("handler", () => {
 
 	afterEach(async () => {
 		await clearDatabase();
-		jest.clearAllMocks();
-		jest.restoreAllMocks();
+		vi.clearAllMocks();
+		vi.restoreAllMocks();
 	});
 
 	test("should take no action if the file is a thumbnail", async () => {
@@ -86,7 +90,7 @@ describe("handler", () => {
 				},
 			],
 		};
-		await handler(event, mock<Context>(), jest.fn());
+		await handler(event, mock<Context>(), vi.fn());
 
 		const recordThumbnail256Result = await db.query<{
 			fileId: string;
@@ -110,7 +114,7 @@ describe("handler", () => {
 		const testSize = 102400;
 		const testVersionId = "test-s3-version-id";
 
-		jest.mocked(constructSignedCdnUrl).mockReturnValue(testUrl);
+		vi.mocked(constructSignedCdnUrl).mockReturnValue(testUrl);
 
 		const event = {
 			Records: [
@@ -149,7 +153,7 @@ describe("handler", () => {
 				},
 			],
 		};
-		await handler(event, mock<Context>(), jest.fn());
+		await handler(event, mock<Context>(), vi.fn());
 
 		const fileResult = await db.query<{
 			size: number;
@@ -252,7 +256,7 @@ describe("handler", () => {
 
 		let error = null;
 		try {
-			await handler(event, mock<Context>(), jest.fn());
+			await handler(event, mock<Context>(), vi.fn());
 		} catch (err) {
 			error = err;
 		} finally {
@@ -307,11 +311,11 @@ describe("handler", () => {
 		};
 
 		const testError = new Error("out of cheese - redo from start");
-		jest.spyOn(db, "sql").mockRejectedValue(testError);
+		vi.spyOn(db, "sql").mockRejectedValue(testError);
 
 		let error = null;
 		try {
-			await handler(event, mock<Context>(), jest.fn());
+			await handler(event, mock<Context>(), vi.fn());
 		} catch (err) {
 			error = err;
 		} finally {
@@ -364,8 +368,7 @@ describe("handler", () => {
 		};
 
 		const testError = new Error("out of cheese - redo from start");
-		jest
-			.spyOn(db, "sql")
+		vi.spyOn(db, "sql")
 			.mockResolvedValueOnce({
 				command: "",
 				row_count: 1,
@@ -377,7 +380,7 @@ describe("handler", () => {
 
 		let error = null;
 		try {
-			await handler(event, mock<Context>(), jest.fn());
+			await handler(event, mock<Context>(), vi.fn());
 		} catch (err) {
 			error = err;
 		} finally {
@@ -390,7 +393,7 @@ describe("handler", () => {
 		const noExtKey =
 			"_Liam/access_copies/e38e/8582/b417/430c/953d/5c7e/8040/1ae2/100_upload-cb45fa84-f0ea-4a9e-b1da-309e485a4f4a/objects/710a1def-caf8-48f2-8eee-0848b4cfda10";
 		const testUrl = "https://localcdn.permanent.org/test";
-		const mockS3Send = jest.fn();
+		const mockS3Instance = mock<S3Client>();
 
 		const buildEvent = (key: string): SQSEvent => ({
 			Records: [
@@ -425,21 +428,20 @@ describe("handler", () => {
 		});
 
 		beforeEach(() => {
-			jest.mocked(constructSignedCdnUrl).mockReturnValue(testUrl);
-			jest
-				.mocked(S3Client)
-				.mockImplementation(jest.fn().mockReturnValue({ send: mockS3Send }));
-			mockS3Send.mockResolvedValue({
+			vi.mocked(constructSignedCdnUrl).mockReturnValue(testUrl);
+			vi.mocked(S3Client).mockReturnValue(mockS3Instance);
+			mockS3Instance.send.mockImplementation(() => ({
 				Body: Readable.from(["test data"]),
-			});
+			}));
 		});
 
 		test("should identify a recognized file type via content sniffing", async () => {
-			jest
-				.mocked(detectFileType)
-				.mockResolvedValue({ ext: "jpg", mime: "image/jpeg" });
+			vi.mocked(detectFileType).mockResolvedValue({
+				ext: "jpg",
+				mime: "image/jpeg",
+			});
 
-			await handler(buildEvent(noExtKey), mock<Context>(), jest.fn());
+			await handler(buildEvent(noExtKey), mock<Context>(), vi.fn());
 
 			const result = await db.query<{ type: string }>(
 				`SELECT type FROM file WHERE parentFileId = 100`,
@@ -448,11 +450,12 @@ describe("handler", () => {
 		});
 
 		test("should not write a file row if the file extension is unrecognized", async () => {
-			jest
-				.mocked(detectFileType)
-				.mockResolvedValue({ ext: "xyz", mime: "application/xyz" });
+			vi.mocked(detectFileType).mockResolvedValue({
+				ext: "xyz",
+				mime: "application/xyz",
+			});
 
-			await handler(buildEvent(noExtKey), mock<Context>(), jest.fn());
+			await handler(buildEvent(noExtKey), mock<Context>(), vi.fn());
 
 			const result = await db.query<{ type: string }>(
 				`SELECT type FROM file WHERE parentFileId = 100`,
@@ -461,9 +464,9 @@ describe("handler", () => {
 		});
 
 		test("should not write a file row when content sniffing cannot identify the file", async () => {
-			jest.mocked(detectFileType).mockResolvedValue(undefined);
+			vi.mocked(detectFileType).mockResolvedValue(undefined);
 
-			await handler(buildEvent(noExtKey), mock<Context>(), jest.fn());
+			await handler(buildEvent(noExtKey), mock<Context>(), vi.fn());
 
 			const result = await db.query<{ type: string }>(
 				`SELECT type FROM file WHERE parentFileId = 100`,
@@ -472,9 +475,9 @@ describe("handler", () => {
 		});
 
 		test("should not write a file row when the S3 response body is not a stream", async () => {
-			mockS3Send.mockResolvedValue({ Body: undefined });
+			mockS3Instance.send.mockImplementation(() => ({ Body: undefined }));
 
-			await handler(buildEvent(noExtKey), mock<Context>(), jest.fn());
+			await handler(buildEvent(noExtKey), mock<Context>(), vi.fn());
 
 			const result = await db.query<{ type: string }>(
 				`SELECT type FROM file WHERE parentFileId = 100`,
@@ -491,7 +494,7 @@ describe("handler", () => {
 		const testSize = 102400;
 		const testVersionId = "test-s3-version-id";
 
-		jest.mocked(constructSignedCdnUrl).mockReturnValue(testUrl);
+		vi.mocked(constructSignedCdnUrl).mockReturnValue(testUrl);
 
 		const event = {
 			Records: [
@@ -530,7 +533,7 @@ describe("handler", () => {
 				},
 			],
 		};
-		await handler(event, mock<Context>(), jest.fn());
+		await handler(event, mock<Context>(), vi.fn());
 
 		const fileResult = await db.query<{
 			size: number;
@@ -564,7 +567,7 @@ describe("handler", () => {
 
 		expect(fileResult.rows.length).toEqual(1);
 
-		await handler(event, mock<Context>(), jest.fn());
+		await handler(event, mock<Context>(), vi.fn());
 
 		const fileResultAfterSecondRun = await db.query<{
 			size: number;

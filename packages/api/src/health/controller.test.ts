@@ -1,8 +1,9 @@
 import request from "supertest";
+import { vi } from "vitest";
 import { app } from "../app";
 import { db } from "../database";
 
-jest.mock("../database");
+vi.mock("../database");
 
 describe("/health", () => {
 	const agent = request(app);
@@ -18,7 +19,7 @@ describe("/health", () => {
 	});
 
 	test("should be unavailable when DB connection fails", async () => {
-		jest.spyOn(db, "sql").mockImplementation(() => {
+		vi.spyOn(db, "sql").mockImplementation(() => {
 			throw new Error();
 		});
 

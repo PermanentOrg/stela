@@ -1,13 +1,14 @@
 import request from "supertest";
+import { vi } from "vitest";
 import { logger } from "@stela/logger";
 import { app } from "../../app";
 import { db } from "../../database";
 import { mockVerifyUserAuthentication } from "../../../test/middleware_mocks";
 import type { Archive } from "../models";
 
-jest.mock("../../database");
-jest.mock("../../middleware");
-jest.mock("@stela/logger");
+vi.mock("../../database");
+vi.mock("../../middleware");
+vi.mock("@stela/logger");
 
 const loadFixtures = async (): Promise<void> => {
 	await db.sql("archive.fixtures.create_test_accounts");
@@ -110,7 +111,7 @@ describe("PATCH /archive/:archiveId", () => {
 	test("should throw an InternalServerError if database query fails", async () => {
 		const archiveId = "1";
 		const testError = new Error("error: out of cheese - redo from start");
-		jest.spyOn(db, "sql").mockRejectedValueOnce(testError);
+		vi.spyOn(db, "sql").mockRejectedValueOnce(testError);
 
 		await agent
 			.patch(`/api/v2/archive/${archiveId}`)

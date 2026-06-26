@@ -1,4 +1,5 @@
 import request from "supertest";
+import { vi } from "vitest";
 import { logger } from "@stela/logger";
 import { app } from "../app";
 import { db } from "../database";
@@ -6,11 +7,11 @@ import { sendLegacyContactNotification } from "../email";
 import type { LegacyContact } from "./model";
 import { mockVerifyUserAuthentication } from "../../test/middleware_mocks";
 
-jest.mock("@stela/logger");
-jest.mock("../database");
-jest.mock("../middleware");
-jest.mock("../email", () => ({
-	sendLegacyContactNotification: jest.fn(),
+vi.mock("@stela/logger");
+vi.mock("../database");
+vi.mock("../middleware");
+vi.mock("../email", () => ({
+	sendLegacyContactNotification: vi.fn(),
 }));
 
 describe("GET /legacy-contact", () => {
@@ -49,7 +50,7 @@ describe("GET /legacy-contact", () => {
 
 	test("should throw an InternalServerError when retrieval of legacy contacts fails", async () => {
 		const testError = new Error("Out of cheese error - redo from start");
-		jest.spyOn(db, "sql").mockImplementationOnce(async () => {
+		vi.spyOn(db, "sql").mockImplementationOnce(async () => {
 			throw testError;
 		});
 		await agent.get("/api/v2/legacy-contact/").expect(500);
@@ -86,11 +87,11 @@ describe("POST /legacy-contact", () => {
 	});
 	afterEach(async () => {
 		await clearDatabase();
-		jest.clearAllMocks();
+		vi.clearAllMocks();
 	});
 
 	test("should successfully create a legacy contact", async () => {
-		jest.mocked(sendLegacyContactNotification).mockResolvedValueOnce(undefined);
+		vi.mocked(sendLegacyContactNotification).mockResolvedValueOnce(undefined);
 		await agent
 			.post("/api/v2/legacy-contact/")
 			.send({
@@ -121,7 +122,7 @@ describe("POST /legacy-contact", () => {
 
 	test("should log errors sending email", async () => {
 		const testError = new Error("out of cheese error - redo from start");
-		jest.mocked(sendLegacyContactNotification).mockRejectedValueOnce(testError);
+		vi.mocked(sendLegacyContactNotification).mockRejectedValueOnce(testError);
 		await agent
 			.post("/api/v2/legacy-contact")
 			.send({
@@ -148,9 +149,9 @@ describe("POST /legacy-contact", () => {
 	});
 
 	test("should error if legacy contact can't be created", async () => {
-		jest
-			.spyOn(db, "sql")
-			.mockImplementationOnce(jest.fn().mockResolvedValue({ rows: [] }));
+		vi.spyOn(db, "sql").mockImplementationOnce(
+			vi.fn().mockResolvedValue({ rows: [] }),
+		);
 		await agent
 			.post("/api/v2/legacy-contact")
 			.send({
@@ -189,11 +190,11 @@ describe("PUT /legacy-contact/:legacyContactId", () => {
 	});
 	afterEach(async () => {
 		await clearDatabase();
-		jest.clearAllMocks();
+		vi.clearAllMocks();
 	});
 
 	test("should update a legacy contact's name and email", async () => {
-		jest.mocked(sendLegacyContactNotification).mockResolvedValueOnce(undefined);
+		vi.mocked(sendLegacyContactNotification).mockResolvedValueOnce(undefined);
 		const result = await agent
 			.put(`/api/v2/legacy-contact/${testLegacyContactId}`)
 			.send({
@@ -271,7 +272,7 @@ describe("PUT /legacy-contact/:legacyContactId", () => {
 	});
 
 	test("should throw an InternalServerError when update fails unexpectedly", async () => {
-		jest.spyOn(db, "sql").mockImplementationOnce(async () => {
+		vi.spyOn(db, "sql").mockImplementationOnce(async () => {
 			throw new Error("Out of cheese error - redo from start");
 		});
 		await agent
@@ -284,7 +285,7 @@ describe("PUT /legacy-contact/:legacyContactId", () => {
 
 	test("should log errors sending email", async () => {
 		const testError = new Error("out of cheese error - redo from start");
-		jest.mocked(sendLegacyContactNotification).mockRejectedValueOnce(testError);
+		vi.mocked(sendLegacyContactNotification).mockRejectedValueOnce(testError);
 		await agent
 			.put(`/api/v2/legacy-contact/${testLegacyContactId}`)
 			.send({

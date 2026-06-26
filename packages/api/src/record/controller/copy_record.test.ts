@@ -1,6 +1,7 @@
 import request from "supertest";
+import { vi } from "vitest";
 import type { NextFunction } from "express";
-import { when } from "jest-when";
+import { when } from "vitest-when";
 import createError from "http-errors";
 import { logger } from "@stela/logger";
 import { app } from "../../app";
@@ -12,9 +13,9 @@ import {
 	mockExtractIp,
 } from "../../../test/middleware_mocks";
 
-jest.mock("../../database");
-jest.mock("../../middleware");
-jest.mock("@stela/logger");
+vi.mock("../../database");
+vi.mock("../../middleware");
+vi.mock("@stela/logger");
 
 const setupDatabase = async (): Promise<void> => {
 	await db.sql("record.fixtures.create_test_accounts");
@@ -77,16 +78,16 @@ describe("POST /record/{recordId}/copies", () => {
 
 	afterEach(async () => {
 		await clearDatabase();
-		jest.restoreAllMocks();
-		jest.clearAllMocks();
+		vi.restoreAllMocks();
+		vi.resetAllMocks();
 	});
 
 	test("expect 401 if not authenticated", async () => {
-		jest
-			.mocked(verifyUserAuthentication)
-			.mockImplementation(async (_, __, next: NextFunction) => {
+		vi.mocked(verifyUserAuthentication).mockImplementation(
+			async (_, __, next: NextFunction) => {
 				next(createError.Unauthorized("Invalid auth token"));
-			});
+			},
+		);
 		await agent
 			.post("/api/v2/records/10008/copies")
 			.send({ destinationFolderId: "2" })
@@ -392,7 +393,7 @@ describe("POST /record/{recordId}/copies", () => {
 
 	test("expect 500 if database lookup fails", async () => {
 		const testError = new Error("test error");
-		jest.spyOn(db, "sql").mockImplementationOnce(async () => {
+		vi.spyOn(db, "sql").mockImplementationOnce(async () => {
 			throw testError;
 		});
 		await agent
@@ -403,9 +404,9 @@ describe("POST /record/{recordId}/copies", () => {
 	});
 
 	test("expect 500 if transaction fails", async () => {
-		jest
-			.spyOn(db, "transaction")
-			.mockRejectedValueOnce(new Error("Transaction error"));
+		vi.spyOn(db, "transaction").mockRejectedValueOnce(
+			new Error("Transaction error"),
+		);
 		await agent
 			.post("/api/v2/records/10008/copies")
 			.send({ destinationFolderId: "2" })
@@ -414,12 +415,12 @@ describe("POST /record/{recordId}/copies", () => {
 
 	test("expect 500 if account space lookup fails", async () => {
 		const testError = new Error("SQL error");
-		const dbSpy = jest.spyOn(db, "sql");
+		const dbSpy = vi.spyOn(db, "sql");
 		when(dbSpy)
 			.calledWith("storage.queries.get_account_space_for_update", {
 				email: "test@permanent.org",
 			})
-			.mockRejectedValueOnce(testError);
+			.thenReject(testError);
 		await agent
 			.post("/api/v2/records/10008/copies")
 			.send({ destinationFolderId: "2" })
@@ -428,16 +429,12 @@ describe("POST /record/{recordId}/copies", () => {
 	});
 
 	test("expect 500 if account space lookup yields and empty response", async () => {
-		const dbSpy = jest.spyOn(db, "sql");
+		const dbSpy = vi.spyOn(db, "sql");
 		when(dbSpy)
 			.calledWith("storage.queries.get_account_space_for_update", {
 				email: "test@permanent.org",
 			})
-			.mockImplementationOnce(
-				jest.fn().mockResolvedValueOnce({
-					rows: [],
-				}),
-			);
+			.thenDo(vi.fn().mockResolvedValue({ rows: [] }));
 		await agent
 			.post("/api/v2/records/10008/copies")
 			.send({ destinationFolderId: "2" })
@@ -449,7 +446,7 @@ describe("POST /record/{recordId}/copies", () => {
 
 	test("expect 500 if copy query fails", async () => {
 		const testError = new Error("SQL error");
-		const dbSpy = jest.spyOn(db, "sql");
+		const dbSpy = vi.spyOn(db, "sql");
 		when(dbSpy)
 			.calledWith("record.queries.copy_record", {
 				destinationArchiveId: "1",
@@ -460,7 +457,7 @@ describe("POST /record/{recordId}/copies", () => {
 				callerIp: "127.0.0.1",
 				callerUserAgent: undefined,
 			})
-			.mockRejectedValueOnce(testError);
+			.thenReject(testError);
 		await agent
 			.post("/api/v2/records/10008/copies")
 			.send({ destinationFolderId: "2" })
@@ -469,7 +466,7 @@ describe("POST /record/{recordId}/copies", () => {
 	});
 
 	test("expect 500 if copy query yields an empty response", async () => {
-		const dbSpy = jest.spyOn(db, "sql");
+		const dbSpy = vi.spyOn(db, "sql");
 		when(dbSpy)
 			.calledWith("record.queries.copy_record", {
 				destinationArchiveId: "1",
@@ -480,11 +477,7 @@ describe("POST /record/{recordId}/copies", () => {
 				callerIp: "127.0.0.1",
 				callerUserAgent: undefined,
 			})
-			.mockImplementationOnce(
-				jest.fn().mockResolvedValueOnce({
-					rows: [],
-				}),
-			);
+			.thenDo(vi.fn().mockResolvedValue({ rows: [] }));
 		await agent
 			.post("/api/v2/records/10008/copies")
 			.send({ destinationFolderId: "2" })
@@ -494,7 +487,7 @@ describe("POST /record/{recordId}/copies", () => {
 
 	test("expect 500 if copy cannot be found after its creation", async () => {
 		const fakeCopiedRecordId = "99999";
-		const dbSpy = jest.spyOn(db, "sql");
+		const dbSpy = vi.spyOn(db, "sql");
 		when(dbSpy)
 			.calledWith("record.queries.copy_record", {
 				destinationArchiveId: "1",
@@ -505,10 +498,8 @@ describe("POST /record/{recordId}/copies", () => {
 				callerIp: "127.0.0.1",
 				callerUserAgent: undefined,
 			})
-			.mockImplementationOnce(
-				jest
-					.fn()
-					.mockResolvedValueOnce({ rows: [{ recordId: fakeCopiedRecordId }] }),
+			.thenDo(
+				vi.fn().mockResolvedValue({ rows: [{ recordId: fakeCopiedRecordId }] }),
 			);
 		when(dbSpy)
 			.calledWith("record.queries.get_records", {
@@ -517,7 +508,7 @@ describe("POST /record/{recordId}/copies", () => {
 				accountEmail: "test@permanent.org",
 				shareToken: undefined,
 			})
-			.mockImplementationOnce(jest.fn().mockResolvedValueOnce({ rows: [] }));
+			.thenDo(vi.fn().mockResolvedValue({ rows: [] }));
 		await agent
 			.post("/api/v2/records/10008/copies")
 			.send({ destinationFolderId: "2" })
