@@ -1,20 +1,24 @@
 import type { Context, SQSRecord } from "aws-lambda";
+import { vi } from "vitest";
 import { S3Client, CopyObjectCommand } from "@aws-sdk/client-s3";
-import { mock } from "jest-mock-extended";
+import { mock } from "vitest-mock-extended";
 import { constructSignedCdnUrl } from "@stela/s3-utils";
 import { logger } from "@stela/logger";
 import { db } from "./database";
 import { handler, extractFileDataFromFileCopyMessage } from "./index";
 
-jest.mock("./database");
-jest.mock("@stela/logger");
-jest.mock("@aws-sdk/client-s3");
-jest.mock("@stela/s3-utils", (): unknown => ({
-	...jest.requireActual("@stela/s3-utils"),
-	constructSignedCdnUrl: jest.fn(),
-}));
+vi.mock("./database");
+vi.mock("@stela/logger");
+vi.mock("@aws-sdk/client-s3");
+vi.mock(import("@stela/s3-utils"), async (importOriginal) => {
+	const actual = await importOriginal();
+	return {
+		...actual,
+		constructSignedCdnUrl: vi.fn(),
+	};
+});
 
-const mockS3Send = jest.fn();
+const mockS3Send = vi.fn();
 
 const originalCloudPath = "originals/100/100";
 const newCloudPath = "originals/101/101";
@@ -130,13 +134,13 @@ describe("handler", () => {
 	};
 
 	beforeEach(async () => {
-		jest.mocked(S3Client).mockImplementation(
-			jest.fn().mockReturnValue({
-				send: mockS3Send.mockResolvedValue({}),
-			}),
+		vi.mocked(S3Client).mockImplementation(
+			class {
+				send = mockS3Send;
+			} as unknown as typeof S3Client,
 		);
-		jest
-			.mocked(constructSignedCdnUrl)
+		mockS3Send.mockResolvedValue({});
+		vi.mocked(constructSignedCdnUrl)
 			.mockReturnValueOnce(testFileUrl)
 			.mockReturnValueOnce(testDownloadUrl);
 		await loadFixtures();
@@ -144,18 +148,18 @@ describe("handler", () => {
 
 	afterEach(async () => {
 		await clearDatabase();
-		jest.clearAllMocks();
-		jest.restoreAllMocks();
+		vi.clearAllMocks();
+		vi.restoreAllMocks();
 	});
 
 	test("should copy the S3 object and update the file record", async () => {
 		await handler(
 			{ Records: [buildFileCopyRecord()] },
 			mock<Context>(),
-			jest.fn(),
+			vi.fn(),
 		);
 
-		const commandInput = jest.mocked(CopyObjectCommand).mock.calls.at(0)?.[0];
+		const commandInput = vi.mocked(CopyObjectCommand).mock.calls.at(0)?.[0];
 		expect(commandInput?.CopySource).toEqual(`/${originalCloudPath}`);
 		expect(commandInput?.Key).toEqual(newCloudPath);
 
@@ -186,11 +190,7 @@ describe("handler", () => {
 			},
 		});
 
-		await handler(
-			{ Records: [messageWithOldFile] },
-			mock<Context>(),
-			jest.fn(),
-		);
+		await handler({ Records: [messageWithOldFile] }, mock<Context>(), vi.fn());
 
 		const {
 			rows: [updatedFile],
@@ -216,11 +216,7 @@ describe("handler", () => {
 			},
 		});
 
-		await handler(
-			{ Records: [messageWithOldFile] },
-			mock<Context>(),
-			jest.fn(),
-		);
+		await handler({ Records: [messageWithOldFile] }, mock<Context>(), vi.fn());
 
 		const {
 			rows: [updatedFile],
@@ -244,7 +240,7 @@ describe("handler", () => {
 			await handler(
 				{ Records: [buildFileCopyRecord()] },
 				mock<Context>(),
-				jest.fn(),
+				vi.fn(),
 			);
 		} catch (err) {
 			error = err;
@@ -270,7 +266,7 @@ describe("handler", () => {
 			await handler(
 				{ Records: [messageWithMissingFile] },
 				mock<Context>(),
-				jest.fn(),
+				vi.fn(),
 			);
 		} catch (err) {
 			error = err;
@@ -283,14 +279,14 @@ describe("handler", () => {
 	test("should throw if the get_file_upload_name query fails", async () => {
 		const testError = new Error("database error");
 
-		jest.spyOn(db, "sql").mockRejectedValueOnce(testError);
+		vi.spyOn(db, "sql").mockRejectedValueOnce(testError);
 
 		let error = null;
 		try {
 			await handler(
 				{ Records: [buildFileCopyRecord()] },
 				mock<Context>(),
-				jest.fn(),
+				vi.fn(),
 			);
 		} catch (err) {
 			error = err;
@@ -304,18 +300,17 @@ describe("handler", () => {
 		await handler(
 			{ Records: [buildFileCopyRecord()] },
 			mock<Context>(),
-			jest.fn(),
+			vi.fn(),
 		);
 
-		jest
-			.mocked(constructSignedCdnUrl)
+		vi.mocked(constructSignedCdnUrl)
 			.mockReturnValueOnce(testFileUrl)
 			.mockReturnValueOnce(testDownloadUrl);
 
 		await handler(
 			{ Records: [buildFileCopyRecord()] },
 			mock<Context>(),
-			jest.fn(),
+			vi.fn(),
 		);
 
 		const { rows } = await db.query<{ count: string }>(
@@ -327,8 +322,7 @@ describe("handler", () => {
 	test("should throw if the update_file_and_send_event query fails", async () => {
 		const testError = new Error("database error");
 
-		jest
-			.spyOn(db, "sql")
+		vi.spyOn(db, "sql")
 			.mockResolvedValueOnce({
 				command: "",
 				row_count: 1,
@@ -341,7 +335,7 @@ describe("handler", () => {
 			await handler(
 				{ Records: [buildFileCopyRecord()] },
 				mock<Context>(),
-				jest.fn(),
+				vi.fn(),
 			);
 		} catch (err) {
 			error = err;

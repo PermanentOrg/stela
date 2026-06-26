@@ -1,11 +1,12 @@
 import { getSignedUrl } from "aws-cloudfront-sign";
+import { vi } from "vitest";
 import { logger } from "@stela/logger";
 import { refreshThumbnails } from "./service";
 import { db } from "./database";
 
-jest.mock("aws-cloudfront-sign");
-jest.mock("@stela/logger");
-jest.mock("./database");
+vi.mock("aws-cloudfront-sign");
+vi.mock("@stela/logger");
+vi.mock("./database");
 
 interface ThumbnailData {
 	thumbnail256: string;
@@ -135,13 +136,13 @@ describe("refreshThumbnails", () => {
 		"https://testcdn.permanent.org/access_copies/a755/62ca/8bd5/40f0/9960/d05b/a5ea/8bfa/7028987_upload-b35bfcf6-9c51-47f9-a502-555b601dbcf0/thumbnails/c6561367-6bb4-4454-ad32-0bdb68df80fe.jpg?Expires=2757200649&Policy=new-test-policy&Signature=new-test-signature&Key-Pair-Id=test-key-pair";
 
 	beforeEach(async () => {
-		jest.mocked(getSignedUrl).mockReturnValue(testNewThumbnail256);
+		vi.mocked(getSignedUrl).mockReturnValue(testNewThumbnail256);
 		await loadFixtures();
 	});
 
 	afterEach(async () => {
-		jest.restoreAllMocks();
-		jest.clearAllMocks();
+		vi.restoreAllMocks();
+		vi.clearAllMocks();
 		await clearDatabase();
 	});
 
@@ -360,7 +361,7 @@ describe("refreshThumbnails", () => {
 	test("should log and rethrow an error if database call to find items fails", async () => {
 		expect.assertions(2);
 		const errorMessage = "out of cheese - redo from start";
-		jest.spyOn(db, "sql").mockRejectedValue(errorMessage);
+		vi.spyOn(db, "sql").mockRejectedValue(errorMessage);
 		await refreshThumbnails().catch((err: unknown) => {
 			expect(err).toEqual(errorMessage);
 		});
@@ -369,10 +370,9 @@ describe("refreshThumbnails", () => {
 
 	test("should log error if an individual update fails", async () => {
 		const errorMessage = "out of cheese - redo from start";
-		jest
-			.spyOn(db, "sql")
+		vi.spyOn(db, "sql")
 			.mockImplementationOnce(
-				jest.fn().mockResolvedValue({
+				vi.fn().mockResolvedValue({
 					rows: [
 						{
 							recordId: "1",

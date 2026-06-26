@@ -45,7 +45,7 @@ This is an npm workspace monorepo (workspaces defined in the root `package.json`
 - **Framework:** Express
 - **Database:** PostgreSQL, accessed via TinyPg (SQL file-based query library)
 - **Authentication:** FusionAuth (external identity provider)
-- **Testing:** Jest with ts-jest, Supertest, jest-when, nock, jest-mock-extended
+- **Testing:** Vitest, Supertest, jest-when, nock, jest-mock-extended
 - **Linting:** ESLint (eslint-config-love + prettier), SQLFluff (PostgreSQL dialect)
 - **API Docs:** OpenAPI, linted with Redocly CLI
 - **Error Tracking:** Sentry
@@ -91,7 +91,7 @@ The `@stela/api` lint script runs these checks sequentially:
 Tests for `@stela/api` require a running PostgreSQL instance. The test setup:
 1. Starts Docker containers (`docker compose up`)
 2. Creates a fresh `test_permanent` database from the main database schema
-3. Runs Jest inside the Docker container
+3. Runs Vitest inside the Docker container
 
 Other workspace tests can generally run independently.
 
@@ -263,9 +263,9 @@ Test files are co-located with source: `controller.test.ts` next to `controller.
 ### Integration Test Pattern (API)
 
 ```typescript
-jest.mock("../database");
-jest.mock("../middleware");
-jest.mock("@stela/logger");
+vi.mock("../database");
+vi.mock("../middleware");
+vi.mock("@stela/logger");
 
 const setupDatabase = async (): Promise<void> => {
   await db.sql("domain.fixtures.create_test_accounts");
@@ -286,8 +286,8 @@ describe("GET /endpoint", () => {
 
   afterEach(async () => {
     await clearDatabase();
-    jest.restoreAllMocks();
-    jest.clearAllMocks();
+    vi.restoreAllMocks();
+    vi.clearAllMocks();
   });
 
   const agent = request(app);

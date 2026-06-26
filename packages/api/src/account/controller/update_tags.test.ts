@@ -1,28 +1,29 @@
 import request from "supertest";
+import { vi } from "vitest";
 import { Md5 } from "ts-md5";
 import { app } from "../../app";
 import { MailchimpMarketing } from "../../mailchimp";
 import type { UpdateTagsRequest } from "../models";
 import { mockVerifyUserAuthentication } from "../../../test/middleware_mocks";
 
-jest.mock("../../mailchimp", () => ({
+vi.mock("../../mailchimp", () => ({
 	MailchimpMarketing: {
 		lists: {
-			updateListMemberTags: jest.fn(),
+			updateListMemberTags: vi.fn(),
 		},
 	},
 }));
-jest.mock("../../middleware");
+vi.mock("../../middleware");
 
 describe("updateTags", () => {
 	const agent = request.agent(app);
 
 	beforeEach(() => {
+		vi.clearAllMocks();
 		mockVerifyUserAuthentication(
 			"test@permanent.org",
 			"b5461dc2-1eb0-450e-b710-fef7b2cafe1e",
 		);
-		jest.clearAllMocks();
 	});
 
 	test("should call updateListMemberTags with the correct arguments", async () => {
@@ -42,9 +43,9 @@ describe("updateTags", () => {
 		const expectedListId = process.env["MAILCHIMP_COMMUNITY_LIST_ID"] ?? "";
 		const expectedSubscriberHash = Md5.hashStr(requestBody.emailFromAuthToken);
 
-		jest
-			.mocked(MailchimpMarketing.lists.updateListMemberTags)
-			.mockResolvedValue(null);
+		vi.mocked(MailchimpMarketing.lists.updateListMemberTags).mockResolvedValue(
+			null,
+		);
 
 		await agent.put("/api/v2/accounts/tags").send(requestBody).expect(200);
 
@@ -56,15 +57,13 @@ describe("updateTags", () => {
 	});
 
 	test("should throw an error if MailChimp call fails", async () => {
-		jest
-			.mocked(MailchimpMarketing.lists.updateListMemberTags)
-			.mockResolvedValue({
-				detail: "Out of Cheese - Redo from Start",
-				status: 500,
-				type: "",
-				title: "",
-				instance: "",
-			});
+		vi.mocked(MailchimpMarketing.lists.updateListMemberTags).mockResolvedValue({
+			detail: "Out of Cheese - Redo from Start",
+			status: 500,
+			type: "",
+			title: "",
+			instance: "",
+		});
 		await agent
 			.put("/api/v2/accounts/tags")
 			.send({

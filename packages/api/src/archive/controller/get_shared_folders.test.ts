@@ -1,4 +1,5 @@
 import request from "supertest";
+import { vi } from "vitest";
 import type { NextFunction } from "express";
 import createError from "http-errors";
 import { logger } from "@stela/logger";
@@ -8,9 +9,9 @@ import { db } from "../../database";
 import type { Folder } from "../../folder/models";
 import { mockVerifyUserAuthentication } from "../../../test/middleware_mocks";
 
-jest.mock("../../database");
-jest.mock("../../middleware");
-jest.mock("@stela/logger");
+vi.mock("../../database");
+vi.mock("../../middleware");
+vi.mock("@stela/logger");
 
 const loadFixtures = async (): Promise<void> => {
 	await db.sql("archive.fixtures.create_test_accounts");
@@ -39,8 +40,8 @@ describe("getSharedFolders", () => {
 
 	afterEach(async () => {
 		await clearDatabase();
-		jest.restoreAllMocks();
-		jest.clearAllMocks();
+		vi.restoreAllMocks();
+		vi.clearAllMocks();
 	});
 
 	test("should return shared folders for an archive", async () => {
@@ -56,11 +57,11 @@ describe("getSharedFolders", () => {
 	});
 
 	test("should return 401 when not authenticated", async () => {
-		jest
-			.mocked(verifyUserAuthentication)
-			.mockImplementation(async (_, __, next: NextFunction) => {
+		vi.mocked(verifyUserAuthentication).mockImplementation(
+			async (_, __, next: NextFunction) => {
 				next(new createError.Unauthorized("Invalid token"));
-			});
+			},
+		);
 
 		await agent.get(`/api/v2/archive/2/folders/shared`).expect(401);
 	});
@@ -72,7 +73,7 @@ describe("getSharedFolders", () => {
 
 	test("should return 500 if database query fails", async () => {
 		const testError = new Error("error: database connection lost");
-		jest.spyOn(db, "sql").mockRejectedValueOnce(testError);
+		vi.spyOn(db, "sql").mockRejectedValueOnce(testError);
 		await agent.get(`/api/v2/archive/2/folders/shared`).expect(500);
 		expect(logger.error).toHaveBeenCalledWith(testError);
 	});

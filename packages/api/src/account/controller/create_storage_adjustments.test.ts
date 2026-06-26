@@ -1,5 +1,6 @@
 import request from "supertest";
-import { when } from "jest-when";
+import { vi } from "vitest";
+import { when } from "vitest-when";
 import { logger } from "@stela/logger";
 import { app } from "../../app";
 import { db } from "../../database";
@@ -8,9 +9,9 @@ import { verifyAdminAuthentication } from "../../middleware";
 import type { StorageAdjustment } from "../models";
 import { mockVerifyAdminAuthentication } from "../../../test/middleware_mocks";
 
-jest.mock("../../database");
-jest.mock("../../middleware");
-jest.mock("@stela/logger");
+vi.mock("../../database");
+vi.mock("../../middleware");
+vi.mock("@stela/logger");
 
 interface AccountSpace {
 	spaceLeft: string;
@@ -55,7 +56,7 @@ describe("/account/storage-adjustments", () => {
 
 	afterEach(async () => {
 		await clearDatabase();
-		jest.clearAllMocks();
+		vi.resetAllMocks();
 	});
 
 	test("should call verifyAdminAuthentication", async () => {
@@ -275,13 +276,13 @@ describe("/account/storage-adjustments", () => {
 
 	test("should log error and return 500 if storage adjustment fails", async () => {
 		const testError = new Error("test error");
-		const spy = jest.spyOn(db, "sql");
+		const spy = vi.spyOn(db, "sql");
 		when(spy)
 			.calledWith("account.queries.adjust_account_storage", {
 				accountId: testAccountId,
 				storageAmountInBytes: 5 * GB,
 			})
-			.mockRejectedValueOnce(testError);
+			.thenReject(testError);
 
 		await agent
 			.post(`/api/v2/accounts/${testAccountId}/storage-adjustments`)

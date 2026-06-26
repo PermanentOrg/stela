@@ -1,6 +1,7 @@
+import { vi } from "vitest";
 import { legacyClient } from "./legacy_client";
 
-global.fetch = jest.fn();
+global.fetch = vi.fn();
 
 describe("creditStorage", () => {
 	test("should submit the correct request", async () => {

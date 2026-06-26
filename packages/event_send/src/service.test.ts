@@ -1,12 +1,13 @@
 import { logger } from "@stela/logger";
+import { vi } from "vitest";
 import { publisherClient } from "@stela/publisher-utils";
 import { mixpanelClient } from "./mixpanel";
 import { sendEvents } from "./service";
 import { db } from "./database";
 
-jest.mock("@stela/logger");
-jest.mock("./database");
-jest.mock("./mixpanel");
+vi.mock("@stela/logger");
+vi.mock("./database");
+vi.mock("./mixpanel");
 
 const loadFixtures = async (): Promise<void> => {
 	await db.sql("fixtures.create_test_events");
@@ -30,15 +31,16 @@ const getEventSentStatus = async (entityId: string): Promise<boolean> => {
 
 describe("sendEvents", () => {
 	beforeEach(async () => {
-		jest
-			.spyOn(publisherClient, "batchPublishMessages")
-			.mockResolvedValue({ messagesSent: 3, failedMessages: [] });
+		vi.spyOn(publisherClient, "batchPublishMessages").mockResolvedValue({
+			messagesSent: 3,
+			failedMessages: [],
+		});
 		await loadFixtures();
 	});
 
 	afterEach(async () => {
-		jest.restoreAllMocks();
-		jest.clearAllMocks();
+		vi.restoreAllMocks();
+		vi.clearAllMocks();
 		await clearDatabase();
 	});
 
@@ -65,7 +67,7 @@ describe("sendEvents", () => {
 			mock: {
 				calls: [call],
 			},
-		} = jest.mocked(publisherClient.batchPublishMessages);
+		} = vi.mocked(publisherClient.batchPublishMessages);
 		const messages = call?.[1] ?? [];
 		expect(
 			messages.some(
@@ -89,9 +91,10 @@ describe("sendEvents", () => {
 		);
 		const archiveEventId = result.rows[0]?.id ?? "";
 
-		jest
-			.spyOn(publisherClient, "batchPublishMessages")
-			.mockResolvedValue({ messagesSent: 1, failedMessages: [archiveEventId] });
+		vi.spyOn(publisherClient, "batchPublishMessages").mockResolvedValue({
+			messagesSent: 1,
+			failedMessages: [archiveEventId],
+		});
 
 		await sendEvents();
 
@@ -127,7 +130,7 @@ describe("sendEvents", () => {
 	});
 
 	test("should log an error and continue if Mixpanel tracking fails", async () => {
-		jest.mocked(mixpanelClient.track).mockImplementation(() => {
+		vi.mocked(mixpanelClient.track).mockImplementation(() => {
 			throw new Error("Mixpanel error");
 		});
 
@@ -140,7 +143,7 @@ describe("sendEvents", () => {
 	test("should log and rethrow an error if database fetch fails", async () => {
 		expect.assertions(2);
 		const errorMessage = "database connection failed";
-		jest.spyOn(db, "sql").mockRejectedValue(errorMessage);
+		vi.spyOn(db, "sql").mockRejectedValue(errorMessage);
 
 		await sendEvents().catch((err: unknown) => {
 			expect(err).toEqual(errorMessage);
@@ -152,9 +155,7 @@ describe("sendEvents", () => {
 	test("should log and rethrow an error if SNS publish fails", async () => {
 		expect.assertions(2);
 		const error = new Error("SNS publish failed");
-		jest
-			.spyOn(publisherClient, "batchPublishMessages")
-			.mockRejectedValue(error);
+		vi.spyOn(publisherClient, "batchPublishMessages").mockRejectedValue(error);
 
 		await sendEvents().catch((err: unknown) => {
 			expect(err).toBe(error);
@@ -166,10 +167,9 @@ describe("sendEvents", () => {
 	test("should log and rethrow an error if database update fails", async () => {
 		expect.assertions(2);
 		const errorMessage = "database update failed";
-		jest
-			.spyOn(db, "sql")
+		vi.spyOn(db, "sql")
 			.mockImplementationOnce(
-				jest.fn().mockResolvedValue({
+				vi.fn().mockResolvedValue({
 					rows: [
 						{
 							id: "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",

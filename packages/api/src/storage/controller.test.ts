@@ -1,5 +1,6 @@
 import request from "supertest";
-import { when } from "jest-when";
+import { vi } from "vitest";
+import { when } from "vitest-when";
 import { logger } from "@stela/logger";
 import { app } from "../app";
 import { verifyUserAuthentication } from "../middleware";
@@ -8,10 +9,10 @@ import { GB } from "../constants";
 import { sendInvitationNotification, sendGiftNotification } from "../email";
 import { mockVerifyUserAuthentication } from "../../test/middleware_mocks";
 
-jest.mock("../database");
-jest.mock("../middleware");
-jest.mock("../email");
-jest.mock("@stela/logger");
+vi.mock("../database");
+vi.mock("../middleware");
+vi.mock("../email");
+vi.mock("@stela/logger");
 
 interface AccountSpace {
 	spaceLeft: string;
@@ -132,7 +133,7 @@ describe("/storage/gift", () => {
 
 	afterEach(async () => {
 		await clearDatabase();
-		jest.clearAllMocks();
+		vi.resetAllMocks();
 	});
 
 	test("should call verifyUserAuthentication", async () => {
@@ -549,7 +550,7 @@ describe("/storage/gift", () => {
 
 	test("should log error and return 500 if check for existing emails fails", async () => {
 		const testError = new Error("test error");
-		jest.spyOn(db, "sql").mockImplementationOnce(async () => {
+		vi.spyOn(db, "sql").mockImplementationOnce(async () => {
 			throw testError;
 		});
 
@@ -563,12 +564,17 @@ describe("/storage/gift", () => {
 
 	test("should log error and return 500 if check for invited emails fails", async () => {
 		const testError = new Error("test error");
-		const spy = jest.spyOn(db, "sql");
+		const spy = vi.spyOn(db, "sql");
+		when(spy)
+			.calledWith("storage.queries.get_existing_account_emails", {
+				emails: ["test+1@permanent.org"],
+			})
+			.thenDo(vi.fn().mockResolvedValue({ rows: [] }));
 		when(spy)
 			.calledWith("storage.queries.get_invited_emails", {
 				emails: ["test+1@permanent.org"],
 			})
-			.mockRejectedValueOnce(testError);
+			.thenReject(testError);
 
 		await agent
 			.post("/api/v2/storage/gift")
@@ -580,12 +586,22 @@ describe("/storage/gift", () => {
 
 	test("should log error and return 500 if check for available space fails", async () => {
 		const testError = new Error("test error");
-		const spy = jest.spyOn(db, "sql");
+		const spy = vi.spyOn(db, "sql");
+		when(spy)
+			.calledWith("storage.queries.get_existing_account_emails", {
+				emails: ["test+1@permanent.org"],
+			})
+			.thenDo(vi.fn().mockResolvedValue({ rows: [] }));
+		when(spy)
+			.calledWith("storage.queries.get_invited_emails", {
+				emails: ["test+1@permanent.org"],
+			})
+			.thenDo(vi.fn().mockResolvedValue({ rows: [] }));
 		when(spy)
 			.calledWith("storage.queries.get_account_space_for_update", {
 				email: "test@permanent.org",
 			})
-			.mockRejectedValueOnce(testError);
+			.thenReject(testError);
 
 		await agent
 			.post("/api/v2/storage/gift")
@@ -596,12 +612,22 @@ describe("/storage/gift", () => {
 	});
 
 	test("should log error and return 500 if check for available space finds nothing", async () => {
-		const spy = jest.spyOn(db, "sql");
+		const spy = vi.spyOn(db, "sql");
+		when(spy)
+			.calledWith("storage.queries.get_existing_account_emails", {
+				emails: ["test+1@permanent.org"],
+			})
+			.thenDo(vi.fn().mockResolvedValue({ rows: [] }));
+		when(spy)
+			.calledWith("storage.queries.get_invited_emails", {
+				emails: ["test+1@permanent.org"],
+			})
+			.thenDo(vi.fn().mockResolvedValue({ rows: [] }));
 		when(spy)
 			.calledWith("storage.queries.get_account_space_for_update", {
 				email: "test@permanent.org",
 			})
-			.mockImplementationOnce(jest.fn().mockResolvedValueOnce({ rows: [] }));
+			.thenDo(vi.fn().mockResolvedValue({ rows: [] }));
 
 		await agent
 			.post("/api/v2/storage/gift")
@@ -615,23 +641,24 @@ describe("/storage/gift", () => {
 
 	test("should log error and return 500 if recording gifts for existing accounts fails", async () => {
 		const testError = new Error("test error");
-		const spy = jest.spyOn(db, "sql");
+		const spy = vi.spyOn(db, "sql");
 		when(spy)
 			.calledWith("storage.queries.get_existing_account_emails", {
 				emails: ["test+1@permanent.org"],
 			})
-			.mockImplementationOnce(
-				jest
+			.thenDo(
+				vi
 					.fn()
-					.mockResolvedValueOnce({ rows: [{ email: "test+1@permanent.org" }] }),
+					.mockResolvedValue({ rows: [{ email: "test+1@permanent.org" }] }),
 			);
+		when(spy)
+			.calledWith("storage.queries.get_invited_emails", { emails: [] })
+			.thenDo(vi.fn().mockResolvedValue({ rows: [] }));
 		when(spy)
 			.calledWith("storage.queries.get_account_space_for_update", {
 				email: "test@permanent.org",
 			})
-			.mockImplementationOnce(
-				jest.fn().mockResolvedValueOnce({ rows: [{ spaceLeft: 2 * GB }] }),
-			);
+			.thenDo(vi.fn().mockResolvedValue({ rows: [{ spaceLeft: 2 * GB }] }));
 		when(spy)
 			.calledWith("storage.queries.record_gift", {
 				fromEmail: "test@permanent.org",
@@ -639,7 +666,7 @@ describe("/storage/gift", () => {
 				storageAmountInBytes: 1 * GB,
 				recipientCount: 1,
 			})
-			.mockRejectedValueOnce(testError);
+			.thenReject(testError);
 
 		await agent
 			.post("/api/v2/storage/gift")
@@ -651,14 +678,30 @@ describe("/storage/gift", () => {
 
 	test("should log error and return 500 if creating invites fails", async () => {
 		const testError = new Error("test error");
-		const spy = jest.spyOn(db, "sql");
+		const spy = vi.spyOn(db, "sql");
+		when(spy)
+			.calledWith("storage.queries.get_existing_account_emails", {
+				emails: ["test+1@permanent.org"],
+			})
+			.thenDo(vi.fn().mockResolvedValue({ rows: [] }));
+		when(spy)
+			.calledWith("storage.queries.get_invited_emails", {
+				emails: ["test+1@permanent.org"],
+			})
+			.thenDo(vi.fn().mockResolvedValue({ rows: [] }));
 		when(spy)
 			.calledWith("storage.queries.get_account_space_for_update", {
 				email: "test@permanent.org",
 			})
-			.mockImplementationOnce(
-				jest.fn().mockResolvedValueOnce({ rows: [{ spaceLeft: 2 * GB }] }),
-			);
+			.thenDo(vi.fn().mockResolvedValue({ rows: [{ spaceLeft: 2 * GB }] }));
+		when(spy)
+			.calledWith("storage.queries.record_gift", {
+				fromEmail: "test@permanent.org",
+				toEmails: [],
+				storageAmountInBytes: 1 * GB,
+				recipientCount: 0,
+			})
+			.thenDo(vi.fn().mockResolvedValue({ rows: [] }));
 		when(spy)
 			.calledWith("storage.queries.create_invites", {
 				emails: ["test+1@permanent.org"],
@@ -667,7 +710,7 @@ describe("/storage/gift", () => {
 				byAccountEmail: "test@permanent.org",
 				recipientCount: 1,
 			})
-			.mockRejectedValueOnce(testError);
+			.thenReject(testError);
 
 		await agent
 			.post("/api/v2/storage/gift")

@@ -1,4 +1,5 @@
 import { createRequest, createResponse } from "node-mocks-http";
+import { vi } from "vitest";
 import {
 	extractUserEmailFromAuthToken,
 	verifyUserAuthentication,
@@ -14,7 +15,7 @@ import {
 	fieldsFromUserOrAdminAuthentication,
 } from "../validators";
 
-jest.mock("../fusionauth");
+vi.mock("../fusionauth");
 
 const testEmail = "test@permanent.org";
 const testSubject = "b2a6787c-f255-465a-8eb0-1583004d4a4f";
@@ -90,10 +91,10 @@ describe("verifyUserAuthentication", () => {
 		const request = createRequest({
 			headers: { Authorization: "Bearer test" },
 		});
-		jest
-			.spyOn(fusionAuthClient, "introspectAccessToken")
-			.mockImplementation(async () => successfulIntrospectionResponse);
-		await verifyUserAuthentication(request, createResponse(), jest.fn());
+		vi.spyOn(fusionAuthClient, "introspectAccessToken").mockImplementation(
+			async () => successfulIntrospectionResponse,
+		);
+		await verifyUserAuthentication(request, createResponse(), vi.fn());
 
 		const {
 			body: { emailFromAuthToken },
@@ -105,10 +106,10 @@ describe("verifyUserAuthentication", () => {
 		const request = createRequest({
 			headers: { Authorization: "Bearer test" },
 		});
-		jest
-			.spyOn(fusionAuthClient, "introspectAccessToken")
-			.mockImplementation(async () => successfulIntrospectionResponse);
-		await verifyUserAuthentication(request, createResponse(), jest.fn());
+		vi.spyOn(fusionAuthClient, "introspectAccessToken").mockImplementation(
+			async () => successfulIntrospectionResponse,
+		);
+		await verifyUserAuthentication(request, createResponse(), vi.fn());
 
 		const {
 			body: { userSubjectFromAuthToken },
@@ -120,10 +121,10 @@ describe("verifyUserAuthentication", () => {
 		const request = createRequest({
 			headers: { Authorization: "Bearer test" },
 		});
-		jest
-			.spyOn(fusionAuthClient, "introspectAccessToken")
-			.mockImplementation(async () => successfulIntrospectionResponse);
-		await verifyUserAuthentication(request, createResponse(), jest.fn());
+		vi.spyOn(fusionAuthClient, "introspectAccessToken").mockImplementation(
+			async () => successfulIntrospectionResponse,
+		);
+		await verifyUserAuthentication(request, createResponse(), vi.fn());
 
 		expect(() => {
 			validateBodyFromAuthentication(request.body);
@@ -132,9 +133,9 @@ describe("verifyUserAuthentication", () => {
 
 	test("should throw unauthorized if authorization header is missing", async () => {
 		const request = createRequest();
-		jest
-			.spyOn(fusionAuthClient, "introspectAccessToken")
-			.mockImplementation(async () => successfulIntrospectionResponse);
+		vi.spyOn(fusionAuthClient, "introspectAccessToken").mockImplementation(
+			async () => successfulIntrospectionResponse,
+		);
 		await verifyUserAuthentication(
 			request,
 			createResponse(),
@@ -153,9 +154,9 @@ describe("verifyUserAuthentication", () => {
 
 	test("should throw unauthorized if authorization header has the wrong number of words", async () => {
 		const request = createRequest({ headers: { Authorization: "test" } });
-		jest
-			.spyOn(fusionAuthClient, "introspectAccessToken")
-			.mockImplementation(async () => successfulIntrospectionResponse);
+		vi.spyOn(fusionAuthClient, "introspectAccessToken").mockImplementation(
+			async () => successfulIntrospectionResponse,
+		);
 		await verifyUserAuthentication(
 			request,
 			createResponse(),
@@ -174,9 +175,9 @@ describe("verifyUserAuthentication", () => {
 
 	test("should throw unauthorized if authorization header doesn't start with Bearer", async () => {
 		const request = createRequest({ headers: { Authorization: "test test" } });
-		jest
-			.spyOn(fusionAuthClient, "introspectAccessToken")
-			.mockImplementation(async () => successfulIntrospectionResponse);
+		vi.spyOn(fusionAuthClient, "introspectAccessToken").mockImplementation(
+			async () => successfulIntrospectionResponse,
+		);
 		await verifyUserAuthentication(
 			request,
 			createResponse(),
@@ -197,9 +198,9 @@ describe("verifyUserAuthentication", () => {
 		const request = createRequest({
 			headers: { Authorization: "Bearer test" },
 		});
-		jest
-			.spyOn(fusionAuthClient, "introspectAccessToken")
-			.mockImplementation(async () => failedIntrospectionResponse);
+		vi.spyOn(fusionAuthClient, "introspectAccessToken").mockImplementation(
+			async () => failedIntrospectionResponse,
+		);
 		await verifyUserAuthentication(
 			request,
 			createResponse(),
@@ -220,9 +221,9 @@ describe("verifyUserAuthentication", () => {
 		const request = createRequest({
 			headers: { Authorization: "Bearer test" },
 		});
-		jest
-			.spyOn(fusionAuthClient, "introspectAccessToken")
-			.mockImplementation(async () => expiredTokenIntrospectionResponse);
+		vi.spyOn(fusionAuthClient, "introspectAccessToken").mockImplementation(
+			async () => expiredTokenIntrospectionResponse,
+		);
 		await verifyUserAuthentication(
 			request,
 			createResponse(),
@@ -243,9 +244,9 @@ describe("verifyUserAuthentication", () => {
 		const request = createRequest({
 			headers: { Authorization: "Bearer test" },
 		});
-		jest
-			.spyOn(fusionAuthClient, "introspectAccessToken")
-			.mockImplementation(async () => missingEmailIntrospectionResponse);
+		vi.spyOn(fusionAuthClient, "introspectAccessToken").mockImplementation(
+			async () => missingEmailIntrospectionResponse,
+		);
 		await verifyUserAuthentication(
 			request,
 			createResponse(),
@@ -266,11 +267,10 @@ describe("verifyUserAuthentication", () => {
 		const request = createRequest({
 			headers: { Authorization: "Bearer test" },
 		});
-		jest
-			.spyOn(fusionAuthClient, "introspectAccessToken")
+		vi.spyOn(fusionAuthClient, "introspectAccessToken")
 			.mockImplementationOnce(async () => failedIntrospectionResponse)
 			.mockImplementationOnce(async () => successfulIntrospectionResponse);
-		await verifyUserAuthentication(request, createResponse(), jest.fn());
+		await verifyUserAuthentication(request, createResponse(), vi.fn());
 
 		const {
 			body: { emailFromAuthToken, userSubjectFromAuthToken },
@@ -285,9 +285,9 @@ describe("verifyUserAuthentication", () => {
 		const request = createRequest({
 			headers: { Authorization: "Bearer test" },
 		});
-		jest
-			.spyOn(fusionAuthClient, "introspectAccessToken")
-			.mockImplementation(async () => failedIntrospectionResponse);
+		vi.spyOn(fusionAuthClient, "introspectAccessToken").mockImplementation(
+			async () => failedIntrospectionResponse,
+		);
 		await verifyUserAuthentication(
 			request,
 			createResponse(),
@@ -311,11 +311,11 @@ describe("verifyUserAuthentication", () => {
 		const testError = Object.assign(new Error("Rate Limit Exceeded"), {
 			statusCode: 429,
 		});
-		jest
-			.spyOn(fusionAuthClient, "introspectAccessToken")
-			.mockImplementationOnce(async () => {
+		vi.spyOn(fusionAuthClient, "introspectAccessToken").mockImplementationOnce(
+			async () => {
 				throw testError;
-			});
+			},
+		);
 		await verifyUserAuthentication(
 			request,
 			createResponse(),
@@ -338,10 +338,10 @@ describe("verifyAdminAuthentication", () => {
 		const request = createRequest({
 			headers: { Authorization: "Bearer test" },
 		});
-		jest
-			.spyOn(fusionAuthClient, "introspectAccessToken")
-			.mockImplementation(async () => successfulIntrospectionResponse);
-		await verifyAdminAuthentication(request, createResponse(), jest.fn());
+		vi.spyOn(fusionAuthClient, "introspectAccessToken").mockImplementation(
+			async () => successfulIntrospectionResponse,
+		);
+		await verifyAdminAuthentication(request, createResponse(), vi.fn());
 
 		const {
 			body: { emailFromAuthToken },
@@ -353,10 +353,10 @@ describe("verifyAdminAuthentication", () => {
 		const request = createRequest({
 			headers: { Authorization: "Bearer test" },
 		});
-		jest
-			.spyOn(fusionAuthClient, "introspectAccessToken")
-			.mockImplementation(async () => successfulIntrospectionResponse);
-		await verifyAdminAuthentication(request, createResponse(), jest.fn());
+		vi.spyOn(fusionAuthClient, "introspectAccessToken").mockImplementation(
+			async () => successfulIntrospectionResponse,
+		);
+		await verifyAdminAuthentication(request, createResponse(), vi.fn());
 
 		const {
 			body: { adminSubjectFromAuthToken },
@@ -366,9 +366,9 @@ describe("verifyAdminAuthentication", () => {
 
 	test("should throw unauthorized if authorization header is missing", async () => {
 		const request = createRequest();
-		jest
-			.spyOn(fusionAuthClient, "introspectAccessToken")
-			.mockImplementation(async () => successfulIntrospectionResponse);
+		vi.spyOn(fusionAuthClient, "introspectAccessToken").mockImplementation(
+			async () => successfulIntrospectionResponse,
+		);
 		await verifyAdminAuthentication(
 			request,
 			createResponse(),
@@ -388,18 +388,18 @@ describe("verifyAdminAuthentication", () => {
 
 describe("verifyUserOrAdminAuthentication", () => {
 	beforeEach(() => {
-		jest.clearAllMocks();
-		jest.resetAllMocks();
+		vi.clearAllMocks();
+		vi.resetAllMocks();
 	});
 	test("should add subject and email to the request body if user token is valid", async () => {
 		const request = createRequest({
 			headers: { Authorization: "Bearer test" },
 		});
-		jest
-			.spyOn(fusionAuthClient, "introspectAccessToken")
-			.mockImplementation(async () => successfulIntrospectionResponse);
+		vi.spyOn(fusionAuthClient, "introspectAccessToken").mockImplementation(
+			async () => successfulIntrospectionResponse,
+		);
 
-		await verifyUserOrAdminAuthentication(request, createResponse(), jest.fn());
+		await verifyUserOrAdminAuthentication(request, createResponse(), vi.fn());
 		const {
 			body: { userSubjectFromAuthToken, userEmailFromAuthToken },
 		} = request as {
@@ -419,13 +419,12 @@ describe("verifyUserOrAdminAuthentication", () => {
 		const request = createRequest({
 			headers: { Authorization: "Bearer test" },
 		});
-		jest
-			.spyOn(fusionAuthClient, "introspectAccessToken")
+		vi.spyOn(fusionAuthClient, "introspectAccessToken")
 			.mockImplementationOnce(async () => expiredTokenIntrospectionResponse)
 			.mockImplementationOnce(async () => expiredTokenIntrospectionResponse)
 			.mockImplementationOnce(async () => successfulIntrospectionResponse);
 
-		await verifyUserOrAdminAuthentication(request, createResponse(), jest.fn());
+		await verifyUserOrAdminAuthentication(request, createResponse(), vi.fn());
 		const {
 			body: { adminSubjectFromAuthToken, adminEmailFromAuthToken },
 		} = request as {
@@ -445,9 +444,9 @@ describe("verifyUserOrAdminAuthentication", () => {
 		const request = createRequest({
 			headers: { Authorization: "Bearer test" },
 		});
-		jest
-			.spyOn(fusionAuthClient, "introspectAccessToken")
-			.mockImplementation(async () => failedIntrospectionResponse);
+		vi.spyOn(fusionAuthClient, "introspectAccessToken").mockImplementation(
+			async () => failedIntrospectionResponse,
+		);
 
 		await verifyUserOrAdminAuthentication(
 			request,
@@ -469,13 +468,12 @@ describe("verifyUserOrAdminAuthentication", () => {
 		const request = createRequest({
 			headers: { Authorization: "Bearer test" },
 		});
-		jest
-			.spyOn(fusionAuthClient, "introspectAccessToken")
+		vi.spyOn(fusionAuthClient, "introspectAccessToken")
 			.mockImplementationOnce(async () => expiredTokenIntrospectionResponse)
 			.mockImplementationOnce(async () => successfulIntrospectionResponse)
 			.mockImplementationOnce(async () => successfulIntrospectionResponse);
 
-		await verifyUserOrAdminAuthentication(request, createResponse(), jest.fn());
+		await verifyUserOrAdminAuthentication(request, createResponse(), vi.fn());
 		const {
 			body: { userSubjectFromAuthToken, userEmailFromAuthToken },
 		} = request as {
@@ -495,9 +493,9 @@ describe("verifyUserOrAdminAuthentication", () => {
 		const request = createRequest({
 			headers: { Authorization: "Bearer test" },
 		});
-		jest
-			.spyOn(fusionAuthClient, "introspectAccessToken")
-			.mockImplementation(async () => expiredTokenIntrospectionResponse);
+		vi.spyOn(fusionAuthClient, "introspectAccessToken").mockImplementation(
+			async () => expiredTokenIntrospectionResponse,
+		);
 
 		await verifyUserOrAdminAuthentication(
 			request,
@@ -517,9 +515,9 @@ describe("verifyUserOrAdminAuthentication", () => {
 
 	test("should throw unauthorized if the authentication header is formatted incorrectly", async () => {
 		const request = createRequest({ headers: { Authorization: "test" } });
-		jest
-			.spyOn(fusionAuthClient, "introspectAccessToken")
-			.mockImplementation(async () => expiredTokenIntrospectionResponse);
+		vi.spyOn(fusionAuthClient, "introspectAccessToken").mockImplementation(
+			async () => expiredTokenIntrospectionResponse,
+		);
 
 		await verifyUserOrAdminAuthentication(
 			request,
@@ -543,10 +541,10 @@ describe("extractUserEmailFromAuthToken", () => {
 		const request = createRequest({
 			headers: { Authorization: "Bearer test" },
 		});
-		jest
-			.spyOn(fusionAuthClient, "introspectAccessToken")
-			.mockImplementation(async () => successfulIntrospectionResponse);
-		await extractUserEmailFromAuthToken(request, createResponse(), jest.fn());
+		vi.spyOn(fusionAuthClient, "introspectAccessToken").mockImplementation(
+			async () => successfulIntrospectionResponse,
+		);
+		await extractUserEmailFromAuthToken(request, createResponse(), vi.fn());
 		const {
 			body: { emailFromAuthToken },
 		} = request as { body: { emailFromAuthToken: string } };
@@ -555,7 +553,7 @@ describe("extractUserEmailFromAuthToken", () => {
 
 	test("Request body has undefined emailFromAuthToken if there was no auth token", async () => {
 		const request = createRequest({ headers: { Authorization: "" } });
-		await extractUserEmailFromAuthToken(request, createResponse(), jest.fn());
+		await extractUserEmailFromAuthToken(request, createResponse(), vi.fn());
 		const {
 			body: { emailFromAuthToken },
 		} = request as { body: { emailFromAuthToken: string } };
@@ -566,10 +564,10 @@ describe("extractUserEmailFromAuthToken", () => {
 		const request = createRequest({
 			headers: { Authorization: "Bearer test" },
 		});
-		jest
-			.spyOn(fusionAuthClient, "introspectAccessToken")
-			.mockImplementation(async () => failedIntrospectionResponse);
-		await extractUserEmailFromAuthToken(request, createResponse(), jest.fn());
+		vi.spyOn(fusionAuthClient, "introspectAccessToken").mockImplementation(
+			async () => failedIntrospectionResponse,
+		);
+		await extractUserEmailFromAuthToken(request, createResponse(), vi.fn());
 		const {
 			body: { emailFromAuthToken },
 		} = request as { body: { emailFromAuthToken: string } };
@@ -580,10 +578,10 @@ describe("extractUserEmailFromAuthToken", () => {
 		const request = createRequest({
 			headers: { Authorization: "Bearer test" },
 		});
-		jest
-			.spyOn(fusionAuthClient, "introspectAccessToken")
-			.mockImplementation(async () => expiredTokenIntrospectionResponse);
-		await extractUserEmailFromAuthToken(request, createResponse(), jest.fn());
+		vi.spyOn(fusionAuthClient, "introspectAccessToken").mockImplementation(
+			async () => expiredTokenIntrospectionResponse,
+		);
+		await extractUserEmailFromAuthToken(request, createResponse(), vi.fn());
 		const {
 			body: { emailFromAuthToken },
 		} = request as { body: { emailFromAuthToken: string } };
@@ -594,12 +592,12 @@ describe("extractUserEmailFromAuthToken", () => {
 		const request = createRequest({
 			headers: { Authorization: "Bearer test" },
 		});
-		jest
-			.spyOn(fusionAuthClient, "introspectAccessToken")
-			.mockImplementation(async () => {
+		vi.spyOn(fusionAuthClient, "introspectAccessToken").mockImplementation(
+			async () => {
 				throw new Error("unauthenticated");
-			});
-		await extractUserEmailFromAuthToken(request, createResponse(), jest.fn());
+			},
+		);
+		await extractUserEmailFromAuthToken(request, createResponse(), vi.fn());
 		const {
 			body: { emailFromAuthToken },
 		} = request as { body: { emailFromAuthToken: string } };
@@ -610,13 +608,13 @@ describe("extractUserEmailFromAuthToken", () => {
 		const request = createRequest({
 			headers: { Authorization: "Bearer test" },
 		});
-		jest
-			.spyOn(fusionAuthClient, "introspectAccessToken")
-			.mockImplementationOnce(async () => failedIntrospectionResponse);
-		jest
-			.spyOn(fusionAuthClient, "introspectAccessToken")
-			.mockImplementationOnce(async () => successfulIntrospectionResponse);
-		await extractUserEmailFromAuthToken(request, createResponse(), jest.fn());
+		vi.spyOn(fusionAuthClient, "introspectAccessToken").mockImplementationOnce(
+			async () => failedIntrospectionResponse,
+		);
+		vi.spyOn(fusionAuthClient, "introspectAccessToken").mockImplementationOnce(
+			async () => successfulIntrospectionResponse,
+		);
+		await extractUserEmailFromAuthToken(request, createResponse(), vi.fn());
 		const {
 			body: { emailFromAuthToken },
 		} = request as { body: { emailFromAuthToken: string } };
@@ -627,15 +625,15 @@ describe("extractUserEmailFromAuthToken", () => {
 		const request = createRequest({
 			headers: { Authorization: "Bearer test" },
 		});
-		jest
-			.spyOn(fusionAuthClient, "introspectAccessToken")
-			.mockImplementationOnce(async () => {
+		vi.spyOn(fusionAuthClient, "introspectAccessToken").mockImplementationOnce(
+			async () => {
 				throw new Error("unauthenticated");
-			});
-		jest
-			.spyOn(fusionAuthClient, "introspectAccessToken")
-			.mockImplementationOnce(async () => successfulIntrospectionResponse);
-		await extractUserEmailFromAuthToken(request, createResponse(), jest.fn());
+			},
+		);
+		vi.spyOn(fusionAuthClient, "introspectAccessToken").mockImplementationOnce(
+			async () => successfulIntrospectionResponse,
+		);
+		await extractUserEmailFromAuthToken(request, createResponse(), vi.fn());
 		const {
 			body: { emailFromAuthToken },
 		} = request as { body: { emailFromAuthToken: string } };
@@ -649,15 +647,15 @@ describe("extractUserEmailFromAuthToken", () => {
 		const testError = Object.assign(new Error("Rate Limit Exceeded"), {
 			statusCode: 429,
 		});
-		jest
-			.spyOn(fusionAuthClient, "introspectAccessToken")
-			.mockImplementationOnce(async () => {
+		vi.spyOn(fusionAuthClient, "introspectAccessToken").mockImplementationOnce(
+			async () => {
 				throw testError;
-			});
-		jest
-			.spyOn(fusionAuthClient, "introspectAccessToken")
-			.mockImplementationOnce(async () => successfulIntrospectionResponse);
-		const next = jest.fn();
+			},
+		);
+		vi.spyOn(fusionAuthClient, "introspectAccessToken").mockImplementationOnce(
+			async () => successfulIntrospectionResponse,
+		);
+		const next = vi.fn();
 		await extractUserEmailFromAuthToken(request, createResponse(), next);
 		expect(next).toHaveBeenCalledWith(testError);
 	});
@@ -668,10 +666,10 @@ describe("extractUserIsAdminFromAuthToken", () => {
 		const request = createRequest({
 			headers: { Authorization: "Bearer test" },
 		});
-		jest
-			.spyOn(fusionAuthClient, "introspectAccessToken")
-			.mockImplementationOnce(async () => successfulIntrospectionResponse);
-		await extractUserIsAdminFromAuthToken(request, createResponse(), jest.fn());
+		vi.spyOn(fusionAuthClient, "introspectAccessToken").mockImplementationOnce(
+			async () => successfulIntrospectionResponse,
+		);
+		await extractUserIsAdminFromAuthToken(request, createResponse(), vi.fn());
 		const {
 			body: { admin },
 		} = request as { body: { admin: boolean } };
@@ -680,7 +678,7 @@ describe("extractUserIsAdminFromAuthToken", () => {
 
 	test("is admin will be false if there is no auth token", async () => {
 		const request = createRequest({ headers: { Authorization: "" } });
-		await extractUserIsAdminFromAuthToken(request, createResponse(), jest.fn());
+		await extractUserIsAdminFromAuthToken(request, createResponse(), vi.fn());
 		const {
 			body: { admin },
 		} = request as { body: { admin: boolean } };
@@ -691,10 +689,10 @@ describe("extractUserIsAdminFromAuthToken", () => {
 		const request = createRequest({
 			headers: { Authorization: "Bearer test" },
 		});
-		jest
-			.spyOn(fusionAuthClient, "introspectAccessToken")
-			.mockImplementationOnce(async () => failedIntrospectionResponse);
-		await extractUserIsAdminFromAuthToken(request, createResponse(), jest.fn());
+		vi.spyOn(fusionAuthClient, "introspectAccessToken").mockImplementationOnce(
+			async () => failedIntrospectionResponse,
+		);
+		await extractUserIsAdminFromAuthToken(request, createResponse(), vi.fn());
 		const {
 			body: { admin },
 		} = request as { body: { admin: boolean } };
@@ -707,10 +705,10 @@ describe("extractUserIsAdminFromAuthToken", () => {
 		const request = createRequest({
 			headers: { Authorization: "Bearer test" },
 		});
-		jest
-			.spyOn(fusionAuthClient, "introspectAccessToken")
-			.mockImplementationOnce(async () => successfulIntrospectionResponse);
-		await extractUserIsAdminFromAuthToken(request, createResponse(), jest.fn());
+		vi.spyOn(fusionAuthClient, "introspectAccessToken").mockImplementationOnce(
+			async () => successfulIntrospectionResponse,
+		);
+		await extractUserIsAdminFromAuthToken(request, createResponse(), vi.fn());
 		const {
 			body: { admin },
 		} = request as { body: { admin: boolean } };
@@ -719,7 +717,7 @@ describe("extractUserIsAdminFromAuthToken", () => {
 
 	test("is admin will be false if there is no auth token", async () => {
 		const request = createRequest({ headers: { Authorization: "" } });
-		await extractUserIsAdminFromAuthToken(request, createResponse(), jest.fn());
+		await extractUserIsAdminFromAuthToken(request, createResponse(), vi.fn());
 		const {
 			body: { admin },
 		} = request as { body: { admin: boolean } };
@@ -730,10 +728,10 @@ describe("extractUserIsAdminFromAuthToken", () => {
 		const request = createRequest({
 			headers: { Authorization: "Bearer test" },
 		});
-		jest
-			.spyOn(fusionAuthClient, "introspectAccessToken")
-			.mockImplementationOnce(async () => failedIntrospectionResponse);
-		await extractUserIsAdminFromAuthToken(request, createResponse(), jest.fn());
+		vi.spyOn(fusionAuthClient, "introspectAccessToken").mockImplementationOnce(
+			async () => failedIntrospectionResponse,
+		);
+		await extractUserIsAdminFromAuthToken(request, createResponse(), vi.fn());
 		const {
 			body: { admin },
 		} = request as { body: { admin: boolean } };
@@ -747,7 +745,7 @@ describe("extractShareTokenFromHeaders", () => {
 		const request = createRequest({
 			headers: { "X-Permanent-Share-Token": testShareToken },
 		});
-		extractShareTokenFromHeaders(request, createResponse(), jest.fn());
+		extractShareTokenFromHeaders(request, createResponse(), vi.fn());
 		const {
 			body: { shareToken },
 		} = request as { body: { shareToken: string } };
@@ -775,7 +773,7 @@ describe("verifyUserOrAdminOrDelegatedCallAuthentication", () => {
 		await verifyUserOrAdminOrDelegatedCallAuthentication(
 			request,
 			createResponse(),
-			jest.fn(),
+			vi.fn(),
 		);
 		const {
 			body: { userEmailFromAuthToken, userSubjectFromAuthToken },
@@ -800,7 +798,7 @@ describe("verifyUserOrAdminOrDelegatedCallAuthentication", () => {
 		await verifyUserOrAdminOrDelegatedCallAuthentication(
 			request,
 			createResponse(),
-			jest.fn(),
+			vi.fn(),
 		);
 		expect(
 			fieldsFromUserOrAdminAuthentication.validate(request.body).error,
@@ -860,14 +858,14 @@ describe("verifyUserOrAdminOrDelegatedCallAuthentication", () => {
 		const request = createRequest({
 			headers: { Authorization: "Bearer test" },
 		});
-		jest
-			.spyOn(fusionAuthClient, "introspectAccessToken")
-			.mockImplementation(async () => successfulIntrospectionResponse);
+		vi.spyOn(fusionAuthClient, "introspectAccessToken").mockImplementation(
+			async () => successfulIntrospectionResponse,
+		);
 
 		await verifyUserOrAdminOrDelegatedCallAuthentication(
 			request,
 			createResponse(),
-			jest.fn(),
+			vi.fn(),
 		);
 		const {
 			body: { userSubjectFromAuthToken, userEmailFromAuthToken },
@@ -885,8 +883,7 @@ describe("verifyUserOrAdminOrDelegatedCallAuthentication", () => {
 		const request = createRequest({
 			headers: { Authorization: "Bearer test" },
 		});
-		jest
-			.spyOn(fusionAuthClient, "introspectAccessToken")
+		vi.spyOn(fusionAuthClient, "introspectAccessToken")
 			.mockImplementationOnce(async () => expiredTokenIntrospectionResponse)
 			.mockImplementationOnce(async () => expiredTokenIntrospectionResponse)
 			.mockImplementationOnce(async () => successfulIntrospectionResponse);
@@ -894,7 +891,7 @@ describe("verifyUserOrAdminOrDelegatedCallAuthentication", () => {
 		await verifyUserOrAdminOrDelegatedCallAuthentication(
 			request,
 			createResponse(),
-			jest.fn(),
+			vi.fn(),
 		);
 		const {
 			body: { adminSubjectFromAuthToken, adminEmailFromAuthToken },
@@ -912,9 +909,9 @@ describe("verifyUserOrAdminOrDelegatedCallAuthentication", () => {
 		const request = createRequest({
 			headers: { Authorization: "Bearer test" },
 		});
-		jest
-			.spyOn(fusionAuthClient, "introspectAccessToken")
-			.mockImplementation(async () => failedIntrospectionResponse);
+		vi.spyOn(fusionAuthClient, "introspectAccessToken").mockImplementation(
+			async () => failedIntrospectionResponse,
+		);
 
 		await verifyUserOrAdminOrDelegatedCallAuthentication(
 			request,
@@ -934,9 +931,9 @@ describe("verifyUserOrAdminOrDelegatedCallAuthentication", () => {
 
 	test("should throw unauthorized if the authorization header is missing", async () => {
 		const request = createRequest();
-		jest
-			.spyOn(fusionAuthClient, "introspectAccessToken")
-			.mockImplementation(async () => successfulIntrospectionResponse);
+		vi.spyOn(fusionAuthClient, "introspectAccessToken").mockImplementation(
+			async () => successfulIntrospectionResponse,
+		);
 		await verifyUserOrAdminOrDelegatedCallAuthentication(
 			request,
 			createResponse(),

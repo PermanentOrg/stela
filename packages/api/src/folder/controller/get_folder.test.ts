@@ -1,4 +1,5 @@
 import request from "supertest";
+import { vi } from "vitest";
 import { app } from "../../app";
 import { db } from "../../database";
 import {
@@ -12,9 +13,9 @@ import {
 } from "../../../test/middleware_mocks";
 import { loadFixtures, clearDatabase } from "./utils_test";
 
-jest.mock("../../database");
-jest.mock("../../middleware");
-jest.mock("@stela/logger");
+vi.mock("../../database");
+vi.mock("../../middleware");
+vi.mock("@stela/logger");
 
 const testEmail = "test@permanent.org";
 describe("GET /folder", () => {
@@ -29,8 +30,8 @@ describe("GET /folder", () => {
 
 	afterEach(async () => {
 		await clearDatabase();
-		jest.restoreAllMocks();
-		jest.clearAllMocks();
+		vi.restoreAllMocks();
+		vi.clearAllMocks();
 	});
 
 	test("should return 200 code for successful call", async () => {
@@ -375,7 +376,7 @@ describe("GET /folder", () => {
 	});
 
 	test("should throw a 500 error if database call fails", async () => {
-		jest.spyOn(db, "sql").mockRejectedValue(new Error("test error"));
+		vi.spyOn(db, "sql").mockRejectedValue(new Error("test error"));
 		await agent.get("/api/v2/folders?folderIds[]=2").expect(500);
 	});
 });

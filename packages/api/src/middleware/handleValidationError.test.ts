@@ -1,16 +1,17 @@
 import type { NextFunction } from "express";
+import { vi } from "vitest";
 import { createRequest, createResponse } from "node-mocks-http";
 import { handleValidationError } from "./handleValidationError";
 
 describe("handleValidationError", () => {
 	const request = createRequest();
 	const response = createResponse();
-	response.status = jest.fn().mockReturnThis();
-	response.json = jest.fn();
-	const nextFunction = jest.fn() as NextFunction;
+	response.status = vi.fn().mockReturnThis();
+	response.json = vi.fn();
+	const nextFunction = vi.fn() as NextFunction;
 
 	beforeEach(() => {
-		jest.clearAllMocks();
+		vi.clearAllMocks();
 	});
 
 	test("should respond with 400 and error message if error is a Joi ValidationError", () => {

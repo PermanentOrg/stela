@@ -1,4 +1,5 @@
 import type { NextFunction } from "express";
+import { vi } from "vitest";
 import request from "supertest";
 import { logger } from "@stela/logger";
 import createError from "http-errors";
@@ -9,9 +10,9 @@ import type { ShareLink } from "../../share_link/models";
 import { mockVerifyUserAuthentication } from "../../../test/middleware_mocks";
 import { loadFixtures, clearDatabase } from "./utils_test";
 
-jest.mock("../../database");
-jest.mock("../../middleware");
-jest.mock("@stela/logger");
+vi.mock("../../database");
+vi.mock("../../middleware");
+vi.mock("@stela/logger");
 
 describe("GET /folder/{id}/share_links", () => {
 	const agent = request(app);
@@ -27,8 +28,8 @@ describe("GET /folder/{id}/share_links", () => {
 
 	afterEach(async () => {
 		await clearDatabase();
-		jest.restoreAllMocks();
-		jest.clearAllMocks();
+		vi.restoreAllMocks();
+		vi.clearAllMocks();
 	});
 
 	test("expect to return share links for a folder", async () => {
@@ -81,7 +82,7 @@ describe("GET /folder/{id}/share_links", () => {
 
 	test("expect to log error and return 500 if database lookup fails", async () => {
 		const testError = new Error("test error");
-		jest.spyOn(db, "sql").mockImplementation(async () => {
+		vi.spyOn(db, "sql").mockImplementation(async () => {
 			throw testError;
 		});
 
@@ -90,11 +91,11 @@ describe("GET /folder/{id}/share_links", () => {
 	});
 
 	test("expect 401 if not authenticated", async () => {
-		jest
-			.mocked(verifyUserAuthentication)
-			.mockImplementation(async (_, __, next: NextFunction) => {
+		vi.mocked(verifyUserAuthentication).mockImplementation(
+			async (_, __, next: NextFunction) => {
 				next(createError.Unauthorized("Invalid auth token"));
-			});
+			},
+		);
 		await agent.get("/api/v2/folders/1/share_links").expect(401);
 	});
 

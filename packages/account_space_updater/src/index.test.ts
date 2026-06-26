@@ -1,9 +1,10 @@
 import type { Context } from "aws-lambda";
-import { mock } from "jest-mock-extended";
+import { vi } from "vitest";
+import { mock } from "vitest-mock-extended";
 import { db } from "./database";
 import { handler } from "./index";
 
-jest.mock("./database");
+vi.mock("./database");
 
 describe("handler", () => {
 	const loadFixtures = async (): Promise<void> => {
@@ -155,7 +156,7 @@ describe("handler", () => {
 				],
 			},
 			mock<Context>(),
-			jest.fn(),
+			vi.fn(),
 		);
 		const updatedAccountSpace = await getUpdatedAccountSpace();
 		const ledgerEntry = await getLedgerEntry();
@@ -221,7 +222,7 @@ describe("handler", () => {
 				],
 			},
 			mock<Context>(),
-			jest.fn(),
+			vi.fn(),
 		);
 		const updatedAccountSpace = await getUpdatedAccountSpace();
 		const ledgerEntry = await getLedgerEntry();
@@ -286,7 +287,7 @@ describe("handler", () => {
 				],
 			},
 			mock<Context>(),
-			jest.fn(),
+			vi.fn(),
 		);
 		const ledgerEntry = await getLedgerEntry();
 		expect(ledgerEntry).toBeFalsy();
@@ -317,7 +318,7 @@ describe("handler", () => {
 					],
 				},
 				mock<Context>(),
-				jest.fn(),
+				vi.fn(),
 			);
 		} catch (err) {
 			error = err;
@@ -352,7 +353,7 @@ describe("handler", () => {
 					],
 				},
 				mock<Context>(),
-				jest.fn(),
+				vi.fn(),
 			);
 		} catch (err) {
 			error = err;
@@ -391,7 +392,7 @@ describe("handler", () => {
 					],
 				},
 				mock<Context>(),
-				jest.fn(),
+				vi.fn(),
 			);
 		} catch (err) {
 			error = err;
@@ -434,7 +435,7 @@ describe("handler", () => {
 					],
 				},
 				mock<Context>(),
-				jest.fn(),
+				vi.fn(),
 			);
 		} catch (err) {
 			error = err;
@@ -526,7 +527,7 @@ describe("handler", () => {
 					],
 				},
 				mock<Context>(),
-				jest.fn(),
+				vi.fn(),
 			);
 		} catch (err) {
 			error = err;

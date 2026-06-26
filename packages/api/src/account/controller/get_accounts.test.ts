@@ -1,4 +1,5 @@
 import request from "supertest";
+import { vi } from "vitest";
 import { logger } from "@stela/logger";
 import { app } from "../../app";
 import { db } from "../../database";
@@ -6,9 +7,9 @@ import { verifyAdminAuthentication } from "../../middleware";
 import { mockVerifyAdminAuthentication } from "../../../test/middleware_mocks";
 import type { Account } from "../models";
 
-jest.mock("../../database");
-jest.mock("../../middleware");
-jest.mock("@stela/logger");
+vi.mock("../../database");
+vi.mock("../../middleware");
+vi.mock("@stela/logger");
 
 const setupDatabase = async (): Promise<void> => {
 	await db.sql("account.fixtures.create_test_accounts");
@@ -32,7 +33,7 @@ describe("GET /account", () => {
 
 	afterEach(async () => {
 		await clearDatabase();
-		jest.clearAllMocks();
+		vi.clearAllMocks();
 	});
 
 	test("should call verifyAdminAuthentication", async () => {
@@ -245,7 +246,7 @@ describe("GET /account", () => {
 
 	test("should log error and return 500 if database query fails", async () => {
 		const testError = new Error("test error");
-		jest.spyOn(db, "sql").mockRejectedValueOnce(testError);
+		vi.spyOn(db, "sql").mockRejectedValueOnce(testError);
 
 		await agent.get("/api/v2/account?accountIds[]=2&pageSize=10").expect(500);
 

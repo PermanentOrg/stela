@@ -1,10 +1,11 @@
 import request from "supertest";
+import { vi } from "vitest";
 import { logger } from "@stela/logger";
 import { app } from "../../app";
 import { db } from "../../database";
 
-jest.mock("../../database");
-jest.mock("@stela/logger");
+vi.mock("../../database");
+vi.mock("@stela/logger");
 
 const loadFixtures = async (): Promise<void> => {
 	await db.sql("archive.fixtures.create_test_accounts");
@@ -29,7 +30,7 @@ describe("getPublicTags", () => {
 	});
 	afterEach(async () => {
 		await clearDatabase();
-		jest.clearAllMocks();
+		vi.clearAllMocks();
 	});
 
 	test("should return public tags and not private or deleted tags", async () => {
@@ -58,7 +59,7 @@ describe("getPublicTags", () => {
 
 	test("should throw an internal server error if database query fails unexpectedly", async () => {
 		const testError = new Error("out of cheese - redo from start");
-		jest.spyOn(db, "sql").mockRejectedValueOnce(testError);
+		vi.spyOn(db, "sql").mockRejectedValueOnce(testError);
 		await agent.get("/api/v2/archive/1/tags/public").expect(500);
 		expect(logger.error).toHaveBeenCalledWith(testError);
 	});

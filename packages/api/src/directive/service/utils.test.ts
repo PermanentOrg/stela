@@ -1,8 +1,9 @@
 import { NotFound } from "http-errors";
+import { vi } from "vitest";
 import { db } from "../../database";
 import { confirmArchiveOwnership } from "./utils";
 
-jest.mock("../../database");
+vi.mock("../../database");
 
 const testArchiveId = "1";
 const testEmail = "test@permanent.org";

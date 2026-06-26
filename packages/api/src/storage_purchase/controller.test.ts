@@ -1,4 +1,5 @@
 import request from "supertest";
+import { vi } from "vitest";
 import Stripe from "stripe";
 import { logger } from "@stela/logger";
 import { app } from "../app";
@@ -8,11 +9,11 @@ import { legacyClient } from "../legacy_client";
 import { verifyUserAuthentication } from "../middleware";
 import { mockVerifyUserAuthentication } from "../../test/middleware_mocks";
 
-jest.mock("../database");
-jest.mock("../stripe");
-jest.mock("../legacy_client");
-jest.mock("../middleware");
-jest.mock("@stela/logger");
+vi.mock("../database");
+vi.mock("../stripe");
+vi.mock("../legacy_client");
+vi.mock("../middleware");
+vi.mock("@stela/logger");
 
 const loadFixtures = async (): Promise<void> => {
 	await db.sql("storage_purchase.fixtures.create_test_accounts");
@@ -30,27 +31,23 @@ describe("POST /storage-purchases", () => {
 			"test@permanent.org",
 			"5a4b6d8c-2e1f-7a3b-9c0d-4e5f6a7b8c9d",
 		);
-		jest
-			.spyOn(stripeClient.customers, "list")
-			.mockImplementation(
-				jest.fn().mockResolvedValue({ data: [{ id: "cus_stripe123" }] }),
-			);
-		jest
-			.spyOn(stripeClient.customers, "create")
-			.mockImplementation(jest.fn().mockResolvedValue({ id: "cus_new123" }));
-		jest
-			.spyOn(stripeClient.paymentIntents, "create")
-			.mockImplementation(
-				jest.fn().mockResolvedValue({ client_secret: "test_client_secret" }),
-			);
+		vi.spyOn(stripeClient.customers, "list").mockImplementation(
+			vi.fn().mockResolvedValue({ data: [{ id: "cus_stripe123" }] }),
+		);
+		vi.spyOn(stripeClient.customers, "create").mockImplementation(
+			vi.fn().mockResolvedValue({ id: "cus_new123" }),
+		);
+		vi.spyOn(stripeClient.paymentIntents, "create").mockImplementation(
+			vi.fn().mockResolvedValue({ client_secret: "test_client_secret" }),
+		);
 		await clearDatabase();
 		await loadFixtures();
 	});
 
 	afterEach(async () => {
 		await clearDatabase();
-		jest.restoreAllMocks();
-		jest.clearAllMocks();
+		vi.restoreAllMocks();
+		vi.clearAllMocks();
 	});
 
 	test("should call verifyUserAuthentication", async () => {
@@ -98,9 +95,9 @@ describe("POST /storage-purchases", () => {
 	});
 
 	test("should create a new Stripe customer if none exists", async () => {
-		jest
-			.spyOn(stripeClient.customers, "list")
-			.mockImplementation(jest.fn().mockResolvedValue({ data: [] }));
+		vi.spyOn(stripeClient.customers, "list").mockImplementation(
+			vi.fn().mockResolvedValue({ data: [] }),
+		);
 		await agent
 			.post("/api/v2/storage-purchases")
 			.send({ amountInUSD: 10 })
@@ -133,7 +130,7 @@ describe("POST /storage-purchases", () => {
 			"test+1@permanent.org",
 			"5a4b6d8c-2e1f-7a3b-9c0d-4e5f6a7b8c9d",
 		);
-		const dbSpy = jest.spyOn(db, "sql");
+		const dbSpy = vi.spyOn(db, "sql");
 		await agent
 			.post("/api/v2/storage-purchases")
 			.send({ amountInUSD: 10 })
@@ -173,11 +170,9 @@ describe("POST /storage-purchases", () => {
 	});
 
 	test("should return 500 if the account lookup fails", async () => {
-		jest
-			.spyOn(db, "sql")
-			.mockImplementationOnce(
-				jest.fn().mockRejectedValueOnce(new Error("DB error")),
-			);
+		vi.spyOn(db, "sql").mockImplementationOnce(
+			vi.fn().mockRejectedValueOnce(new Error("DB error")),
+		);
 		await agent
 			.post("/api/v2/storage-purchases")
 			.send({ amountInUSD: 10 })
@@ -185,11 +180,9 @@ describe("POST /storage-purchases", () => {
 	});
 
 	test("should return 500 if the Stripe customer lookup fails", async () => {
-		jest
-			.spyOn(stripeClient.customers, "list")
-			.mockImplementationOnce(
-				jest.fn().mockRejectedValueOnce(new Error("Stripe error")),
-			);
+		vi.spyOn(stripeClient.customers, "list").mockImplementationOnce(
+			vi.fn().mockRejectedValueOnce(new Error("Stripe error")),
+		);
 		await agent
 			.post("/api/v2/storage-purchases")
 			.send({ amountInUSD: 10 })
@@ -197,14 +190,12 @@ describe("POST /storage-purchases", () => {
 	});
 
 	test("should return 500 if Stripe customer creation fails", async () => {
-		jest
-			.spyOn(stripeClient.customers, "list")
-			.mockImplementationOnce(jest.fn().mockResolvedValueOnce({ data: [] }));
-		jest
-			.spyOn(stripeClient.customers, "create")
-			.mockImplementationOnce(
-				jest.fn().mockRejectedValueOnce(new Error("Stripe error")),
-			);
+		vi.spyOn(stripeClient.customers, "list").mockImplementationOnce(
+			vi.fn().mockResolvedValueOnce({ data: [] }),
+		);
+		vi.spyOn(stripeClient.customers, "create").mockImplementationOnce(
+			vi.fn().mockRejectedValueOnce(new Error("Stripe error")),
+		);
 		await agent
 			.post("/api/v2/storage-purchases")
 			.send({ amountInUSD: 10 })
@@ -212,13 +203,12 @@ describe("POST /storage-purchases", () => {
 	});
 
 	test("should return 500 if saving the customer ID fails", async () => {
-		jest
-			.spyOn(db, "sql")
+		vi.spyOn(db, "sql")
 			.mockImplementationOnce(
-				jest.fn().mockResolvedValueOnce({ rows: [{ stripeCustomerId: null }] }),
+				vi.fn().mockResolvedValueOnce({ rows: [{ stripeCustomerId: null }] }),
 			)
 			.mockImplementationOnce(
-				jest.fn().mockRejectedValueOnce(new Error("DB error")),
+				vi.fn().mockRejectedValueOnce(new Error("DB error")),
 			);
 		await agent
 			.post("/api/v2/storage-purchases")
@@ -227,11 +217,9 @@ describe("POST /storage-purchases", () => {
 	});
 
 	test("should return 500 if payment intent creation fails", async () => {
-		jest
-			.spyOn(stripeClient.paymentIntents, "create")
-			.mockImplementationOnce(
-				jest.fn().mockRejectedValueOnce(new Error("Stripe error")),
-			);
+		vi.spyOn(stripeClient.paymentIntents, "create").mockImplementationOnce(
+			vi.fn().mockRejectedValueOnce(new Error("Stripe error")),
+		);
 		await agent
 			.post("/api/v2/storage-purchases")
 			.send({ amountInUSD: 10 })
@@ -255,12 +243,12 @@ describe("POST /storage-purchases/stripe/webhook", () => {
 
 	beforeEach(async () => {
 		process.env["STRIPE_WEBHOOK_SECRET"] = "test_webhook_secret";
-		jest
-			.spyOn(stripeClient.webhooks, "constructEvent")
-			.mockImplementation(jest.fn().mockReturnValue(mockSuccessEvent));
-		jest
-			.spyOn(legacyClient, "creditStorage")
-			.mockImplementation(jest.fn().mockResolvedValue({ ok: true }));
+		vi.spyOn(stripeClient.webhooks, "constructEvent").mockImplementation(
+			vi.fn().mockReturnValue(mockSuccessEvent),
+		);
+		vi.spyOn(legacyClient, "creditStorage").mockImplementation(
+			vi.fn().mockResolvedValue({ ok: true }),
+		);
 		await clearDatabase();
 		await loadFixtures();
 	});
@@ -269,8 +257,8 @@ describe("POST /storage-purchases/stripe/webhook", () => {
 		delete process.env["STRIPE_WEBHOOK_SECRET"];
 		delete process.env["SLACK_WEBHOOK_URL"];
 		await clearDatabase();
-		jest.restoreAllMocks();
-		jest.clearAllMocks();
+		vi.restoreAllMocks();
+		vi.clearAllMocks();
 	});
 
 	test("should return 400 if no stripe-signature header", async () => {
@@ -294,8 +282,8 @@ describe("POST /storage-purchases/stripe/webhook", () => {
 		const signatureError = new Stripe.errors.StripeSignatureVerificationError({
 			type: "api_error",
 		});
-		jest.spyOn(stripeClient.webhooks, "constructEvent").mockImplementationOnce(
-			jest.fn().mockImplementation(() => {
+		vi.spyOn(stripeClient.webhooks, "constructEvent").mockImplementationOnce(
+			vi.fn().mockImplementation(() => {
 				throw signatureError;
 			}),
 		);
@@ -330,8 +318,8 @@ describe("POST /storage-purchases/stripe/webhook", () => {
 	});
 
 	test("should return 200 on payment_intent.payment_failed and log the failure", async () => {
-		jest.spyOn(stripeClient.webhooks, "constructEvent").mockImplementation(
-			jest.fn().mockReturnValueOnce({
+		vi.spyOn(stripeClient.webhooks, "constructEvent").mockImplementation(
+			vi.fn().mockReturnValueOnce({
 				type: "payment_intent.payment_failed",
 				data: { object: mockPaymentIntent },
 			}),
@@ -348,8 +336,8 @@ describe("POST /storage-purchases/stripe/webhook", () => {
 	});
 
 	test("should return 200 on unhandled event types", async () => {
-		jest.spyOn(stripeClient.webhooks, "constructEvent").mockImplementation(
-			jest.fn().mockReturnValueOnce({
+		vi.spyOn(stripeClient.webhooks, "constructEvent").mockImplementation(
+			vi.fn().mockReturnValueOnce({
 				type: "customer.created",
 				data: { object: {} },
 			}),
@@ -373,8 +361,8 @@ describe("POST /storage-purchases/stripe/webhook", () => {
 	});
 
 	test("should return 400 if the payment intent customer is not a string", async () => {
-		jest.spyOn(stripeClient.webhooks, "constructEvent").mockImplementation(
-			jest.fn().mockReturnValue({
+		vi.spyOn(stripeClient.webhooks, "constructEvent").mockImplementation(
+			vi.fn().mockReturnValue({
 				...mockSuccessEvent,
 				data: { object: { ...mockPaymentIntent, customer: null } },
 			}),
@@ -388,11 +376,9 @@ describe("POST /storage-purchases/stripe/webhook", () => {
 	});
 
 	test("should return 500 if the account lookup fails", async () => {
-		jest
-			.spyOn(db, "sql")
-			.mockImplementationOnce(
-				jest.fn().mockRejectedValueOnce(new Error("DB error")),
-			);
+		vi.spyOn(db, "sql").mockImplementationOnce(
+			vi.fn().mockRejectedValueOnce(new Error("DB error")),
+		);
 		await agent
 			.post("/api/v2/storage-purchases/stripe/webhook")
 			.set("stripe-signature", "test_sig")
@@ -402,9 +388,9 @@ describe("POST /storage-purchases/stripe/webhook", () => {
 	});
 
 	test("should return 500 if no account is found for the Stripe customer", async () => {
-		jest
-			.spyOn(db, "sql")
-			.mockImplementationOnce(jest.fn().mockResolvedValueOnce({ rows: [] }));
+		vi.spyOn(db, "sql").mockImplementationOnce(
+			vi.fn().mockResolvedValueOnce({ rows: [] }),
+		);
 		await agent
 			.post("/api/v2/storage-purchases/stripe/webhook")
 			.set("stripe-signature", "test_sig")
@@ -414,9 +400,9 @@ describe("POST /storage-purchases/stripe/webhook", () => {
 	});
 
 	test("should return 500 if creditStorage throws", async () => {
-		jest
-			.spyOn(legacyClient, "creditStorage")
-			.mockRejectedValueOnce(new Error("Network error"));
+		vi.spyOn(legacyClient, "creditStorage").mockRejectedValueOnce(
+			new Error("Network error"),
+		);
 		await agent
 			.post("/api/v2/storage-purchases/stripe/webhook")
 			.set("stripe-signature", "test_sig")
@@ -426,11 +412,9 @@ describe("POST /storage-purchases/stripe/webhook", () => {
 	});
 
 	test("should return 500 if the legacy API returns an error", async () => {
-		jest
-			.spyOn(legacyClient, "creditStorage")
-			.mockImplementation(
-				jest.fn().mockResolvedValueOnce({ ok: false, status: 500 }),
-			);
+		vi.spyOn(legacyClient, "creditStorage").mockImplementation(
+			vi.fn().mockResolvedValueOnce({ ok: false, status: 500 }),
+		);
 		await agent
 			.post("/api/v2/storage-purchases/stripe/webhook")
 			.set("stripe-signature", "test_sig")
@@ -441,9 +425,9 @@ describe("POST /storage-purchases/stripe/webhook", () => {
 
 	test("should send a Slack notification on payment_intent.succeeded", async () => {
 		process.env["SLACK_WEBHOOK_URL"] = "https://hooks.slack.com/test";
-		jest
-			.spyOn(global, "fetch")
-			.mockImplementation(jest.fn().mockResolvedValue({ ok: true }));
+		vi.spyOn(global, "fetch").mockImplementation(
+			vi.fn().mockResolvedValue({ ok: true }),
+		);
 		await agent
 			.post("/api/v2/storage-purchases/stripe/webhook")
 			.set("stripe-signature", "test_sig")
@@ -463,9 +447,9 @@ describe("POST /storage-purchases/stripe/webhook", () => {
 	});
 
 	test("should not send a Slack notification if SLACK_WEBHOOK_URL is not set", async () => {
-		jest
-			.spyOn(global, "fetch")
-			.mockImplementation(jest.fn().mockResolvedValue({ ok: true }));
+		vi.spyOn(global, "fetch").mockImplementation(
+			vi.fn().mockResolvedValue({ ok: true }),
+		);
 		await agent
 			.post("/api/v2/storage-purchases/stripe/webhook")
 			.set("stripe-signature", "test_sig")
@@ -476,7 +460,7 @@ describe("POST /storage-purchases/stripe/webhook", () => {
 
 	test("should return 200 if the Slack notification fails", async () => {
 		process.env["SLACK_WEBHOOK_URL"] = "https://hooks.slack.com/test";
-		jest.spyOn(global, "fetch").mockRejectedValue(new Error("Slack error"));
+		vi.spyOn(global, "fetch").mockRejectedValue(new Error("Slack error"));
 		await agent
 			.post("/api/v2/storage-purchases/stripe/webhook")
 			.set("stripe-signature", "test_sig")
