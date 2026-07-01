@@ -99,7 +99,7 @@ jobs:
         run: (cd stela; npm run test -w @stela/${{ matrix.package }})
 
       # Upload coverage
-      - uses: codecov/codecov-action@v6
+      - uses: codecov/codecov-action@v7
         with:
           flags: ${{ matrix.package }}
         env:
