@@ -25,6 +25,6 @@
 		"test": "node --experimental-vm-modules ../../node_modules/jest/bin/jest.js -i --silent=false"
 	},
 	"dependencies": {
-		"@aws-sdk/client-sns": "^3.1053.0"
+		"@aws-sdk/client-sns": "^3.1075.0"
 	}
 }
