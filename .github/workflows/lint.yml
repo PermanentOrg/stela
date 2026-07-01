@@ -15,7 +15,7 @@ jobs:
       - run: npm install -ws
       - run: npm run build -ws
 
-      - uses: actions/cache/save@v5
+      - uses: actions/cache/save@v6.1.0
         with:
           path: packages/*/dist
           key: build-${{ github.sha }}
@@ -55,7 +55,7 @@ jobs:
       - run: npm install --include dev
       - run: npm install -w @stela/${{ matrix.package }}
 
-      - uses: actions/cache/restore@v5
+      - uses: actions/cache/restore@v6.1.0
         with:
           path: packages/*/dist
           key: build-${{ github.sha }}
