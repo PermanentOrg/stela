@@ -42,14 +42,14 @@ jobs:
             needs_devenv: true
     steps:
       # Always checkout stela
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           path: ./stela
 
       # Conditionally checkout external repos (only if needs_devenv)
       - name: Checkout back-end
         if: matrix.needs_devenv
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           ssh-key: ${{ secrets.BACKEND_ACCESS_PRIVATE_SSH_KEY }}
           repository: PermanentOrg/back-end
@@ -58,7 +58,7 @@ jobs:
 
       - name: Checkout devenv
         if: matrix.needs_devenv
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           ssh-key: ${{ secrets.DEVENV_ACCESS_PRIVATE_SSH_KEY }}
           repository: PermanentOrg/devenv
