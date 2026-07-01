@@ -46,7 +46,7 @@ jobs:
       EVENT_SEND_IMAGE_TAG: ${{ steps.generate_event_send_image_tag.outputs.EVENT_SEND_IMAGE_TAG }}
       FILE_COPIER_LAMBDA_IMAGE_TAG: ${{ steps.generate_file_copier_lambda_image_tag.outputs.FILE_COPIER_LAMBDA_IMAGE_TAG }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - name: Set ECR domain env var
         id: set_ecr_domain
         run: echo "ECR_DOMAIN=364159549467.dkr.ecr.$AWS_REGION.amazonaws.com" >> "$GITHUB_ENV"
