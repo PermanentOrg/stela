@@ -98,6 +98,19 @@ export const validateUpdateShareLinkRequest: (
 	}
 };
 
+export const validateShareLinkParameters: (data: unknown) => asserts data is {
+	shareLinkId: string;
+} = (data: unknown): asserts data is { shareLinkId: string } => {
+	const validation = Joi.object()
+		.keys({
+			shareLinkId: Joi.string().required(),
+		})
+		.validate(data);
+	if (validation.error !== undefined) {
+		throw validation.error;
+	}
+};
+
 export const validateGetShareLinksParameters: (
 	data: unknown,
 ) => asserts data is {
