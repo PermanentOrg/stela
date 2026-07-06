@@ -9,6 +9,7 @@ import {
 	validateCreateShareLinkRequest,
 	validateUpdateShareLinkRequest,
 	validateGetShareLinksParameters,
+	validateShareLinkParameters,
 } from "./validators";
 import { shareLinkService } from "./service";
 import { validateBodyFromAuthentication } from "../validators";
@@ -37,8 +38,9 @@ shareLinkController.patch(
 	async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			validateUpdateShareLinkRequest(req.body);
+			validateShareLinkParameters(req.params);
 			const updatedShareLink = await shareLinkService.updateShareLink(
-				req.params["shareLinkId"] ?? "",
+				req.params.shareLinkId,
 				req.body,
 			);
 			res.status(HTTP_STATUS.SUCCESSFUL.OK).json({ data: updatedShareLink });
@@ -81,9 +83,10 @@ shareLinkController.delete(
 	async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			validateBodyFromAuthentication(req.body);
+			validateShareLinkParameters(req.params);
 			await shareLinkService.deleteShareLink(
 				req.body.emailFromAuthToken,
-				req.params["shareLinkId"] ?? "",
+				req.params.shareLinkId,
 			);
 			res.sendStatus(HTTP_STATUS.SUCCESSFUL.NO_CONTENT);
 		} catch (err) {

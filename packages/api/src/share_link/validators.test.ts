@@ -2,6 +2,7 @@ import {
 	validateCreateShareLinkRequest,
 	validateUpdateShareLinkRequest,
 	validateGetShareLinksParameters,
+	validateShareLinkParameters,
 } from "./validators";
 
 describe("validateCreateShareLinkRequest", () => {
@@ -928,6 +929,45 @@ describe("validateUpdateShareLinkRequest", () => {
 		try {
 			validateGetShareLinksParameters({
 				shareLinkIds: [1],
+			});
+		} catch (err) {
+			error = err;
+		} finally {
+			expect(error).not.toBeNull();
+		}
+	});
+});
+
+describe("validateShareLinkParameters", () => {
+	test("should find no errors in a valid request", () => {
+		let error = null;
+		try {
+			validateShareLinkParameters({
+				shareLinkId: "1",
+			});
+		} catch (err) {
+			error = err;
+		} finally {
+			expect(error).toBeNull();
+		}
+	});
+
+	test("should error if shareLinkId is missing", () => {
+		let error = null;
+		try {
+			validateShareLinkParameters({});
+		} catch (err) {
+			error = err;
+		} finally {
+			expect(error).not.toBeNull();
+		}
+	});
+
+	test("should error if shareLinkId is not a string", () => {
+		let error = null;
+		try {
+			validateShareLinkParameters({
+				shareLinkId: ["1"],
 			});
 		} catch (err) {
 			error = err;
