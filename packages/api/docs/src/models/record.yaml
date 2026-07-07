@@ -40,6 +40,7 @@ record:
     Generic Record object
   type: object
   required:
+    - id
     - recordId
     - displayName
     - archiveId
@@ -50,8 +51,11 @@ record:
     - updatedAt
     - archive
   properties:
+    id:
+      type: string
     recordId:
       type: string
+      deprecated: true
     displayName:
       type: string
     archiveId:

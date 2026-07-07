@@ -179,6 +179,7 @@ aggregated_ancestor_unrestricted_share_tokens AS (
 )
 
 SELECT DISTINCT ON (record.recordid)
+  record.recordid AS id,
   record.recordid AS "recordId",
   record.displayname AS "displayName",
   record.archiveid AS "archiveId",
