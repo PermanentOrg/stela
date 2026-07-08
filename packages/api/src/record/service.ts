@@ -6,6 +6,7 @@ import type {
 	ArchiveRecord,
 	ArchiveRecordRow,
 	CreateRecordCopyRequest,
+	GetRecordsResponse,
 	PatchRecordRequest,
 } from "./models";
 import {
@@ -20,6 +21,12 @@ import { getFolders } from "../folder/service";
 import { type Folder, PrettyFolderType } from "../folder/models";
 import { insertLocation, updateLocation } from "../location/service";
 
+const mapRecordRow = (row: ArchiveRecordRow): ArchiveRecord => ({
+	...row,
+	size: +(row.size ?? 0),
+	imageRatio: +(row.imageRatio ?? 0),
+});
+
 export const getRecords = async (requestQuery: {
 	recordIds: string[] | undefined;
 	archiveId?: string | undefined;
@@ -32,16 +39,14 @@ export const getRecords = async (requestQuery: {
 			archiveId: requestQuery.archiveId ?? null,
 			accountEmail: requestQuery.accountEmail,
 			shareToken: requestQuery.shareToken,
+			pageSize: null,
+			cursor: undefined,
 		})
 		.catch((err: unknown) => {
 			logger.error(err);
 			throw new createError.InternalServerError("failed to retrieve records");
 		});
-	const records = record.rows.map<ArchiveRecord>((row: ArchiveRecordRow) => ({
-		...row,
-		size: +(row.size ?? 0),
-		imageRatio: +(row.imageRatio ?? 0),
-	}));
+	const records = record.rows.map<ArchiveRecord>(mapRecordRow);
 
 	if (requestQuery.recordIds !== undefined) {
 		// Our API contract remains that the order in which this endpoint returns
@@ -61,6 +66,71 @@ export const getRecords = async (requestQuery: {
 		return recordsInOrder;
 	}
 	return records;
+};
+
+const buildRecordsNextPageUrl = (
+	requestQuery: {
+		recordIds: string[] | undefined;
+		archiveId?: string | undefined;
+		pageSize: number;
+	},
+	nextCursor: string,
+): string => {
+	const params = new URLSearchParams();
+	requestQuery.recordIds?.forEach((recordId) => {
+		params.append("recordIds[]", recordId);
+	});
+	if (requestQuery.archiveId !== undefined) {
+		params.set("archiveId", requestQuery.archiveId);
+	}
+	params.set("pageSize", String(requestQuery.pageSize));
+	params.set("cursor", nextCursor);
+	return `https://${process.env["SITE_URL"] ?? ""}/api/v2/records?${params.toString()}`;
+};
+
+export const getRecordsPage = async (requestQuery: {
+	recordIds: string[] | undefined;
+	archiveId?: string | undefined;
+	accountEmail: string | undefined;
+	shareToken?: string | undefined;
+	pageSize: number;
+	cursor: string | undefined;
+}): Promise<GetRecordsResponse> => {
+	const result = await db
+		.sql<ArchiveRecordRow & { rank: string; totalPages: number }>(
+			"record.queries.get_records",
+			{
+				recordIds: requestQuery.recordIds ?? null,
+				archiveId: requestQuery.archiveId ?? null,
+				accountEmail: requestQuery.accountEmail,
+				shareToken: requestQuery.shareToken,
+				pageSize: requestQuery.pageSize,
+				cursor: requestQuery.cursor,
+			},
+		)
+		.catch((err: unknown) => {
+			logger.error(err);
+			throw new createError.InternalServerError("failed to retrieve records");
+		});
+
+	const items = result.rows.map((row) => {
+		const { rank: _rank, totalPages: _totalPages, ...recordRow } = row;
+		return mapRecordRow(recordRow);
+	});
+
+	const nextCursor = items[items.length - 1]?.id;
+
+	return {
+		items,
+		pagination: {
+			nextCursor,
+			nextPage:
+				nextCursor === undefined
+					? undefined
+					: buildRecordsNextPageUrl(requestQuery, nextCursor),
+			totalPages: result.rows[0]?.totalPages ?? 0,
+		},
+	};
 };
 
 const validateCanPatchRecord = async (

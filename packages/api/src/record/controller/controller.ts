@@ -12,12 +12,14 @@ import {
 } from "../../middleware";
 import {
 	getRecords,
+	getRecordsPage,
 	patchRecord,
 	getRecordShareLinks,
 	createRecordCopy,
 } from "../service";
 import {
 	validateGetRecordQuery,
+	validateGetRecordsPageQuery,
 	validatePatchRecordRequest,
 	validateSingleRecordParams,
 	validateCreateRecordCopyRequest,
@@ -130,3 +132,32 @@ recordController.post(
 		}
 	},
 );
+
+export const recordsController = Router();
+
+recordsController.get(
+	"/",
+	extractUserEmailFromAuthToken,
+	extractShareTokenFromHeaders,
+	async (req: Request, res: Response, next: NextFunction) => {
+		try {
+			validateOptionalAuthenticationValues(req.body);
+			validateGetRecordsPageQuery(req.query);
+			const response = await getRecordsPage({
+				recordIds: req.query.recordIds,
+				archiveId: req.query.archiveId,
+				accountEmail: req.body.emailFromAuthToken,
+				shareToken: req.body.shareToken,
+				pageSize: req.query.pageSize,
+				cursor: req.query.cursor,
+			});
+			res.status(HTTP_STATUS.SUCCESSFUL.OK).send(response);
+		} catch (err) {
+			next(err);
+		}
+	},
+);
+
+// Handles all other /records routes (e.g. PATCH/:recordId, /:recordId/copies)
+// that are identical to the deprecated /record alias.
+recordsController.use(recordController);

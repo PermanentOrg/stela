@@ -9,7 +9,7 @@ import { storageController } from "../storage";
 import { eventController } from "../event";
 import { promoController } from "../promo";
 import { idpUserController } from "../idpuser";
-import { recordController } from "../record";
+import { recordController, recordsController } from "../record";
 import { featureController } from "../feature_flag";
 import { folderController } from "../folder";
 import { shareLinkController } from "../share_link";
@@ -30,7 +30,7 @@ apiRoutes.use("/events", eventController);
 apiRoutes.use("/event", eventController); // Deprecated path maintained to avoid breaking changes
 apiRoutes.use("/promo", promoController);
 apiRoutes.use("/idpuser", idpUserController);
-apiRoutes.use("/records", recordController);
+apiRoutes.use("/records", recordsController);
 apiRoutes.use("/record", recordController); // Deprecated path maintained to avoid breaking changes
 apiRoutes.use("/feature-flags", featureController);
 apiRoutes.use("/folders", folderController);

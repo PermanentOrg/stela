@@ -2,6 +2,7 @@ import Joi from "joi";
 import { parse as parseEDTF } from "@edtf-ts/core";
 import type { CreateRecordCopyRequest, PatchRecordRequest } from "./models";
 import { fieldsFromUserAuthentication } from "../validators";
+import { paginationFields } from "../validators/shared";
 import { locationInputSchema } from "../location/validators";
 import { EDTF_LEVEL_2 } from "../constants";
 
@@ -14,6 +15,32 @@ export const validateGetRecordQuery: (
 		.keys({
 			recordIds: Joi.array().items(Joi.string().required()),
 			archiveId: Joi.string(),
+		})
+		.or("recordIds", "archiveId")
+		.validate(data);
+	if (validation.error !== undefined) {
+		throw validation.error;
+	}
+};
+
+export const validateGetRecordsPageQuery: (data: unknown) => asserts data is {
+	recordIds?: string[];
+	archiveId?: string;
+	cursor?: string;
+	pageSize: number;
+} = (
+	data: unknown,
+): asserts data is {
+	recordIds?: string[];
+	archiveId?: string;
+	cursor?: string;
+	pageSize: number;
+} => {
+	const validation = Joi.object()
+		.keys({
+			recordIds: Joi.array().items(Joi.string().required()),
+			archiveId: Joi.string(),
+			...paginationFields,
 		})
 		.or("recordIds", "archiveId")
 		.validate(data);
