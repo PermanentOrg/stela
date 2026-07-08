@@ -69,6 +69,7 @@ describe("GET /folder/{id}/children", () => {
 			expect("folderId" in folder).toBe(true);
 			if ("folderId" in folder) {
 				expect(folder.folderId).toEqual("2");
+				expect(folder.itemType).toEqual("folder");
 				expect(folder.size).toEqual(0);
 				expect(folder.location).toBeDefined();
 				if (folder.location !== undefined) {
@@ -166,6 +167,7 @@ describe("GET /folder/{id}/children", () => {
 			expect("recordId" in record);
 			if ("recordId" in record) {
 				expect(record.recordId).toEqual("8");
+				expect(record.itemType).toEqual("record");
 				expect(record.displayName).toEqual("Public File");
 				expect(record.archiveId).toEqual("1");
 				expect(record.archiveNumber).toEqual("0000-0008");

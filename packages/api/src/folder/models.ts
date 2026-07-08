@@ -3,7 +3,9 @@ import type { Tag } from "../tag/models";
 import type { ArchiveRecord } from "../record/models";
 import type { Location, LocationInput } from "../location/models";
 
-export type FolderChildItem = ArchiveRecord | Folder;
+export type FolderChildItem =
+	| (ArchiveRecord & { itemType: "record" | "folder" })
+	| (Folder & { itemType: "record" | "folder" });
 
 export interface GetFolderChildrenResponse {
 	items: FolderChildItem[];

@@ -1,0 +1,20 @@
+item:
+  oneOf:
+    - allOf:
+      - $ref: "./folder.yaml#/folder"
+      - type: object
+        properties:
+          itemType:
+            type: string
+            enum:
+              - record
+              - folder
+    - allOf:
+      - $ref: "./record.yaml#/record"
+      - type: object
+        properties:
+          itemType:
+            type: string
+            enum:
+              - record
+              - folder
