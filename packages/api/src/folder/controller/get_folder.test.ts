@@ -197,6 +197,7 @@ describe("GET /folder", () => {
 		expect(folders[0]).toBeDefined();
 		if (folders[0] !== undefined) {
 			expect(folders[0].folderId).toEqual("2");
+			expect(folders[0].id).toEqual("2");
 			expect(folders[0].folderLinkId).toEqual("1");
 			expect(folders[0].archiveNumber).toEqual("0001-0002");
 			expect(folders[0].size).toEqual(0);

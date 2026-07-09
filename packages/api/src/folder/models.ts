@@ -18,6 +18,7 @@ export interface GetFolderChildrenResponse {
 
 export interface FolderRow {
 	folderId: string;
+	id: string;
 	archiveNumber: string | null;
 	size: string | null;
 	location?: Location;
@@ -71,6 +72,7 @@ export interface ThumbnailUrls {
 
 export interface Folder {
 	folderId: string;
+	id: string;
 	archiveNumber: string | null;
 	size: number | null;
 	location?: Location;
