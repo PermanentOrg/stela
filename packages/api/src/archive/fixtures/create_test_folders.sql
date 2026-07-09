@@ -203,4 +203,16 @@ VALUES
   CURRENT_TIMESTAMP,
   'type.folder.root.root',
   NULL
+),
+(
+  200,
+  2,
+  NULL,
+  'Second Shared Folder',
+  'Second Shared Folder',
+  NULL,
+  'status.generic.ok',
+  CURRENT_TIMESTAMP,
+  'type.folder.private',
+  NULL
 );

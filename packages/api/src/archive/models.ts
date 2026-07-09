@@ -1,4 +1,5 @@
 import { ArchiveMembershipRole } from "../access/models";
+import type { Folder } from "../folder/models";
 
 export { ArchiveMembershipRole };
 
@@ -73,6 +74,15 @@ export interface Archive {
 
 export interface GetArchivesResponse {
 	items: Archive[];
+	pagination: {
+		nextCursor: string | undefined;
+		nextPage: string | undefined;
+		totalPages: number;
+	};
+}
+
+export interface GetSharedFoldersResponse {
+	items: Folder[];
 	pagination: {
 		nextCursor: string | undefined;
 		nextPage: string | undefined;
