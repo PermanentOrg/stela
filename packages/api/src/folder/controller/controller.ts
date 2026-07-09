@@ -12,6 +12,7 @@ import {
 import {
 	patchFolder,
 	getFolders,
+	getFoldersPage,
 	getFolderChildren,
 	getFolderShareLinks,
 } from "../service";
@@ -19,6 +20,7 @@ import {
 	validatePatchFolderRequest,
 	validateFolderRequest,
 	validateGetFoldersQuery,
+	validateGetFoldersPageQuery,
 } from "../validators";
 import {
 	validateOptionalAuthenticationValues,
@@ -114,3 +116,31 @@ folderController.get(
 		}
 	},
 );
+
+export const foldersController = Router();
+
+foldersController.get(
+	"/",
+	extractUserEmailFromAuthToken,
+	extractShareTokenFromHeaders,
+	async (req: Request, res: Response, next: NextFunction) => {
+		try {
+			validateOptionalAuthenticationValues(req.body);
+			validateGetFoldersPageQuery(req.query);
+			const response = await getFoldersPage({
+				folderIds: req.query.folderIds,
+				email: req.body.emailFromAuthToken,
+				shareToken: req.body.shareToken,
+				pageSize: req.query.pageSize,
+				cursor: req.query.cursor,
+			});
+			res.status(HTTP_STATUS.SUCCESSFUL.OK).send(response);
+		} catch (err) {
+			next(err);
+		}
+	},
+);
+
+// Handles all other /folders routes (e.g. PATCH /:folderId, /:folderId/children)
+// that are identical to the deprecated /folder alias.
+foldersController.use(folderController);

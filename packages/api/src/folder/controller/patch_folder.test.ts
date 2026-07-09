@@ -186,6 +186,8 @@ describe("patch folder", () => {
 				folderIds: ["1"],
 				email: "test@permanent.org",
 				shareToken: undefined,
+				pageSize: null,
+				cursor: undefined,
 			},
 			{ reject: testError },
 		);
@@ -229,6 +231,8 @@ describe("patch folder", () => {
 				folderIds: ["1"],
 				email: "test@permanent.org",
 				shareToken: undefined,
+				pageSize: null,
+				cursor: undefined,
 			},
 			{ resolve: { rows: [] } },
 		);

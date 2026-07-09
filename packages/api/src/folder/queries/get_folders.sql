@@ -209,196 +209,228 @@ account_by_share AS (
     account.primaryemail = :email
     AND access.status != 'status.generic.deleted'
     AND account_archive.status = 'status.generic.ok'
+),
+
+all_folders AS (
+  SELECT
+    folder.folderid AS "folderId",
+    folder.folderid AS id,
+    folder.archivenbr AS "archiveNumber",
+    folder_size.allfilesizedeep AS size,
+    aggregated_shares.folder_shares AS shares,
+    aggregated_tags.tags,
+    folder.createddt AS "createdAt",
+    folder.updateddt AS "updatedAt",
+    folder.description,
+    folder.displaydt AS "displayTimestamp",
+    folder.displayenddt AS "displayEndTimestamp",
+    folder.displaytime AS "displayTime",
+    folder.displayname AS "displayName",
+    folder.downloadname AS "downloadName",
+    folder.imageratio AS "imageRatio",
+    folder.publicdt AS "publicAt",
+    folder.sort,
+    folder.type,
+    folder.status,
+    folder.view,
+    folder_link.folder_linkid AS "folderLinkId",
+    CASE
+      WHEN
+        EXISTS (
+          SELECT 1
+          FROM account_archive
+          INNER JOIN account
+            ON
+              account_archive.accountid = account.accountid
+              AND account.primaryemail = :email
+          WHERE
+            account_archive.archiveid = folder.archiveid
+            AND account_archive.status = 'status.generic.ok'
+            AND account_archive.accessrole IN (
+              'access.role.owner', 'access.role.manager'
+            )
+        )
+        THEN aggregated_pending_shares.pending_shares_as_json
+    END AS "pendingShares",
+    JSON_BUILD_OBJECT(
+      'id',
+      locn.locnid::text,
+      'name',
+      locn.name,
+      'sublocation',
+      locn.sublocation,
+      'city',
+      locn.city,
+      'state',
+      locn.adminonename,
+      'postalCode',
+      locn.postalcode,
+      'country',
+      locn.country,
+      'latitude',
+      locn.latitude,
+      'longitude',
+      locn.longitude,
+      'altitudeMeters',
+      locn.altitudemeters,
+      'precision',
+      locn.locationprecision,
+      'streetNumber',
+      locn.streetnumber,
+      'streetName',
+      locn.streetname,
+      'locality',
+      locn.locality,
+      'county',
+      locn.admintwoname,
+      'countryCode',
+      locn.countrycode,
+      'displayName',
+      locn.displayname
+    ) AS location,
+    CASE
+      WHEN folder_link.parentfolderid IS NOT NULL
+        THEN
+          JSON_BUILD_OBJECT(
+            'id',
+            folder_link.parentfolderid::text,
+            'folderLinkId',
+            folder_link.parentfolder_linkid::text
+          )
+    END AS "parentFolder",
+    JSON_BUILD_OBJECT(
+      'id',
+      folder.archiveid::text,
+      'name',
+      profile_item.string1
+    ) AS archive,
+    JSONB_BUILD_OBJECT(
+      'names',
+      aggregated_path.name_path,
+      'folderLinkIds',
+      aggregated_path.folder_link_id_path,
+      'archiveNumbers',
+      aggregated_path.archive_number_path
+    ) AS paths,
+    JSON_BUILD_OBJECT(
+      '200',
+      folder.thumburl200,
+      '500',
+      folder.thumburl500,
+      '1000',
+      folder.thumburl1000,
+      '2000',
+      folder.thumburl2000,
+      '256',
+      folder.thumbnail256
+    ) AS "thumbnailUrls"
+  FROM
+    folder
+  INNER JOIN
+    archive
+    ON
+      folder.archiveid = archive.archiveid
+      AND archive.status != 'status.generic.deleted'
+      AND archive.status IS NOT NULL
+  LEFT JOIN
+    profile_item
+    ON
+      archive.archiveid = profile_item.archiveid
+      AND profile_item.fieldnameui = 'profile.basic'
+      AND profile_item.status = 'status.generic.ok'
+      AND profile_item.string1 IS NOT NULL
+  INNER JOIN
+    folder_link
+    ON
+      folder.folderid = folder_link.folderid
+      AND folder_link.status != 'status.generic.deleted'
+  LEFT JOIN
+    folder_size
+    ON
+      folder.folderid = folder_size.folderid
+      AND folder_size.status != 'status.generic.deleted'
+  INNER JOIN
+    aggregated_path
+    ON
+      folder.folderid = aggregated_path.folderid
+  LEFT JOIN
+    account_by_archive
+    ON
+      folder.archiveid = account_by_archive.archiveid
+  LEFT JOIN
+    aggregated_shares
+    ON
+      folder_link.folder_linkid = aggregated_shares.folder_linkid
+  LEFT JOIN
+    aggregated_pending_shares
+    ON
+      folder_link.folder_linkid = aggregated_pending_shares.folder_linkid
+  LEFT JOIN
+    aggregated_tags
+    ON
+      folder.folderid = aggregated_tags.refid
+  LEFT JOIN
+    locn
+    ON
+      folder.locnid = locn.locnid
+  LEFT JOIN
+    account_by_share
+    ON
+      folder_link.folder_linkid = account_by_share.folder_linkid
+  LEFT JOIN
+    aggregated_ancestor_unrestricted_share_tokens
+    ON folder.folderid = aggregated_ancestor_unrestricted_share_tokens.folderid
+  WHERE
+    folder.folderid = ANY(:folderIds)
+    AND (
+      (
+        folder.publicdt IS NOT NULL
+        AND folder.publicdt <= NOW()
+      )
+      OR (
+        account_by_archive.primaryemail = :email
+        AND account_by_archive.primaryemail IS NOT NULL
+      )
+      OR (
+        :shareToken::text IS NOT NULL
+        AND :shareToken = ANY(
+          aggregated_ancestor_unrestricted_share_tokens.tokens
+        )
+      )
+      OR (
+        account_by_share.primaryemail = :email
+        AND account_by_share.primaryemail IS NOT NULL
+      )
+    )
+    AND folder.status != 'status.generic.deleted'
+  ORDER BY folder.folderid ASC
+),
+
+ranked_folders AS (
+  SELECT
+    *,
+    ROW_NUMBER() OVER (ORDER BY "folderId"::bigint ASC) AS rank
+  FROM all_folders
+),
+
+cursor AS (
+  SELECT rank
+  FROM
+    ranked_folders
+  WHERE
+    "folderId" = :cursor
+),
+
+total_pages AS (
+  SELECT CEILING(COUNT(*)::float / :pageSize) AS total_pages
+  FROM all_folders
 )
 
 SELECT
-  folder.folderid AS "folderId",
-  folder.folderid AS id,
-  folder.archivenbr AS "archiveNumber",
-  folder_size.allfilesizedeep AS size,
-  aggregated_shares.folder_shares AS shares,
-  aggregated_tags.tags,
-  folder.createddt AS "createdAt",
-  folder.updateddt AS "updatedAt",
-  folder.description,
-  folder.displaydt AS "displayTimestamp",
-  folder.displayenddt AS "displayEndTimestamp",
-  folder.displaytime AS "displayTime",
-  folder.displayname AS "displayName",
-  folder.downloadname AS "downloadName",
-  folder.imageratio AS "imageRatio",
-  folder.publicdt AS "publicAt",
-  folder.sort,
-  folder.type,
-  folder.status,
-  folder.view,
-  folder_link.folder_linkid AS "folderLinkId",
-  CASE
-    WHEN
-      EXISTS (
-        SELECT 1
-        FROM account_archive
-        INNER JOIN account
-          ON
-            account_archive.accountid = account.accountid
-            AND account.primaryemail = :email
-        WHERE
-          account_archive.archiveid = folder.archiveid
-          AND account_archive.status = 'status.generic.ok'
-          AND account_archive.accessrole IN (
-            'access.role.owner', 'access.role.manager'
-          )
-      )
-      THEN aggregated_pending_shares.pending_shares_as_json
-  END AS "pendingShares",
-  JSON_BUILD_OBJECT(
-    'id',
-    locn.locnid::text,
-    'name',
-    locn.name,
-    'sublocation',
-    locn.sublocation,
-    'city',
-    locn.city,
-    'state',
-    locn.adminonename,
-    'postalCode',
-    locn.postalcode,
-    'country',
-    locn.country,
-    'latitude',
-    locn.latitude,
-    'longitude',
-    locn.longitude,
-    'altitudeMeters',
-    locn.altitudemeters,
-    'precision',
-    locn.locationprecision,
-    'streetNumber',
-    locn.streetnumber,
-    'streetName',
-    locn.streetname,
-    'locality',
-    locn.locality,
-    'county',
-    locn.admintwoname,
-    'countryCode',
-    locn.countrycode,
-    'displayName',
-    locn.displayname
-  ) AS location,
-  CASE
-    WHEN folder_link.parentfolderid IS NOT NULL
-      THEN
-        JSON_BUILD_OBJECT(
-          'id',
-          folder_link.parentfolderid::text,
-          'folderLinkId',
-          folder_link.parentfolder_linkid::text
-        )
-  END AS "parentFolder",
-  JSON_BUILD_OBJECT(
-    'id',
-    folder.archiveid::text,
-    'name',
-    profile_item.string1
-  ) AS archive,
-  JSONB_BUILD_OBJECT(
-    'names',
-    aggregated_path.name_path,
-    'folderLinkIds',
-    aggregated_path.folder_link_id_path,
-    'archiveNumbers',
-    aggregated_path.archive_number_path
-  ) AS paths,
-  JSON_BUILD_OBJECT(
-    '200',
-    folder.thumburl200,
-    '500',
-    folder.thumburl500,
-    '1000',
-    folder.thumburl1000,
-    '2000',
-    folder.thumburl2000,
-    '256',
-    folder.thumbnail256
-  ) AS "thumbnailUrls"
-FROM
-  folder
-INNER JOIN
-  archive
-  ON
-    folder.archiveid = archive.archiveid
-    AND archive.status != 'status.generic.deleted'
-    AND archive.status IS NOT NULL
-LEFT JOIN
-  profile_item
-  ON
-    archive.archiveid = profile_item.archiveid
-    AND profile_item.fieldnameui = 'profile.basic'
-    AND profile_item.status = 'status.generic.ok'
-    AND profile_item.string1 IS NOT NULL
-INNER JOIN
-  folder_link
-  ON
-    folder.folderid = folder_link.folderid
-    AND folder_link.status != 'status.generic.deleted'
-LEFT JOIN
-  folder_size
-  ON
-    folder.folderid = folder_size.folderid
-    AND folder_size.status != 'status.generic.deleted'
-INNER JOIN
-  aggregated_path
-  ON
-    folder.folderid = aggregated_path.folderid
-LEFT JOIN
-  account_by_archive
-  ON
-    folder.archiveid = account_by_archive.archiveid
-LEFT JOIN
-  aggregated_shares
-  ON
-    folder_link.folder_linkid = aggregated_shares.folder_linkid
-LEFT JOIN
-  aggregated_pending_shares
-  ON
-    folder_link.folder_linkid = aggregated_pending_shares.folder_linkid
-LEFT JOIN
-  aggregated_tags
-  ON
-    folder.folderid = aggregated_tags.refid
-LEFT JOIN
-  locn
-  ON
-    folder.locnid = locn.locnid
-LEFT JOIN
-  account_by_share
-  ON
-    folder_link.folder_linkid = account_by_share.folder_linkid
-LEFT JOIN
-  aggregated_ancestor_unrestricted_share_tokens
-  ON folder.folderid = aggregated_ancestor_unrestricted_share_tokens.folderid
+  ranked_folders.*,
+  (SELECT total_pages.total_pages FROM total_pages) AS "totalPages"
+FROM ranked_folders
 WHERE
-  folder.folderid = ANY(:folderIds)
-  AND (
-    (
-      folder.publicdt IS NOT NULL
-      AND folder.publicdt <= NOW()
-    )
-    OR (
-      account_by_archive.primaryemail = :email
-      AND account_by_archive.primaryemail IS NOT NULL
-    )
-    OR (
-      :shareToken::text IS NOT NULL
-      AND :shareToken = ANY(
-        aggregated_ancestor_unrestricted_share_tokens.tokens
-      )
-    )
-    OR (
-      account_by_share.primaryemail = :email
-      AND account_by_share.primaryemail IS NOT NULL
-    )
-  )
-  AND folder.status != 'status.generic.deleted';
+  ranked_folders.rank > COALESCE((SELECT cursor.rank FROM cursor), 0)
+ORDER BY ranked_folders.rank ASC
+LIMIT :pageSize;
