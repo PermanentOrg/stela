@@ -87,3 +87,12 @@ export interface ShareLinkRow {
 	createdAt: Date;
 	updatedAt: Date;
 }
+
+export interface GetShareLinksResponse {
+	items: ShareLink[];
+	pagination: {
+		nextCursor: string | undefined;
+		nextPage: string | undefined;
+		totalPages: number;
+	};
+}

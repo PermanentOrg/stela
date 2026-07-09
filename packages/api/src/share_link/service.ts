@@ -8,6 +8,7 @@ import type {
 	ShareLinkRow,
 	CreateShareLinkDatabaseParams,
 	UpdateShareLinkDatabaseParams,
+	GetShareLinksResponse,
 } from "./models";
 import { db } from "../database";
 import {
@@ -19,6 +20,7 @@ import { AccessRole } from "../access/models";
 
 const APPROVAL_NOT_REQUIRED = 1;
 const APPROVAL_REQUIRED = 0;
+const DEFAULT_PAGE_SIZE = 10;
 
 const createShareLinkRequestParamsToDatabaseParams = (
 	data: CreateShareLinkRequest,
@@ -150,6 +152,8 @@ const updateShareLink = async (
 			shareLinkIds: [shareLinkId],
 			shareTokens: [],
 			email: data.emailFromAuthToken,
+			pageSize: null,
+			cursor: undefined,
 		})
 		.catch((err: unknown) => {
 			logger.error(err);
@@ -209,22 +213,76 @@ const updateShareLink = async (
 	};
 };
 
+const buildShareLinksNextPageUrl = (
+	requestQuery: {
+		shareTokens: string[] | undefined;
+		shareLinkIds: string[] | undefined;
+		pageSize: number;
+	},
+	nextCursor: string,
+): string => {
+	const params = new URLSearchParams();
+	requestQuery.shareTokens?.forEach((shareToken) => {
+		params.append("shareTokens[]", shareToken);
+	});
+	requestQuery.shareLinkIds?.forEach((shareLinkId) => {
+		params.append("shareLinkIds[]", shareLinkId);
+	});
+	params.set("pageSize", String(requestQuery.pageSize));
+	params.set("cursor", nextCursor);
+	return `https://${
+		process.env["SITE_URL"] ?? ""
+	}/api/v2/share-links?${params.toString()}`;
+};
+
 const getShareLinks = async (
 	email: string | undefined,
 	shareTokens: string[] | undefined,
 	shareLinkIds: string[] | undefined,
-): Promise<ShareLink[]> => {
-	const shareLinks = await db
-		.sql<ShareLink>("share_link.queries.get_share_links", {
-			email,
-			shareTokens,
-			shareLinkIds,
-		})
+	pagination: {
+		pageSize: number | null | undefined;
+		cursor: string | undefined;
+	},
+): Promise<GetShareLinksResponse> => {
+	const pageSize =
+		pagination.pageSize === undefined ? DEFAULT_PAGE_SIZE : pagination.pageSize;
+	const result = await db
+		.sql<ShareLink & { rank: string; totalPages: number }>(
+			"share_link.queries.get_share_links",
+			{
+				email,
+				shareTokens,
+				shareLinkIds,
+				pageSize,
+				cursor: pagination.cursor,
+			},
+		)
 		.catch((err: unknown) => {
 			logger.error(err);
 			throw new Error("Failed to get share links");
 		});
-	return shareLinks.rows;
+
+	const items = result.rows.map((row) => {
+		const { rank: _rank, totalPages: _totalPages, ...shareLink } = row;
+		return shareLink;
+	});
+
+	const nextCursor = items[items.length - 1]?.id;
+
+	return {
+		items,
+		pagination: {
+			nextCursor,
+			nextPage:
+				nextCursor === undefined || pageSize === null
+					? undefined
+					: buildShareLinksNextPageUrl(
+							{ shareTokens, shareLinkIds, pageSize },
+							nextCursor,
+						),
+			totalPages: result.rows[0]?.totalPages ?? 0,
+		},
+	};
 };
 
 const deleteShareLink = async (

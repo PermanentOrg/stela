@@ -937,6 +937,63 @@ describe("validateUpdateShareLinkRequest", () => {
 			expect(error).not.toBeNull();
 		}
 	});
+
+	test("should allow pageSize and cursor to be provided", () => {
+		let error = null;
+		try {
+			validateGetShareLinksParameters({
+				shareLinkIds: ["1"],
+				pageSize: 5,
+				cursor: "1",
+			});
+		} catch (err) {
+			error = err;
+		} finally {
+			expect(error).toBeNull();
+		}
+	});
+
+	test("should error if pageSize is not an integer", () => {
+		let error = null;
+		try {
+			validateGetShareLinksParameters({
+				shareLinkIds: ["1"],
+				pageSize: 1.5,
+			});
+		} catch (err) {
+			error = err;
+		} finally {
+			expect(error).not.toBeNull();
+		}
+	});
+
+	test("should error if pageSize is less than 1", () => {
+		let error = null;
+		try {
+			validateGetShareLinksParameters({
+				shareLinkIds: ["1"],
+				pageSize: 0,
+			});
+		} catch (err) {
+			error = err;
+		} finally {
+			expect(error).not.toBeNull();
+		}
+	});
+
+	test("should error if cursor is not a string", () => {
+		let error = null;
+		try {
+			validateGetShareLinksParameters({
+				shareLinkIds: ["1"],
+				cursor: 1,
+			});
+		} catch (err) {
+			error = err;
+		} finally {
+			expect(error).not.toBeNull();
+		}
+	});
 });
 
 describe("validateShareLinkParameters", () => {

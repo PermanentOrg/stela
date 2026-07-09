@@ -1,47 +1,78 @@
+WITH all_share_links AS (
+  SELECT
+    shareby_url.shareby_urlid AS id,
+    shareby_url.urltoken AS token,
+    shareby_url.uses AS "usesExpended",
+    shareby_url.expiresdt AS "expirationTimestamp",
+    shareby_url.createddt AS "createdAt",
+    shareby_url.updateddt AS "updatedAt",
+    SUBSTRING(
+      shareby_url.defaultaccessrole FROM (LENGTH('access.role.') + 1)
+    ) AS "permissionsLevel",
+    CASE
+      WHEN shareby_url.maxuses = 0 THEN NULL
+      ELSE shareby_url.maxuses
+    END AS "maxUses",
+    COALESCE(folder_link.recordid, folder_link.folderid) AS "itemId",
+    CASE
+      WHEN folder_link.recordid IS NOT NULL THEN 'record'
+      ELSE 'folder'
+    END AS "itemType",
+    CASE
+      WHEN shareby_url.unrestricted THEN 'none'
+      WHEN shareby_url.autoapprovetoggle = 1 THEN 'account'
+      ELSE 'approval'
+    END AS "accessRestrictions",
+    JSON_BUILD_OBJECT(
+      'id',
+      shareby_url.byaccountid::text,
+      'name',
+      account.fullname
+    ) AS "creatorAccount"
+  FROM
+    shareby_url
+  INNER JOIN
+    account
+    ON shareby_url.byaccountid = account.accountid
+  INNER JOIN
+    folder_link
+    ON shareby_url.folder_linkid = folder_link.folder_linkid
+  WHERE
+    (
+      shareby_url.shareby_urlid::text = ANY(:shareLinkIds)
+      OR shareby_url.urltoken = ANY(:shareTokens)
+    )
+    AND (
+      account.primaryemail = :email
+      OR :email IS NULL
+    )
+),
+
+ranked_share_links AS (
+  SELECT
+    *,
+    ROW_NUMBER() OVER (ORDER BY id::bigint ASC) AS rank
+  FROM all_share_links
+),
+
+cursor AS (
+  SELECT rank
+  FROM
+    ranked_share_links
+  WHERE
+    id = :cursor
+),
+
+total_pages AS (
+  SELECT CEILING(COUNT(*)::float / :pageSize) AS total_pages
+  FROM all_share_links
+)
+
 SELECT
-  shareby_url.shareby_urlid AS id,
-  shareby_url.urltoken AS token,
-  shareby_url.uses AS "usesExpended",
-  shareby_url.expiresdt AS "expirationTimestamp",
-  shareby_url.createddt AS "createdAt",
-  shareby_url.updateddt AS "updatedAt",
-  SUBSTRING(
-    shareby_url.defaultaccessrole FROM (LENGTH('access.role.') + 1)
-  ) AS "permissionsLevel",
-  CASE
-    WHEN shareby_url.maxuses = 0 THEN NULL
-    ELSE shareby_url.maxuses
-  END AS "maxUses",
-  COALESCE(folder_link.recordid, folder_link.folderid) AS "itemId",
-  CASE
-    WHEN folder_link.recordid IS NOT NULL THEN 'record'
-    ELSE 'folder'
-  END AS "itemType",
-  CASE
-    WHEN shareby_url.unrestricted THEN 'none'
-    WHEN shareby_url.autoapprovetoggle = 1 THEN 'account'
-    ELSE 'approval'
-  END AS "accessRestrictions",
-  JSON_BUILD_OBJECT(
-    'id',
-    shareby_url.byaccountid::text,
-    'name',
-    account.fullname
-  ) AS "creatorAccount"
-FROM
-  shareby_url
-INNER JOIN
-  account
-  ON shareby_url.byaccountid = account.accountid
-INNER JOIN
-  folder_link
-  ON shareby_url.folder_linkid = folder_link.folder_linkid
+  ranked_share_links.*,
+  (SELECT total_pages.total_pages FROM total_pages) AS "totalPages"
+FROM ranked_share_links
 WHERE
-  (
-    shareby_url.shareby_urlid::text = ANY(:shareLinkIds)
-    OR shareby_url.urltoken = ANY(:shareTokens)
-  )
-  AND (
-    account.primaryemail = :email
-    OR :email IS NULL
-  );
+  ranked_share_links.rank > COALESCE((SELECT cursor.rank FROM cursor), 0)
+ORDER BY ranked_share_links.rank ASC
+LIMIT :pageSize;

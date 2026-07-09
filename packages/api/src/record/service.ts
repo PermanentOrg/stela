@@ -376,6 +376,7 @@ export const getRecordShareLinks = async (
 		email,
 		[],
 		shareLinkIds,
+		{ pageSize: null, cursor: undefined },
 	);
-	return shareLinks;
+	return shareLinks.items;
 };
