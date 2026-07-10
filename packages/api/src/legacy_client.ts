@@ -8,7 +8,6 @@ const transferArchiveOwnership = async (request: {
 	archiveSlug: string;
 	message?: string;
 	isLegacyAction?: boolean;
-	storageGiftInMB?: number;
 }): Promise<Response> => {
 	const response = await fetch(`${hostUrl}/archive/transferOwnership`, {
 		method: "POST",
@@ -20,7 +19,6 @@ const transferArchiveOwnership = async (request: {
 		body: JSON.stringify({
 			recipientEmail: request.recipientEmail,
 			archiveNbr: request.archiveSlug,
-			storageGiftInMB: request.storageGiftInMB ?? 0,
 			isLegacyAction: request.isLegacyAction ?? false,
 			message: request.message ?? null,
 		}),

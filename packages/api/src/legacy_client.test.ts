@@ -37,7 +37,6 @@ describe("transferArchiveOwnership", () => {
 			archiveSlug,
 			message: testMessage,
 			isLegacyAction: true,
-			storageGiftInMB: 1024,
 		});
 
 		expect(fetch).toHaveBeenCalledWith("/archive/transferOwnership", {
@@ -50,7 +49,6 @@ describe("transferArchiveOwnership", () => {
 			body: JSON.stringify({
 				recipientEmail: testEmail,
 				archiveNbr: archiveSlug,
-				storageGiftInMB: 1024,
 				isLegacyAction: true,
 				message: testMessage,
 			}),
@@ -75,7 +73,6 @@ describe("transferArchiveOwnership", () => {
 			body: JSON.stringify({
 				recipientEmail: testEmail,
 				archiveNbr: archiveSlug,
-				storageGiftInMB: 0,
 				isLegacyAction: false,
 				message: null,
 			}),
