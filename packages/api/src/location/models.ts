@@ -11,6 +11,7 @@ export interface LocationInput {
 	longitude?: number;
 	altitudeMeters?: number;
 	precision?: LocationPrecision;
+	timezone?: string | null;
 }
 
 export interface Location extends LocationInput {

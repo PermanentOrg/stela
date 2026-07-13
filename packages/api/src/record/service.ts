@@ -205,6 +205,8 @@ export const patchRecord = async (
 				setDescriptionToNull: recordData.description === null,
 				displayTime: recordData.displayTime,
 				setDisplayTimeToNull: recordData.displayTime === null,
+				timezone: recordData.location?.timezone,
+				setTimezoneToNull: recordData.location?.timezone === null,
 			})
 			.catch((err: unknown) => {
 				logger.error(err);

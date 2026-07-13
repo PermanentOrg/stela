@@ -142,6 +142,17 @@ describe("POST /record/{recordId}/copies", () => {
 		expect(record.displayName).toEqual("Public File");
 	});
 
+	test("expect copied record to retain the original record's timezone", async () => {
+		const response = await agent
+			.post("/api/v2/records/10008/copies")
+			.send({ destinationFolderId: "34" })
+			.expect(200);
+		const {
+			body: { data: record },
+		} = response as { body: { data: ArchiveRecord } };
+		expect(record.location.timezone).toEqual("Europe/Paris");
+	});
+
 	test("expect 403 if copying to public workspace without manager role", async () => {
 		// test+1@permanent.org is viewer in archive 1, which is below manager.
 		// Folder 1 is type.folder.public in archive 1 and requires manager role.

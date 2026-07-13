@@ -19,5 +19,6 @@ export const locationInputSchema = Joi.object()
 		precision: Joi.string()
 			.valid("approximate", "uncertain", "unknown")
 			.optional(),
+		timezone: Joi.string().optional().allow(null),
 	})
 	.min(1);

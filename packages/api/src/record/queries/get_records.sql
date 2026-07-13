@@ -278,7 +278,9 @@ all_records AS (
       'countryCode',
       locn.countrycode,
       'displayName',
-      locn.displayname
+      locn.displayname,
+      'timezone',
+      record.timezone
     ) AS location,
     JSON_BUILD_OBJECT(
       'id',

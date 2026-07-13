@@ -330,6 +330,8 @@ export const patchFolder = async (
 				setDisplayEndDateToNull: folderData.displayEndDate === null,
 				displayTime: folderData.displayTime,
 				setDisplayTimeToNull: folderData.displayTime === null,
+				timezone: folderData.location?.timezone,
+				setTimezoneToNull: folderData.location?.timezone === null,
 				locationId,
 			})
 			.catch((err: unknown) => {

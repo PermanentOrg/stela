@@ -152,7 +152,8 @@ new_record AS (
     updateddt,
     uploadpayeraccountid,
     alttext,
-    displaytime
+    displaytime,
+    timezone
   )
   SELECT
     :destinationArchiveId AS archiveid,
@@ -220,7 +221,8 @@ new_record AS (
       (SELECT copier_account.accountid FROM copier_account)
     ) AS uploadpayeraccountid,
     alttext,
-    displaytime
+    displaytime,
+    timezone
   FROM
     record
   WHERE
