@@ -177,7 +177,7 @@ export const getFolderChildren = async (
 					? folders.find((folder) => folder.folderId === row.id)
 					: records.find((record) => record.recordId === row.id);
 			if (child !== undefined) {
-				accumulator.push(child);
+				accumulator.push({ ...child, itemType: row.item_type });
 			}
 			return accumulator;
 		},

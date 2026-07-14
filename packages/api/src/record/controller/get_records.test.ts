@@ -268,6 +268,7 @@ describe("GET /records", () => {
 		expect(records.length).toEqual(1);
 		if (record !== undefined) {
 			expect(record).toMatchObject({
+				id: "10008",
 				recordId: "10008",
 				displayName: "Public File",
 				archiveId: "1",

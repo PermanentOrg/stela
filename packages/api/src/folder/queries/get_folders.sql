@@ -213,6 +213,7 @@ account_by_share AS (
 
 SELECT
   folder.folderid AS "folderId",
+  folder.folderid AS id,
   folder.archivenbr AS "archiveNumber",
   folder_size.allfilesizedeep AS size,
   aggregated_shares.folder_shares AS shares,

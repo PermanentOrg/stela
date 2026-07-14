@@ -121,9 +121,7 @@ folders-id-children:
                 items:
                   type: array
                   items:
-                    oneOf:
-                      - $ref: "../models/folder.yaml#/folder"
-                      - $ref: "../models/record.yaml#/record"
+                    $ref: "../models/item.yaml#/item"
                 pagination:
                   $ref: "../models/pagination_metadata.yaml#/pagination"
       "400":

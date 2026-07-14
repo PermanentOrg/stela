@@ -4,6 +4,7 @@ import type { Tag } from "../tag/models";
 import type { Location, LocationInput } from "../location/models";
 
 export interface ArchiveRecord {
+	id: string;
 	recordId: string;
 	archiveId: string;
 	displayName: string;
@@ -53,6 +54,7 @@ export interface ArchiveRecord {
 }
 
 export interface ArchiveRecordRow {
+	id: string;
 	recordId: string;
 	archiveId: string;
 	displayName: string;
