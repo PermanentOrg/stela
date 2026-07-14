@@ -1,5 +1,6 @@
 import request from "supertest";
-import { when } from "jest-when";
+import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
+import { when } from "vitest-when";
 
 import { db } from "../../database";
 import { EVENT_ACTION, EVENT_ACTOR, EVENT_ENTITY } from "../../constants";
@@ -10,9 +11,9 @@ import {
 	mockExtractIp,
 } from "../../../test/middleware_mocks";
 
-jest.mock("../../database");
-jest.mock("../../middleware");
-jest.mock("../../event/service");
+vi.mock("../../database");
+vi.mock("../../middleware");
+vi.mock("../../event/service");
 
 const loadFixtures = async (): Promise<void> => {
 	await db.sql("account.fixtures.create_test_accounts");
@@ -42,13 +43,13 @@ describe("leaveArchive", () => {
         accountid = 3 AND archiveid = 1`;
 
 	beforeEach(async () => {
+		vi.resetAllMocks();
 		mockVerifyUserAuthentication(
 			"test+1@permanent.org",
 			"b5461dc2-1eb0-450e-b710-fef7b2cafe1e",
 		);
 		mockExtractIp(ip);
 		await loadFixtures();
-		jest.clearAllMocks();
 	});
 
 	afterEach(async () => {
@@ -94,17 +95,13 @@ describe("leaveArchive", () => {
 	});
 
 	test("should return a 500 error if the deletion database call fails", async () => {
-		const spy = jest.spyOn(db, "sql");
+		const spy = vi.spyOn(db, "sql");
 		when(spy)
 			.calledWith("account.queries.delete_account_archive", {
 				archiveId: "1",
 				email: "test+1@permanent.org",
 			})
-			.mockImplementation(
-				jest.fn().mockResolvedValue({
-					rows: [],
-				}),
-			);
+			.thenDo(vi.fn().mockResolvedValue({ rows: [] }));
 		await agent.delete("/api/v2/accounts/archive/1").expect(500);
 	});
 });

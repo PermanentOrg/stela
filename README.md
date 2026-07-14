@@ -88,7 +88,7 @@ Note that the database tests run against is dropped and recreated at the beginni
 For running tests on a single file in `stela`, you can make an adjustment to the existing `test` command in **packages/api/package.json** on your machine. See the example below (replace **src/middleware/authentication.test.ts** with a pattern to match your file):
 
 ```json
-    "test:file": "npm run start-containers && npm run clear-database && npm run create-database && npm run set-up-database && (cd ../..; docker compose run stela node --experimental-vm-modules ../../node_modules/jest/bin/jest.js -i --silent=false -- src/middleware/authentication.test.ts)",
+    "test:file": "npm run start-containers && npm run clear-database && npm run create-database && npm run set-up-database && (cd ../..; docker compose run vitest run -- src/middleware/authentication.test.ts)",
 ```
 
 ## Running the API Server Locally

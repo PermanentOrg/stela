@@ -3,6 +3,7 @@ import {
 	isInvalidEnumError,
 	getInvalidValueFromInvalidEnumMessage,
 } from "./database_util";
+import { describe, expect, test } from "vitest";
 
 const testInvalidEnumError =
 	"invalid input value for enum test_enum: not_a_test_enum";

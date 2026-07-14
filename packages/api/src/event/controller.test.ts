@@ -1,4 +1,5 @@
 import request from "supertest";
+import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 import type { NextFunction } from "express";
 import createError from "http-errors";
 import { db } from "../database";
@@ -14,9 +15,9 @@ import {
 	mockExtractIp,
 } from "../../test/middleware_mocks";
 
-jest.mock("../database");
-jest.mock("../middleware");
-jest.mock("@stela/publisher-utils");
+vi.mock("../database");
+vi.mock("../middleware");
+vi.mock("@stela/publisher-utils");
 
 const testSubject = "fcb2b59b-df07-4e79-ad20-bf7f067a965e";
 const testEmail = "test+1@permanent.org";
@@ -42,16 +43,16 @@ describe("POST /event", () => {
 
 	afterEach(async () => {
 		await clearDatabase();
-		jest.restoreAllMocks();
-		jest.clearAllMocks();
+		vi.restoreAllMocks();
+		vi.clearAllMocks();
 	});
 
 	test("should return 401 if unauthenticated", async () => {
-		jest
-			.mocked(verifyUserOrAdminOrDelegatedCallAuthentication)
-			.mockImplementation(async (_, __, next: NextFunction) => {
-				next(new createError.Unauthorized("You aren't logged in"));
-			});
+		vi.mocked(
+			verifyUserOrAdminOrDelegatedCallAuthentication,
+		).mockImplementation(async (_, __, next: NextFunction) => {
+			next(new createError.Unauthorized("You aren't logged in"));
+		});
 		await agent.post("/api/v2/event").expect(401);
 	});
 
@@ -108,11 +109,11 @@ describe("POST /event", () => {
 	});
 
 	test("should return 400 if fields from auth token fail validation", async () => {
-		jest
-			.mocked(verifyUserOrAdminOrDelegatedCallAuthentication)
-			.mockImplementation(async (_, __, next: NextFunction) => {
-				next();
-			});
+		vi.mocked(
+			verifyUserOrAdminOrDelegatedCallAuthentication,
+		).mockImplementation(async (_, __, next: NextFunction) => {
+			next();
+		});
 		await agent.post("/api/v2/event").expect(400);
 	});
 
@@ -380,7 +381,7 @@ describe("POST /event", () => {
 	});
 
 	test("should return 500 error if database call fails", async () => {
-		jest.spyOn(db, "sql").mockImplementation(() => {
+		vi.spyOn(db, "sql").mockImplementation(() => {
 			throw new Error("SQL error");
 		});
 		await agent
@@ -396,8 +397,8 @@ describe("POST /event", () => {
 	});
 
 	test("should return 500 error if database call returns an empty result", async () => {
-		jest.spyOn(db, "sql").mockImplementation(
-			jest.fn().mockResolvedValue({
+		vi.spyOn(db, "sql").mockImplementation(
+			vi.fn().mockResolvedValue({
 				rows: [],
 			}),
 		);
@@ -495,8 +496,8 @@ describe("GET /event/checklist", () => {
 	});
 
 	afterEach(async () => {
-		jest.restoreAllMocks();
-		jest.clearAllMocks();
+		vi.restoreAllMocks();
+		vi.clearAllMocks();
 		await clearDatabase();
 	});
 
@@ -505,11 +506,11 @@ describe("GET /event/checklist", () => {
 	});
 
 	test("should return 401 if unauthenticated", async () => {
-		jest
-			.mocked(verifyUserAuthentication)
-			.mockImplementation(async (_, __, next: NextFunction) => {
+		vi.mocked(verifyUserAuthentication).mockImplementation(
+			async (_, __, next: NextFunction) => {
 				next(new createError.Unauthorized("You aren't logged in"));
-			});
+			},
+		);
 
 		await agent.get("/api/v2/event/checklist").expect(401);
 	});
@@ -651,15 +652,15 @@ describe("GET /event/checklist", () => {
 	});
 
 	test("should return 500 error if database call fails", async () => {
-		jest.spyOn(db, "sql").mockImplementation(() => {
+		vi.spyOn(db, "sql").mockImplementation(() => {
 			throw new Error("SQL error");
 		});
 		await agent.get("/api/v2/event/checklist").expect(500);
 	});
 
 	test("should return 500 error if database response is empty", async () => {
-		jest.spyOn(db, "sql").mockImplementationOnce(
-			jest.fn().mockResolvedValueOnce({
+		vi.spyOn(db, "sql").mockImplementationOnce(
+			vi.fn().mockResolvedValueOnce({
 				rows: [],
 			}),
 		);

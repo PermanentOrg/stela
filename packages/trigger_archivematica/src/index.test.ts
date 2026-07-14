@@ -1,23 +1,20 @@
 import type { Context } from "aws-lambda";
-import { mock } from "jest-mock-extended";
+import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
+import { mock } from "vitest-mock-extended";
 import { logger } from "@stela/logger";
 import { triggerArchivematicaProcessing } from "@stela/archivematica-utils";
 import { db } from "./database";
 import { handler, extractRecordIdFromNewRecordMessage } from "./index";
 
-jest.mock("./database");
-jest.mock("@stela/archivematica-utils", () => ({
-	triggerArchivematicaProcessing: jest.fn().mockResolvedValue({
-		json: jest.fn(),
-		text: jest.fn(),
+vi.mock("./database");
+vi.mock("@stela/archivematica-utils", () => ({
+	triggerArchivematicaProcessing: vi.fn().mockResolvedValue({
+		json: vi.fn(),
+		text: vi.fn(),
 		ok: true,
 	}),
 }));
-jest.mock("@stela/logger", () => ({
-	logger: {
-		error: jest.fn(),
-	},
-}));
+vi.mock("@stela/logger");
 
 const loadFixtures = async (): Promise<void> => {
 	await db.sql("fixtures.create_test_accounts");
@@ -178,7 +175,7 @@ describe("extractRecordIdFromRecordCreateMessage", () => {
 describe("handler", () => {
 	beforeEach(async () => {
 		await loadFixtures();
-		jest.clearAllMocks();
+		vi.clearAllMocks();
 	});
 
 	afterEach(async () => {
@@ -214,7 +211,7 @@ describe("handler", () => {
 				],
 			},
 			mock<Context>(),
-			jest.fn(),
+			vi.fn(),
 		);
 
 		expect(triggerArchivematicaProcessing).toHaveBeenCalledWith(
@@ -258,7 +255,7 @@ describe("handler", () => {
 				],
 			},
 			mock<Context>(),
-			jest.fn(),
+			vi.fn(),
 		);
 
 		expect(triggerArchivematicaProcessing).not.toHaveBeenCalled();
@@ -315,7 +312,7 @@ describe("handler", () => {
 				],
 			},
 			mock<Context>(),
-			jest.fn(),
+			vi.fn(),
 		);
 
 		expect(triggerArchivematicaProcessing).toHaveBeenCalledTimes(2);
@@ -342,7 +339,7 @@ describe("handler", () => {
 	});
 	test("should throw error when database query fails", async () => {
 		const dbError = new Error("Database connection failed");
-		jest.spyOn(db, "sql").mockRejectedValueOnce(dbError);
+		vi.spyOn(db, "sql").mockRejectedValueOnce(dbError);
 
 		await expect(
 			handler(
@@ -373,7 +370,7 @@ describe("handler", () => {
 					],
 				},
 				mock<Context>(),
-				jest.fn(),
+				vi.fn(),
 			),
 		).rejects.toThrow("Database connection failed");
 
@@ -383,9 +380,9 @@ describe("handler", () => {
 
 	test("should throw error when Archivematica processing throws", async () => {
 		const archivematicaError = new Error("Failed to trigger Archivematica");
-		jest
-			.mocked(triggerArchivematicaProcessing)
-			.mockRejectedValueOnce(archivematicaError);
+		vi.mocked(triggerArchivematicaProcessing).mockRejectedValueOnce(
+			archivematicaError,
+		);
 
 		await expect(
 			handler(
@@ -416,7 +413,7 @@ describe("handler", () => {
 					],
 				},
 				mock<Context>(),
-				jest.fn(),
+				vi.fn(),
 			),
 		).rejects.toThrow("Failed to trigger Archivematica");
 
@@ -434,11 +431,9 @@ describe("handler", () => {
 	});
 
 	test("should throw error when Archivematica processing fails without an exception", async () => {
-		jest
-			.mocked(triggerArchivematicaProcessing)
-			.mockImplementation(
-				jest.fn().mockResolvedValueOnce({ ok: false, status: 404 }),
-			);
+		vi.mocked(triggerArchivematicaProcessing).mockImplementation(
+			vi.fn().mockResolvedValueOnce({ ok: false, status: 404 }),
+		);
 
 		await expect(
 			handler(
@@ -469,7 +464,7 @@ describe("handler", () => {
 					],
 				},
 				mock<Context>(),
-				jest.fn(),
+				vi.fn(),
 			),
 		).rejects.toThrow("Call to Archivematica failed with status 404");
 

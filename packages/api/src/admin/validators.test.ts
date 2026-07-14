@@ -1,4 +1,5 @@
 import { validateRecalculateFolderThumbnailsRequest } from "./validators";
+import { describe, expect, test } from "vitest";
 
 const adminSubjectFromAuthToken = "fcb2b59b-df07-4e79-ad20-bf7f067a965e";
 

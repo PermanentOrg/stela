@@ -3,7 +3,7 @@ import typescriptEslint from "typescript-eslint";
 import prettier from "eslint-config-prettier";
 import love from "eslint-config-love";
 import globals from "globals";
-import jest from "eslint-plugin-jest";
+import vitest from "@vitest/eslint-plugin";
 import js from "@eslint/js";
 
 export default defineConfig([
@@ -17,7 +17,7 @@ export default defineConfig([
 		languageOptions: {
 			globals: {
 				...globals.node,
-				...globals.jest,
+				...vitest.environments.env.globals,
 			},
 		},
 
@@ -48,13 +48,13 @@ export default defineConfig([
 		files: ["**/*.test.ts"],
 
 		plugins: {
-			jest,
+			vitest,
 		},
 
 		rules: {
 			"@typescript-eslint/unbound-method": "off",
-			"jest/unbound-method": "error",
-			"jest/no-focused-tests": "error",
+			"vitest/unbound-method": "error",
+			"vitest/no-focused-tests": "error",
 			// Test files are allowed to be long because they need to be able to comprehensively test
 			// the relevant code, however many tests that takes. Their natural structure also makes
 			// them more navigable than other lengthy files might be.
@@ -64,6 +64,11 @@ export default defineConfig([
 			"@typescript-eslint/require-await": "off",
 			// This interferes with some mocking patterns that we use widely
 			"@typescript-eslint/strict-void-return": "off",
+		},
+		languageOptions: {
+			globals: {
+				...vitest.environments.env.globals,
+			},
 		},
 	},
 ]);

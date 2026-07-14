@@ -1,20 +1,21 @@
 import type { NextFunction } from "express";
+import { beforeEach, describe, expect, test, vi } from "vitest";
 import { createRequest, createResponse } from "node-mocks-http";
 import * as Sentry from "@sentry/node";
 import { handleError } from "./handleError";
 
-jest.mock("@sentry/node", () => ({
-	captureException: jest.fn(),
+vi.mock("@sentry/node", () => ({
+	captureException: vi.fn(),
 }));
 describe("handleError", () => {
 	const request = createRequest();
 	const response = createResponse();
-	response.status = jest.fn().mockReturnThis();
-	response.json = jest.fn();
-	const nextFunction = jest.fn() as NextFunction;
+	response.status = vi.fn().mockReturnThis();
+	response.json = vi.fn();
+	const nextFunction = vi.fn() as NextFunction;
 
 	beforeEach(() => {
-		jest.clearAllMocks();
+		vi.clearAllMocks();
 	});
 
 	test("should respond with the status and error object if the error has 'status' property", async () => {

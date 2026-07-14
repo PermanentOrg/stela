@@ -1,13 +1,14 @@
 import request from "supertest";
+import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 import { logger } from "@stela/logger";
 import { app } from "../../app";
 import { db } from "../../database";
 import { GB } from "../../constants";
 import { mockVerifyUserAuthentication } from "../../../test/middleware_mocks";
 
-jest.mock("../../database");
-jest.mock("../../middleware");
-jest.mock("@stela/logger");
+vi.mock("../../database");
+vi.mock("../../middleware");
+vi.mock("@stela/logger");
 
 const loadFixtures = async (): Promise<void> => {
 	await db.sql("archive.fixtures.create_test_accounts");
@@ -34,7 +35,7 @@ describe("getPayerAccountStorage", () => {
 	});
 	afterEach(async () => {
 		await clearDatabase();
-		jest.clearAllMocks();
+		vi.clearAllMocks();
 	});
 
 	test("should return payer account storage", async () => {
@@ -74,7 +75,7 @@ describe("getPayerAccountStorage", () => {
 
 	test("should throw an internal server error if database call fails", async () => {
 		const testError = new Error("out of cheese - redo from start");
-		jest.spyOn(db, "sql").mockRejectedValueOnce(testError);
+		vi.spyOn(db, "sql").mockRejectedValueOnce(testError);
 		await agent.get("/api/v2/archive/2/payer-account-storage").expect(500);
 		expect(logger.error).toHaveBeenCalledWith(testError);
 	});

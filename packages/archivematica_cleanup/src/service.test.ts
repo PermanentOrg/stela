@@ -1,15 +1,16 @@
 import * as Sentry from "@sentry/node";
+import { afterEach, describe, expect, test, vi } from "vitest";
 import { cleanupDashboard } from "./service";
 
-jest.mock("@sentry/node");
+vi.mock("@sentry/node");
 
 describe("cleanupDashboard", () => {
 	afterEach(() => {
-		jest.clearAllMocks();
-		jest.resetAllMocks();
+		vi.clearAllMocks();
+		vi.resetAllMocks();
 	});
 	test("should call fetch with the correct arguments", async () => {
-		global.fetch = jest.fn().mockResolvedValue({
+		global.fetch = vi.fn().mockResolvedValue({
 			ok: true,
 		});
 		await cleanupDashboard();
@@ -37,7 +38,7 @@ describe("cleanupDashboard", () => {
 
 	test("should log an error to sentry if the transfer deletion fails", async () => {
 		const errorText = "500 Internal Server Error";
-		global.fetch = jest.fn().mockResolvedValue({
+		global.fetch = vi.fn().mockResolvedValue({
 			ok: false,
 			text: async () => await Promise.resolve(errorText),
 		});
@@ -48,7 +49,7 @@ describe("cleanupDashboard", () => {
 
 	test("should log an error to sentry if the ingest deletion fails", async () => {
 		const errorText = "500 Internal Server Error";
-		global.fetch = jest
+		global.fetch = vi
 			.fn()
 			.mockResolvedValueOnce({
 				ok: true,

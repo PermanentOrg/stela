@@ -2,6 +2,7 @@ import {
 	validatePatchFolderRequest,
 	validateGetFoldersQuery,
 } from "./validators";
+import { describe, expect, test } from "vitest";
 
 describe("validatePatchFolderRequest", () => {
 	test("should find no errors in a valid request", () => {

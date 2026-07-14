@@ -1,14 +1,15 @@
 import { logger } from "@stela/logger";
+import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 import request from "supertest";
-import { when } from "jest-when";
 import { app } from "../../app";
 import { db } from "../../database";
 import { loadFixtures, clearDatabase } from "./utils_test";
 import { mockVerifyUserAuthentication } from "../../../test/middleware_mocks";
+import { mockSqlCall } from "../../../test/mock_sql";
 
-jest.mock("../../database");
-jest.mock("../../middleware");
-jest.mock("@stela/logger");
+vi.mock("../../database");
+vi.mock("../../middleware");
+vi.mock("@stela/logger");
 
 describe("patch folder", () => {
 	const agent = request(app);
@@ -24,8 +25,8 @@ describe("patch folder", () => {
 
 	afterEach(async () => {
 		await clearDatabase();
-		jest.restoreAllMocks();
-		jest.clearAllMocks();
+		vi.restoreAllMocks();
+		vi.resetAllMocks();
 	});
 
 	test("expect an empty query to cause a 400 error", async () => {
@@ -137,7 +138,7 @@ describe("patch folder", () => {
 
 	test("expect to log error and return 500 if database update fails", async () => {
 		const testError = new Error("test error");
-		const spy = jest.spyOn(db, "sql").mockImplementation(async () => {
+		const spy = vi.spyOn(db, "sql").mockImplementation(async () => {
 			throw testError;
 		});
 
@@ -152,9 +153,10 @@ describe("patch folder", () => {
 
 	test("expect to log error and return 500 if database update fails", async () => {
 		const testError = new Error("test error");
-		const sqlSpy = jest.spyOn(db, "sql");
-		when(sqlSpy)
-			.calledWith("folder.queries.update_folder", {
+		mockSqlCall(
+			db,
+			"folder.queries.update_folder",
+			{
 				folderId: "1",
 				displayDate: "2024-09-26T15:09:52.000Z",
 				setDisplayDateToNull: false,
@@ -163,10 +165,9 @@ describe("patch folder", () => {
 				displayTime: undefined,
 				setDisplayTimeToNull: false,
 				locationId: null,
-			})
-			.mockImplementation(async () => {
-				throw testError;
-			});
+			},
+			{ reject: testError },
+		);
 
 		await agent
 			.patch("/api/v2/folders/1")
@@ -178,16 +179,16 @@ describe("patch folder", () => {
 
 	test("expect to log error and return 500 if database update is ok but the database select fails", async () => {
 		const testError = new Error("test error");
-		const sqlSpy = jest.spyOn(db, "sql");
-		when(sqlSpy)
-			.calledWith("folder.queries.get_folders", {
+		mockSqlCall(
+			db,
+			"folder.queries.get_folders",
+			{
 				folderIds: ["1"],
 				email: "test@permanent.org",
 				shareToken: undefined,
-			})
-			.mockImplementation(async () => {
-				throw testError;
-			});
+			},
+			{ reject: testError },
+		);
 
 		await agent
 			.patch("/api/v2/folders/1")
@@ -198,9 +199,10 @@ describe("patch folder", () => {
 	});
 
 	test("expect 404 if update_folder returns no rows", async () => {
-		const sqlSpy = jest.spyOn(db, "sql");
-		when(sqlSpy)
-			.calledWith("folder.queries.update_folder", {
+		mockSqlCall(
+			db,
+			"folder.queries.update_folder",
+			{
 				folderId: "1",
 				displayDate: "2024-09-26T15:09:52.000Z",
 				setDisplayDateToNull: false,
@@ -209,12 +211,9 @@ describe("patch folder", () => {
 				displayTime: undefined,
 				setDisplayTimeToNull: false,
 				locationId: null,
-			})
-			.mockImplementationOnce(
-				jest.fn().mockResolvedValue({
-					rows: [],
-				}),
-			);
+			},
+			{ resolve: { rows: [] } },
+		);
 
 		await agent
 			.patch("/api/v2/folders/1")
@@ -223,18 +222,16 @@ describe("patch folder", () => {
 	});
 
 	test("expect to log error and return 404 if database update is ok but the database select has empty result", async () => {
-		const sqlSpy = jest.spyOn(db, "sql");
-		when(sqlSpy)
-			.calledWith("folder.queries.get_folders", {
+		mockSqlCall(
+			db,
+			"folder.queries.get_folders",
+			{
 				folderIds: ["1"],
 				email: "test@permanent.org",
 				shareToken: undefined,
-			})
-			.mockImplementationOnce(
-				jest.fn().mockResolvedValue({
-					rows: [],
-				}),
-			);
+			},
+			{ resolve: { rows: [] } },
+		);
 
 		await agent
 			.patch("/api/v2/folders/1")
@@ -355,14 +352,12 @@ describe("patch folder", () => {
 		});
 
 		test("expect 404 if folder disappears between access check and location lookup", async () => {
-			const sqlSpy = jest.spyOn(db, "sql");
-			when(sqlSpy)
-				.calledWith("folder.queries.get_folder_location_id", { folderId: "1" })
-				.mockImplementationOnce(
-					jest.fn().mockResolvedValue({
-						rows: [],
-					}),
-				);
+			mockSqlCall(
+				db,
+				"folder.queries.get_folder_location_id",
+				{ folderId: "1" },
+				{ resolve: { rows: [] } },
+			);
 
 			await agent
 				.patch("/api/v2/folders/1")
@@ -372,10 +367,12 @@ describe("patch folder", () => {
 
 		test("expect 500 if the folder location lookup query fails", async () => {
 			const testError = new Error("test error");
-			const sqlSpy = jest.spyOn(db, "sql");
-			when(sqlSpy)
-				.calledWith("folder.queries.get_folder_location_id", { folderId: "1" })
-				.mockImplementationOnce(jest.fn().mockRejectedValue(testError));
+			mockSqlCall(
+				db,
+				"folder.queries.get_folder_location_id",
+				{ folderId: "1" },
+				{ reject: testError },
+			);
 
 			await agent
 				.patch("/api/v2/folders/1")

@@ -1,4 +1,5 @@
 import request from "supertest";
+import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 import type { FolderChildItem, Folder } from "../models";
 import type { ArchiveFile } from "../../record/models";
 import type { Tag } from "../../tag/models";
@@ -15,8 +16,8 @@ import {
 import { loadFixtures, clearDatabase } from "./utils_test";
 import { db } from "../../database";
 
-jest.mock("../../database");
-jest.mock("../../middleware");
+vi.mock("../../database");
+vi.mock("../../middleware");
 
 describe("GET /folder/{id}/children", () => {
 	const agent = request(app);
@@ -444,7 +445,7 @@ describe("GET /folder/{id}/children", () => {
 	});
 
 	test("should return 500 if the database call fails", async () => {
-		jest.spyOn(db, "sql").mockRejectedValue(new Error("test error"));
+		vi.spyOn(db, "sql").mockRejectedValue(new Error("test error"));
 		await agent.get("/api/v2/folders/10/children?pageSize=1").expect(500);
 	});
 });

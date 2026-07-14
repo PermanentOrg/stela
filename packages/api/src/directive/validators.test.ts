@@ -5,6 +5,7 @@ import {
 	validateUpdateDirectiveParams,
 	validateUpdateDirectiveRequest,
 } from "./validators";
+import { describe, expect, test } from "vitest";
 
 describe("validateCreateDirectiveRequest", () => {
 	test("should find no errors in a valid request", () => {

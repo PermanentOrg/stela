@@ -1,4 +1,5 @@
 import request from "supertest";
+import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 import type { NextFunction } from "express";
 import createError from "http-errors";
 import { logger } from "@stela/logger";
@@ -8,9 +9,9 @@ import type { Promo } from "./models";
 import { db } from "../database";
 import { mockVerifyAdminAuthentication } from "../../test/middleware_mocks";
 
-jest.mock("../middleware/authentication");
-jest.mock("../database");
-jest.mock("@stela/logger");
+vi.mock("../middleware/authentication");
+vi.mock("../database");
+vi.mock("@stela/logger");
 
 const loadFixtures = async (): Promise<void> => {
 	await db.sql("promo.fixtures.create_test_promos");
@@ -22,18 +23,18 @@ const clearDatabase = async (): Promise<void> => {
 describe("POST /promo", () => {
 	const agent = request(app);
 	beforeEach(async () => {
+		vi.restoreAllMocks();
+		vi.clearAllMocks();
 		mockVerifyAdminAuthentication(
 			"test@permanent.org",
 			"6b640c73-4963-47de-a096-4a05ff8dc5f5",
 		);
-		jest.restoreAllMocks();
-		jest.clearAllMocks();
 		await clearDatabase();
 	});
 
 	afterEach(async () => {
-		jest.restoreAllMocks();
-		jest.clearAllMocks();
+		vi.restoreAllMocks();
+		vi.clearAllMocks();
 		await clearDatabase();
 	});
 
@@ -50,11 +51,11 @@ describe("POST /promo", () => {
 	});
 
 	test("should respond with 401 status code if lacking admin authentication", async () => {
-		jest
-			.mocked(verifyAdminAuthentication)
-			.mockImplementation(async (_, __, next: NextFunction) => {
+		vi.mocked(verifyAdminAuthentication).mockImplementation(
+			async (_, __, next: NextFunction) => {
 				next(new createError.Unauthorized("You aren't logged in"));
-			});
+			},
+		);
 		await agent.post("/api/v2/promo").expect(401);
 	});
 
@@ -311,7 +312,7 @@ describe("POST /promo", () => {
 	});
 
 	test("should respond with 500 if the database call fails", async () => {
-		jest.spyOn(db, "sql").mockImplementation(() => {
+		vi.spyOn(db, "sql").mockImplementation(() => {
 			throw new Error("SQL error");
 		});
 		await agent
@@ -327,7 +328,7 @@ describe("POST /promo", () => {
 
 	test("should log the error if the database call fails", async () => {
 		const testError = new Error("SQL error");
-		jest.spyOn(db, "sql").mockRejectedValueOnce(testError);
+		vi.spyOn(db, "sql").mockRejectedValueOnce(testError);
 		await agent
 			.post("/api/v2/promo")
 			.send({
@@ -345,15 +346,15 @@ describe("GET /promo", () => {
 	const agent = request(app);
 
 	beforeEach(async () => {
+		vi.restoreAllMocks();
+		vi.clearAllMocks();
 		mockVerifyAdminAuthentication("test@permanent.org");
-		jest.restoreAllMocks();
-		jest.clearAllMocks();
 		await loadFixtures();
 	});
 
 	afterEach(async () => {
-		jest.restoreAllMocks();
-		jest.clearAllMocks();
+		vi.restoreAllMocks();
+		vi.clearAllMocks();
 		await clearDatabase();
 	});
 
@@ -362,11 +363,11 @@ describe("GET /promo", () => {
 	});
 
 	test("should respond with 401 status code if lacking admin authentication", async () => {
-		jest
-			.mocked(verifyAdminAuthentication)
-			.mockImplementation(async (_, __, next: NextFunction) => {
+		vi.mocked(verifyAdminAuthentication).mockImplementation(
+			async (_, __, next: NextFunction) => {
 				next(new createError.Unauthorized("You aren't logged in"));
-			});
+			},
+		);
 		await agent.get("/api/v2/promo").expect(401);
 	});
 
@@ -415,14 +416,14 @@ describe("GET /promo", () => {
 
 	test("should response with 500 status code if the database call fails", async () => {
 		const testError = new Error("SQL error");
-		jest.spyOn(db, "sql").mockRejectedValueOnce(testError);
+		vi.spyOn(db, "sql").mockRejectedValueOnce(testError);
 
 		await agent.get("/api/v2/promo").expect(500);
 	});
 
 	test("should log the error if the database call fails", async () => {
 		const testError = new Error("SQL error");
-		jest.spyOn(db, "sql").mockRejectedValueOnce(testError);
+		vi.spyOn(db, "sql").mockRejectedValueOnce(testError);
 
 		await agent.get("/api/v2/promo").expect(500);
 		expect(logger.error).toHaveBeenCalled();

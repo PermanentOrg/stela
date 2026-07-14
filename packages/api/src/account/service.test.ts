@@ -1,8 +1,9 @@
 import { InternalServerError } from "http-errors";
+import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 import { db } from "../database";
 import { accountService } from "./service";
 
-jest.mock("../database");
+vi.mock("../database");
 
 const loadFixtures = async (): Promise<void> => {
 	await db.sql("account.fixtures.create_test_accounts");
@@ -40,9 +41,9 @@ describe("getAccountArchive", () => {
 	});
 
 	test("should throw an internal server error if the database call fails", async () => {
-		jest
-			.spyOn(db, "sql")
-			.mockRejectedValue(new Error("Out of Cheese - Redo from Start"));
+		vi.spyOn(db, "sql").mockRejectedValue(
+			new Error("Out of Cheese - Redo from Start"),
+		);
 		let error = null;
 		try {
 			await accountService.getAccountArchive("1", "test@permanent.org");
