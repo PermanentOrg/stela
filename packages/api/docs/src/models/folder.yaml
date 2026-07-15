@@ -43,7 +43,7 @@ folder:
     shares:
       type: array
       items:
-        $ref: "../models/share.yaml#/share"
+        $ref: "../models/share.yaml#/shareSummary"
     pendingShares:
       nullable: true
       type: array

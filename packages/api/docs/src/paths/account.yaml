@@ -149,3 +149,133 @@ storage-adjustment:
         $ref: "../errors.yaml#/404"
       "500":
         $ref: "../errors.yaml#/500"
+accounts/me:
+  get:
+    summary: Get the currently authenticated account.
+    operationId: get-accounts-me
+    security:
+      - bearerHttpAuthentication: []
+    tags:
+      - accounts
+      - unimplemented
+    responses:
+      "200":
+        description: >
+          The account authenticated by the bearer token.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                data:
+                  $ref: "../models/account.yaml#/account"
+      "401":
+        $ref: "../errors.yaml#/401"
+      "500":
+        $ref: "../errors.yaml#/500"
+accounts/me/marketing-tags:
+  post:
+    summary: Add marketing tags to the authenticated account
+    operationId: post-accounts-me-marketing-tags
+    security:
+      - bearerHttpAuthentication: []
+    tags:
+      - accounts
+      - unimplemented
+    requestBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [tags]
+            properties:
+              tags:
+                type: array
+                items:
+                  type: string
+    responses:
+      "200":
+        description: >
+          The marketing tags of the account authenticated by the bearer token.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                items:
+                  type: array
+                  items:
+                    type: string
+      "401":
+        $ref: "../errors.yaml#/401"
+      "400":
+        $ref: "../errors.yaml#/400"
+      "500":
+        $ref: "../errors.yaml#/500"
+  get:
+    summary: Get the marketing tags of the authenticated account
+    operationId: get-accounts-me-marketing-tags
+    security:
+      - bearerHttpAuthentication: []
+    tags:
+      - accounts
+      - unimplemented
+    responses:
+      "200":
+        description: >
+          The marketing tags of the account authenticated by the bearer token.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                items:
+                  type: array
+                  items:
+                    type: string
+      "401":
+        $ref: "../errors.yaml#/401"
+      "500":
+        $ref: "../errors.yaml#/500"
+accounts/me/promo-claim:
+  post:
+    summary: Claim a promo code for the authenticated account
+    operationId: post-accounts-me-promo-claim
+    security:
+      - bearerHttpAuthentication: []
+    tags:
+      - accounts
+      - promo
+      - unimplemented
+    requestBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [promoCode]
+            properties:
+              promoCode:
+                type: string
+    responses:
+      "200":
+        description: >
+          The amount of storage granted by the promo code in GB
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                data:
+                  type: object
+                  required: [storageGrantInGb]
+                  properties:
+                    storageGrantInGb:
+                      type: integer
+      "401":
+        $ref: "../errors.yaml#/401"
+      "403":
+        $ref: "../errors.yaml#/403"
+      "400":
+        $ref: "../errors.yaml#/400"
+      "500":
+        $ref: "../errors.yaml#/500"

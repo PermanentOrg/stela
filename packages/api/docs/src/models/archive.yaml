@@ -2,6 +2,7 @@ archive:
   description: Archive object
   type: object
   required:
+    - id
     - archiveId
     - rootFolderId
     - name
@@ -13,8 +14,11 @@ archive:
     - createdAt
     - updatedAt
   properties:
+    id:
+      type: string
     archiveId:
       type: string
+      deprecated: true
     rootFolderId:
       type: string
     description:
@@ -60,8 +64,13 @@ archive:
       $ref: "./archive_membership_role.yaml#/archiveMembershipRole"
     status:
       type: string
+      enum:
+        - ok
+        - orphaned
+        - deleted
+        - generate-avatar
     type:
-      type: string
+      $ref: "./archive_type.yaml#/archiveType"
     createdAt:
       type: string
       format: date-time
@@ -73,3 +82,26 @@ archive:
       enum:
         - chronological
         - reverse_chronological
+archiveSummary:
+  description: A minimal, summary version of an archive object
+  type: object
+  required:
+    - id
+    - name
+    - thumbnailUrls
+  properties:
+    id:
+      type: string
+    name:
+      type: string
+    thumbnailUrls:
+      type: object
+      properties:
+        width200:
+          type: string
+        width500:
+          type: string
+        width1000:
+          type: string
+        width2000:
+          type: string
