@@ -26,6 +26,8 @@ location:
     precision:
       type: string
       enum: [approximate, uncertain, unknown]
+    timezone:
+      type: string
     streetNumber:
       type: string
       deprecated: true
@@ -78,3 +80,5 @@ locationInput:
     precision:
       type: string
       enum: [approximate, uncertain, unknown]
+    timezone:
+      type: string

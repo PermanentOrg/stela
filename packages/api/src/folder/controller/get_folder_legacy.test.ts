@@ -221,6 +221,7 @@ describe("GET /folder (deprecated alias, no pagination)", () => {
 				expect(folders[0].location.county).toEqual("Ile-de-France");
 				expect(folders[0].location.countryCode).toEqual("FR");
 				expect(folders[0].location.displayName).toEqual("Jean Valjean's House");
+				expect(folders[0].location.timezone).toEqual("Europe/Paris");
 			}
 			expect(folders[0].parentFolder?.id).toEqual("10");
 			expect(folders[0].parentFolder?.folderLinkId).toEqual("10");

@@ -286,7 +286,9 @@ all_folders AS (
       'countryCode',
       locn.countrycode,
       'displayName',
-      locn.displayname
+      locn.displayname,
+      'timezone',
+      folder.timezone
     ) AS location,
     CASE
       WHEN folder_link.parentfolderid IS NOT NULL

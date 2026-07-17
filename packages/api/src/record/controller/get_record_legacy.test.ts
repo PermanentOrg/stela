@@ -321,6 +321,7 @@ describe("GET /record (deprecated alias, no pagination)", () => {
 					county: "Ile-de-France",
 					countryCode: "FR",
 					displayName: "Jean Valjean's House",
+					timezone: "Europe/Paris",
 				},
 				files: [
 					{

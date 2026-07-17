@@ -25,7 +25,8 @@ record (
   updateddt,
   alttext,
   locnid,
-  displaytime
+  displaytime,
+  timezone
 )
 VALUES
 (
@@ -54,5 +55,6 @@ VALUES
   '2023-06-21T00:00:00.000Z',
   'An image',
   1,
-  '1985-04-12T23:20:30Z'
+  '1985-04-12T23:20:30Z',
+  'Europe/Paris'
 );

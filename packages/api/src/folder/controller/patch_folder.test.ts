@@ -6,6 +6,7 @@ import { db } from "../../database";
 import { loadFixtures, clearDatabase } from "./utils_test";
 import { mockVerifyUserAuthentication } from "../../../test/middleware_mocks";
 import { mockSqlCall } from "../../../test/mock_sql";
+import type { Folder } from "../models";
 
 vi.mock("../../database");
 vi.mock("../../middleware");
@@ -165,6 +166,8 @@ describe("patch folder", () => {
 				displayTime: undefined,
 				setDisplayTimeToNull: false,
 				locationId: null,
+				timezone: undefined,
+				setTimezoneToNull: false,
 			},
 			{ reject: testError },
 		);
@@ -213,6 +216,8 @@ describe("patch folder", () => {
 				displayTime: undefined,
 				setDisplayTimeToNull: false,
 				locationId: null,
+				timezone: undefined,
+				setTimezoneToNull: false,
 			},
 			{ resolve: { rows: [] } },
 		);
@@ -269,7 +274,7 @@ describe("patch folder", () => {
 
 	describe("nested location updates", () => {
 		test("expect a nested location to update the existing location row", async () => {
-			await agent
+			const response = await agent
 				.patch("/api/v2/folders/2")
 				.send({
 					location: {
@@ -279,6 +284,7 @@ describe("patch folder", () => {
 						latitude: 45.764,
 						longitude: 4.8357,
 						precision: "approximate",
+						timezone: "Europe/Lyon",
 					},
 				})
 				.expect(200);
@@ -300,6 +306,10 @@ describe("patch folder", () => {
 				longitude: 4.8357,
 				locationprecision: "approximate",
 			});
+			const {
+				body: { data: folder },
+			} = response as { body: { data: Folder } };
+			expect(folder.location?.timezone).toEqual("Europe/Lyon");
 		});
 
 		test("expect a nested location partial update to preserve untouched fields", async () => {
@@ -318,7 +328,7 @@ describe("patch folder", () => {
 		});
 
 		test("expect a nested location to create a new location when folder has none", async () => {
-			await agent
+			const response = await agent
 				.patch("/api/v2/folders/1")
 				.send({
 					location: {
@@ -328,6 +338,7 @@ describe("patch folder", () => {
 						latitude: 43.2965,
 						longitude: 5.3698,
 						precision: "approximate",
+						timezone: "Europe/Marseille",
 					},
 				})
 				.expect(200);
@@ -349,6 +360,10 @@ describe("patch folder", () => {
 				city: "Marseille",
 				country: "France",
 			});
+			const {
+				body: { data: folder },
+			} = response as { body: { data: Folder } };
+			expect(folder.location?.timezone).toEqual("Europe/Marseille");
 		});
 
 		test("expect 400 error if location is an empty object", async () => {
@@ -445,6 +460,17 @@ describe("patch folder", () => {
 				"SELECT locality FROM locn WHERE locnid = 1",
 			);
 			expect(locationResult.rows[0]).toEqual({ locality: "Marseille" });
+		});
+
+		test("expect location.timezone to be set to null if explicitly null in the request", async () => {
+			await agent
+				.patch("/api/v2/folders/2")
+				.send({ location: { timezone: null } })
+				.expect(200);
+			const updatedFolder = await db.query(
+				"SELECT timezone FROM folder WHERE folderid = 2",
+			);
+			expect(updatedFolder.rows[0]).toEqual({ timezone: null });
 		});
 	});
 

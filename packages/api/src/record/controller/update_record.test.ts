@@ -260,6 +260,8 @@ describe("PATCH /records", () => {
 				setDescriptionToNull: false,
 				displayTime: undefined,
 				setDisplayTimeToNull: false,
+				timezone: undefined,
+				setTimezoneToNull: false,
 			})
 			.thenReject(testError);
 
@@ -320,6 +322,8 @@ describe("PATCH /records", () => {
 				setDescriptionToNull: false,
 				displayTime: undefined,
 				setDisplayTimeToNull: false,
+				timezone: undefined,
+				setTimezoneToNull: false,
 			})
 			.thenDo(vi.fn().mockResolvedValue({ rows: [] }));
 
@@ -416,7 +420,7 @@ describe("PATCH /records", () => {
 	});
 
 	test("expect a nested location to update the existing location row", async () => {
-		await agent
+		const response = await agent
 			.patch("/api/v2/records/10008")
 			.send({
 				location: {
@@ -426,6 +430,7 @@ describe("PATCH /records", () => {
 					latitude: 45.764,
 					longitude: 4.8357,
 					precision: "approximate",
+					timezone: "Europe/Lyon",
 				},
 			})
 			.expect(200);
@@ -447,6 +452,11 @@ describe("PATCH /records", () => {
 			longitude: 4.8357,
 			locationprecision: "approximate",
 		});
+
+		const {
+			body: { data: record },
+		} = response as { body: { data: ArchiveRecord } };
+		expect(record.location.timezone).toEqual("Europe/Lyon");
 	});
 
 	test("expect a nested location partial update to preserve untouched fields", async () => {
@@ -465,7 +475,7 @@ describe("PATCH /records", () => {
 	});
 
 	test("expect a nested location to create a new location when record has none", async () => {
-		await agent
+		const response = await agent
 			.patch("/api/v2/records/10001")
 			.send({
 				location: {
@@ -475,6 +485,7 @@ describe("PATCH /records", () => {
 					latitude: 43.2965,
 					longitude: 5.3698,
 					precision: "approximate",
+					timezone: "Europe/Marseille",
 				},
 			})
 			.expect(200);
@@ -496,6 +507,11 @@ describe("PATCH /records", () => {
 			city: "Marseille",
 			country: "France",
 		});
+
+		const {
+			body: { data: record },
+		} = response as { body: { data: ArchiveRecord } };
+		expect(record.location.timezone).toEqual("Europe/Marseille");
 	});
 
 	test("expect 400 error if location and locationId are both provided", async () => {
@@ -544,5 +560,16 @@ describe("PATCH /records", () => {
 			.expect(500);
 
 		expect(logger.error).toHaveBeenCalledWith(testError);
+	});
+
+	test("expect location.timezone to be set to null if explicitly null in the request", async () => {
+		await agent
+			.patch("/api/v2/records/10008")
+			.send({ location: { timezone: null } })
+			.expect(200);
+		const updatedRecord = await db.query(
+			"SELECT timezone FROM record WHERE recordid = 10008",
+		);
+		expect(updatedRecord.rows[0]).toEqual({ timezone: null });
 	});
 });
