@@ -113,6 +113,15 @@ export interface ArchiveFile {
 	updatedAt: Date;
 }
 
+export interface GetRecordsResponse {
+	items: ArchiveRecord[];
+	pagination: {
+		nextCursor: string | undefined;
+		nextPage: string | undefined;
+		totalPages: number;
+	};
+}
+
 export interface PatchRecordRequest {
 	emailFromAuthToken: string;
 	locationId?: bigint | null;

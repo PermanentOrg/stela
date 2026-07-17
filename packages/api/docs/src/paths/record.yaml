@@ -20,6 +20,19 @@ records:
           At least one of recordIds or archiveId must be provided.
         schema:
           type: string
+      - name: cursor
+        description: |
+          The id of the record right before the first record you want returned.
+          In most cases, this will be that of the last record on the previous page.
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: pageSize
+        in: query
+        required: true
+        schema:
+          type: integer
     security:
       - {}
       - bearerHttpAuthentication: []
@@ -39,6 +52,8 @@ records:
                   type: array
                   items:
                     $ref: "../models/record.yaml#/record"
+                pagination:
+                  $ref: "../models/pagination_metadata.yaml#/pagination"
       "400":
         $ref: "../errors.yaml#/400"
       "401":

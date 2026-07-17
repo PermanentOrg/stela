@@ -10,7 +10,7 @@ import {
 	verifyUserAuthentication,
 } from "../middleware";
 import { db } from "../database";
-import type { ShareLink } from "./models";
+import type { GetShareLinksResponse, ShareLink } from "./models";
 import {
 	mockVerifyUserAuthentication,
 	mockExtractUserEmailFromAuthToken,
@@ -705,6 +705,82 @@ describe("GET /share-links", () => {
 			new Error("out of cheese - redo from start"),
 		);
 		await agent.get("/api/v2/share-links?shareLinkIds[]=1000").expect(500);
+	});
+
+	test("should default to a pageSize of 10 if not provided", async () => {
+		const response = await agent
+			.get(
+				"/api/v2/share-links?shareLinkIds[]=1000&shareLinkIds[]=1001&shareLinkIds[]=1002",
+			)
+			.expect(200);
+		const { body } = response as { body: GetShareLinksResponse };
+		expect(body.items).toHaveLength(3);
+		expect(body.pagination.totalPages).toEqual(1);
+	});
+
+	test("should limit results to the provided pageSize", async () => {
+		const response = await agent
+			.get(
+				"/api/v2/share-links?shareLinkIds[]=1000&shareLinkIds[]=1001&shareLinkIds[]=1002&pageSize=1",
+			)
+			.expect(200);
+		const { body } = response as { body: GetShareLinksResponse };
+		expect(body.items).toHaveLength(1);
+		expect(body.items[0]?.id).toEqual("1000");
+		expect(body.pagination.totalPages).toEqual(3);
+		expect(body.pagination.nextCursor).toEqual("1000");
+	});
+
+	test("should page through all matching share links via cursor, in ascending id order", async () => {
+		const firstResponse = await agent
+			.get(
+				"/api/v2/share-links?shareLinkIds[]=1000&shareLinkIds[]=1001&shareLinkIds[]=1002&pageSize=2",
+			)
+			.expect(200);
+		const { body: firstPage } = firstResponse as {
+			body: GetShareLinksResponse;
+		};
+		expect(firstPage.items.map((shareLink) => shareLink.id)).toEqual([
+			"1000",
+			"1001",
+		]);
+		expect(firstPage.pagination.totalPages).toEqual(2);
+		expect(firstPage.pagination.nextCursor).toBeDefined();
+
+		const secondResponse = await agent
+			.get(
+				`/api/v2/share-links?shareLinkIds[]=1000&shareLinkIds[]=1001&shareLinkIds[]=1002&pageSize=2&cursor=${
+					firstPage.pagination.nextCursor ?? ""
+				}`,
+			)
+			.expect(200);
+		const { body: secondPage } = secondResponse as {
+			body: GetShareLinksResponse;
+		};
+		expect(secondPage.items.map((shareLink) => shareLink.id)).toEqual(["1002"]);
+		expect(secondPage.pagination.totalPages).toEqual(2);
+	});
+
+	test("should return pagination.nextPage linking to the next page with the same filters", async () => {
+		const response = await agent
+			.get(
+				"/api/v2/share-links?shareLinkIds[]=1000&shareLinkIds[]=1001&shareLinkIds[]=1002&pageSize=1",
+			)
+			.expect(200);
+		const { body } = response as { body: GetShareLinksResponse };
+		expect(body.pagination.nextPage).toEqual(
+			`https://${
+				process.env["SITE_URL"] ?? ""
+			}/api/v2/share-links?shareLinkIds%5B%5D=1000&shareLinkIds%5B%5D=1001&shareLinkIds%5B%5D=1002&pageSize=1&cursor=${
+				body.pagination.nextCursor ?? ""
+			}`,
+		);
+	});
+
+	test("should return 400 if pageSize is not a positive integer", async () => {
+		await agent
+			.get("/api/v2/share-links?shareLinkIds[]=1000&pageSize=0")
+			.expect(400);
 	});
 });
 

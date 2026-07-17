@@ -1,5 +1,8 @@
-import { validatePatchRecordRequest } from "./validators";
 import { describe, expect, test } from "vitest";
+import {
+	validatePatchRecordRequest,
+	validateGetRecordsPageQuery,
+} from "./validators";
 
 describe("validatePatchRecordRequest", () => {
 	test("should find no errors in a valid request", () => {
@@ -177,6 +180,77 @@ describe("validatePatchRecordRequest", () => {
 					countryCode: "FR",
 					displayName: "Jean Valjean's House",
 				},
+			});
+		} catch (err) {
+			error = err;
+		} finally {
+			expect(error).not.toBeNull();
+		}
+	});
+});
+
+describe("validateGetRecordsPageQuery", () => {
+	test("should find no errors in a valid request", () => {
+		let error = null;
+		try {
+			validateGetRecordsPageQuery({
+				archiveId: "1",
+				pageSize: 10,
+			});
+		} catch (err) {
+			error = err;
+		} finally {
+			expect(error).toBeNull();
+		}
+	});
+
+	test("should find no errors when a cursor is provided", () => {
+		let error = null;
+		try {
+			validateGetRecordsPageQuery({
+				recordIds: ["1", "2"],
+				pageSize: 10,
+				cursor: "5",
+			});
+		} catch (err) {
+			error = err;
+		} finally {
+			expect(error).toBeNull();
+		}
+	});
+
+	test("should raise an error if pageSize is missing", () => {
+		let error = null;
+		try {
+			validateGetRecordsPageQuery({
+				archiveId: "1",
+			});
+		} catch (err) {
+			error = err;
+		} finally {
+			expect(error).not.toBeNull();
+		}
+	});
+
+	test("should raise an error if pageSize is not an integer", () => {
+		let error = null;
+		try {
+			validateGetRecordsPageQuery({
+				archiveId: "1",
+				pageSize: 1.5,
+			});
+		} catch (err) {
+			error = err;
+		} finally {
+			expect(error).not.toBeNull();
+		}
+	});
+
+	test("should raise an error if neither recordIds nor archiveId is provided", () => {
+		let error = null;
+		try {
+			validateGetRecordsPageQuery({
+				pageSize: 10,
 			});
 		} catch (err) {
 			error = err;

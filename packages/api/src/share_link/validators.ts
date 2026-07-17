@@ -3,6 +3,7 @@ import type { CreateShareLinkRequest, UpdateShareLinkRequest } from "./models";
 import { fieldsFromUserAuthentication } from "../validators";
 
 const MINIMUM_MAX_USES = 1;
+const MINIMUM_PAGE_SIZE = 1;
 
 export const validateCreateShareLinkRequest: (
 	data: unknown,
@@ -116,16 +117,22 @@ export const validateGetShareLinksParameters: (
 ) => asserts data is {
 	shareTokens: string[] | undefined;
 	shareLinkIds: string[] | undefined;
+	cursor: string | undefined;
+	pageSize: number | undefined;
 } = (
 	data: unknown,
 ): asserts data is {
 	shareTokens: string[] | undefined;
 	shareLinkIds: string[] | undefined;
+	cursor: string | undefined;
+	pageSize: number | undefined;
 } => {
 	const validation = Joi.object()
 		.keys({
 			shareTokens: Joi.array().items(Joi.string()).optional(),
 			shareLinkIds: Joi.array().items(Joi.string()).optional(),
+			cursor: Joi.string().optional(),
+			pageSize: Joi.number().integer().min(MINIMUM_PAGE_SIZE).optional(),
 		})
 		.validate(data);
 	if (validation.error !== undefined) {

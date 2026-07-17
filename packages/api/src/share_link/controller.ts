@@ -65,12 +65,16 @@ shareLinkController.get(
 					"Accessing share links by ID requires authentication",
 				);
 			}
-			const shareLinks = await shareLinkService.getShareLinks(
+			const response = await shareLinkService.getShareLinks(
 				req.body.emailFromAuthToken,
 				req.query.shareTokens,
 				req.query.shareLinkIds,
+				{
+					pageSize: req.query.pageSize,
+					cursor: req.query.cursor,
+				},
 			);
-			res.status(HTTP_STATUS.SUCCESSFUL.OK).json({ items: shareLinks });
+			res.status(HTTP_STATUS.SUCCESSFUL.OK).json(response);
 		} catch (err) {
 			next(err);
 		}

@@ -3,6 +3,7 @@ import {
 	validateBodyFromAuthentication,
 	fieldsFromUserAuthentication,
 } from "../validators";
+import { paginationFields } from "../validators/shared";
 import { ArchiveMembershipRole, type MilestoneSortOrder } from "./models";
 
 export { validateBodyFromAuthentication };
@@ -57,6 +58,21 @@ export const validateSearchQuery: (data: unknown) => asserts data is {
 		})
 		.or("searchQuery", "callerMembershipRole")
 		.validate(data);
+	if (validation.error !== undefined) {
+		throw validation.error;
+	}
+};
+
+export const validateGetSharedFoldersQuery: (data: unknown) => asserts data is {
+	pageSize: number;
+	cursor?: string;
+} = (
+	data: unknown,
+): asserts data is {
+	pageSize: number;
+	cursor?: string;
+} => {
+	const validation = Joi.object().keys(paginationFields).validate(data);
 	if (validation.error !== undefined) {
 		throw validation.error;
 	}

@@ -47,4 +47,16 @@ VALUES
   CURRENT_TIMESTAMP,
   CURRENT_TIMESTAMP,
   'access.role.owner'
+),
+(
+  10,
+  200,
+  2,
+  11,
+  0,
+  'status.generic.ok',
+  'type.folder_link.folder',
+  CURRENT_TIMESTAMP,
+  CURRENT_TIMESTAMP,
+  'access.role.owner'
 );

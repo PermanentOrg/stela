@@ -11,6 +11,7 @@ import {
 	validateBodyFromAuthentication,
 	validateSearchQuery,
 	validatePatchArchiveBody,
+	validateGetSharedFoldersQuery,
 } from "../validators";
 import { archiveService } from "../service";
 import { HTTP_STATUS } from "@pdc/http-status-codes";
@@ -171,11 +172,16 @@ archiveController.get(
 		try {
 			validateArchiveIdFromParams(req.params);
 			validateBodyFromAuthentication(req.body);
-			const folders = await archiveService.getSharedFolders(
+			validateGetSharedFoldersQuery(req.query);
+			const response = await archiveService.getSharedFolders(
 				req.params.archiveId,
 				req.body.emailFromAuthToken,
+				{
+					pageSize: req.query.pageSize,
+					cursor: req.query.cursor,
+				},
 			);
-			res.json({ items: folders });
+			res.json(response);
 		} catch (err) {
 			next(err);
 		}

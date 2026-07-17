@@ -16,6 +16,15 @@ export interface GetFolderChildrenResponse {
 	};
 }
 
+export interface GetFoldersResponse {
+	items: Folder[];
+	pagination: {
+		nextCursor: string | undefined;
+		nextPage: string | undefined;
+		totalPages: number;
+	};
+}
+
 export interface FolderRow {
 	folderId: string;
 	id: string;

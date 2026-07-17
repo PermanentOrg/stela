@@ -87,6 +87,20 @@ share-link:
           type: array
           items:
             type: string
+      - name: cursor
+        description: |
+          The id of the share link right before the first share link you want returned.
+          In most cases, this will be that of the last share link on the previous page.
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: pageSize
+        description: Defaults to 10 if not provided.
+        in: query
+        required: false
+        schema:
+          type: integer
     summary: Retrieve a share link by ID or token
     security:
       - {}
@@ -107,6 +121,8 @@ share-link:
                   type: array
                   items:
                     $ref: "../models/share_link.yaml#/shareLink"
+                pagination:
+                  $ref: "../models/pagination_metadata.yaml#/pagination"
       "400":
         $ref: "../errors.yaml#/400"
       "401":

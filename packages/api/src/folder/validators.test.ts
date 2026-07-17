@@ -1,6 +1,7 @@
 import {
 	validatePatchFolderRequest,
 	validateGetFoldersQuery,
+	validateGetFoldersPageQuery,
 } from "./validators";
 import { describe, expect, test } from "vitest";
 
@@ -189,6 +190,77 @@ describe("validateGetFoldersQuery", () => {
 		try {
 			validateGetFoldersQuery({
 				folderIds: [1, 2, 3],
+			});
+		} catch (err) {
+			error = err;
+		} finally {
+			expect(error).not.toBeNull();
+		}
+	});
+});
+
+describe("validateGetFoldersPageQuery", () => {
+	test("should find no errors in a valid request", () => {
+		let error = null;
+		try {
+			validateGetFoldersPageQuery({
+				folderIds: ["1", "2", "3"],
+				pageSize: 10,
+			});
+		} catch (err) {
+			error = err;
+		} finally {
+			expect(error).toBeNull();
+		}
+	});
+
+	test("should find no errors when a cursor is provided", () => {
+		let error = null;
+		try {
+			validateGetFoldersPageQuery({
+				folderIds: ["1", "2"],
+				pageSize: 10,
+				cursor: "5",
+			});
+		} catch (err) {
+			error = err;
+		} finally {
+			expect(error).toBeNull();
+		}
+	});
+
+	test("should raise an error if pageSize is missing", () => {
+		let error = null;
+		try {
+			validateGetFoldersPageQuery({
+				folderIds: ["1"],
+			});
+		} catch (err) {
+			error = err;
+		} finally {
+			expect(error).not.toBeNull();
+		}
+	});
+
+	test("should raise an error if pageSize is not an integer", () => {
+		let error = null;
+		try {
+			validateGetFoldersPageQuery({
+				folderIds: ["1"],
+				pageSize: 1.5,
+			});
+		} catch (err) {
+			error = err;
+		} finally {
+			expect(error).not.toBeNull();
+		}
+	});
+
+	test("should raise an error if folderIds is missing", () => {
+		let error = null;
+		try {
+			validateGetFoldersPageQuery({
+				pageSize: 10,
 			});
 		} catch (err) {
 			error = err;

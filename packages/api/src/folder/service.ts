@@ -7,6 +7,7 @@ import type {
 	Folder,
 	PatchFolderRequest,
 	GetFolderChildrenResponse,
+	GetFoldersResponse,
 	FolderChildItem,
 } from "./models";
 import {
@@ -96,6 +97,16 @@ export const prettifyFolderView = (view: FolderView): PrettyFolderView => {
 	}
 };
 
+const mapFolderRow = (row: FolderRow): Folder => ({
+	...row,
+	size: row.size === null ? null : +row.size,
+	imageRatio: +(row.imageRatio ?? 0),
+	sort: prettifyFolderSortType(row.sort),
+	type: prettifyFolderType(row.type),
+	status: prettifyFolderStatus(row.status),
+	view: prettifyFolderView(row.view),
+});
+
 export const getFolders = async (
 	folderIds: string[],
 	email?: string,
@@ -106,24 +117,74 @@ export const getFolders = async (
 			folderIds,
 			email,
 			shareToken,
+			pageSize: null,
+			cursor: undefined,
 		})
 		.catch((err: unknown) => {
 			logger.error(err);
 			throw new createError.InternalServerError("Failed to retrieve folders");
 		});
 
-	const folders = result.rows.map<Folder>(
-		(row: FolderRow): Folder => ({
-			...row,
-			size: row.size === null ? null : +row.size,
-			imageRatio: +(row.imageRatio ?? 0),
-			sort: prettifyFolderSortType(row.sort),
-			type: prettifyFolderType(row.type),
-			status: prettifyFolderStatus(row.status),
-			view: prettifyFolderView(row.view),
-		}),
-	);
-	return folders;
+	return result.rows.map<Folder>(mapFolderRow);
+};
+
+const buildFoldersNextPageUrl = (
+	requestQuery: {
+		folderIds: string[];
+		pageSize: number;
+	},
+	nextCursor: string,
+): string => {
+	const params = new URLSearchParams();
+	requestQuery.folderIds.forEach((folderId) => {
+		params.append("folderIds[]", folderId);
+	});
+	params.set("pageSize", String(requestQuery.pageSize));
+	params.set("cursor", nextCursor);
+	return `https://${process.env["SITE_URL"] ?? ""}/api/v2/folders?${params.toString()}`;
+};
+
+export const getFoldersPage = async (requestQuery: {
+	folderIds: string[];
+	email: string | undefined;
+	shareToken: string | undefined;
+	pageSize: number;
+	cursor: string | undefined;
+}): Promise<GetFoldersResponse> => {
+	const result = await db
+		.sql<FolderRow & { rank: string; totalPages: number }>(
+			"folder.queries.get_folders",
+			{
+				folderIds: requestQuery.folderIds,
+				email: requestQuery.email,
+				shareToken: requestQuery.shareToken,
+				pageSize: requestQuery.pageSize,
+				cursor: requestQuery.cursor,
+			},
+		)
+		.catch((err: unknown) => {
+			logger.error(err);
+			throw new createError.InternalServerError("Failed to retrieve folders");
+		});
+
+	const items = result.rows.map((row) => {
+		const { rank: _rank, totalPages: _totalPages, ...folderRow } = row;
+		return mapFolderRow(folderRow);
+	});
+
+	const nextCursor = items[items.length - 1]?.folderId;
+
+	return {
+		items,
+		pagination: {
+			nextCursor,
+			nextPage:
+				nextCursor === undefined
+					? undefined
+					: buildFoldersNextPageUrl(requestQuery, nextCursor),
+			totalPages: result.rows[0]?.totalPages ?? 0,
+		},
+	};
 };
 
 export const getFolderChildren = async (
@@ -304,6 +365,7 @@ export const getFolderShareLinks = async (
 		email,
 		[],
 		shareLinkIds,
+		{ pageSize: null, cursor: undefined },
 	);
-	return shareLinks;
+	return shareLinks.items;
 };

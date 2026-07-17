@@ -7,6 +7,19 @@ folders:
         type: array
         items:
           type: string
+    - name: cursor
+      description: |
+        The id of the folder right before the first folder you want returned.
+        In most cases, this will be that of the last folder on the previous page.
+      in: query
+      required: false
+      schema:
+        type: string
+    - name: pageSize
+      in: query
+      required: true
+      schema:
+        type: integer
   get:
     summary: Get folders by their IDs
     security:
@@ -28,6 +41,8 @@ folders:
                   type: array
                   items:
                     $ref: "../models/folder.yaml#/folder"
+                pagination:
+                  $ref: "../models/pagination_metadata.yaml#/pagination"
       "400":
         $ref: "../errors.yaml#/400"
       "401":
