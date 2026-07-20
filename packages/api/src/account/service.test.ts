@@ -1,7 +1,7 @@
 import { InternalServerError } from "http-errors";
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
-import { db } from "../database";
-import { accountService } from "./service";
+import { db } from "../database.js";
+import { accountService } from "./service.js";
 
 vi.mock("../database");
 

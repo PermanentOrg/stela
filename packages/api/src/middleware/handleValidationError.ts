@@ -1,5 +1,5 @@
 import type { Request, Response, NextFunction } from "express";
-import { isValidationError } from "../validators/validator_util";
+import { isValidationError } from "../validators/validator_util.js";
 import { HTTP_STATUS } from "@pdc/http-status-codes";
 
 export const handleValidationError = (

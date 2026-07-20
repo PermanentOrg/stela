@@ -1,7 +1,7 @@
 import createError from "http-errors";
 import { logger } from "@stela/logger";
-import { AccessRole } from "./models";
-import { db } from "../database";
+import { AccessRole } from "./models.js";
+import { db } from "../database.js";
 
 const VIEWER_ACCESS_ROLE_RANK = 1;
 const CONTRIBUTOR_ACCESS_ROLE_RANK = 2;

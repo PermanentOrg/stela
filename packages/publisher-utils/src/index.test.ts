@@ -4,7 +4,7 @@ import {
 	SNSClient,
 	type PublishBatchInput,
 } from "@aws-sdk/client-sns";
-import { publisherClient } from "./index";
+import { publisherClient } from "./index.js";
 
 const mockSend = vi.fn();
 vi.mock("@aws-sdk/client-sns");

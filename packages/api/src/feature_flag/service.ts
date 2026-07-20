@@ -1,9 +1,9 @@
 import createError from "http-errors";
 import { logger } from "@stela/logger";
 
-import { db } from "../database";
+import { db } from "../database.js";
 
-import type { FeatureFlagRow, FeatureFlagNameRow } from "./models";
+import type { FeatureFlagRow, FeatureFlagNameRow } from "./models.js";
 
 const getAllFeatureFlags = async (): Promise<FeatureFlagRow[]> => {
 	const result = await db

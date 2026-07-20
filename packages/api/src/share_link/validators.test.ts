@@ -3,7 +3,7 @@ import {
 	validateUpdateShareLinkRequest,
 	validateGetShareLinksParameters,
 	validateShareLinkParameters,
-} from "./validators";
+} from "./validators.js";
 import { describe, expect, test } from "vitest";
 
 describe("validateCreateShareLinkRequest", () => {

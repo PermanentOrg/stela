@@ -1,8 +1,8 @@
 import { Router } from "express";
 import type { Request, Response, NextFunction } from "express";
-import { verifyUserAuthentication } from "../middleware";
-import { validateGiftStorageRequest } from "./validators";
-import { issueGift } from "./service";
+import { verifyUserAuthentication } from "../middleware/index.js";
+import { validateGiftStorageRequest } from "./validators.js";
+import { issueGift } from "./service.js";
 import { HTTP_STATUS } from "@pdc/http-status-codes";
 
 export const storageController = Router();

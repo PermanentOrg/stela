@@ -5,7 +5,7 @@ import {
 	validateIsAdminFromAuthentication,
 	validateOptionalAuthenticationValues,
 	validatePaginationParameters,
-} from "./shared";
+} from "./shared.js";
 import { describe, expect, test } from "vitest";
 
 describe("validateBodyFromAuthentication", () => {

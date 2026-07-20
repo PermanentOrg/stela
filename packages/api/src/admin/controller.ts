@@ -1,13 +1,13 @@
 import { Router } from "express";
 import type { Request, Response, NextFunction } from "express";
 import { HTTP_STATUS } from "@pdc/http-status-codes";
-import { adminService } from "./service";
-import { verifyAdminAuthentication } from "../middleware";
+import { adminService } from "./service.js";
+import { verifyAdminAuthentication } from "../middleware/index.js";
 import {
 	validateRecalculateFolderThumbnailsRequest,
 	validateRecalculateRecordThumbnailRequest,
 	validateAccountSetNullSubjectsRequest,
-} from "./validators";
+} from "./validators.js";
 
 export const adminController = Router();
 adminController.post(

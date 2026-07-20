@@ -1,1 +1,1 @@
-export { storageController } from "./controller";
+export { storageController } from "./controller.js";

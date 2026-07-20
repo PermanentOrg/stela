@@ -1,4 +1,4 @@
-import { db } from "../../database";
+import { db } from "../../database.js";
 
 export const loadFixtures = async (): Promise<void> => {
 	await db.sql("folder.fixtures.create_test_accounts");

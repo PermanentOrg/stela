@@ -1,7 +1,7 @@
 import { logger } from "@stela/logger";
 import createError from "http-errors";
-import type { FeatureFlagRow, UpdateFeatureFlagRequest } from "../models";
-import { db } from "../../database";
+import type { FeatureFlagRow, UpdateFeatureFlagRequest } from "../models.js";
+import { db } from "../../database.js";
 
 export const updateFeatureFlag = async (
 	featureFlagId: string,

@@ -2,8 +2,8 @@ import Joi from "joi";
 import type {
 	CreateFeatureFlagRequest,
 	UpdateFeatureFlagRequest,
-} from "./models";
-import { fieldsFromAdminAuthentication } from "../validators";
+} from "./models.js";
+import { fieldsFromAdminAuthentication } from "../validators/index.js";
 
 export const validateCreateFeatureFlagRequest: (
 	data: unknown,

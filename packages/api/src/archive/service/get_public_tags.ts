@@ -1,7 +1,7 @@
 import createError from "http-errors";
 import { logger } from "@stela/logger";
-import { db } from "../../database";
-import type { Tag } from "../models";
+import { db } from "../../database.js";
+import type { Tag } from "../models.js";
 
 export const getPublicTags = async (archiveId: string): Promise<Tag[]> => {
 	const tagsResult = await db

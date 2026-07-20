@@ -1,7 +1,7 @@
 import type { Request, Response, NextFunction } from "express";
 import createError from "http-errors";
-import { fusionAuthClient } from "../fusionauth";
-import { isObjectWithStatusCode } from "./handleError";
+import { fusionAuthClient } from "../fusionauth.js";
+import { isObjectWithStatusCode } from "./handleError.js";
 import { HTTP_STATUS } from "@pdc/http-status-codes";
 
 const emailKey = "email";

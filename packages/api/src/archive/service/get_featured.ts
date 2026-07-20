@@ -1,7 +1,7 @@
 import createError from "http-errors";
 import { logger } from "@stela/logger";
-import { db } from "../../database";
-import type { FeaturedArchive } from "../models";
+import { db } from "../../database.js";
+import type { FeaturedArchive } from "../models.js";
 
 export const getFeatured = async (): Promise<FeaturedArchive[]> => {
 	const archives = await db

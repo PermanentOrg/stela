@@ -1,20 +1,20 @@
 import request from "supertest";
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
-import type { FolderChildItem, Folder } from "../models";
-import type { ArchiveFile } from "../../record/models";
-import type { Tag } from "../../tag/models";
-import type { Share } from "../../share/models";
-import { app } from "../../app";
+import type { FolderChildItem, Folder } from "../models.js";
+import type { ArchiveFile } from "../../record/models.js";
+import type { Tag } from "../../tag/models.js";
+import type { Share } from "../../share/models.js";
+import { app } from "../../app.js";
 import {
 	extractUserEmailFromAuthToken,
 	extractShareTokenFromHeaders,
-} from "../../middleware";
+} from "../../middleware/index.js";
 import {
 	mockExtractUserEmailFromAuthToken,
 	mockExtractShareTokenFromHeaders,
-} from "../../../test/middleware_mocks";
-import { loadFixtures, clearDatabase } from "./utils_test";
-import { db } from "../../database";
+} from "../../../test/middleware_mocks.js";
+import { loadFixtures, clearDatabase } from "./utils_test.js";
+import { db } from "../../database.js";
 
 vi.mock("../../database");
 vi.mock("../../middleware");

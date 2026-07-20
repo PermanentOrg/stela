@@ -1,5 +1,5 @@
 import { describe, expect, test, vi } from "vitest";
-import { legacyClient } from "./legacy_client";
+import { legacyClient } from "./legacy_client.js";
 
 global.fetch = vi.fn();
 

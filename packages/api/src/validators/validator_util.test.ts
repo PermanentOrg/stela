@@ -1,4 +1,4 @@
-import { isValidationError } from "./validator_util";
+import { isValidationError } from "./validator_util.js";
 import { describe, expect, test } from "vitest";
 
 describe("isValidationError", () => {

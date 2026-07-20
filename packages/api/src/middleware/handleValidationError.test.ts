@@ -1,7 +1,7 @@
 import type { NextFunction } from "express";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import { createRequest, createResponse } from "node-mocks-http";
-import { handleValidationError } from "./handleValidationError";
+import { handleValidationError } from "./handleValidationError.js";
 
 describe("handleValidationError", () => {
 	const request = createRequest();

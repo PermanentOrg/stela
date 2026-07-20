@@ -2,11 +2,11 @@ import { Md5 } from "ts-md5";
 import createError from "http-errors";
 import { logger } from "@stela/logger";
 
-import { db } from "../database";
-import { MailchimpMarketing } from "../mailchimp";
-import { ACCESS_ROLE, EVENT_ACTION, EVENT_ENTITY, GB } from "../constants";
-import { createEvent } from "../event/service";
-import type { CreateEventRequest } from "../event/models";
+import { db } from "../database.js";
+import { MailchimpMarketing } from "../mailchimp.js";
+import { ACCESS_ROLE, EVENT_ACTION, EVENT_ENTITY, GB } from "../constants.js";
+import { createEvent } from "../event/service.js";
+import type { CreateEventRequest } from "../event/models.js";
 
 import {
 	type UpdateTagsRequest,
@@ -23,7 +23,7 @@ import {
 	PrettyAccountType,
 	AccountStatus,
 	PrettyAccountStatus,
-} from "./models";
+} from "./models.js";
 
 const prettifyAccountType = (accountType: AccountType): PrettyAccountType => {
 	switch (accountType) {

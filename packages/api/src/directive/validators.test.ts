@@ -4,7 +4,7 @@ import {
 	validateGetDirectivesByArchiveIdParams,
 	validateUpdateDirectiveParams,
 	validateUpdateDirectiveRequest,
-} from "./validators";
+} from "./validators.js";
 import { describe, expect, test } from "vitest";
 
 describe("validateCreateDirectiveRequest", () => {

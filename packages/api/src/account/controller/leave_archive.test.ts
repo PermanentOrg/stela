@@ -2,14 +2,14 @@ import request from "supertest";
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 import { when } from "vitest-when";
 
-import { db } from "../../database";
-import { EVENT_ACTION, EVENT_ACTOR, EVENT_ENTITY } from "../../constants";
-import { app } from "../../app";
-import { createEvent } from "../../event/service";
+import { db } from "../../database.js";
+import { EVENT_ACTION, EVENT_ACTOR, EVENT_ENTITY } from "../../constants.js";
+import { app } from "../../app.js";
+import { createEvent } from "../../event/service.js";
 import {
 	mockVerifyUserAuthentication,
 	mockExtractIp,
-} from "../../../test/middleware_mocks";
+} from "../../../test/middleware_mocks.js";
 
 vi.mock("../../database");
 vi.mock("../../middleware");

@@ -3,7 +3,7 @@ import {
 	validateLeaveArchiveParams,
 	validateLeaveArchiveRequest,
 	validateUpdateTagsRequest,
-} from "./validators";
+} from "./validators.js";
 import { describe, expect, test } from "vitest";
 
 describe("validateUpdateTagsRequest", () => {

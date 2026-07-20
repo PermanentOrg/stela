@@ -2,7 +2,7 @@ import { describe, expect, test, vi } from "vitest";
 import {
 	getOriginalFileIdFromInformationPackagePath,
 	triggerArchivematicaProcessing,
-} from "./index";
+} from "./index.js";
 
 global.fetch = vi.fn();
 

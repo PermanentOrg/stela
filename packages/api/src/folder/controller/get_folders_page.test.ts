@@ -1,17 +1,17 @@
 import request from "supertest";
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
-import { app } from "../../app";
-import { db } from "../../database";
+import { app } from "../../app.js";
+import { db } from "../../database.js";
 import {
 	extractShareTokenFromHeaders,
 	extractUserEmailFromAuthToken,
-} from "../../middleware";
-import type { GetFoldersResponse } from "../models";
+} from "../../middleware/index.js";
+import type { GetFoldersResponse } from "../models.js";
 import {
 	mockExtractUserEmailFromAuthToken,
 	mockExtractShareTokenFromHeaders,
-} from "../../../test/middleware_mocks";
-import { loadFixtures, clearDatabase } from "./utils_test";
+} from "../../../test/middleware_mocks.js";
+import { loadFixtures, clearDatabase } from "./utils_test.js";
 
 vi.mock("../../database");
 vi.mock("../../middleware");

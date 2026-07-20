@@ -1,7 +1,7 @@
 import request from "supertest";
 import { describe, expect, test, vi } from "vitest";
-import { app } from "../app";
-import { db } from "../database";
+import { app } from "../app.js";
+import { db } from "../database.js";
 
 vi.mock("../database");
 

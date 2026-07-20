@@ -2,12 +2,12 @@ import request from "supertest";
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 import Stripe from "stripe";
 import { logger } from "@stela/logger";
-import { app } from "../app";
-import { db } from "../database";
-import { stripeClient } from "../stripe";
-import { legacyClient } from "../legacy_client";
-import { verifyUserAuthentication } from "../middleware";
-import { mockVerifyUserAuthentication } from "../../test/middleware_mocks";
+import { app } from "../app.js";
+import { db } from "../database.js";
+import { stripeClient } from "../stripe.js";
+import { legacyClient } from "../legacy_client.js";
+import { verifyUserAuthentication } from "../middleware/index.js";
+import { mockVerifyUserAuthentication } from "../../test/middleware_mocks.js";
 
 vi.mock("../database");
 vi.mock("../stripe");

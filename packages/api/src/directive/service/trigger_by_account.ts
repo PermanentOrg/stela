@@ -1,6 +1,6 @@
-import type { DirectiveExecutionResult } from "../model";
-import { db } from "../../database";
-import { legacyClient } from "../../legacy_client";
+import type { DirectiveExecutionResult } from "../model.js";
+import { db } from "../../database.js";
+import { legacyClient } from "../../legacy_client.js";
 import { HTTP_STATUS } from "@pdc/http-status-codes";
 
 const directiveExecutionOutcomeSuccess = "success";

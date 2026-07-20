@@ -1,5 +1,5 @@
 import nock from "nock";
-import { fusionAuthClient } from "./fusionauth";
+import { fusionAuthClient } from "./fusionauth.js";
 import { afterEach, describe, expect, test } from "vitest";
 
 const mockFusionAuthHost = process.env["FUSIONAUTH_HOST"] ?? "";

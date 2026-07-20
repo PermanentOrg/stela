@@ -1,7 +1,7 @@
-import type { PendingShare, Share } from "../share/models";
-import type { Tag } from "../tag/models";
-import type { ArchiveRecord } from "../record/models";
-import type { Location, LocationInput } from "../location/models";
+import type { PendingShare, Share } from "../share/models.js";
+import type { Tag } from "../tag/models.js";
+import type { ArchiveRecord } from "../record/models.js";
+import type { Location, LocationInput } from "../location/models.js";
 
 export type FolderChildItem =
 	| (ArchiveRecord & { itemType: "record" | "folder" })

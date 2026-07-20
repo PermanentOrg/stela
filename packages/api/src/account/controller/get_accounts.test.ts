@@ -1,11 +1,11 @@
 import request from "supertest";
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 import { logger } from "@stela/logger";
-import { app } from "../../app";
-import { db } from "../../database";
-import { verifyAdminAuthentication } from "../../middleware";
-import { mockVerifyAdminAuthentication } from "../../../test/middleware_mocks";
-import type { Account } from "../models";
+import { app } from "../../app.js";
+import { db } from "../../database.js";
+import { verifyAdminAuthentication } from "../../middleware/index.js";
+import { mockVerifyAdminAuthentication } from "../../../test/middleware_mocks.js";
+import type { Account } from "../models.js";
 
 vi.mock("../../database");
 vi.mock("../../middleware");

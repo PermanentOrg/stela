@@ -3,7 +3,7 @@ import {
 	prettifyFolderType,
 	prettifyFolderStatus,
 	prettifyFolderView,
-} from "./service";
+} from "./service.js";
 import {
 	FolderSortOrder,
 	PrettyFolderSortOrder,
@@ -13,7 +13,7 @@ import {
 	PrettyFolderStatus,
 	FolderView,
 	PrettyFolderView,
-} from "./models";
+} from "./models.js";
 import { describe, expect, test } from "vitest";
 
 describe("prettifyFolderType", () => {

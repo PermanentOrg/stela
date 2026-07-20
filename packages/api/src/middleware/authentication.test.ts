@@ -8,12 +8,12 @@ import {
 	verifyUserOrAdminOrDelegatedCallAuthentication,
 	extractUserIsAdminFromAuthToken,
 	extractShareTokenFromHeaders,
-} from "./authentication";
-import { fusionAuthClient } from "../fusionauth";
+} from "./authentication.js";
+import { fusionAuthClient } from "../fusionauth.js";
 import {
 	validateBodyFromAuthentication,
 	fieldsFromUserOrAdminAuthentication,
-} from "../validators";
+} from "../validators/index.js";
 
 vi.mock("../fusionauth");
 

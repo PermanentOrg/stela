@@ -1,9 +1,12 @@
 import createError from "http-errors";
 import { logger } from "@stela/logger";
-import { db } from "../database";
-import type { GiftStorageRequest, GiftStorageResponse } from "./models";
-import { GB } from "../constants";
-import { sendInvitationNotification, sendGiftNotification } from "../email";
+import { db } from "../database.js";
+import type { GiftStorageRequest, GiftStorageResponse } from "./models.js";
+import { GB } from "../constants.js";
+import {
+	sendInvitationNotification,
+	sendGiftNotification,
+} from "../email/index.js";
 
 const INVITE_TOKEN_LENGTH = 10;
 

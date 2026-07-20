@@ -4,7 +4,7 @@ import * as Sentry from "@sentry/aws-serverless";
 import { validateSqsMessage } from "@stela/s3-utils";
 import { logger } from "@stela/logger";
 import { validateRecordSubmitEvent } from "@stela/event_utils";
-import { db } from "./database";
+import { db } from "./database.js";
 
 enum Operation {
 	Upload = "type.billing.file_upload",

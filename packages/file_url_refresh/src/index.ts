@@ -1,8 +1,8 @@
-import "./instrument";
+import "./instrument.js";
 import * as Sentry from "@sentry/node";
 import { logger } from "@stela/logger";
-import "./env";
-import { refreshFileUrls } from "./service";
+import "./env.js";
+import { refreshFileUrls } from "./service.js";
 
 const EXIT_CODE_SUCCESS = 0;
 const EXIT_CODE_ERROR = 1;

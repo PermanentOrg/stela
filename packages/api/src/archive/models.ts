@@ -1,5 +1,5 @@
-import { ArchiveMembershipRole } from "../access/models";
-import type { Folder } from "../folder/models";
+import { ArchiveMembershipRole } from "../access/models.js";
+import type { Folder } from "../folder/models.js";
 
 export { ArchiveMembershipRole };
 

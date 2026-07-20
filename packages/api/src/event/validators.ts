@@ -1,6 +1,6 @@
 import Joi from "joi";
-import type { CreateEventRequest } from "./models";
-import { fieldsFromUserOrAdminAuthentication } from "../validators";
+import type { CreateEventRequest } from "./models.js";
+import { fieldsFromUserOrAdminAuthentication } from "../validators/index.js";
 
 export const validateCreateEventRequest: (
 	data: unknown,

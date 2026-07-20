@@ -1,8 +1,8 @@
 import { Router } from "express";
 import type { Request, Response, NextFunction } from "express";
-import { verifyAdminAuthentication } from "../middleware/authentication";
-import { validateCreatePromoRequest } from "./validators";
-import { createPromo, getPromos } from "./service";
+import { verifyAdminAuthentication } from "../middleware/authentication.js";
+import { validateCreatePromoRequest } from "./validators.js";
+import { createPromo, getPromos } from "./service.js";
 import { HTTP_STATUS } from "@pdc/http-status-codes";
 
 export const promoController = Router();

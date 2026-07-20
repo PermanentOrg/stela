@@ -1,8 +1,8 @@
 import createError from "http-errors";
 import { logger } from "@stela/logger";
 import type { TinyPg } from "tinypg";
-import { db } from "../database";
-import type { LocationInput } from "./models";
+import { db } from "../database.js";
+import type { LocationInput } from "./models.js";
 
 const MODERN_LOCATION_FIELDS = [
 	"name",

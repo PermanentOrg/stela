@@ -1,25 +1,25 @@
 import createError from "http-errors";
 import { logger } from "@stela/logger";
 import type { TinyPg } from "tinypg";
-import { db } from "../database";
+import { db } from "../database.js";
 import type {
 	ArchiveRecord,
 	ArchiveRecordRow,
 	CreateRecordCopyRequest,
 	GetRecordsResponse,
 	PatchRecordRequest,
-} from "./models";
+} from "./models.js";
 import {
 	getRecordAccessRole,
 	accessRoleLessThan,
 	getArchiveAccessRole,
-} from "../access/permission";
-import { AccessRole } from "../access/models";
-import { shareLinkService } from "../share_link/service";
-import type { ShareLink } from "../share_link/models";
-import { getFolders } from "../folder/service";
-import { type Folder, PrettyFolderType } from "../folder/models";
-import { insertLocation, updateLocation } from "../location/service";
+} from "../access/permission.js";
+import { AccessRole } from "../access/models.js";
+import { shareLinkService } from "../share_link/service.js";
+import type { ShareLink } from "../share_link/models.js";
+import { getFolders } from "../folder/service.js";
+import { type Folder, PrettyFolderType } from "../folder/models.js";
+import { insertLocation, updateLocation } from "../location/service.js";
 
 const mapRecordRow = (row: ArchiveRecordRow): ArchiveRecord => ({
 	...row,

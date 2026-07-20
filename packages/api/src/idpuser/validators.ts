@@ -4,8 +4,8 @@ import type {
 	SendDisableCodeRequest,
 	CreateTwoFactorMethodRequest,
 	DisableTwoFactorRequest,
-} from "./models";
-import { fieldsFromUserAuthentication } from "../validators";
+} from "./models.js";
+import { fieldsFromUserAuthentication } from "../validators/index.js";
 
 export const validateSendEnableCodeRequest: (
 	data: unknown,

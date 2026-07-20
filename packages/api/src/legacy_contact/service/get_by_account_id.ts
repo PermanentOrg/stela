@@ -1,7 +1,7 @@
 import createError from "http-errors";
 import { logger } from "@stela/logger";
-import type { LegacyContact } from "../model";
-import { db } from "../../database";
+import type { LegacyContact } from "../model.js";
+import { db } from "../../database.js";
 
 export const getLegacyContactsByAccountId = async (
 	accountEmail: string,

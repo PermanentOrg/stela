@@ -1,7 +1,7 @@
 import createError from "http-errors";
 import { logger } from "@stela/logger";
-import { db } from "../../database";
-import type { AccountStorage } from "../models";
+import { db } from "../../database.js";
+import type { AccountStorage } from "../models.js";
 
 export const getPayerAccountStorage = async (
 	archiveId: string,

@@ -1,1 +1,1 @@
-export { promoController } from "./controller";
+export { promoController } from "./controller.js";

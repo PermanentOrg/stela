@@ -1,20 +1,20 @@
 import { Router } from "express";
 import type { Request, Response, NextFunction } from "express";
 
-import { featureService } from "./service";
-import { createFeatureService } from "./service/create";
-import { updateFeatureService } from "./service/update";
-import { deleteFeatureService } from "./service/delete";
+import { featureService } from "./service.js";
+import { createFeatureService } from "./service/create.js";
+import { updateFeatureService } from "./service/update.js";
+import { deleteFeatureService } from "./service/delete.js";
 import {
 	extractUserIsAdminFromAuthToken,
 	verifyAdminAuthentication,
-} from "../middleware";
+} from "../middleware/index.js";
 import {
 	validateCreateFeatureFlagRequest,
 	validateUpdateFeatureFlagRequest,
 	validateFeatureFlagParams,
-} from "./validators";
-import { validateIsAdminFromAuthentication } from "../validators/shared";
+} from "./validators.js";
+import { validateIsAdminFromAuthentication } from "../validators/shared.js";
 import { HTTP_STATUS } from "@pdc/http-status-codes";
 
 export const featureController = Router();

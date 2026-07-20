@@ -1,8 +1,8 @@
 import { getSignedUrl } from "aws-cloudfront-sign";
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 import { logger } from "@stela/logger";
-import { refreshThumbnails } from "./service";
-import { db } from "./database";
+import { refreshThumbnails } from "./service.js";
+import { db } from "./database.js";
 
 vi.mock("aws-cloudfront-sign");
 vi.mock("@stela/logger");

@@ -1,9 +1,9 @@
 import { logger } from "@stela/logger";
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 import { publisherClient } from "@stela/publisher-utils";
-import { mixpanelClient } from "./mixpanel";
-import { sendEvents } from "./service";
-import { db } from "./database";
+import { mixpanelClient } from "./mixpanel.js";
+import { sendEvents } from "./service.js";
+import { db } from "./database.js";
 
 vi.mock("@stela/logger");
 vi.mock("./database");

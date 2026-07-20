@@ -4,15 +4,15 @@ import type { NextFunction } from "express";
 import { when } from "vitest-when";
 import createError from "http-errors";
 import { logger } from "@stela/logger";
-import { app } from "../../app";
-import { db } from "../../database";
-import { verifyUserAuthentication } from "../../middleware";
-import type { ArchiveRecord } from "../models";
+import { app } from "../../app.js";
+import { db } from "../../database.js";
+import { verifyUserAuthentication } from "../../middleware/index.js";
+import type { ArchiveRecord } from "../models.js";
 import {
 	mockVerifyUserAuthentication,
 	mockExtractIp,
-} from "../../../test/middleware_mocks";
-import { mockSqlCall } from "../../../test/mock_sql";
+} from "../../../test/middleware_mocks.js";
+import { mockSqlCall } from "../../../test/mock_sql.js";
 
 vi.mock("../../database");
 vi.mock("../../middleware");

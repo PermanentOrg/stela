@@ -3,7 +3,7 @@ import { logger } from "@stela/logger";
 import { getFileExtensionByFileType } from "@stela/permanent_models";
 import { constructSignedCdnUrl } from "@stela/s3-utils";
 import type { FileType } from "@stela/permanent_models";
-import { db } from "./database";
+import { db } from "./database.js";
 
 interface FileData {
 	id: string;

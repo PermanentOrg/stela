@@ -9,25 +9,25 @@ import {
 	extractUserEmailFromAuthToken,
 	verifyUserAuthentication,
 	extractIp,
-} from "../../middleware";
+} from "../../middleware/index.js";
 import {
 	getRecords,
 	getRecordsPage,
 	patchRecord,
 	getRecordShareLinks,
 	createRecordCopy,
-} from "../service";
+} from "../service.js";
 import {
 	validateGetRecordQuery,
 	validateGetRecordsPageQuery,
 	validatePatchRecordRequest,
 	validateSingleRecordParams,
 	validateCreateRecordCopyRequest,
-} from "../validators";
+} from "../validators.js";
 import {
 	validateBodyFromAuthentication,
 	validateOptionalAuthenticationValues,
-} from "../../validators/shared";
+} from "../../validators/shared.js";
 import { HTTP_STATUS } from "@pdc/http-status-codes";
 
 export const recordController = Router();

@@ -1,1 +1,1 @@
-export { legacyContactController } from "./controller";
+export { legacyContactController } from "./controller.js";

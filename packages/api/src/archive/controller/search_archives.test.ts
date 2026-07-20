@@ -1,13 +1,13 @@
 import request from "supertest";
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 import { logger } from "@stela/logger";
-import { app } from "../../app";
-import { db } from "../../database";
-import { ArchiveMembershipRole, type Archive } from "../models";
+import { app } from "../../app.js";
+import { db } from "../../database.js";
+import { ArchiveMembershipRole, type Archive } from "../models.js";
 import {
 	mockExtractUserIsAdminFromAuthToken,
 	mockExtractUserEmailFromAuthToken,
-} from "../../../test/middleware_mocks";
+} from "../../../test/middleware_mocks.js";
 
 vi.mock("../../database");
 vi.mock("@stela/logger");

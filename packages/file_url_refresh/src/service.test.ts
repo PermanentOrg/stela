@@ -1,8 +1,8 @@
 import { logger } from "@stela/logger";
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 import { constructSignedCdnUrl } from "@stela/s3-utils";
-import { refreshFileUrls } from "./service";
-import { db } from "./database";
+import { refreshFileUrls } from "./service.js";
+import { db } from "./database.js";
 
 vi.mock("@stela/logger");
 vi.mock("@stela/s3-utils");

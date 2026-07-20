@@ -1,7 +1,7 @@
 import createError from "http-errors";
 import { logger } from "@stela/logger";
-import { db } from "../../database";
-import type { Archive } from "../models";
+import { db } from "../../database.js";
+import type { Archive } from "../models.js";
 
 export const updateArchive = async (
 	archiveId: string,

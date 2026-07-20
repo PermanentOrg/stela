@@ -8,19 +8,19 @@ import {
 } from "@stela/s3-utils";
 import { getOriginalFileIdFromInformationPackagePath } from "@stela/archivematica-utils";
 import { logger } from "@stela/logger";
-import { db } from "./database";
+import { db } from "./database.js";
 import type {
 	MetsMetadata,
 	MetsAdministrativeSection,
 	EmbeddedMetadata,
 	TrackMetadata,
-} from "./models";
-import { validateMetsMetadata } from "./validators";
+} from "./models.js";
+import { validateMetsMetadata } from "./validators.js";
 import {
 	getISOStringFromExifTimestamp,
 	getISOStringFromMediaInfoTimestamp,
 	getISOStringFromQuicktimeTimestamp,
-} from "./timestamps";
+} from "./timestamps.js";
 
 const getOriginalAdministrativeSectionFromMetsFile = (
 	fileId: string,

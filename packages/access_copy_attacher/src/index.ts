@@ -16,9 +16,9 @@ import {
 	UnrecognizedExtensionPermanentType,
 } from "@stela/file-utils";
 import { logger } from "@stela/logger";
-import { db } from "./database";
+import { db } from "./database.js";
 import { Readable } from "node:stream";
-import { detectFileType } from "./file-type-utils";
+import { detectFileType } from "./file-type-utils.js";
 
 const duplicateArchivematicaFileError =
 	'duplicate key value violates unique constraint "unique_parent_file_id_format"';

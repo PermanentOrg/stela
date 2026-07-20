@@ -1,6 +1,6 @@
 import Joi from "joi";
-import type { StoragePurchaseRequest } from "./models";
-import { fieldsFromUserAuthentication } from "../validators";
+import type { StoragePurchaseRequest } from "./models.js";
+import { fieldsFromUserAuthentication } from "../validators/index.js";
 
 const MINIMUM_PURCHASE_AMOUNT_IN_USD = 1;
 

@@ -4,7 +4,7 @@ import {
 	coverageConfigDefaults,
 } from "vitest/config";
 import os from "node:os";
-import shared from "../../vitest.shared";
+import shared from "../../vitest.shared.js";
 
 export default mergeConfig(
 	shared,

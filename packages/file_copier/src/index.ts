@@ -3,8 +3,8 @@ import { S3Client, CopyObjectCommand } from "@aws-sdk/client-s3";
 import * as Sentry from "@sentry/aws-serverless";
 import { constructSignedCdnUrl, validateSqsMessage } from "@stela/s3-utils";
 import { logger } from "@stela/logger";
-import { validateFileCopyEvent } from "./validator";
-import { db } from "./database";
+import { validateFileCopyEvent } from "./validator.js";
+import { db } from "./database.js";
 
 export const extractFileDataFromFileCopyMessage = (
 	message: SQSRecord,

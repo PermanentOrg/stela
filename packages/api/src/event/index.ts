@@ -1,1 +1,1 @@
-export { eventController } from "./controller";
+export { eventController } from "./controller.js";

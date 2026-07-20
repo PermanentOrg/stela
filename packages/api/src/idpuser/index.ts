@@ -1,3 +1,3 @@
 /** @format */
 
-export { idpUserController } from "./controller";
+export { idpUserController } from "./controller.js";

@@ -1,3 +1,3 @@
-import { FileType, getFileExtensionByFileType } from "./models/file";
+import { FileType, getFileExtensionByFileType } from "./models/file.js";
 
 export { FileType, getFileExtensionByFileType };

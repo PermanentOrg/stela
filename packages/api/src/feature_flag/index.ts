@@ -1,1 +1,1 @@
-export { featureController } from "./controller";
+export { featureController } from "./controller.js";

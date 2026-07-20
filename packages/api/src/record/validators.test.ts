@@ -2,7 +2,7 @@ import { describe, expect, test } from "vitest";
 import {
 	validatePatchRecordRequest,
 	validateGetRecordsPageQuery,
-} from "./validators";
+} from "./validators.js";
 
 describe("validatePatchRecordRequest", () => {
 	test("should find no errors in a valid request", () => {

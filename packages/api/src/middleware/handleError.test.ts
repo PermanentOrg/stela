@@ -2,7 +2,7 @@ import type { NextFunction } from "express";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import { createRequest, createResponse } from "node-mocks-http";
 import * as Sentry from "@sentry/node";
-import { handleError } from "./handleError";
+import { handleError } from "./handleError.js";
 
 vi.mock("@sentry/node", () => ({
 	captureException: vi.fn(),

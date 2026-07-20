@@ -1,5 +1,5 @@
 import { logger } from "@stela/logger";
-import { db } from "../database";
+import { db } from "../database.js";
 
 const AVAILABLE = "available";
 const UNAVAILABLE = "unavailable";

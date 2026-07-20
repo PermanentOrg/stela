@@ -1,10 +1,13 @@
 import Stripe from "stripe";
 import createError from "http-errors";
 import { logger } from "@stela/logger";
-import { db } from "../database";
-import { stripeClient } from "../stripe";
-import { legacyClient } from "../legacy_client";
-import type { StoragePurchaseRequest, StoragePurchaseResponse } from "./models";
+import { db } from "../database.js";
+import { stripeClient } from "../stripe.js";
+import { legacyClient } from "../legacy_client.js";
+import type {
+	StoragePurchaseRequest,
+	StoragePurchaseResponse,
+} from "./models.js";
 
 const CENTS_PER_DOLLAR = 100;
 

@@ -1,5 +1,5 @@
 import createError from "http-errors";
-import { fusionAuthClient } from "../fusionauth";
+import { fusionAuthClient } from "../fusionauth.js";
 import {
 	TwoFactorMethod,
 	type SendEnableCodeRequest,
@@ -7,8 +7,8 @@ import {
 	type SendDisableCodeRequest,
 	type DisableTwoFactorRequest,
 	type TwoFactorRequestResponse,
-} from "./models";
-import { db } from "../database";
+} from "./models.js";
+import { db } from "../database.js";
 
 export const getTwoFactorMethods = async (
 	emailFromAuthToken: string,

@@ -1,5 +1,5 @@
 import Joi from "joi";
-import { fieldsFromAdminAuthentication } from "../validators";
+import { fieldsFromAdminAuthentication } from "../validators/index.js";
 
 export const validateRecalculateFolderThumbnailsRequest: (
 	data: unknown,

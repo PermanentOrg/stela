@@ -4,18 +4,18 @@ import type { Request, Response, NextFunction } from "express";
 import createError from "http-errors";
 import { v4 as uuidv4 } from "uuid";
 import { when } from "vitest-when";
-import { app } from "../app";
+import { app } from "../app.js";
 import {
 	extractUserEmailFromAuthToken,
 	verifyUserAuthentication,
-} from "../middleware";
-import { db } from "../database";
-import type { GetShareLinksResponse, ShareLink } from "./models";
+} from "../middleware/index.js";
+import { db } from "../database.js";
+import type { GetShareLinksResponse, ShareLink } from "./models.js";
 import {
 	mockVerifyUserAuthentication,
 	mockExtractUserEmailFromAuthToken,
-} from "../../test/middleware_mocks";
-import { mockSqlCall } from "../../test/mock_sql";
+} from "../../test/middleware_mocks.js";
+import { mockSqlCall } from "../../test/mock_sql.js";
 
 vi.mock("../database");
 vi.mock("../middleware");

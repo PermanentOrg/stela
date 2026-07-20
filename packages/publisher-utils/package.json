@@ -26,5 +26,6 @@
 	},
 	"dependencies": {
 		"@aws-sdk/client-sns": "^3.1075.0"
-	}
+	},
+	"type": "module"
 }

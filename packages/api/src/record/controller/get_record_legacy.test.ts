@@ -1,14 +1,14 @@
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 import { logger } from "@stela/logger";
 import request from "supertest";
-import { app } from "../../app";
-import { db } from "../../database";
-import { extractShareTokenFromHeaders } from "../../middleware";
-import type { ArchiveRecord } from "../models";
+import { app } from "../../app.js";
+import { db } from "../../database.js";
+import { extractShareTokenFromHeaders } from "../../middleware/index.js";
+import type { ArchiveRecord } from "../models.js";
 import {
 	mockExtractShareTokenFromHeaders,
 	mockExtractUserEmailFromAuthToken,
-} from "../../../test/middleware_mocks";
+} from "../../../test/middleware_mocks.js";
 
 vi.mock("../../database");
 vi.mock("../../middleware");

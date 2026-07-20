@@ -4,7 +4,7 @@ import {
 	constructSignedCdnUrl,
 	getS3ObjectFromS3Message,
 	getS3BucketFromS3Message,
-} from "./index";
+} from "./index.js";
 
 vi.mock("aws-cloudfront-sign");
 

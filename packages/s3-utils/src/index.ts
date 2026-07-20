@@ -6,7 +6,7 @@ import {
 	validateSqsMessage,
 	type S3Object,
 	type S3Bucket,
-} from "./validators";
+} from "./validators.js";
 
 const yearsUntilCdnUrlExpiration = 1;
 

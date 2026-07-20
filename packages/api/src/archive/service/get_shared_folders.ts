@@ -1,8 +1,8 @@
 import { logger } from "@stela/logger";
 import createError from "http-errors";
-import { db } from "../../database";
-import { getFolders } from "../../folder/service";
-import type { GetSharedFoldersResponse } from "../models";
+import { db } from "../../database.js";
+import { getFolders } from "../../folder/service.js";
+import type { GetSharedFoldersResponse } from "../models.js";
 
 const buildSharedFoldersNextPageUrl = (
 	archiveId: string,
