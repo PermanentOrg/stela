@@ -6,27 +6,28 @@ import {
 } from "@aws-sdk/client-sns";
 import { publisherClient } from "./index.js";
 
-const mockSend = vi.fn();
-vi.mock("@aws-sdk/client-sns");
-vi.mock("@aws-sdk/client-sns");
+const mockSend = vi.hoisted(() => vi.fn());
+
+vi.mock("@aws-sdk/client-sns", () => ({
+	SNSClient: vi.fn(function MockSNSClient(this: {
+		send: ReturnType<typeof vi.fn>;
+	}) {
+		this.send = mockSend;
+	}),
+	PublishBatchCommand: vi.fn(function MockPublishBatchCommand(
+		this: { __input: PublishBatchInput },
+		input: PublishBatchInput,
+	) {
+		this.__input = input;
+	}),
+}));
 
 describe("batchPublishMessages", () => {
 	beforeEach(() => {
 		vi.clearAllMocks();
 	});
 	test("should publish messages in batches", async () => {
-		vi.mocked(SNSClient).mockImplementation(
-			vi.fn().mockReturnValue({
-				send: mockSend,
-			}),
-		);
 		mockSend.mockResolvedValue({ Failed: [] });
-
-		vi.mocked(PublishBatchCommand).mockImplementation(
-			vi.fn().mockImplementation((input: PublishBatchInput) => ({
-				__input: input,
-			})),
-		);
 
 		const messages = [
 			{ id: "1", body: "message 1" },
@@ -136,11 +137,7 @@ describe("batchPublishMessages", () => {
 	});
 
 	test("should report failures", async () => {
-		vi.mocked(SNSClient).mockImplementation(
-			vi.fn().mockReturnValue({
-				send: mockSend.mockResolvedValue({ Failed: [{ Id: "1" }] }),
-			}),
-		);
+		mockSend.mockResolvedValue({ Failed: [{ Id: "1" }] });
 
 		const messages = [
 			{ id: "1", body: "message 1" },
@@ -171,16 +168,13 @@ describe("batchPublishMessages", () => {
 		} = process;
 		process.env["AWS_ENDPOINT_URL"] = "http://localhost:4566";
 
-		const mockSNSClient = vi.fn().mockReturnValue({
-			send: mockSend.mockResolvedValue({ Failed: [] }),
-		});
-		vi.mocked(SNSClient).mockImplementation(mockSNSClient);
+		mockSend.mockResolvedValue({ Failed: [] });
 
 		const messages = [{ id: "1", body: "message 1" }];
 
 		await publisherClient.batchPublishMessages("topic", messages);
 
-		expect(mockSNSClient).toHaveBeenCalledWith({
+		expect(vi.mocked(SNSClient)).toHaveBeenCalledWith({
 			region: process.env["AWS_REGION"] ?? "",
 			endpoint: "http://localhost:4566",
 		});
@@ -199,22 +193,14 @@ describe("publishMessage", () => {
 	});
 
 	test("should publish a message", async () => {
-		vi.mocked(SNSClient).mockImplementation(
-			vi.fn().mockReturnValue({
-				send: mockSend.mockResolvedValue({ Failed: [] }),
-			}),
-		);
+		mockSend.mockResolvedValue({ Failed: [] });
 
 		await publisherClient.publishMessage("topic", { id: "1", body: "message" });
 		expect(mockSend).toHaveBeenCalledTimes(1);
 	});
 
 	test("should include message attributes if provided", async () => {
-		vi.mocked(SNSClient).mockImplementation(
-			vi.fn().mockReturnValue({
-				send: mockSend.mockResolvedValue({ Failed: [] }),
-			}),
-		);
+		mockSend.mockResolvedValue({ Failed: [] });
 
 		await publisherClient.publishMessage("topic", {
 			id: "1",
@@ -246,11 +232,7 @@ describe("publishMessage", () => {
 	});
 
 	test("should throw an error if the message fails to publish", async () => {
-		vi.mocked(SNSClient).mockImplementation(
-			vi.fn().mockReturnValue({
-				send: mockSend.mockResolvedValue({ Failed: [{ Id: "1" }] }),
-			}),
-		);
+		mockSend.mockResolvedValue({ Failed: [{ Id: "1" }] });
 
 		let error = null;
 		try {
