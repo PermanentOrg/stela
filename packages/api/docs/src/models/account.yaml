@@ -106,3 +106,13 @@ account:
               $ref: "#/notificationTypesEnabled"
             inApp:
               $ref: "#/notificationTypesEnabled"
+    archiveMemberships:
+      type: array
+      items:
+        $ref: "./archive_membership.yaml#/archiveMembership"
+    createdAt:
+      type: string
+      format: date-time
+    updatedAt:
+      type: string
+      format: date-time

@@ -1,0 +1,6 @@
+archiveType:
+  type: string
+  enum:
+    - person
+    - group
+    - organization

@@ -1,6 +1,6 @@
-share:
+shareSummary:
   description: >
-    Share Object
+    Share Object Summary
   type: object
   properties:
     id:

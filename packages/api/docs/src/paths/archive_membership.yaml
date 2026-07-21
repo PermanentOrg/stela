@@ -1,0 +1,50 @@
+archive-memberships/{id}:
+  parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: string
+  patch:
+    summary: Update an archive membership
+    description: |
+      Updateable fields of an archive membership are accessRole and status.
+      accessRole can only be updated by a Manager or Owner of the archive involved
+      in the membership. status can only be set to "ok" by the account involved in
+      the membership. It can be set to "deleted" by either that account or a Manager
+      or Owner of the archive.
+    security:
+      - bearerHttpAuthentication: []
+    tags:
+      - archive-membership
+      - unimplemented
+    operationId: patch-archive-membership
+    requestBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              accessRole:
+                $ref: "../models/archive_membership_role.yaml#/archiveMembershipRole"
+              status:
+                type: string
+                enum:
+                  - ok
+                  - deleted
+    responses:
+      "200":
+        description: The updated archive membership
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                data:
+                  $ref: "../models/archive_membership.yaml#/archiveMembership"
+      "400":
+        $ref: "../errors.yaml#/400"
+      "401":
+        $ref: "../errors.yaml#/401"
+      "500":
+        $ref: "../errors.yaml#/500"

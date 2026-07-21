@@ -67,15 +67,69 @@ archives:
         $ref: "../errors.yaml#/401"
       "500":
         $ref: "../errors.yaml#/500"
+  post:
+    summary: Create an archive
+    security:
+      - bearerHttpAuthentication: []
+    tags:
+      - archives
+      - unimplemented
+    operationId: post-archives
+    requestBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+              type:
+                $ref: "../models/archive_type.yaml#/archiveType"
+    responses:
+      "200":
+        description: The created archive
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                data:
+                  $ref: "../models/archive.yaml#/archive"
+      "400":
+        $ref: "../errors.yaml#/400"
+      "500":
+        $ref: "../errors.yaml#/500"
 archives/{id}:
+  parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: string
+  get:
+    summary: Get an archive
+    security:
+      - bearerHttpAuthentication: []
+    tags:
+      - archives
+      - unimplemented
+    operationId: get-archives-id
+    responses:
+      "200":
+        description: The requested archive
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                data:
+                  $ref: "../models/archive.yaml#/archive"
+      "400":
+        $ref: "../errors.yaml#/400"
+      "500":
+        $ref: "../errors.yaml#/500"
   patch:
     summary: Update an archive
-    parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: integer
     security:
       - bearerHttpAuthentication: []
     tags:

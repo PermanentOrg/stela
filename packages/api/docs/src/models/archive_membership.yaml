@@ -1,0 +1,18 @@
+archiveMembership:
+  description: A membership relation granting an account some level of access to an archive
+  type: object
+  required: [id, accountId, archive, accessRole, status]
+  properties:
+    id:
+      type: string
+    accountId:
+      type: string
+    archive:
+      $ref: "./archive.yaml#/archiveSummary"
+    accessRole:
+      $ref: "./archive_membership_role.yaml#/archiveMembershipRole"
+    status:
+      type: string
+      enum:
+        - ok
+        - pending

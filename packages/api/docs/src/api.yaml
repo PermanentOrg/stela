@@ -44,6 +44,12 @@ paths:
     $ref: "./paths/mfa_management.yaml#/mfa-method-with-id"
   /accounts:
     $ref: "./paths/account.yaml#/account"
+  /accounts/me:
+    $ref: "./paths/account.yaml#/accounts~1me"
+  /accounts/me/marketing-tags:
+    $ref: "./paths/account.yaml#/accounts~1me~1marketing-tags"
+  /accounts/me/promo-claim:
+    $ref: "./paths/account.yaml#/accounts~1me~1promo-claim"
   /accounts/{id}/storage-adjustments:
     $ref: "./paths/account.yaml#/storage-adjustment"
   /share-links:
@@ -72,6 +78,8 @@ paths:
     $ref: "./paths/archive.yaml#/archives~1{id}"
   /archives/{id}/folders/shared:
     $ref: "./paths/archive.yaml#/archives-id-folders-shared"
+  /archive-memberships/{id}:
+    $ref: "./paths/archive_membership.yaml#/archive-memberships~1{id}"
   /applications:
     $ref: "./paths/application.yaml#/applications"
   /applications/{id}:
