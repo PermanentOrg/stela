@@ -1,5 +1,5 @@
 import createError from "http-errors";
-import { db } from "../../database";
+import { db } from "../../database.js";
 
 interface HasAccessResult {
 	hasAccess: boolean;

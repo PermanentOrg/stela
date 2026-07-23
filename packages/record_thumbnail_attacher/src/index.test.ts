@@ -3,8 +3,8 @@ import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 import { mock } from "vitest-mock-extended";
 import { constructSignedCdnUrl } from "@stela/s3-utils";
 import { logger } from "@stela/logger";
-import { db } from "./database";
-import { handler } from "./index";
+import { db } from "./database.js";
+import { handler } from "./index.js";
 
 vi.mock("./database");
 vi.mock(import("@stela/s3-utils"), async (importOriginal) => {

@@ -2,18 +2,18 @@ import request from "supertest";
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 import type { NextFunction } from "express";
 import createError from "http-errors";
-import { db } from "../database";
-import { app } from "../app";
+import { db } from "../database.js";
+import { app } from "../app.js";
 import {
 	verifyUserAuthentication,
 	verifyUserOrAdminOrDelegatedCallAuthentication,
-} from "../middleware";
-import type { ChecklistItem } from "./models";
+} from "../middleware/index.js";
+import type { ChecklistItem } from "./models.js";
 import {
 	mockVerifyUserOrAdminOrDelegatedCallAuthentication,
 	mockVerifyUserAuthentication,
 	mockExtractIp,
-} from "../../test/middleware_mocks";
+} from "../../test/middleware_mocks.js";
 
 vi.mock("../database");
 vi.mock("../middleware");

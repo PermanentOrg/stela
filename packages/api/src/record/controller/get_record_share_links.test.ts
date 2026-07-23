@@ -3,11 +3,11 @@ import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 import createError from "http-errors";
 import { logger } from "@stela/logger";
 import request from "supertest";
-import { app } from "../../app";
-import { db } from "../../database";
-import { verifyUserAuthentication } from "../../middleware";
-import type { ShareLink } from "../../share_link/models";
-import { mockVerifyUserAuthentication } from "../../../test/middleware_mocks";
+import { app } from "../../app.js";
+import { db } from "../../database.js";
+import { verifyUserAuthentication } from "../../middleware/index.js";
+import type { ShareLink } from "../../share_link/models.js";
+import { mockVerifyUserAuthentication } from "../../../test/middleware_mocks.js";
 
 vi.mock("../../database");
 vi.mock("../../middleware");

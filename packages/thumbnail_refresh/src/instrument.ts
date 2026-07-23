@@ -1,6 +1,6 @@
 import * as Sentry from "@sentry/node";
 import { nodeProfilingIntegration } from "@sentry/profiling-node";
-import "./env";
+import "./env.js";
 
 const env = process.env["ENV"] ?? "";
 

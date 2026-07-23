@@ -5,15 +5,15 @@ import {
 	verifyAdminAuthentication,
 	extractUserIsAdminFromAuthToken,
 	extractUserEmailFromAuthToken,
-} from "../../middleware";
+} from "../../middleware/index.js";
 import {
 	validateArchiveIdFromParams,
 	validateBodyFromAuthentication,
 	validateSearchQuery,
 	validatePatchArchiveBody,
 	validateGetSharedFoldersQuery,
-} from "../validators";
-import { archiveService } from "../service";
+} from "../validators.js";
+import { archiveService } from "../service/index.js";
 import { HTTP_STATUS } from "@pdc/http-status-codes";
 
 export const archiveController = Router();

@@ -3,11 +3,11 @@ import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 import type { NextFunction } from "express";
 import createError from "http-errors";
 import { logger } from "@stela/logger";
-import { app } from "../app";
-import { verifyAdminAuthentication } from "../middleware/authentication";
-import type { Promo } from "./models";
-import { db } from "../database";
-import { mockVerifyAdminAuthentication } from "../../test/middleware_mocks";
+import { app } from "../app.js";
+import { verifyAdminAuthentication } from "../middleware/authentication.js";
+import type { Promo } from "./models.js";
+import { db } from "../database.js";
+import { mockVerifyAdminAuthentication } from "../../test/middleware_mocks.js";
 
 vi.mock("../middleware/authentication");
 vi.mock("../database");

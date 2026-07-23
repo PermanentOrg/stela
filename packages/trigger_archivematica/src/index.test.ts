@@ -3,8 +3,8 @@ import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 import { mock } from "vitest-mock-extended";
 import { logger } from "@stela/logger";
 import { triggerArchivematicaProcessing } from "@stela/archivematica-utils";
-import { db } from "./database";
-import { handler, extractRecordIdFromNewRecordMessage } from "./index";
+import { db } from "./database.js";
+import { handler, extractRecordIdFromNewRecordMessage } from "./index.js";
 
 vi.mock("./database");
 vi.mock("@stela/archivematica-utils", () => ({

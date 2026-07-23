@@ -1,8 +1,8 @@
 import type { Context } from "aws-lambda";
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 import { mock } from "vitest-mock-extended";
-import { db } from "./database";
-import { handler } from "./index";
+import { db } from "./database.js";
+import { handler } from "./index.js";
 
 vi.mock("./database");
 

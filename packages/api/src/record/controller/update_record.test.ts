@@ -2,12 +2,12 @@ import { when } from "vitest-when";
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 import { logger } from "@stela/logger";
 import request from "supertest";
-import { app } from "../../app";
-import { db } from "../../database";
-import { AccessRole } from "../../access/models";
-import { mockVerifyUserAuthentication } from "../../../test/middleware_mocks";
-import { mockSqlCall } from "../../../test/mock_sql";
-import type { ArchiveRecord } from "../models";
+import { app } from "../../app.js";
+import { db } from "../../database.js";
+import { AccessRole } from "../../access/models.js";
+import { mockVerifyUserAuthentication } from "../../../test/middleware_mocks.js";
+import { mockSqlCall } from "../../../test/mock_sql.js";
+import type { ArchiveRecord } from "../models.js";
 
 vi.mock("../../database");
 vi.mock("../../middleware");

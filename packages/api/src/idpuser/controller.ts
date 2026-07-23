@@ -4,21 +4,21 @@ import {
 	type Request,
 	type NextFunction,
 } from "express";
-import { verifyUserAuthentication } from "../middleware";
-import { validateBodyFromAuthentication } from "../validators";
+import { verifyUserAuthentication } from "../middleware/index.js";
+import { validateBodyFromAuthentication } from "../validators/index.js";
 import {
 	validateSendEnableCodeRequest,
 	validateSendDisableCodeRequest,
 	validateCreateTwoFactorMethodRequest,
 	validateDisableTwoFactorRequest,
-} from "./validators";
+} from "./validators.js";
 import {
 	getTwoFactorMethods,
 	sendEnableCode,
 	addTwoFactorMethod,
 	sendDisableCode,
 	removeTwoFactorMethod,
-} from "./service";
+} from "./service.js";
 import { HTTP_STATUS } from "@pdc/http-status-codes";
 
 export const idpUserController = Router();

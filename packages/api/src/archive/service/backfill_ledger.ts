@@ -1,6 +1,6 @@
 import createError from "http-errors";
 import { logger } from "@stela/logger";
-import { db } from "../../database";
+import { db } from "../../database.js";
 import { publisherClient } from "@stela/publisher-utils";
 
 export const backfillLedger = async (archiveId: string): Promise<void> => {

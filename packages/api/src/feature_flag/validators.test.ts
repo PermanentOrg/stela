@@ -2,7 +2,7 @@ import {
 	validateCreateFeatureFlagRequest,
 	validateUpdateFeatureFlagRequest,
 	validateFeatureFlagParams,
-} from "./validators";
+} from "./validators.js";
 import { describe, expect, test } from "vitest";
 
 describe("validateCreateFeatureFlagRequest", () => {

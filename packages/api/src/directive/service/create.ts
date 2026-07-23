@@ -4,15 +4,15 @@ import type {
 	CreateDirectiveRequest,
 	Directive,
 	DirectiveTrigger,
-} from "../model";
-import { db } from "../../database";
+} from "../model.js";
+import { db } from "../../database.js";
 import {
 	isInvalidEnumError,
 	isMissingStewardAccountError,
 	getInvalidValueFromInvalidEnumMessage,
-} from "../../database_util";
-import { sendArchiveStewardNotification } from "../../email";
-import { confirmArchiveOwnership } from "./utils";
+} from "../../database_util.js";
+import { sendArchiveStewardNotification } from "../../email/index.js";
+import { confirmArchiveOwnership } from "./utils.js";
 
 export const createDirective = async (
 	requestBody: CreateDirectiveRequest,

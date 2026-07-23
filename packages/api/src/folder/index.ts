@@ -1,1 +1,4 @@
-export { folderController, foldersController } from "./controller/controller";
+export {
+	folderController,
+	foldersController,
+} from "./controller/controller.js";

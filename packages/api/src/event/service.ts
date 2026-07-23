@@ -1,11 +1,11 @@
 import createError from "http-errors";
 import { logger } from "@stela/logger";
-import { db } from "../database";
-import type { CreateEventRequest, ChecklistItem } from "./models";
+import { db } from "../database.js";
+import type { CreateEventRequest, ChecklistItem } from "./models.js";
 import {
 	isInvalidEnumError,
 	getInvalidValueFromInvalidEnumMessage,
-} from "../database_util";
+} from "../database_util.js";
 
 export const createEvent = async (data: CreateEventRequest): Promise<void> => {
 	const actorType =

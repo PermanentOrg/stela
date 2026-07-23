@@ -1,5 +1,5 @@
-import { MailchimpTransactional } from "../mailchimp";
-import { db } from "../database";
+import { MailchimpTransactional } from "../mailchimp.js";
+import { db } from "../database.js";
 
 const defaultFromEmail = "support@permanent.org";
 const defaultMessage = {

@@ -1,12 +1,12 @@
-import "./instrument";
+import "./instrument.js";
 import * as Sentry from "@sentry/node";
 import express from "express";
 import cors from "cors";
 import expressWinston from "express-winston";
 import { logger } from "@stela/logger";
-import { apiRoutes } from "./routes";
-import { handleError } from "./middleware/handleError";
-import { handleValidationError } from "./middleware/handleValidationError";
+import { apiRoutes } from "./routes/index.js";
+import { handleError } from "./middleware/handleError.js";
+import { handleValidationError } from "./middleware/handleValidationError.js";
 
 const env = process.env["ENV"] ?? "";
 

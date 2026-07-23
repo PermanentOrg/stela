@@ -1,7 +1,7 @@
 import createError from "http-errors";
 import { logger } from "@stela/logger";
 import type { TinyPg } from "tinypg";
-import { db } from "../database";
+import { db } from "../database.js";
 import type {
 	FolderRow,
 	Folder,
@@ -9,7 +9,7 @@ import type {
 	GetFolderChildrenResponse,
 	GetFoldersResponse,
 	FolderChildItem,
-} from "./models";
+} from "./models.js";
 import {
 	FolderType,
 	FolderStatus,
@@ -19,13 +19,16 @@ import {
 	PrettyFolderType,
 	PrettyFolderStatus,
 	PrettyFolderView,
-} from "./models";
-import { getFolderAccessRole, accessRoleLessThan } from "../access/permission";
-import { AccessRole } from "../access/models";
-import { getRecords } from "../record/service";
-import { shareLinkService } from "../share_link/service";
-import type { ShareLink } from "../share_link/models";
-import { insertLocation, updateLocation } from "../location/service";
+} from "./models.js";
+import {
+	getFolderAccessRole,
+	accessRoleLessThan,
+} from "../access/permission.js";
+import { AccessRole } from "../access/models.js";
+import { getRecords } from "../record/service.js";
+import { shareLinkService } from "../share_link/service.js";
+import type { ShareLink } from "../share_link/models.js";
+import { insertLocation, updateLocation } from "../location/service.js";
 
 export const prettifyFolderSortType = (
 	sortType: FolderSortOrder,

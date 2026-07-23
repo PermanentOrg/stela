@@ -38,5 +38,6 @@
 		"require-env-variable": "^4.0.2",
 		"tinypg": "^7.0.1",
 		"ua-parser-js": "^2.0.10"
-	}
+	},
+	"type": "module"
 }

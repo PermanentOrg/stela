@@ -1,4 +1,4 @@
-import type { AccessRole } from "../access/models";
+import type { AccessRole } from "../access/models.js";
 
 export interface Share {
 	id: string;

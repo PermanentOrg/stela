@@ -1,6 +1,6 @@
 import Joi from "joi";
-import type { GiftStorageRequest } from "./models";
-import { fieldsFromUserAuthentication } from "../validators";
+import type { GiftStorageRequest } from "./models.js";
+import { fieldsFromUserAuthentication } from "../validators/index.js";
 
 const MINIMUM_GIFT_AMOUNT = 1;
 const MINIMUM_GIFT_RECIPIENTS = 1;

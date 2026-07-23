@@ -2,9 +2,9 @@ import Joi from "joi";
 import {
 	validateBodyFromAuthentication,
 	fieldsFromUserAuthentication,
-} from "../validators";
-import { paginationFields } from "../validators/shared";
-import { ArchiveMembershipRole, type MilestoneSortOrder } from "./models";
+} from "../validators/index.js";
+import { paginationFields } from "../validators/shared.js";
+import { ArchiveMembershipRole, type MilestoneSortOrder } from "./models.js";
 
 export { validateBodyFromAuthentication };
 

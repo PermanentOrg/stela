@@ -1,8 +1,8 @@
 import { logger } from "@stela/logger";
 import { UAParser } from "ua-parser-js";
 import { publisherClient } from "@stela/publisher-utils";
-import { mixpanelClient } from "./mixpanel";
-import { db } from "./database";
+import { mixpanelClient } from "./mixpanel.js";
+import { db } from "./database.js";
 
 interface Analytics {
 	event: string;

@@ -1,4 +1,4 @@
-import { validateArchiveIdFromParams } from "./validators";
+import { validateArchiveIdFromParams } from "./validators.js";
 import { describe, expect, test } from "vitest";
 
 describe("validateArchiveIdFromParams", () => {

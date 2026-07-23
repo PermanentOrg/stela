@@ -1,10 +1,10 @@
 import request from "supertest";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import { Md5 } from "ts-md5";
-import { app } from "../../app";
-import { MailchimpMarketing } from "../../mailchimp";
-import type { UpdateTagsRequest } from "../models";
-import { mockVerifyUserAuthentication } from "../../../test/middleware_mocks";
+import { app } from "../../app.js";
+import { MailchimpMarketing } from "../../mailchimp.js";
+import type { UpdateTagsRequest } from "../models.js";
+import { mockVerifyUserAuthentication } from "../../../test/middleware_mocks.js";
 
 vi.mock("../../mailchimp", () => ({
 	MailchimpMarketing: {

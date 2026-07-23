@@ -2,12 +2,12 @@ import request from "supertest";
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 import createError from "http-errors";
 import type { NextFunction } from "express";
-import { app } from "../app";
-import { db } from "../database";
-import { verifyUserAuthentication } from "../middleware";
-import { fusionAuthClient } from "../fusionauth";
-import type { TwoFactorRequestResponse } from "./models";
-import { mockVerifyUserAuthentication } from "../../test/middleware_mocks";
+import { app } from "../app.js";
+import { db } from "../database.js";
+import { verifyUserAuthentication } from "../middleware/index.js";
+import { fusionAuthClient } from "../fusionauth.js";
+import type { TwoFactorRequestResponse } from "./models.js";
+import { mockVerifyUserAuthentication } from "../../test/middleware_mocks.js";
 
 vi.mock("../database");
 vi.mock("../middleware");

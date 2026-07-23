@@ -2,7 +2,7 @@ import {
 	validatePatchFolderRequest,
 	validateGetFoldersQuery,
 	validateGetFoldersPageQuery,
-} from "./validators";
+} from "./validators.js";
 import { describe, expect, test } from "vitest";
 
 describe("validatePatchFolderRequest", () => {

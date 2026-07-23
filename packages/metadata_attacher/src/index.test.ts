@@ -5,8 +5,8 @@ import { S3Client } from "@aws-sdk/client-s3";
 import * as fs from "node:fs/promises";
 import * as path from "node:path";
 import { logger } from "@stela/logger";
-import { db } from "./database";
-import { handler } from "./index";
+import { db } from "./database.js";
+import { handler } from "./index.js";
 vi.mock("./database");
 vi.mock("@stela/logger");
 vi.mock("@aws-sdk/client-s3");
@@ -35,7 +35,10 @@ describe("handler", () => {
 	};
 
 	const loadMetsFile = async (filename: string): Promise<string> =>
-		await fs.readFile(path.join(__dirname, "fixtures", filename), "utf-8");
+		await fs.readFile(
+			path.join(import.meta.dirname, "fixtures", filename),
+			"utf-8",
+		);
 
 	const getRecordMetadata = async (
 		recordId: string,

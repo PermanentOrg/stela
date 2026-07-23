@@ -1,6 +1,6 @@
 import Joi from "joi";
-import type { CreatePromoRequest } from "./models";
-import { fieldsFromAdminAuthentication } from "../validators";
+import type { CreatePromoRequest } from "./models.js";
+import { fieldsFromAdminAuthentication } from "../validators/index.js";
 
 const MINIMUM_STORAGE_AWARD = 1;
 const MINIMUM_USES = 1;

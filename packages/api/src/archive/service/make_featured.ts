@@ -1,6 +1,6 @@
 import createError from "http-errors";
 import { logger } from "@stela/logger";
-import { db } from "../../database";
+import { db } from "../../database.js";
 
 export const makeFeatured = async (archiveId: string): Promise<void> => {
 	const makeFeaturedArchiveResult = await db

@@ -25,5 +25,6 @@
 		"test": "vitest run"
 	},
 	"dependencies": {},
-	"devDependencies": {}
+	"devDependencies": {},
+	"type": "module"
 }

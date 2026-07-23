@@ -8,7 +8,7 @@ import {
 	verifyUserOrAdminOrDelegatedCallAuthentication,
 	extractIp,
 	extractUserIsAdminFromAuthToken,
-} from "../src/middleware";
+} from "../src/middleware/index.js";
 
 export const mockExtractUserEmailFromAuthToken = (mockEmail?: string): void => {
 	vi.mocked(extractUserEmailFromAuthToken).mockImplementation(

@@ -3,11 +3,11 @@ import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 import type { NextFunction } from "express";
 import createError from "http-errors";
 import { logger } from "@stela/logger";
-import { app } from "../../app";
-import { verifyUserAuthentication } from "../../middleware";
-import { db } from "../../database";
-import type { GetSharedFoldersResponse } from "../models";
-import { mockVerifyUserAuthentication } from "../../../test/middleware_mocks";
+import { app } from "../../app.js";
+import { verifyUserAuthentication } from "../../middleware/index.js";
+import { db } from "../../database.js";
+import type { GetSharedFoldersResponse } from "../models.js";
+import { mockVerifyUserAuthentication } from "../../../test/middleware_mocks.js";
 
 vi.mock("../../database");
 vi.mock("../../middleware");

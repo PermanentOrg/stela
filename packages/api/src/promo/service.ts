@@ -1,7 +1,7 @@
 import createError from "http-errors";
 import { logger } from "@stela/logger";
-import { db } from "../database";
-import type { CreatePromoRequest, Promo, PromoRow } from "./models";
+import { db } from "../database.js";
+import type { CreatePromoRequest, Promo, PromoRow } from "./models.js";
 
 export const createPromo = async (
 	promoData: CreatePromoRequest,

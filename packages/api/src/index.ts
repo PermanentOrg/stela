@@ -1,6 +1,6 @@
 import { logger } from "@stela/logger";
-import "./env";
-import { app } from "./app";
+import "./env.js";
+import { app } from "./app.js";
 
 const DEFAULT_PORT = 8080;
 const port = process.env["PORT"] ?? DEFAULT_PORT;

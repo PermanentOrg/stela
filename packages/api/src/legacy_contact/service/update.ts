@@ -1,8 +1,8 @@
 import createError from "http-errors";
 import { logger } from "@stela/logger";
-import type { UpdateLegacyContactRequest, LegacyContact } from "../model";
-import { db } from "../../database";
-import { sendLegacyContactNotification } from "../../email";
+import type { UpdateLegacyContactRequest, LegacyContact } from "../model.js";
+import { db } from "../../database.js";
+import { sendLegacyContactNotification } from "../../email/index.js";
 
 export const updateLegacyContact = async (
 	legacyContactId: string,

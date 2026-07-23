@@ -1,9 +1,12 @@
 import Joi from "joi";
-import type { CreateDirectiveRequest, UpdateDirectiveRequest } from "./model";
+import type {
+	CreateDirectiveRequest,
+	UpdateDirectiveRequest,
+} from "./model.js";
 import {
 	validateBodyFromAuthentication,
 	fieldsFromUserAuthentication,
-} from "../validators";
+} from "../validators/index.js";
 
 export { validateBodyFromAuthentication };
 

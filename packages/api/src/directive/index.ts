@@ -1,1 +1,1 @@
-export { directiveController } from "./controller";
+export { directiveController } from "./controller.js";

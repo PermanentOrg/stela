@@ -1,6 +1,6 @@
-import { db } from "../../database";
-import type { Directive } from "../model";
-import { confirmArchiveOwnership } from "./utils";
+import { db } from "../../database.js";
+import type { Directive } from "../model.js";
+import { confirmArchiveOwnership } from "./utils.js";
 
 export const getDirectivesByArchiveId = async (
 	archiveId: string,

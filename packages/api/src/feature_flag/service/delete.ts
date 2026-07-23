@@ -1,6 +1,6 @@
 import { logger } from "@stela/logger";
 import createError from "http-errors";
-import { db } from "../../database";
+import { db } from "../../database.js";
 
 export const deleteFeatureFlag = async (
 	featureFlagId: string,

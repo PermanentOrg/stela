@@ -1,1 +1,1 @@
-export { accountController } from "./controller/controller";
+export { accountController } from "./controller/controller.js";

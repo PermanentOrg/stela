@@ -1,7 +1,7 @@
 import { NotFound } from "http-errors";
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
-import { db } from "../../database";
-import { confirmArchiveOwnership } from "./utils";
+import { db } from "../../database.js";
+import { confirmArchiveOwnership } from "./utils.js";
 
 vi.mock("../../database");
 

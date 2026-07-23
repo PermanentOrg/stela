@@ -1,12 +1,12 @@
 import { logger } from "@stela/logger";
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 import request from "supertest";
-import { app } from "../../app";
-import { db } from "../../database";
-import { loadFixtures, clearDatabase } from "./utils_test";
-import { mockVerifyUserAuthentication } from "../../../test/middleware_mocks";
-import { mockSqlCall } from "../../../test/mock_sql";
-import type { Folder } from "../models";
+import { app } from "../../app.js";
+import { db } from "../../database.js";
+import { loadFixtures, clearDatabase } from "./utils_test.js";
+import { mockVerifyUserAuthentication } from "../../../test/middleware_mocks.js";
+import { mockSqlCall } from "../../../test/mock_sql.js";
+import type { Folder } from "../models.js";
 
 vi.mock("../../database");
 vi.mock("../../middleware");

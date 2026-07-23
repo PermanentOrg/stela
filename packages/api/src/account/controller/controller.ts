@@ -6,7 +6,7 @@ import {
 	extractIp,
 	verifyUserAuthentication,
 	verifyAdminAuthentication,
-} from "../../middleware";
+} from "../../middleware/index.js";
 import {
 	validateUpdateTagsRequest,
 	validateBodyFromAuthentication,
@@ -16,13 +16,13 @@ import {
 	validateCreateStorageAdjustmentRequest,
 	validateCreateStorageAdjustmentParams,
 	validateGetAccountsQuery,
-} from "../validators";
+} from "../validators.js";
 import {
 	accountService,
 	createStorageAdjustment,
 	getAccounts,
-} from "../service";
-import type { LeaveArchiveRequest } from "../models";
+} from "../service.js";
+import type { LeaveArchiveRequest } from "../models.js";
 
 export const accountController = Router();
 accountController.get(

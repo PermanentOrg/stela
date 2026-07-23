@@ -1,7 +1,7 @@
 import type { FileType } from "@stela/permanent_models";
-import type { PendingShare, Share } from "../share/models";
-import type { Tag } from "../tag/models";
-import type { Location, LocationInput } from "../location/models";
+import type { PendingShare, Share } from "../share/models.js";
+import type { Tag } from "../tag/models.js";
+import type { Location, LocationInput } from "../location/models.js";
 
 export interface ArchiveRecord {
 	id: string;

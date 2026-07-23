@@ -4,8 +4,8 @@ import { S3Client, CopyObjectCommand } from "@aws-sdk/client-s3";
 import { mock } from "vitest-mock-extended";
 import { constructSignedCdnUrl } from "@stela/s3-utils";
 import { logger } from "@stela/logger";
-import { db } from "./database";
-import { handler, extractFileDataFromFileCopyMessage } from "./index";
+import { db } from "./database.js";
+import { handler, extractFileDataFromFileCopyMessage } from "./index.js";
 
 vi.mock("./database");
 vi.mock("@stela/logger");

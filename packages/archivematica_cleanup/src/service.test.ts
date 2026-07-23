@@ -1,6 +1,6 @@
 import * as Sentry from "@sentry/node";
 import { afterEach, describe, expect, test, vi } from "vitest";
-import { cleanupDashboard } from "./service";
+import { cleanupDashboard } from "./service.js";
 
 vi.mock("@sentry/node");
 

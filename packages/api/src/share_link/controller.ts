@@ -4,16 +4,16 @@ import createError from "http-errors";
 import {
 	verifyUserAuthentication,
 	extractUserEmailFromAuthToken,
-} from "../middleware";
+} from "../middleware/index.js";
 import {
 	validateCreateShareLinkRequest,
 	validateUpdateShareLinkRequest,
 	validateGetShareLinksParameters,
 	validateShareLinkParameters,
-} from "./validators";
-import { shareLinkService } from "./service";
-import { validateBodyFromAuthentication } from "../validators";
-import { validateOptionalAuthenticationValues } from "../validators/shared";
+} from "./validators.js";
+import { shareLinkService } from "./service.js";
+import { validateBodyFromAuthentication } from "../validators/index.js";
+import { validateOptionalAuthenticationValues } from "../validators/shared.js";
 import { HTTP_STATUS } from "@pdc/http-status-codes";
 
 export const shareLinkController = Router();

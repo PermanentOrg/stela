@@ -1,6 +1,6 @@
 import { createRequest, createResponse } from "node-mocks-http";
 import { describe, expect, test, vi } from "vitest";
-import { extractIp } from "./extract_ip";
+import { extractIp } from "./extract_ip.js";
 
 describe("extractIp", () => {
 	test("should extract the IP from X-Forwarded-For header", () => {

@@ -1,6 +1,6 @@
 import { getSignedUrl } from "aws-cloudfront-sign";
 import { logger } from "@stela/logger";
-import { db } from "./database";
+import { db } from "./database.js";
 
 const thumbnail200Suffix = ".thumb.w200";
 const thumbnail500Suffix = ".thumb.w500";

@@ -1,1 +1,1 @@
-export { healthController } from "./controller";
+export { healthController } from "./controller.js";

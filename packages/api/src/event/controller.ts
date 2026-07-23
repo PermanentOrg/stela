@@ -4,10 +4,10 @@ import {
 	verifyUserAuthentication,
 	verifyUserOrAdminOrDelegatedCallAuthentication,
 	extractIp,
-} from "../middleware";
-import { validateCreateEventRequest } from "./validators";
-import { validateBodyFromAuthentication } from "../validators/shared";
-import { createEvent, getChecklistEvents } from "./service";
+} from "../middleware/index.js";
+import { validateCreateEventRequest } from "./validators.js";
+import { validateBodyFromAuthentication } from "../validators/shared.js";
+import { createEvent, getChecklistEvents } from "./service.js";
 import { HTTP_STATUS } from "@pdc/http-status-codes";
 
 export const eventController = Router();

@@ -1,10 +1,10 @@
 import Joi from "joi";
 import { parse as parseEDTF } from "@edtf-ts/core";
-import type { CreateRecordCopyRequest, PatchRecordRequest } from "./models";
-import { fieldsFromUserAuthentication } from "../validators";
-import { paginationFields } from "../validators/shared";
-import { locationInputSchema } from "../location/validators";
-import { EDTF_LEVEL_2 } from "../constants";
+import type { CreateRecordCopyRequest, PatchRecordRequest } from "./models.js";
+import { fieldsFromUserAuthentication } from "../validators/index.js";
+import { paginationFields } from "../validators/shared.js";
+import { locationInputSchema } from "../location/validators.js";
+import { EDTF_LEVEL_2 } from "../constants.js";
 
 export const validateGetRecordQuery: (
 	data: unknown,

@@ -1,11 +1,11 @@
 import request from "supertest";
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 import { logger } from "@stela/logger";
-import { app } from "../app";
-import { db } from "../database";
-import { sendLegacyContactNotification } from "../email";
-import type { LegacyContact } from "./model";
-import { mockVerifyUserAuthentication } from "../../test/middleware_mocks";
+import { app } from "../app.js";
+import { db } from "../database.js";
+import { sendLegacyContactNotification } from "../email/index.js";
+import type { LegacyContact } from "./model.js";
+import { mockVerifyUserAuthentication } from "../../test/middleware_mocks.js";
 
 vi.mock("@stela/logger");
 vi.mock("../database");

@@ -1,1 +1,1 @@
-export { shareLinkController } from "./controller";
+export { shareLinkController } from "./controller.js";

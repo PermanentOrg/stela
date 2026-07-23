@@ -9,7 +9,7 @@ const dbName = `test_permanent_worker_${workerId}`;
 
 const db = new TinyPg({
 	connection_string: `postgres://postgres:permanent@database:5432/${dbName}`,
-	root_dir: [path.resolve(__dirname, "..")],
+	root_dir: [path.resolve(import.meta.dirname, "..")],
 	capture_stack_trace: true,
 });
 

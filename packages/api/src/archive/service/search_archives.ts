@@ -1,12 +1,12 @@
 import createError from "http-errors";
 import { logger } from "@stela/logger";
-import { db } from "../../database";
-import type { Archive, GetArchivesResponse } from "../models";
-import type { AccessRole, ArchiveMembershipRole } from "../../access/models";
+import { db } from "../../database.js";
+import type { Archive, GetArchivesResponse } from "../models.js";
+import type { AccessRole, ArchiveMembershipRole } from "../../access/models.js";
 import {
 	accessRoleToArchiveMembershipRole,
 	archiveMembershipRoleToAccessRole,
-} from "../../access/models";
+} from "../../access/models.js";
 
 interface ArchiveRow extends Omit<Archive, "callerMembershipRole"> {
 	callerMembershipRole?: AccessRole | null;

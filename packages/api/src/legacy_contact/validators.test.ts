@@ -2,7 +2,7 @@ import {
 	validateCreateLegacyContactRequest,
 	validateUpdateLegacyContactParams,
 	validateUpdateLegacyContactRequest,
-} from "./validators";
+} from "./validators.js";
 import { describe, expect, test } from "vitest";
 
 describe("validateCreateLegacyContactRequest", () => {

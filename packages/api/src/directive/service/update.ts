@@ -1,17 +1,17 @@
 import createError, { BadRequest } from "http-errors";
 import { logger } from "@stela/logger";
-import { db } from "../../database";
+import { db } from "../../database.js";
 import {
 	isInvalidEnumError,
 	isMissingStewardAccountError,
 	getInvalidValueFromInvalidEnumMessage,
-} from "../../database_util";
-import { sendArchiveStewardNotification } from "../../email";
+} from "../../database_util.js";
+import { sendArchiveStewardNotification } from "../../email/index.js";
 import type {
 	UpdateDirectiveRequest,
 	Directive,
 	DirectiveTrigger,
-} from "../model";
+} from "../model.js";
 
 export const updateDirective = async (
 	directiveId: string,

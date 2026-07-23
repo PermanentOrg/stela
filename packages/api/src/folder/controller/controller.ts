@@ -8,25 +8,25 @@ import {
 	extractShareTokenFromHeaders,
 	extractUserEmailFromAuthToken,
 	verifyUserAuthentication,
-} from "../../middleware";
+} from "../../middleware/index.js";
 import {
 	patchFolder,
 	getFolders,
 	getFoldersPage,
 	getFolderChildren,
 	getFolderShareLinks,
-} from "../service";
+} from "../service.js";
 import {
 	validatePatchFolderRequest,
 	validateFolderRequest,
 	validateGetFoldersQuery,
 	validateGetFoldersPageQuery,
-} from "../validators";
+} from "../validators.js";
 import {
 	validateOptionalAuthenticationValues,
 	validatePaginationParameters,
 	validateBodyFromAuthentication,
-} from "../../validators/shared";
+} from "../../validators/shared.js";
 import { HTTP_STATUS } from "@pdc/http-status-codes";
 
 export const folderController = Router();

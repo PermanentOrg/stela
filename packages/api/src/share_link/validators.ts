@@ -1,6 +1,9 @@
 import Joi from "joi";
-import type { CreateShareLinkRequest, UpdateShareLinkRequest } from "./models";
-import { fieldsFromUserAuthentication } from "../validators";
+import type {
+	CreateShareLinkRequest,
+	UpdateShareLinkRequest,
+} from "./models.js";
+import { fieldsFromUserAuthentication } from "../validators/index.js";
 
 const MINIMUM_MAX_USES = 1;
 const MINIMUM_PAGE_SIZE = 1;

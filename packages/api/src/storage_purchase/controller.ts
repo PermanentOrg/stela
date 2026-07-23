@@ -1,11 +1,11 @@
 import { Router } from "express";
 import type { Request, Response, NextFunction } from "express";
-import { verifyUserAuthentication } from "../middleware";
+import { verifyUserAuthentication } from "../middleware/index.js";
 import {
 	validateStoragePurchaseRequest,
 	validateStripeWebhookBody,
-} from "./validators";
-import { initiateStoragePurchase, handleStripeWebhook } from "./service";
+} from "./validators.js";
+import { initiateStoragePurchase, handleStripeWebhook } from "./service.js";
 import { HTTP_STATUS } from "@pdc/http-status-codes";
 
 export const storagePurchaseController = Router();

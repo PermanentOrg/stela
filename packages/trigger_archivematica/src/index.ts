@@ -4,13 +4,13 @@ import { validateSqsMessage } from "@stela/s3-utils";
 import { logger } from "@stela/logger";
 import { triggerArchivematicaProcessing } from "@stela/archivematica-utils";
 import { validateRecordSubmitEvent } from "@stela/event_utils";
-import { db } from "./database";
+import { db } from "./database.js";
 import {
 	ARCHIVEMATICA_HOST_URL,
 	ARCHIVEMATICA_API_KEY,
 	ARCHIVEMATICA_ORIGINAL_LOCATION_ID,
 	ARCHIVEMATICA_PROCESSING_WORKFLOW,
-} from "./env";
+} from "./env.js";
 
 export const extractRecordIdFromNewRecordMessage = (
 	message: SQSRecord,

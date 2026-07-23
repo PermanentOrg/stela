@@ -2,7 +2,7 @@ import { TinyPgError } from "tinypg";
 import {
 	isInvalidEnumError,
 	getInvalidValueFromInvalidEnumMessage,
-} from "./database_util";
+} from "./database_util.js";
 import { describe, expect, test } from "vitest";
 
 const testInvalidEnumError =

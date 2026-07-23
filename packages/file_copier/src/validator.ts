@@ -1,6 +1,6 @@
 import Joi from "joi";
 import { logger } from "@stela/logger";
-import type { FileCopyEvent } from "./models";
+import type { FileCopyEvent } from "./models.js";
 
 export const validateFileCopyEvent: (
 	data: unknown,

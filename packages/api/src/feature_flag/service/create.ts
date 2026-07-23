@@ -1,8 +1,8 @@
 import { logger } from "@stela/logger";
 import createError from "http-errors";
 import { TinyPgError } from "tinypg";
-import type { CreateFeatureFlagRequest, FeatureFlagRow } from "../models";
-import { db } from "../../database";
+import type { CreateFeatureFlagRequest, FeatureFlagRow } from "../models.js";
+import { db } from "../../database.js";
 
 const duplicateFeatureFlagError =
 	'duplicate key value violates unique constraint "feature_flag_name_unique"';

@@ -9,14 +9,14 @@ import type {
 	CreateShareLinkDatabaseParams,
 	UpdateShareLinkDatabaseParams,
 	GetShareLinksResponse,
-} from "./models";
-import { db } from "../database";
+} from "./models.js";
+import { db } from "../database.js";
 import {
 	getItemAccessRole,
 	accessRoleLessThan,
 	isItemPublic,
-} from "../access/permission";
-import { AccessRole } from "../access/models";
+} from "../access/permission.js";
+import { AccessRole } from "../access/models.js";
 
 const APPROVAL_NOT_REQUIRED = 1;
 const APPROVAL_REQUIRED = 0;

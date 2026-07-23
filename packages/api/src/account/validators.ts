@@ -3,14 +3,14 @@ import type {
 	CreateStorageAdjustmentRequest,
 	UpdateTagsRequest,
 	GetAccountsQuery,
-} from "./models";
+} from "./models.js";
 import {
 	fieldsFromUserAuthentication,
 	fieldsFromAdminAuthentication,
 	validateBodyFromAuthentication,
 	validateBodyFromAdminAuthentication,
-} from "../validators";
-import { paginationFields } from "../validators/shared";
+} from "../validators/index.js";
+import { paginationFields } from "../validators/shared.js";
 
 export { validateBodyFromAuthentication, validateBodyFromAdminAuthentication };
 

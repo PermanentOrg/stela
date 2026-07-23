@@ -1,8 +1,8 @@
 import { afterEach, describe, expect, test, vi } from "vitest";
 import { logger } from "@stela/logger";
-import { db } from "../database";
-import { insertLocation, updateLocation } from "./service";
-import type { LocationInput } from "./models";
+import { db } from "../database.js";
+import { insertLocation, updateLocation } from "./service.js";
+import type { LocationInput } from "./models.js";
 
 vi.mock("../database");
 vi.mock("@stela/logger");

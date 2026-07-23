@@ -39,5 +39,6 @@
 		"dotenv": "^17.4.2",
 		"require-env-variable": "^4.0.2",
 		"tinypg": "^7.0.1"
-	}
+	},
+	"type": "module"
 }

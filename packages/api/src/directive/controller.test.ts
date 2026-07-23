@@ -2,15 +2,15 @@ import request from "supertest";
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 import { when } from "vitest-when";
 import { logger } from "@stela/logger";
-import { app } from "../app";
-import { db } from "../database";
-import { sendArchiveStewardNotification } from "../email";
-import type { Directive, DirectiveTrigger } from "./model";
-import { legacyClient } from "../legacy_client";
+import { app } from "../app.js";
+import { db } from "../database.js";
+import { sendArchiveStewardNotification } from "../email/index.js";
+import type { Directive, DirectiveTrigger } from "./model.js";
+import { legacyClient } from "../legacy_client.js";
 import {
 	mockVerifyUserAuthentication,
 	mockVerifyAdminAuthentication,
-} from "../../test/middleware_mocks";
+} from "../../test/middleware_mocks.js";
 
 vi.mock("../database");
 vi.mock("../middleware");

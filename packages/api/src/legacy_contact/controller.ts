@@ -1,13 +1,13 @@
 import { Router } from "express";
 import type { Request, Response, NextFunction } from "express";
-import { verifyUserAuthentication } from "../middleware";
+import { verifyUserAuthentication } from "../middleware/index.js";
 import {
 	validateCreateLegacyContactRequest,
 	validateUpdateLegacyContactRequest,
 	validateBodyFromAuthentication,
 	validateUpdateLegacyContactParams,
-} from "./validators";
-import { legacyContactService } from "./service";
+} from "./validators.js";
+import { legacyContactService } from "./service/index.js";
 
 export const legacyContactController = Router();
 legacyContactController.post(

@@ -1,12 +1,12 @@
-import { getPublicTags } from "./get_public_tags";
-import { getPayerAccountStorage } from "./get_payer_account_storage";
-import { makeFeatured } from "./make_featured";
-import { unfeature } from "./unfeature";
-import { getFeatured } from "./get_featured";
-import { getSharedFolders } from "./get_shared_folders";
-import { backfillLedger } from "./backfill_ledger";
-import { searchArchives } from "./search_archives";
-import { updateArchive } from "./update_archive";
+import { getPublicTags } from "./get_public_tags.js";
+import { getPayerAccountStorage } from "./get_payer_account_storage.js";
+import { makeFeatured } from "./make_featured.js";
+import { unfeature } from "./unfeature.js";
+import { getFeatured } from "./get_featured.js";
+import { getSharedFolders } from "./get_shared_folders.js";
+import { backfillLedger } from "./backfill_ledger.js";
+import { searchArchives } from "./search_archives.js";
+import { updateArchive } from "./update_archive.js";
 
 export const archiveService = {
 	getPublicTags,

@@ -1,6 +1,6 @@
 import Joi from "joi";
 import { logger } from "@stela/logger";
-import type { MetsMetadata } from "./models";
+import type { MetsMetadata } from "./models.js";
 
 const rdfMetadataSchema = Joi.object({
 	"File:MIMEType": Joi.string().required(),

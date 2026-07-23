@@ -5,9 +5,9 @@ import {
 	getRecordAccessRole,
 	getFolderAccessRole,
 	isItemPublic,
-} from "./permission";
-import { AccessRole } from "./models";
-import { db } from "../database";
+} from "./permission.js";
+import { AccessRole } from "./models.js";
+import { db } from "../database.js";
 
 vi.mock("../database");
 

@@ -6,7 +6,7 @@ import {
 } from "@stela/s3-utils";
 import { getOriginalFileIdFromInformationPackagePath } from "@stela/archivematica-utils";
 import { logger } from "@stela/logger";
-import { db } from "./database";
+import { db } from "./database.js";
 
 export const handler: SQSHandler = Sentry.wrapHandler(
 	async (event: SQSEvent) => {

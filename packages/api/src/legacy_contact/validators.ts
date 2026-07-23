@@ -1,9 +1,9 @@
 import Joi from "joi";
-import type { CreateLegacyContactRequest } from "./model";
+import type { CreateLegacyContactRequest } from "./model.js";
 import {
 	fieldsFromUserAuthentication,
 	validateBodyFromAuthentication,
-} from "../validators";
+} from "../validators/index.js";
 
 export { validateBodyFromAuthentication };
 

@@ -6,9 +6,9 @@ import {
 	sendInvitationNotification,
 	sendGiftNotification,
 	sendEmail,
-} from "./service";
-import { MailchimpTransactional } from "../mailchimp";
-import { db } from "../database";
+} from "./service.js";
+import { MailchimpTransactional } from "../mailchimp.js";
+import { db } from "../database.js";
 
 vi.mock("../database");
 vi.mock("../mailchimp", () => ({

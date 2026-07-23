@@ -1,10 +1,10 @@
 import { Router } from "express";
 import type { Request, Response, NextFunction } from "express";
-import { directiveService } from "./service";
+import { directiveService } from "./service/index.js";
 import {
 	verifyUserAuthentication,
 	verifyAdminAuthentication,
-} from "../middleware";
+} from "../middleware/index.js";
 import {
 	validateUpdateDirectiveParams,
 	validateUpdateDirectiveRequest,
@@ -12,8 +12,8 @@ import {
 	validateTriggerAdminDirectivesParams,
 	validateGetDirectivesByArchiveIdParams,
 	validateBodyFromAuthentication,
-} from "./validators";
-import { validateBodyFromAdminAuthentication } from "../validators";
+} from "./validators.js";
+import { validateBodyFromAdminAuthentication } from "../validators/index.js";
 
 export const directiveController = Router();
 directiveController.post(

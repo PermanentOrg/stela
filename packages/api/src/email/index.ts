@@ -3,7 +3,7 @@ import {
 	sendArchiveStewardNotification,
 	sendInvitationNotification,
 	sendGiftNotification,
-} from "./service";
+} from "./service.js";
 
 export {
 	sendLegacyContactNotification,
