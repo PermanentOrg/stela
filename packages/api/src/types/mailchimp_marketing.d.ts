@@ -13,11 +13,20 @@ declare module "@mailchimp/mailchimp_marketing" {
 		instance: string;
 	}
 
+	export interface MemberTagsResponse {
+		tags: Array<{ id: number; name: string; date_added: string }>;
+		total_items: number;
+	}
+
 	export namespace lists {
 		export function updateListMemberTags(
 			listId: string,
 			subscriberHash: string,
 			body: { tags: Array<{ name: string; status: "active" | "inactive" }> },
-		): Promise<ErrorResponse | null>;
+		): Promise<null>;
+		export function getListMemberTags(
+			listId: string,
+			subscriberHash: string,
+		): Promise<MemberTagsResponse>;
 	}
 }

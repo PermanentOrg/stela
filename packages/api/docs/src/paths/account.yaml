@@ -181,7 +181,6 @@ accounts/me/marketing-tags:
       - bearerHttpAuthentication: []
     tags:
       - accounts
-      - unimplemented
     requestBody:
       content:
         application/json:

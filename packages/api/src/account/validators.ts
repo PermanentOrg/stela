@@ -1,6 +1,7 @@
 import Joi from "joi";
 import type {
 	CreateStorageAdjustmentRequest,
+	PostMarketingTagsRequest,
 	UpdateTagsRequest,
 	GetAccountsQuery,
 } from "./models";
@@ -108,6 +109,22 @@ export const validateGetAccountsQuery: (
 				.optional(),
 		})
 		.xor("accountIds", "accountEmails")
+		.validate(data);
+	if (validation.error !== undefined) {
+		throw validation.error;
+	}
+};
+
+export const validatePostMarketingTagsRequest: (
+	data: unknown,
+) => asserts data is PostMarketingTagsRequest = (
+	data: unknown,
+): asserts data is PostMarketingTagsRequest => {
+	const validation = Joi.object()
+		.keys({
+			...fieldsFromUserAuthentication,
+			tags: Joi.array().items(Joi.string()).min(1).required(),
+		})
 		.validate(data);
 	if (validation.error !== undefined) {
 		throw validation.error;
