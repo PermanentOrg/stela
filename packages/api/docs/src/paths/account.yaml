@@ -190,6 +190,7 @@ accounts/me/marketing-tags:
             properties:
               tags:
                 type: array
+                minItems: 1
                 items:
                   type: string
     responses:
