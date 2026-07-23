@@ -19,5 +19,12 @@ declare module "@mailchimp/mailchimp_marketing" {
 			subscriberHash: string,
 			body: { tags: Array<{ name: string; status: "active" | "inactive" }> },
 		): Promise<ErrorResponse | null>;
+
+		export function getListMemberTags(
+			listId: string,
+			subscriberHash: string,
+		): Promise<{
+			tags: Array<{ id: number; name: string; date_added: string }>;
+		}>;
 	}
 }
