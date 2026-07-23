@@ -53,6 +53,19 @@ accountController.put(
 	},
 );
 accountController.get(
+	"/me/marketing-tags",
+	verifyUserAuthentication,
+	async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+		try {
+			validateBodyFromAuthentication(req.body);
+			const result = await accountService.getMarketingTags(req.body);
+			res.status(HTTP_STATUS.SUCCESSFUL.OK).json(result);
+		} catch (err) {
+			next(err);
+		}
+	},
+);
+accountController.get(
 	"/signup",
 	verifyUserAuthentication,
 	async (req: Request, res: Response, next: NextFunction): Promise<void> => {

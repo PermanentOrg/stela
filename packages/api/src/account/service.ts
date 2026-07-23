@@ -1,6 +1,8 @@
 import { Md5 } from "ts-md5";
 import createError from "http-errors";
+import { HTTP_STATUS } from "@pdc/http-status-codes";
 import { logger } from "@stela/logger";
+import type { ErrorResponse } from "@mailchimp/mailchimp_marketing";
 
 import { db } from "../database";
 import { MailchimpMarketing } from "../mailchimp";
@@ -10,6 +12,7 @@ import type { CreateEventRequest } from "../event/models";
 
 import {
 	type UpdateTagsRequest,
+	type GetMarketingTagsResponse,
 	type SignupDetails,
 	type GetAccountArchiveResult,
 	type LeaveArchiveRequest,
@@ -151,6 +154,41 @@ const updateTags = async (requestBody: UpdateTagsRequest): Promise<void> => {
 	}
 };
 
+interface MailchimpApiError {
+	status: number;
+	response?: {
+		body: ErrorResponse;
+	};
+}
+
+const isMailchimpApiError = (err: unknown): err is MailchimpApiError =>
+	err instanceof Object &&
+	"status" in err &&
+	typeof (err as { status: unknown }).status === "number";
+
+const getMarketingTags = async (requestBody: {
+	emailFromAuthToken: string;
+	userSubjectFromAuthToken: string;
+}): Promise<GetMarketingTagsResponse> => {
+	try {
+		const response = await MailchimpMarketing.lists.getListMemberTags(
+			process.env["MAILCHIMP_COMMUNITY_LIST_ID"] ?? "",
+			Md5.hashStr(requestBody.emailFromAuthToken),
+		);
+		return { items: response.tags.map((tag) => tag.name) };
+	} catch (err) {
+		if (isMailchimpApiError(err)) {
+			if (err.status === HTTP_STATUS.CLIENT_ERROR.NOT_FOUND.valueOf()) {
+				return { items: [] };
+			}
+			throw err.response === undefined
+				? createError(err.status)
+				: createError(err.status, err.response.body.detail);
+		}
+		throw err;
+	}
+};
+
 const getSignupDetails = async (
 	accountEmail: string,
 ): Promise<SignupDetails> => {
@@ -259,6 +297,7 @@ export const accountService = {
 	getSignupDetails,
 	leaveArchive,
 	updateTags,
+	getMarketingTags,
 	getAccountArchive,
 };
 
