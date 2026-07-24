@@ -1,4 +1,4 @@
-import createError, { BadRequest } from "http-errors";
+import createError from "http-errors";
 import { logger } from "@stela/logger";
 import { db } from "../../database.js";
 import {
@@ -61,7 +61,7 @@ export const updateDirective = async (
 					throw new createError.BadRequest(
 						"Steward email must have an account",
 					);
-				} else if (err instanceof BadRequest) {
+				} else if (err instanceof createError.BadRequest) {
 					throw err;
 				}
 				logger.error(err);
