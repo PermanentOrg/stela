@@ -9,6 +9,7 @@ import {
 } from "../../middleware/index.js";
 import {
 	validateUpdateTagsRequest,
+	validatePostMarketingTagsRequest,
 	validateBodyFromAuthentication,
 	validateBodyFromAdminAuthentication,
 	validateLeaveArchiveParams,
@@ -84,6 +85,19 @@ accountController.delete(
 			await accountService.leaveArchive(data);
 
 			res.status(HTTP_STATUS.SUCCESSFUL.NO_CONTENT).send();
+		} catch (err) {
+			next(err);
+		}
+	},
+);
+accountController.post(
+	"/me/marketing-tags",
+	verifyUserAuthentication,
+	async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+		try {
+			validatePostMarketingTagsRequest(req.body);
+			const result = await accountService.postMarketingTags(req.body);
+			res.json(result);
 		} catch (err) {
 			next(err);
 		}

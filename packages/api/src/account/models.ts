@@ -101,6 +101,12 @@ export interface UpdateTagsRequest {
 	removeTags?: string[];
 }
 
+export interface PostMarketingTagsRequest {
+	emailFromAuthToken: string;
+	userSubjectFromAuthToken: string;
+	tags: string[];
+}
+
 export interface SignupDetails {
 	token: string;
 }
