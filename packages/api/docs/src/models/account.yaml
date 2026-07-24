@@ -40,7 +40,7 @@ notificationTypesEnabled:
 account:
   description: An object representing a user account on permanent.org
   type: object
-  required: [id, primaryEmail, fullName, address, settings]
+  required: [id, primaryEmail, fullName, address, settings, archiveMemberships, createdAt, updatedAt, status, type, primaryPhone, defaultArchiveId]
   properties:
     id:
       type: string
@@ -55,6 +55,7 @@ account:
     primaryPhone:
       type: object
       required: [number, verified]
+      nullable: true
       properties:
         number:
           type: string
@@ -64,6 +65,7 @@ account:
       type: string
     defaultArchiveId:
       type: string
+      nullable: true
     address:
       type: object
       properties:
