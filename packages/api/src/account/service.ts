@@ -314,9 +314,10 @@ export const createStorageAdjustment = async (
 			storageTotalInBytes: bigint;
 			adjustmentSizeInBytes: bigint;
 			createdAt: Date;
-		}>("account.queries.adjust_account_storage", {
+		}>("storage.queries.adjust_account_storage", {
 			accountId,
 			storageAmountInBytes: requestBody.storageAmount * GB,
+			ledgerType: "type.billing.transfer.admin_adjustment",
 		})
 		.catch((err: unknown) => {
 			logger.error(err);
