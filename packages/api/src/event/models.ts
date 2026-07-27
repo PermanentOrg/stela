@@ -1,14 +1,14 @@
 export interface CreateEventRequest {
-	userSubjectFromAuthToken?: string;
-	userEmailFromAuthToken?: string;
-	adminSubjectFromAuthToken?: string;
-	adminEmailFromAuthToken?: string;
+	userSubjectFromAuthToken?: string | undefined;
+	userEmailFromAuthToken?: string | undefined;
+	adminSubjectFromAuthToken?: string | undefined;
+	adminEmailFromAuthToken?: string | undefined;
 	entity: string;
 	action: string;
 	version: number;
 	entityId: string;
 	ip: string;
-	userAgent?: string;
+	userAgent?: string | undefined;
 	body: {
 		[key: string]: unknown;
 		analytics?: {

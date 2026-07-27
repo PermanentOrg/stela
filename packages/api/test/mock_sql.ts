@@ -16,23 +16,29 @@ type MockSqlBehavior =
 export const mockSqlCall = (
 	db: TinyPg,
 	queryName: string,
-	params: unknown,
+	expectedParams: unknown,
 	behavior: MockSqlBehavior,
 ): void => {
-	const originalSql = db.sql.bind(db);
-	vi.spyOn(db, "sql").mockImplementation(
-		async (name: string, actualParams?: TinyPgParams) => {
-			if (name === queryName && equals(actualParams, params)) {
-				if ("reject" in behavior) {
-					throw behavior.reject;
-				}
-				return {
-					command: "",
-					row_count: behavior.resolve.rows.length,
-					...behavior.resolve,
-				};
+	vi.spyOn(db, "sql").mockImplementation(async function (
+		this: TinyPg,
+		name: string,
+		actualParams?: TinyPgParams,
+	) {
+		if (name === queryName && equals(actualParams, expectedParams)) {
+			if ("reject" in behavior) {
+				throw behavior.reject;
 			}
-			return originalSql(name, actualParams);
-		},
-	);
+			return {
+				command: "",
+				row_count: behavior.resolve.rows.length,
+				...behavior.resolve,
+			};
+		}
+		const proto: unknown = Object.getPrototypeOf(db);
+		if (!isTinyPg(proto)) throw new TypeError("Unexpected db prototype shape");
+		return await proto.sql.call(this, name, actualParams);
+	});
 };
+
+const isTinyPg = (value: unknown): value is TinyPg =>
+	value !== null && typeof value === "object" && "sql" in value;
