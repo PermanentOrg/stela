@@ -6,7 +6,9 @@ account_archive (
   accessrole,
   position,
   type,
-  status
+  status,
+  createddt,
+  updateddt
 )
 VALUES
 (
@@ -16,7 +18,9 @@ VALUES
   'access.role.owner',
   0,
   'type.account.standard',
-  'status.generic.ok'
+  'status.generic.ok',
+  CURRENT_TIMESTAMP,
+  CURRENT_TIMESTAMP
 ),
 (
   4,
@@ -25,5 +29,7 @@ VALUES
   'access.role.editor',
   0,
   'type.account.standard',
-  'status.generic.ok'
+  'status.generic.ok',
+  CURRENT_TIMESTAMP,
+  CURRENT_TIMESTAMP
 );

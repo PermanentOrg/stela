@@ -6,7 +6,9 @@ account_archive (
   accessrole,
   position,
   type,
-  status
+  status,
+  createddt,
+  updateddt
 )
 VALUES
 (
@@ -16,7 +18,9 @@ VALUES
   'access.role.owner',
   0,
   'type.account.standard',
-  'status.generic.ok'
+  'status.generic.ok',
+  CURRENT_TIMESTAMP,
+  CURRENT_TIMESTAMP
 ),
 (
   5,
@@ -25,7 +29,9 @@ VALUES
   'access.role.viewer',
   0,
   'type.account.standard',
-  'status.generic.ok'
+  'status.generic.ok',
+  CURRENT_TIMESTAMP,
+  CURRENT_TIMESTAMP
 ),
 (
   8,
@@ -34,7 +40,9 @@ VALUES
   'access.role.owner',
   0,
   'type.account.standard',
-  'status.generic.ok'
+  'status.generic.ok',
+  CURRENT_TIMESTAMP,
+  CURRENT_TIMESTAMP
 ),
 (
   13,
@@ -43,7 +51,9 @@ VALUES
   'access.role.owner',
   0,
   'type.account.standard',
-  'status.generic.ok'
+  'status.generic.ok',
+  CURRENT_TIMESTAMP,
+  CURRENT_TIMESTAMP
 ),
 (
   21,
@@ -52,7 +62,9 @@ VALUES
   'access.role.viewer',
   0,
   'type.account.standard',
-  'status.generic.pending'
+  'status.generic.pending',
+  CURRENT_TIMESTAMP,
+  CURRENT_TIMESTAMP
 ),
 (
   34,
@@ -61,7 +73,9 @@ VALUES
   'access.role.curator',
   0,
   'type.account.standard',
-  'status.generic.deleted'
+  'status.generic.deleted',
+  CURRENT_TIMESTAMP,
+  CURRENT_TIMESTAMP
 ),
 (
   35,
@@ -70,7 +84,9 @@ VALUES
   'access.role.owner',
   0,
   'type.account.standard',
-  'status.generic.ok'
+  'status.generic.ok',
+  CURRENT_TIMESTAMP,
+  CURRENT_TIMESTAMP
 ),
 (
   36,
@@ -79,7 +95,9 @@ VALUES
   'access.role.owner',
   0,
   'type.account.standard',
-  'status.generic.ok'
+  'status.generic.ok',
+  CURRENT_TIMESTAMP,
+  CURRENT_TIMESTAMP
 ),
 (
   37,
@@ -88,7 +106,9 @@ VALUES
   'access.role.owner',
   0,
   'type.account.standard',
-  'status.generic.deleted'
+  'status.generic.deleted',
+  CURRENT_TIMESTAMP,
+  CURRENT_TIMESTAMP
 ),
 (
   38,
@@ -97,5 +117,7 @@ VALUES
   'access.role.contributor',
   0,
   'type.account.standard',
-  'status.generic.deleted'
+  'status.generic.deleted',
+  CURRENT_TIMESTAMP,
+  CURRENT_TIMESTAMP
 );

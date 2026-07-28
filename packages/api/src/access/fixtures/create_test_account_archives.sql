@@ -6,7 +6,9 @@ account_archive (
   accessrole,
   position,
   type,
-  status
+  status,
+  createddt,
+  updateddt
 )
 VALUES
 (
@@ -16,7 +18,9 @@ VALUES
   'access.role.owner',
   0,
   'type.account.standard',
-  'status.generic.ok'
+  'status.generic.ok',
+  CURRENT_TIMESTAMP,
+  CURRENT_TIMESTAMP
 ),
 (
   4,
@@ -25,7 +29,9 @@ VALUES
   'access.role.owner',
   0,
   'type.account.standard',
-  'status.generic.ok'
+  'status.generic.ok',
+  CURRENT_TIMESTAMP,
+  CURRENT_TIMESTAMP
 ),
 (
   5,
@@ -34,7 +40,9 @@ VALUES
   'access.role.owner',
   0,
   'type.account.standard',
-  'status.generic.ok'
+  'status.generic.ok',
+  CURRENT_TIMESTAMP,
+  CURRENT_TIMESTAMP
 ),
 (
   6,
@@ -43,7 +51,9 @@ VALUES
   'access.role.manager',
   0,
   'type.account.standard',
-  'status.generic.ok'
+  'status.generic.ok',
+  CURRENT_TIMESTAMP,
+  CURRENT_TIMESTAMP
 ),
 (
   7,
@@ -52,7 +62,9 @@ VALUES
   'access.role.manager',
   0,
   'type.account.standard',
-  'status.generic.deleted'
+  'status.generic.deleted',
+  CURRENT_TIMESTAMP,
+  CURRENT_TIMESTAMP
 ),
 (
   8,
@@ -61,5 +73,7 @@ VALUES
   'access.role.manager',
   0,
   'type.account.standard',
-  'status.generic.ok'
+  'status.generic.ok',
+  CURRENT_TIMESTAMP,
+  CURRENT_TIMESTAMP
 );
