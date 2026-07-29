@@ -1,6 +1,26 @@
 import Joi from "joi";
-import type { CreatePromoRequest } from "./models.js";
-import { fieldsFromAdminAuthentication } from "../validators/index.js";
+import type { ClaimPromoRequest, CreatePromoRequest } from "./models.js";
+import {
+	fieldsFromAdminAuthentication,
+	fieldsFromUserAuthentication,
+} from "../validators/index.js";
+
+export const validateClaimPromoRequest: (
+	data: unknown,
+) => asserts data is ClaimPromoRequest = (
+	data: unknown,
+): asserts data is ClaimPromoRequest => {
+	const validation = Joi.object()
+		.keys({
+			...fieldsFromUserAuthentication,
+			promoCode: Joi.string().required(),
+		})
+		.validate(data);
+
+	if (validation.error !== undefined) {
+		throw validation.error;
+	}
+};
 
 const MINIMUM_STORAGE_AWARD = 1;
 const MINIMUM_USES = 1;

@@ -23,6 +23,8 @@ import {
 	createStorageAdjustment,
 	getAccounts,
 } from "../service.js";
+import { claimPromo } from "../../promo/service.js";
+import { validateClaimPromoRequest } from "../../promo/validators.js";
 import type { LeaveArchiveRequest } from "../models.js";
 
 export const accountController = Router();
@@ -124,6 +126,19 @@ accountController.post(
 			validatePostMarketingTagsRequest(req.body);
 			const result = await accountService.postMarketingTags(req.body);
 			res.json(result);
+		} catch (err) {
+			next(err);
+		}
+	},
+);
+accountController.post(
+	"/me/promo-claim",
+	verifyUserAuthentication,
+	async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+		try {
+			validateClaimPromoRequest(req.body);
+			const result = await claimPromo(req.body);
+			res.status(HTTP_STATUS.SUCCESSFUL.OK).json({ data: result });
 		} catch (err) {
 			next(err);
 		}

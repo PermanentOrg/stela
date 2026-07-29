@@ -245,7 +245,6 @@ accounts/me/promo-claim:
     tags:
       - accounts
       - promo
-      - unimplemented
     requestBody:
       content:
         application/json:
@@ -269,11 +268,13 @@ accounts/me/promo-claim:
                   required: [storageGrantInGb]
                   properties:
                     storageGrantInGb:
-                      type: integer
+                      type: number
       "401":
         $ref: "../errors.yaml#/401"
       "403":
         $ref: "../errors.yaml#/403"
+      "404":
+        $ref: "../errors.yaml#/404"
       "400":
         $ref: "../errors.yaml#/400"
       "500":

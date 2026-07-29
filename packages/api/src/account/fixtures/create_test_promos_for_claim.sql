@@ -1,0 +1,56 @@
+INSERT INTO promo (
+  promoid,
+  code,
+  sizeinmb,
+  expiresdt,
+  remaininguses,
+  status,
+  type,
+  createddt,
+  updateddt
+)
+VALUES
+(
+  1,
+  'VALID_PROMO',
+  1024,
+  '2030-12-31',
+  100,
+  'status.promo.valid',
+  'type.generic.ok',
+  '2020-01-01',
+  '2020-01-01'
+),
+(
+  2,
+  'INVALID_PROMO',
+  1024,
+  '2030-12-31',
+  100,
+  'status.promo.invalid',
+  'type.generic.ok',
+  '2020-01-01',
+  '2020-01-01'
+),
+(
+  3,
+  'EXPIRED_PROMO',
+  1024,
+  '2020-01-01',
+  100,
+  'status.promo.valid',
+  'type.generic.ok',
+  '2020-01-01',
+  '2020-01-01'
+),
+(
+  4,
+  'NO_USES_PROMO',
+  1024,
+  '2030-12-31',
+  0,
+  'status.promo.valid',
+  'type.generic.ok',
+  '2020-01-01',
+  '2020-01-01'
+);

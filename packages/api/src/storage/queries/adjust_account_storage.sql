@@ -38,7 +38,7 @@ ledger_financial (
   updateddt
 )
 SELECT
-  'type.billing.transfer.admin_adjustment' AS type,
+  :ledgerType AS type,
   :storageAmountInBytes,
   0 AS filedelta,
   0 AS fromaccountid,

@@ -278,9 +278,10 @@ describe("/account/storage-adjustments", () => {
 		const testError = new Error("test error");
 		const spy = vi.spyOn(db, "sql");
 		when(spy)
-			.calledWith("account.queries.adjust_account_storage", {
+			.calledWith("storage.queries.adjust_account_storage", {
 				accountId: testAccountId,
 				storageAmountInBytes: 5 * GB,
+				ledgerType: "type.billing.transfer.admin_adjustment",
 			})
 			.thenReject(testError);
 
