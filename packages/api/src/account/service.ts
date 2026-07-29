@@ -10,81 +10,25 @@ import { ACCESS_ROLE, EVENT_ACTION, EVENT_ENTITY, GB } from "../constants.js";
 import { createEvent } from "../event/service.js";
 import type { CreateEventRequest } from "../event/models.js";
 
-import {
-	type UpdateTagsRequest,
-	type GetMarketingTagsResponse,
-	type PostMarketingTagsRequest,
-	type SignupDetails,
-	type GetAccountArchiveResult,
-	type LeaveArchiveRequest,
-	type CreateStorageAdjustmentRequest,
-	type StorageAdjustment,
-	type Account,
-	type AccountRow,
-	type GetAccountsQuery,
-	type GetAccountsResponse,
-	AccountType,
-	PrettyAccountType,
-	AccountStatus,
-	PrettyAccountStatus,
+import type {
+	UpdateTagsRequest,
+	GetMarketingTagsResponse,
+	SignupDetails,
+	GetAccountArchiveResult,
+	LeaveArchiveRequest,
+	CreateStorageAdjustmentRequest,
+	StorageAdjustment,
+	Account,
+	AccountRow,
+	GetAccountsQuery,
+	GetAccountsResponse,
+	PostMarketingTagsRequest,
 } from "./models.js";
 
-const prettifyAccountType = (accountType: AccountType): PrettyAccountType => {
-	switch (accountType) {
-		case AccountType.Standard:
-			return PrettyAccountType.Standard;
-		case AccountType.Test:
-			return PrettyAccountType.Test;
-	}
+const accountRowToAccount = (row: AccountRow): Account => {
+	const { totalPages: _, ...account } = row;
+	return account;
 };
-
-const prettifyAccountStatus = (
-	accountStatus: AccountStatus,
-): PrettyAccountStatus => {
-	switch (accountStatus) {
-		case AccountStatus.Ok:
-			return PrettyAccountStatus.Ok;
-		case AccountStatus.Invited:
-			return PrettyAccountStatus.Invited;
-	}
-};
-
-const accountRowToAccount = (row: AccountRow): Account => ({
-	id: row.id,
-	primaryEmail: {
-		address: row.primaryEmailAddress,
-		verified: row.emailStatus === "status.auth.ok",
-	},
-	...(row.primaryPhoneNumber !== null && {
-		primaryPhone: {
-			number: row.primaryPhoneNumber,
-			verified: row.phoneStatus === "status.auth.ok",
-		},
-	}),
-	fullName: row.fullName,
-	...(row.defaultArchiveId !== null && {
-		defaultArchiveId: row.defaultArchiveId,
-	}),
-	address: {
-		lineOne: row.addressLineOne,
-		lineTwo: row.addressLineTwo,
-		city: row.city,
-		state: row.state,
-		zip: row.zip,
-		country: row.country,
-	},
-	settings: {
-		hideChecklist: row.hideChecklist,
-		allowSftpDeletion: row.allowSftpDeletion,
-		notificationsEnabled: {
-			sms: row.notificationPreferences.textPreference,
-			email: row.notificationPreferences.emailPreference,
-			inApp: row.notificationPreferences.inAppPreference,
-		},
-	},
-	status: prettifyAccountStatus(row.status),
-	type: prettifyAccountType(row.type),
-});
 
 interface MailchimpApiError {
 	status: number;
@@ -114,7 +58,7 @@ export const getAccounts = async (
 			: [query.accountEmails.toLowerCase()];
 
 	const result = await db
-		.sql<AccountRow & { totalPages: number }>("account.queries.get_accounts", {
+		.sql<AccountRow>("account.queries.get_accounts", {
 			filterByIds,
 			accountIds,
 			accountEmails,
@@ -330,6 +274,27 @@ const getAccountArchive = async (
 	return accountArchiveResult.rows[0];
 };
 
+const getMe = async (email: string): Promise<Account> => {
+	const result = await db
+		.sql<AccountRow>("account.queries.get_accounts", {
+			filterByIds: false,
+			accountEmails: [email.toLowerCase()],
+			accountIds: [],
+			pageSize: 1,
+			cursor: undefined,
+		})
+		.catch((err: unknown) => {
+			logger.error(err);
+			throw new createError.InternalServerError("Failed to retrieve account");
+		});
+
+	if (result.rows[0] === undefined) {
+		throw new createError.NotFound("Account not found");
+	}
+
+	return accountRowToAccount(result.rows[0]);
+};
+
 export const accountService = {
 	getSignupDetails,
 	leaveArchive,
@@ -337,6 +302,7 @@ export const accountService = {
 	getMarketingTags,
 	postMarketingTags,
 	getAccountArchive,
+	getMe,
 };
 
 export const createStorageAdjustment = async (

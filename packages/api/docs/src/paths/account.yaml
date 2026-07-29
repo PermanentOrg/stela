@@ -157,7 +157,6 @@ accounts/me:
       - bearerHttpAuthentication: []
     tags:
       - accounts
-      - unimplemented
     responses:
       "200":
         description: >

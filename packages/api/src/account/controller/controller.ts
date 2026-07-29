@@ -81,6 +81,19 @@ accountController.get(
 		}
 	},
 );
+accountController.get(
+	"/me",
+	verifyUserAuthentication,
+	async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+		try {
+			validateBodyFromAuthentication(req.body);
+			const account = await accountService.getMe(req.body.emailFromAuthToken);
+			res.status(HTTP_STATUS.SUCCESSFUL.OK).json({ data: account });
+		} catch (err) {
+			next(err);
+		}
+	},
+);
 accountController.delete(
 	"/archive/:archiveId",
 	verifyUserAuthentication,

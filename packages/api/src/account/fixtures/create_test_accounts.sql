@@ -6,7 +6,9 @@ account (
   notificationpreferences,
   type,
   fullname,
-  subject
+  subject,
+  createddt,
+  updateddt
 )
 VALUES
 (
@@ -16,7 +18,9 @@ VALUES
   '{}',
   'type.account.standard',
   'Jack Rando',
-  null
+  null,
+  '2026-06-01',
+  '2026-07-01'
 ),
 (
   3,
@@ -25,7 +29,9 @@ VALUES
   '{}',
   'type.account.standard',
   'John Rando',
-  '553f3cb8-b753-43ce-83af-4443a404741b'
+  '553f3cb8-b753-43ce-83af-4443a404741b',
+  null,
+  null
 ),
 (
   4,
@@ -34,6 +40,8 @@ VALUES
   '{}',
   'type.account.standard',
   'Jane Rando',
+  null,
+  null,
   null
 ),
 (
@@ -43,6 +51,8 @@ VALUES
   '{}',
   'type.account.standard',
   'Jenny Rando',
+  null,
+  null,
   null
 ),
 (
@@ -52,5 +62,7 @@ VALUES
   '{}',
   'type.account.standard',
   'Jenny Rando',
+  null,
+  null,
   null
 );

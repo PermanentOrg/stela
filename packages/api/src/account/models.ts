@@ -1,3 +1,5 @@
+import type { ArchiveMembershipRole } from "../access/models.js";
+
 interface NotificationTypePreference {
 	apps?: { confirmations?: boolean };
 	share?: {
@@ -19,10 +21,23 @@ interface NotificationTypePreference {
 	};
 }
 
-interface RawNotificationPreferences {
-	textPreference?: NotificationTypePreference;
-	emailPreference?: NotificationTypePreference;
-	inAppPreference?: NotificationTypePreference;
+export interface ArchiveSummary {
+	id: string;
+	name: string | null;
+	thumbnailUrls: {
+		width200: string | null;
+		width500: string | null;
+		width1000: string | null;
+		width2000: string | null;
+	};
+}
+
+export interface ArchiveMembership {
+	id: string;
+	accountId: string;
+	archive: ArchiveSummary;
+	accessRole: ArchiveMembershipRole;
+	status: "ok" | "pending";
 }
 
 export interface Account {
@@ -31,12 +46,12 @@ export interface Account {
 		address: string;
 		verified: boolean;
 	};
-	primaryPhone?: {
+	primaryPhone: {
 		number: string;
 		verified: boolean;
-	};
+	} | null;
 	fullName: string | null;
-	defaultArchiveId?: string;
+	defaultArchiveId: string | null;
 	address: {
 		lineOne: string | null;
 		lineTwo: string | null;
@@ -56,27 +71,13 @@ export interface Account {
 	};
 	status: PrettyAccountStatus;
 	type: PrettyAccountType;
+	archiveMemberships: ArchiveMembership[];
+	createdAt: string;
+	updatedAt: string;
 }
 
-export interface AccountRow {
-	id: string;
-	primaryEmailAddress: string;
-	emailStatus: string | null;
-	primaryPhoneNumber: string | null;
-	phoneStatus: string | null;
-	fullName: string | null;
-	defaultArchiveId: string | null;
-	addressLineOne: string | null;
-	addressLineTwo: string | null;
-	city: string | null;
-	state: string | null;
-	zip: string | null;
-	country: string | null;
-	hideChecklist: boolean;
-	allowSftpDeletion: boolean;
-	notificationPreferences: RawNotificationPreferences;
-	status: AccountStatus;
-	type: AccountType;
+export interface AccountRow extends Account {
+	totalPages: number;
 }
 
 export interface GetAccountsQuery {
@@ -139,16 +140,6 @@ export interface StorageAdjustment {
 	newStorageTotal: number;
 	adjustmentAmount: number;
 	createdAt: Date;
-}
-
-export enum AccountStatus {
-	Ok = "status.auth.ok",
-	Invited = "status.generic.invited",
-}
-
-export enum AccountType {
-	Standard = "type.account.standard",
-	Test = "type.account.test",
 }
 
 export enum PrettyAccountStatus {
