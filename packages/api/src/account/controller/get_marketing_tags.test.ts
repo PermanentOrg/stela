@@ -31,6 +31,7 @@ describe("getMarketingTags", () => {
 				{ id: 1, name: "tag1", date_added: "2024-01-01" },
 				{ id: 2, name: "tag2", date_added: "2024-01-02" },
 			],
+			total_items: 2,
 		});
 
 		const response = await agent
@@ -47,6 +48,7 @@ describe("getMarketingTags", () => {
 	test("should return an empty list when the account has no tags", async () => {
 		vi.mocked(MailchimpMarketing.lists.getListMemberTags).mockResolvedValue({
 			tags: [],
+			total_items: 0,
 		});
 
 		const response = await agent

@@ -57,12 +57,45 @@ describe("updateTags", () => {
 	});
 
 	test("should throw an error if MailChimp call fails", async () => {
-		vi.mocked(MailchimpMarketing.lists.updateListMemberTags).mockResolvedValue({
-			detail: "Out of Cheese - Redo from Start",
+		vi.mocked(MailchimpMarketing.lists.updateListMemberTags).mockRejectedValue({
 			status: 500,
-			type: "",
-			title: "",
-			instance: "",
+			response: {
+				body: {
+					detail: "Out of Cheese - Redo from Start",
+					status: 500,
+					type: "",
+					title: "",
+					instance: "",
+				},
+			},
+		});
+		await agent
+			.put("/api/v2/accounts/tags")
+			.send({
+				emailFromAuthToken: "test@permanent.org",
+				addTags: ["tag1", "tag2"],
+				removeTags: ["tag3", "tag4"],
+			})
+			.expect(500);
+	});
+
+	test("should use the error's status even if the received error response is empty", async () => {
+		vi.mocked(MailchimpMarketing.lists.updateListMemberTags).mockRejectedValue({
+			status: 418,
+		});
+		await agent
+			.put("/api/v2/accounts/tags")
+			.send({
+				emailFromAuthToken: "test@permanent.org",
+				addTags: ["tag1", "tag2"],
+				removeTags: ["tag3", "tag4"],
+			})
+			.expect(418);
+	});
+
+	test("should default to a 500 error if the error from Mailchimp has no status", async () => {
+		vi.mocked(MailchimpMarketing.lists.updateListMemberTags).mockRejectedValue({
+			error: "Out of cheese - redo from start",
 		});
 		await agent
 			.put("/api/v2/accounts/tags")

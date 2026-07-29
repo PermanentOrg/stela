@@ -1,8 +1,8 @@
 import { Md5 } from "ts-md5";
 import createError from "http-errors";
 import { HTTP_STATUS } from "@pdc/http-status-codes";
-import { logger } from "@stela/logger";
 import type { ErrorResponse } from "@mailchimp/mailchimp_marketing";
+import { logger } from "@stela/logger";
 
 import { db } from "../database.js";
 import { MailchimpMarketing } from "../mailchimp.js";
@@ -13,6 +13,7 @@ import type { CreateEventRequest } from "../event/models.js";
 import {
 	type UpdateTagsRequest,
 	type GetMarketingTagsResponse,
+	type PostMarketingTagsRequest,
 	type SignupDetails,
 	type GetAccountArchiveResult,
 	type LeaveArchiveRequest,
@@ -85,6 +86,18 @@ const accountRowToAccount = (row: AccountRow): Account => ({
 	type: prettifyAccountType(row.type),
 });
 
+interface MailchimpApiError {
+	status: number;
+	response?: {
+		body: ErrorResponse;
+	};
+}
+
+const isMailchimpApiError = (err: unknown): err is MailchimpApiError =>
+	err instanceof Object &&
+	"status" in err &&
+	typeof (err as { status: unknown }).status === "number";
+
 export const getAccounts = async (
 	query: GetAccountsQuery,
 ): Promise<GetAccountsResponse> => {
@@ -143,28 +156,52 @@ const updateTags = async (requestBody: UpdateTagsRequest): Promise<void> => {
 			),
 		);
 
-	const response = await MailchimpMarketing.lists.updateListMemberTags(
-		process.env["MAILCHIMP_COMMUNITY_LIST_ID"] ?? "",
-		Md5.hashStr(requestBody.emailFromAuthToken),
-		{ tags },
-	);
-
-	if (response !== null) {
-		throw createError(response.status, response.detail);
+	try {
+		await MailchimpMarketing.lists.updateListMemberTags(
+			process.env["MAILCHIMP_COMMUNITY_LIST_ID"] ?? "",
+			Md5.hashStr(requestBody.emailFromAuthToken),
+			{ tags },
+		);
+	} catch (err) {
+		if (isMailchimpApiError(err)) {
+			throw err.response === undefined
+				? createError(err.status)
+				: createError(err.status, err.response.body.detail);
+		}
+		throw err;
 	}
 };
 
-interface MailchimpApiError {
-	status: number;
-	response?: {
-		body: ErrorResponse;
-	};
-}
+const postMarketingTags = async (
+	requestBody: PostMarketingTagsRequest,
+): Promise<{ items: string[] }> => {
+	const subscriberHash = Md5.hashStr(requestBody.emailFromAuthToken);
+	const listId = process.env["MAILCHIMP_COMMUNITY_LIST_ID"] ?? "";
 
-const isMailchimpApiError = (err: unknown): err is MailchimpApiError =>
-	err instanceof Object &&
-	"status" in err &&
-	typeof (err as { status: unknown }).status === "number";
+	try {
+		await MailchimpMarketing.lists.updateListMemberTags(
+			listId,
+			subscriberHash,
+			{
+				tags: requestBody.tags.map((tag) => ({ name: tag, status: "active" })),
+			},
+		);
+
+		const tagsResponse = await MailchimpMarketing.lists.getListMemberTags(
+			listId,
+			subscriberHash,
+		);
+
+		return { items: tagsResponse.tags.map((tag) => tag.name) };
+	} catch (err) {
+		if (isMailchimpApiError(err)) {
+			throw err.response === undefined
+				? createError(err.status)
+				: createError(err.status, err.response.body.detail);
+		}
+		throw err;
+	}
+};
 
 const getMarketingTags = async (requestBody: {
 	emailFromAuthToken: string;
@@ -298,6 +335,7 @@ export const accountService = {
 	leaveArchive,
 	updateTags,
 	getMarketingTags,
+	postMarketingTags,
 	getAccountArchive,
 };
 
