@@ -1,5 +1,13 @@
 import request from "supertest";
-import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
+import {
+	afterAll,
+	afterEach,
+	beforeEach,
+	describe,
+	expect,
+	test,
+	vi,
+} from "vitest";
 import type { NextFunction } from "express";
 import createError from "http-errors";
 import { logger } from "@stela/logger";
@@ -8,6 +16,7 @@ import { db } from "../database.js";
 import { lowPriorityTopicArn, publisherClient } from "@stela/publisher-utils";
 import { verifyAdminAuthentication } from "../middleware/index.js";
 import { mockVerifyAdminAuthentication } from "../../test/middleware_mocks.js";
+import { runFixtures } from "../../test/run_fixtures.js";
 
 vi.mock("../database");
 vi.mock("@stela/logger");
@@ -34,7 +43,7 @@ describe("recalculateFolderThumbnails", () => {
 		await loadFixtures();
 	});
 
-	afterEach(async () => {
+	afterAll(async () => {
 		await clearDatabase();
 	});
 
@@ -134,7 +143,7 @@ describe("set_null_subjects", () => {
 		await loadFixtures();
 	});
 
-	afterEach(async () => {
+	afterAll(async () => {
 		await clearDatabase();
 	});
 
@@ -369,11 +378,13 @@ describe("/record/:recordId/recalculate_thumbnail", () => {
 	const agent = request(app);
 
 	const loadFixtures = async (): Promise<void> => {
-		await db.sql("admin.fixtures.create_test_accounts");
-		await db.sql("admin.fixtures.create_test_archives");
-		await db.sql("admin.fixtures.create_test_records");
-		await db.sql("admin.fixtures.create_test_folders");
-		await db.sql("admin.fixtures.create_test_folder_links");
+		await runFixtures(db, [
+			"admin.fixtures.create_test_accounts",
+			"admin.fixtures.create_test_archives",
+			"admin.fixtures.create_test_records",
+			"admin.fixtures.create_test_folders",
+			"admin.fixtures.create_test_folder_links",
+		]);
 	};
 
 	const clearDatabase = async (): Promise<void> => {
@@ -392,7 +403,7 @@ describe("/record/:recordId/recalculate_thumbnail", () => {
 		await loadFixtures();
 	});
 
-	afterEach(async () => {
+	afterAll(async () => {
 		await clearDatabase();
 	});
 
@@ -476,11 +487,13 @@ describe("/folder/delete-orphaned-folders", () => {
 	const agent = request(app);
 
 	const loadFixtures = async (): Promise<void> => {
-		await db.sql("admin.fixtures.create_test_accounts");
-		await db.sql("admin.fixtures.create_test_archives");
-		await db.sql("admin.fixtures.create_test_folders");
-		await db.sql("admin.fixtures.create_test_records");
-		await db.sql("admin.fixtures.create_test_folder_links");
+		await runFixtures(db, [
+			"admin.fixtures.create_test_accounts",
+			"admin.fixtures.create_test_archives",
+			"admin.fixtures.create_test_folders",
+			"admin.fixtures.create_test_records",
+			"admin.fixtures.create_test_folder_links",
+		]);
 	};
 
 	beforeEach(async () => {

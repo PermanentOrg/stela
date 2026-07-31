@@ -1,5 +1,13 @@
 import request from "supertest";
-import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
+import {
+	afterAll,
+	afterEach,
+	beforeEach,
+	describe,
+	expect,
+	test,
+	vi,
+} from "vitest";
 import { when } from "vitest-when";
 import { logger } from "@stela/logger";
 import { app } from "../app.js";
@@ -7,6 +15,7 @@ import { db } from "../database.js";
 import { sendArchiveStewardNotification } from "../email/index.js";
 import type { Directive, DirectiveTrigger } from "./model.js";
 import { legacyClient } from "../legacy_client.js";
+import { runFixtures } from "../../test/run_fixtures.js";
 import {
 	mockVerifyUserAuthentication,
 	mockVerifyAdminAuthentication,
@@ -28,11 +37,13 @@ describe("GET /directive/archive/:archiveId", () => {
 	const testEmail = "test@permanent.org";
 
 	const loadFixtures = async (): Promise<void> => {
-		await db.sql("directive.fixtures.create_test_accounts");
-		await db.sql("directive.fixtures.create_test_archives");
-		await db.sql("directive.fixtures.create_test_account_archives");
-		await db.sql("directive.fixtures.create_test_directives");
-		await db.sql("directive.fixtures.create_test_directive_triggers");
+		await runFixtures(db, [
+			"directive.fixtures.create_test_accounts",
+			"directive.fixtures.create_test_archives",
+			"directive.fixtures.create_test_account_archives",
+			"directive.fixtures.create_test_directives",
+			"directive.fixtures.create_test_directive_triggers",
+		]);
 	};
 
 	const clearDatabase = async (): Promise<void> => {
@@ -50,7 +61,8 @@ describe("GET /directive/archive/:archiveId", () => {
 		await clearDatabase();
 		await loadFixtures();
 	});
-	afterEach(async () => {
+
+	afterAll(async () => {
 		await clearDatabase();
 	});
 
@@ -109,9 +121,11 @@ describe("POST /directive", () => {
 	const stewardEmail = "test+1@permanent.org";
 
 	const loadFixtures = async (): Promise<void> => {
-		await db.sql("directive.fixtures.create_test_accounts");
-		await db.sql("directive.fixtures.create_test_archives");
-		await db.sql("directive.fixtures.create_test_account_archives");
+		await runFixtures(db, [
+			"directive.fixtures.create_test_accounts",
+			"directive.fixtures.create_test_archives",
+			"directive.fixtures.create_test_account_archives",
+		]);
 	};
 
 	const clearDatabase = async (): Promise<void> => {
@@ -130,8 +144,11 @@ describe("POST /directive", () => {
 		await loadFixtures();
 	});
 	afterEach(async () => {
-		await clearDatabase();
 		vi.resetAllMocks();
+	});
+
+	afterAll(async () => {
+		await clearDatabase();
 	});
 
 	test("should successfully create a directive and trigger", async () => {
@@ -343,11 +360,13 @@ describe("PUT /directive/:directiveId", () => {
 	const testNote = "test note";
 
 	const loadFixtures = async (): Promise<void> => {
-		await db.sql("directive.fixtures.create_test_accounts");
-		await db.sql("directive.fixtures.create_test_archives");
-		await db.sql("directive.fixtures.create_test_account_archives");
-		await db.sql("directive.fixtures.create_test_directives");
-		await db.sql("directive.fixtures.create_test_directive_triggers");
+		await runFixtures(db, [
+			"directive.fixtures.create_test_accounts",
+			"directive.fixtures.create_test_archives",
+			"directive.fixtures.create_test_account_archives",
+			"directive.fixtures.create_test_directives",
+			"directive.fixtures.create_test_directive_triggers",
+		]);
 	};
 
 	const clearDatabase = async (): Promise<void> => {
@@ -365,8 +384,11 @@ describe("PUT /directive/:directiveId", () => {
 		await loadFixtures();
 	});
 	afterEach(async () => {
-		await clearDatabase();
 		vi.resetAllMocks();
+	});
+
+	afterAll(async () => {
+		await clearDatabase();
 	});
 
 	test("should successfully update steward account and note", async () => {
@@ -638,11 +660,13 @@ describe("POST /trigger/account/:accountId", () => {
 	const testDirectiveId = "39b2a5fa-3508-4030-91b6-21dc6ec7a1ab";
 
 	const loadFixtures = async (): Promise<void> => {
-		await db.sql("directive.fixtures.create_test_accounts");
-		await db.sql("directive.fixtures.create_test_archives");
-		await db.sql("directive.fixtures.create_test_account_archives");
-		await db.sql("directive.fixtures.create_test_directives");
-		await db.sql("directive.fixtures.create_test_directive_triggers");
+		await runFixtures(db, [
+			"directive.fixtures.create_test_accounts",
+			"directive.fixtures.create_test_archives",
+			"directive.fixtures.create_test_account_archives",
+			"directive.fixtures.create_test_directives",
+			"directive.fixtures.create_test_directive_triggers",
+		]);
 	};
 
 	const clearDatabase = async (): Promise<void> => {
@@ -662,7 +686,8 @@ describe("POST /trigger/account/:accountId", () => {
 			"373f94fb-88f0-4acb-9638-9d554ec51520",
 		);
 	});
-	afterEach(async () => {
+
+	afterAll(async () => {
 		await clearDatabase();
 	});
 

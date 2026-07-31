@@ -1,5 +1,13 @@
 import request from "supertest";
-import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
+import {
+	afterAll,
+	afterEach,
+	beforeEach,
+	describe,
+	expect,
+	test,
+	vi,
+} from "vitest";
 import type { NextFunction } from "express";
 import createError from "http-errors";
 import { logger } from "@stela/logger";
@@ -35,6 +43,9 @@ describe("POST /promo", () => {
 	afterEach(async () => {
 		vi.restoreAllMocks();
 		vi.clearAllMocks();
+	});
+
+	afterAll(async () => {
 		await clearDatabase();
 	});
 

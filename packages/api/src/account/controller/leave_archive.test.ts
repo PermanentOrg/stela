@@ -6,6 +6,7 @@ import { db } from "../../database.js";
 import { EVENT_ACTION, EVENT_ACTOR, EVENT_ENTITY } from "../../constants.js";
 import { app } from "../../app.js";
 import { createEvent } from "../../event/service.js";
+import { runFixtures } from "../../../test/run_fixtures.js";
 import {
 	mockVerifyUserAuthentication,
 	mockExtractIp,
@@ -16,9 +17,11 @@ vi.mock("../../middleware");
 vi.mock("../../event/service");
 
 const loadFixtures = async (): Promise<void> => {
-	await db.sql("account.fixtures.create_test_accounts");
-	await db.sql("account.fixtures.create_test_archives");
-	await db.sql("account.fixtures.create_test_account_archives");
+	await runFixtures(db, [
+		"account.fixtures.create_test_accounts",
+		"account.fixtures.create_test_archives",
+		"account.fixtures.create_test_account_archives",
+	]);
 };
 
 const clearDatabase = async (): Promise<void> => {

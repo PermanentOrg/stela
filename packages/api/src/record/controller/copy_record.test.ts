@@ -1,5 +1,13 @@
 import request from "supertest";
-import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
+import {
+	afterAll,
+	afterEach,
+	beforeEach,
+	describe,
+	expect,
+	test,
+	vi,
+} from "vitest";
 import type { NextFunction } from "express";
 import { when } from "vitest-when";
 import createError from "http-errors";
@@ -13,33 +21,36 @@ import {
 	mockExtractIp,
 } from "../../../test/middleware_mocks.js";
 import { mockSqlCall } from "../../../test/mock_sql.js";
+import { runFixtures } from "../../../test/run_fixtures.js";
 
 vi.mock("../../database");
 vi.mock("../../middleware");
 vi.mock("@stela/logger");
 
 const setupDatabase = async (): Promise<void> => {
-	await db.sql("record.fixtures.create_test_accounts");
-	await db.sql("record.fixtures.create_test_archives");
-	await db.sql("record.fixtures.create_test_account_archives");
-	await db.sql("record.fixtures.create_test_locations");
-	await db.sql("record.fixtures.create_test_records");
-	await db.sql("record.fixtures.create_complete_test_record");
-	await db.sql("record.fixtures.create_test_folders");
-	await db.sql("record.fixtures.create_test_folder_links");
-	await db.sql("record.fixtures.create_test_accesses");
-	await db.sql("record.fixtures.create_test_files");
-	await db.sql("record.fixtures.create_complete_test_files");
-	await db.sql("record.fixtures.create_test_record_files");
-	await db.sql("record.fixtures.create_test_tags");
-	await db.sql("record.fixtures.create_test_tag_links");
-	await db.sql("record.fixtures.create_test_shares");
-	await db.sql("record.fixtures.create_test_profile_items");
-	await db.sql("record.fixtures.create_complete_test_folder_links");
-	await db.sql("record.fixtures.create_test_shareby_urls");
-	await db.sql("record.fixtures.create_test_invite_shares");
-	await db.sql("record.fixtures.create_test_account_space");
-	await db.sql("record.fixtures.create_test_archive_nbr");
+	await runFixtures(db, [
+		"record.fixtures.create_test_accounts",
+		"record.fixtures.create_test_archives",
+		"record.fixtures.create_test_account_archives",
+		"record.fixtures.create_test_locations",
+		"record.fixtures.create_test_records",
+		"record.fixtures.create_complete_test_record",
+		"record.fixtures.create_test_folders",
+		"record.fixtures.create_test_folder_links",
+		"record.fixtures.create_test_accesses",
+		"record.fixtures.create_test_files",
+		"record.fixtures.create_complete_test_files",
+		"record.fixtures.create_test_record_files",
+		"record.fixtures.create_test_tags",
+		"record.fixtures.create_test_tag_links",
+		"record.fixtures.create_test_shares",
+		"record.fixtures.create_test_profile_items",
+		"record.fixtures.create_complete_test_folder_links",
+		"record.fixtures.create_test_shareby_urls",
+		"record.fixtures.create_test_invite_shares",
+		"record.fixtures.create_test_account_space",
+		"record.fixtures.create_test_archive_nbr",
+	]);
 };
 
 const clearDatabase = async (): Promise<void> => {
@@ -78,9 +89,12 @@ describe("POST /record/{recordId}/copies", () => {
 	});
 
 	afterEach(async () => {
-		await clearDatabase();
 		vi.restoreAllMocks();
 		vi.resetAllMocks();
+	});
+
+	afterAll(async () => {
+		await clearDatabase();
 	});
 
 	test("expect 401 if not authenticated", async () => {

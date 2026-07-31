@@ -1,23 +1,26 @@
 import { db } from "../../database.js";
+import { runFixtures } from "../../../test/run_fixtures.js";
 
 export const loadFixtures = async (): Promise<void> => {
-	await db.sql("folder.fixtures.create_test_accounts");
-	await db.sql("folder.fixtures.create_test_archives");
-	await db.sql("folder.fixtures.create_test_account_archives");
-	await db.sql("folder.fixtures.create_test_locations");
-	await db.sql("folder.fixtures.create_test_folders");
-	await db.sql("folder.fixtures.create_test_records");
-	await db.sql("folder.fixtures.create_test_files");
-	await db.sql("folder.fixtures.create_test_record_files");
-	await db.sql("folder.fixtures.create_test_folder_links");
-	await db.sql("folder.fixtures.create_test_shareby_urls");
-	await db.sql("folder.fixtures.create_test_accesses");
-	await db.sql("folder.fixtures.create_test_folder_sizes");
-	await db.sql("folder.fixtures.create_test_shares");
-	await db.sql("folder.fixtures.create_test_profile_items");
-	await db.sql("folder.fixtures.create_test_tags");
-	await db.sql("folder.fixtures.create_test_tag_links");
-	await db.sql("folder.fixtures.create_test_invite_shares");
+	await runFixtures(db, [
+		"folder.fixtures.create_test_accounts",
+		"folder.fixtures.create_test_archives",
+		"folder.fixtures.create_test_account_archives",
+		"folder.fixtures.create_test_locations",
+		"folder.fixtures.create_test_folders",
+		"folder.fixtures.create_test_records",
+		"folder.fixtures.create_test_files",
+		"folder.fixtures.create_test_record_files",
+		"folder.fixtures.create_test_folder_links",
+		"folder.fixtures.create_test_shareby_urls",
+		"folder.fixtures.create_test_accesses",
+		"folder.fixtures.create_test_folder_sizes",
+		"folder.fixtures.create_test_shares",
+		"folder.fixtures.create_test_profile_items",
+		"folder.fixtures.create_test_tags",
+		"folder.fixtures.create_test_tag_links",
+		"folder.fixtures.create_test_invite_shares",
+	]);
 };
 
 export const clearDatabase = async (): Promise<void> => {

@@ -1,5 +1,13 @@
 import request from "supertest";
-import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
+import {
+	afterAll,
+	afterEach,
+	beforeEach,
+	describe,
+	expect,
+	test,
+	vi,
+} from "vitest";
 import { when } from "vitest-when";
 import { logger } from "@stela/logger";
 import { app } from "../app.js";
@@ -11,6 +19,7 @@ import {
 	sendGiftNotification,
 } from "../email/index.js";
 import { mockVerifyUserAuthentication } from "../../test/middleware_mocks.js";
+import { runFixtures } from "../../test/run_fixtures.js";
 
 vi.mock("../database");
 vi.mock("../middleware");
@@ -135,8 +144,11 @@ describe("/storage/gift", () => {
 	});
 
 	afterEach(async () => {
-		await clearDatabase();
 		vi.resetAllMocks();
+	});
+
+	afterAll(async () => {
+		await clearDatabase();
 	});
 
 	test("should call verifyUserAuthentication", async () => {
@@ -250,9 +262,11 @@ describe("/storage/gift", () => {
 	});
 
 	test("should return a 500 error if email from auth token has no permanent account", async () => {
-		await db.sql("storage.fixtures.create_test_accounts");
-		await db.sql("storage.fixtures.create_test_account_space");
-		await db.sql("storage.fixtures.create_test_emails");
+		await runFixtures(db, [
+			"storage.fixtures.create_test_accounts",
+			"storage.fixtures.create_test_account_space",
+			"storage.fixtures.create_test_emails",
+		]);
 		mockVerifyUserAuthentication(
 			"not_a_user@permanent.org",
 			"13bb917e-7c75-4971-a8ee-b22e82432888",
@@ -268,9 +282,11 @@ describe("/storage/gift", () => {
 	});
 
 	test("should create a ledger entry with correct values if recipient already has an account", async () => {
-		await db.sql("storage.fixtures.create_test_accounts");
-		await db.sql("storage.fixtures.create_test_account_space");
-		await db.sql("storage.fixtures.create_test_emails");
+		await runFixtures(db, [
+			"storage.fixtures.create_test_accounts",
+			"storage.fixtures.create_test_account_space",
+			"storage.fixtures.create_test_emails",
+		]);
 
 		const initialSenderSpace = await getAccountSpace(senderAccountId);
 		const initialRecipientSpace = await getAccountSpace(recipientOneAccountId);
@@ -288,9 +304,11 @@ describe("/storage/gift", () => {
 	});
 
 	test("successful gift should update account_space for sender", async () => {
-		await db.sql("storage.fixtures.create_test_accounts");
-		await db.sql("storage.fixtures.create_test_account_space");
-		await db.sql("storage.fixtures.create_test_emails");
+		await runFixtures(db, [
+			"storage.fixtures.create_test_accounts",
+			"storage.fixtures.create_test_account_space",
+			"storage.fixtures.create_test_emails",
+		]);
 
 		const initialAccountSpace = await getAccountSpace(senderAccountId);
 		await agent
@@ -321,9 +339,11 @@ describe("/storage/gift", () => {
 	});
 
 	test("successful gift should update account_space for recipient", async () => {
-		await db.sql("storage.fixtures.create_test_accounts");
-		await db.sql("storage.fixtures.create_test_emails");
-		await db.sql("storage.fixtures.create_test_account_space");
+		await runFixtures(db, [
+			"storage.fixtures.create_test_accounts",
+			"storage.fixtures.create_test_emails",
+			"storage.fixtures.create_test_account_space",
+		]);
 		const initialAccountSpace = await getAccountSpace(recipientOneAccountId);
 		await agent
 			.post("/api/v2/storage/gift")
@@ -353,9 +373,11 @@ describe("/storage/gift", () => {
 	});
 
 	test("should create a multiple correct ledger entries if there are multiple recipients", async () => {
-		await db.sql("storage.fixtures.create_test_accounts");
-		await db.sql("storage.fixtures.create_test_account_space");
-		await db.sql("storage.fixtures.create_test_emails");
+		await runFixtures(db, [
+			"storage.fixtures.create_test_accounts",
+			"storage.fixtures.create_test_account_space",
+			"storage.fixtures.create_test_emails",
+		]);
 
 		const initialSenderSpace = await getAccountSpace(senderAccountId);
 		const initialRecipientOneSpace = await getAccountSpace(
@@ -388,9 +410,11 @@ describe("/storage/gift", () => {
 	});
 
 	test("should return an invalid request status if sender doesn't have enough storage", async () => {
-		await db.sql("storage.fixtures.create_test_accounts");
-		await db.sql("storage.fixtures.create_test_account_space");
-		await db.sql("storage.fixtures.create_test_emails");
+		await runFixtures(db, [
+			"storage.fixtures.create_test_accounts",
+			"storage.fixtures.create_test_account_space",
+			"storage.fixtures.create_test_emails",
+		]);
 
 		await agent
 			.post("/api/v2/storage/gift")
@@ -402,9 +426,11 @@ describe("/storage/gift", () => {
 	});
 
 	test("should create an invite if recipient doesn't have an account", async () => {
-		await db.sql("storage.fixtures.create_test_accounts");
-		await db.sql("storage.fixtures.create_test_account_space");
-		await db.sql("storage.fixtures.create_test_emails");
+		await runFixtures(db, [
+			"storage.fixtures.create_test_accounts",
+			"storage.fixtures.create_test_account_space",
+			"storage.fixtures.create_test_emails",
+		]);
 
 		const newUserEmails = [
 			"test+not_a_user_yet@permanent.org",
@@ -430,10 +456,12 @@ describe("/storage/gift", () => {
 	});
 
 	test("should not create an invite if recipient already has an invite", async () => {
-		await db.sql("storage.fixtures.create_test_accounts");
-		await db.sql("storage.fixtures.create_test_account_space");
-		await db.sql("storage.fixtures.create_test_emails");
-		await db.sql("storage.fixtures.create_test_invites");
+		await runFixtures(db, [
+			"storage.fixtures.create_test_accounts",
+			"storage.fixtures.create_test_account_space",
+			"storage.fixtures.create_test_emails",
+			"storage.fixtures.create_test_invites",
+		]);
 
 		const newUserEmails = ["Test+Already_Invited@permanent.org"];
 
@@ -453,9 +481,11 @@ describe("/storage/gift", () => {
 	});
 
 	test("should create a gift purchase ledger entry if recipient doesn't have an account", async () => {
-		await db.sql("storage.fixtures.create_test_accounts");
-		await db.sql("storage.fixtures.create_test_account_space");
-		await db.sql("storage.fixtures.create_test_emails");
+		await runFixtures(db, [
+			"storage.fixtures.create_test_accounts",
+			"storage.fixtures.create_test_account_space",
+			"storage.fixtures.create_test_emails",
+		]);
 
 		const initialSenderSpace = await getAccountSpace(senderAccountId);
 
@@ -485,9 +515,11 @@ describe("/storage/gift", () => {
 	});
 
 	test("should send invitation email if recipient doesn't have an account", async () => {
-		await db.sql("storage.fixtures.create_test_accounts");
-		await db.sql("storage.fixtures.create_test_account_space");
-		await db.sql("storage.fixtures.create_test_emails");
+		await runFixtures(db, [
+			"storage.fixtures.create_test_accounts",
+			"storage.fixtures.create_test_account_space",
+			"storage.fixtures.create_test_emails",
+		]);
 
 		const newUserEmails = [
 			"test+not_a_user_yet@permanent.org",
@@ -506,9 +538,11 @@ describe("/storage/gift", () => {
 	});
 
 	test("should send gift notification email if recipient does have an account", async () => {
-		await db.sql("storage.fixtures.create_test_accounts");
-		await db.sql("storage.fixtures.create_test_account_space");
-		await db.sql("storage.fixtures.create_test_emails");
+		await runFixtures(db, [
+			"storage.fixtures.create_test_accounts",
+			"storage.fixtures.create_test_account_space",
+			"storage.fixtures.create_test_emails",
+		]);
 
 		const newUserEmails = ["test+1@permanent.org"];
 
@@ -524,10 +558,12 @@ describe("/storage/gift", () => {
 	});
 
 	test("should report what happened to each email passed in", async () => {
-		await db.sql("storage.fixtures.create_test_accounts");
-		await db.sql("storage.fixtures.create_test_account_space");
-		await db.sql("storage.fixtures.create_test_emails");
-		await db.sql("storage.fixtures.create_test_invites");
+		await runFixtures(db, [
+			"storage.fixtures.create_test_accounts",
+			"storage.fixtures.create_test_account_space",
+			"storage.fixtures.create_test_emails",
+			"storage.fixtures.create_test_invites",
+		]);
 
 		const recipientEmails = [
 			"test+already_invited@permanent.org",

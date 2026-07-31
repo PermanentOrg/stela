@@ -1,5 +1,13 @@
 import request from "supertest";
-import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
+import {
+	afterAll,
+	afterEach,
+	beforeEach,
+	describe,
+	expect,
+	test,
+	vi,
+} from "vitest";
 import type { NextFunction } from "express";
 import createError from "http-errors";
 import type { TinyPg, TinyPgParams } from "tinypg";
@@ -9,6 +17,7 @@ import { db } from "../../database.js";
 import { GB } from "../../constants.js";
 import { verifyUserAuthentication } from "../../middleware/index.js";
 import { mockVerifyUserAuthentication } from "../../../test/middleware_mocks.js";
+import { runFixtures } from "../../../test/run_fixtures.js";
 
 vi.mock("../../database");
 vi.mock("../../middleware");
@@ -61,9 +70,11 @@ describe("POST /accounts/me/promo-claim", () => {
 	const agent = request(app);
 
 	const setupDatabase = async (): Promise<void> => {
-		await db.sql("account.fixtures.create_test_accounts");
-		await db.sql("account.fixtures.create_test_account_space");
-		await db.sql("account.fixtures.create_test_promos_for_claim");
+		await runFixtures(db, [
+			"account.fixtures.create_test_accounts",
+			"account.fixtures.create_test_account_space",
+			"account.fixtures.create_test_promos_for_claim",
+		]);
 	};
 
 	const clearDatabase = async (): Promise<void> => {
@@ -99,8 +110,11 @@ describe("POST /accounts/me/promo-claim", () => {
 	});
 
 	afterEach(async () => {
-		await clearDatabase();
 		vi.restoreAllMocks();
+	});
+
+	afterAll(async () => {
+		await clearDatabase();
 	});
 
 	test("should return 200 with the storage grant in GB", async () => {

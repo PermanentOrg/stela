@@ -1,5 +1,13 @@
 import { logger } from "@stela/logger";
-import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
+import {
+	afterAll,
+	afterEach,
+	beforeEach,
+	describe,
+	expect,
+	test,
+	vi,
+} from "vitest";
 import request from "supertest";
 import { app } from "../../app.js";
 import { db } from "../../database.js";
@@ -25,9 +33,12 @@ describe("patch folder", () => {
 	});
 
 	afterEach(async () => {
-		await clearDatabase();
 		vi.restoreAllMocks();
 		vi.resetAllMocks();
+	});
+
+	afterAll(async () => {
+		await clearDatabase();
 	});
 
 	test("expect an empty query to cause a 400 error", async () => {

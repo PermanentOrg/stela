@@ -1,19 +1,30 @@
 import request from "supertest";
-import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
+import {
+	afterAll,
+	afterEach,
+	beforeEach,
+	describe,
+	expect,
+	test,
+	vi,
+} from "vitest";
 import { logger } from "@stela/logger";
 import { app } from "../../app.js";
 import { db } from "../../database.js";
+import { runFixtures } from "../../../test/run_fixtures.js";
 
 vi.mock("../../database");
 vi.mock("@stela/logger");
 
 const loadFixtures = async (): Promise<void> => {
-	await db.sql("archive.fixtures.create_test_accounts");
-	await db.sql("archive.fixtures.create_test_archives");
-	await db.sql("archive.fixtures.create_test_records");
-	await db.sql("archive.fixtures.create_test_folders");
-	await db.sql("archive.fixtures.create_test_tags");
-	await db.sql("archive.fixtures.create_test_tag_links");
+	await runFixtures(db, [
+		"archive.fixtures.create_test_accounts",
+		"archive.fixtures.create_test_archives",
+		"archive.fixtures.create_test_records",
+		"archive.fixtures.create_test_folders",
+		"archive.fixtures.create_test_tags",
+		"archive.fixtures.create_test_tag_links",
+	]);
 };
 
 const clearDatabase = async (): Promise<void> => {
@@ -29,8 +40,11 @@ describe("getPublicTags", () => {
 		await loadFixtures();
 	});
 	afterEach(async () => {
-		await clearDatabase();
 		vi.clearAllMocks();
+	});
+
+	afterAll(async () => {
+		await clearDatabase();
 	});
 
 	test("should return public tags and not private or deleted tags", async () => {

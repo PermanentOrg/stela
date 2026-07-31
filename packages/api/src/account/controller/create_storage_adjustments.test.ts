@@ -1,5 +1,13 @@
 import request from "supertest";
-import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
+import {
+	afterAll,
+	afterEach,
+	beforeEach,
+	describe,
+	expect,
+	test,
+	vi,
+} from "vitest";
 import { when } from "vitest-when";
 import { logger } from "@stela/logger";
 import { app } from "../../app.js";
@@ -8,6 +16,7 @@ import { GB } from "../../constants.js";
 import { verifyAdminAuthentication } from "../../middleware/index.js";
 import type { StorageAdjustment } from "../models.js";
 import { mockVerifyAdminAuthentication } from "../../../test/middleware_mocks.js";
+import { runFixtures } from "../../../test/run_fixtures.js";
 
 vi.mock("../../database");
 vi.mock("../../middleware");
@@ -34,9 +43,11 @@ describe("/account/storage-adjustments", () => {
 	const agent = request(app);
 
 	const setupDatabase = async (): Promise<void> => {
-		await db.sql("storage.fixtures.create_test_accounts");
-		await db.sql("storage.fixtures.create_test_account_space");
-		await db.sql("storage.fixtures.create_test_emails");
+		await runFixtures(db, [
+			"storage.fixtures.create_test_accounts",
+			"storage.fixtures.create_test_account_space",
+			"storage.fixtures.create_test_emails",
+		]);
 	};
 
 	const clearDatabase = async (): Promise<void> => {
@@ -55,8 +66,11 @@ describe("/account/storage-adjustments", () => {
 	});
 
 	afterEach(async () => {
-		await clearDatabase();
 		vi.resetAllMocks();
+	});
+
+	afterAll(async () => {
+		await clearDatabase();
 	});
 
 	test("should call verifyAdminAuthentication", async () => {

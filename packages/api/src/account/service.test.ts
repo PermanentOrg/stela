@@ -1,15 +1,18 @@
 import { InternalServerError } from "http-errors";
-import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
+import { afterAll, beforeEach, describe, expect, test, vi } from "vitest";
 import { db } from "../database.js";
 import { accountService } from "./service.js";
+import { runFixtures } from "../../test/run_fixtures.js";
 
 vi.mock("../database");
 
 const loadFixtures = async (): Promise<void> => {
-	await db.sql("account.fixtures.create_test_accounts");
-	await db.sql("account.fixtures.create_test_invites");
-	await db.sql("account.fixtures.create_test_archives");
-	await db.sql("account.fixtures.create_test_account_archives");
+	await runFixtures(db, [
+		"account.fixtures.create_test_accounts",
+		"account.fixtures.create_test_invites",
+		"account.fixtures.create_test_archives",
+		"account.fixtures.create_test_account_archives",
+	]);
 };
 
 const clearDatabase = async (): Promise<void> => {
@@ -22,7 +25,7 @@ describe("getAccountArchive", () => {
 		await loadFixtures();
 	});
 
-	afterEach(async () => {
+	afterAll(async () => {
 		await clearDatabase();
 	});
 

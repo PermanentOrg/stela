@@ -4,6 +4,7 @@ import { logger } from "@stela/logger";
 import { app } from "../../app.js";
 import { db } from "../../database.js";
 import { ArchiveMembershipRole, type Archive } from "../models.js";
+import { runFixtures } from "../../../test/run_fixtures.js";
 import {
 	mockExtractUserIsAdminFromAuthToken,
 	mockExtractUserEmailFromAuthToken,
@@ -14,12 +15,14 @@ vi.mock("@stela/logger");
 vi.mock("../../middleware");
 
 const loadFixtures = async (): Promise<void> => {
-	await db.sql("archive.fixtures.create_test_accounts");
-	await db.sql("archive.fixtures.create_test_archives");
-	await db.sql("archive.fixtures.create_test_folders");
-	await db.sql("archive.fixtures.create_test_text_data");
-	await db.sql("archive.fixtures.create_test_profile_items");
-	await db.sql("archive.fixtures.create_test_account_archives");
+	await runFixtures(db, [
+		"archive.fixtures.create_test_accounts",
+		"archive.fixtures.create_test_archives",
+		"archive.fixtures.create_test_folders",
+		"archive.fixtures.create_test_text_data",
+		"archive.fixtures.create_test_profile_items",
+		"archive.fixtures.create_test_account_archives",
+	]);
 };
 
 const clearDatabase = async (): Promise<void> => {

@@ -1,5 +1,13 @@
 import request from "supertest";
-import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
+import {
+	afterAll,
+	afterEach,
+	beforeEach,
+	describe,
+	expect,
+	test,
+	vi,
+} from "vitest";
 import type { NextFunction } from "express";
 import { logger } from "@stela/logger";
 import createError from "http-errors";
@@ -42,6 +50,9 @@ describe("GET /feature-flags", () => {
 
 	afterEach(async () => {
 		vi.restoreAllMocks();
+	});
+
+	afterAll(async () => {
 		await clearDatabase();
 	});
 
@@ -121,6 +132,9 @@ describe("POST /feature-flag", () => {
 	afterEach(async () => {
 		vi.restoreAllMocks();
 		vi.clearAllMocks();
+	});
+
+	afterAll(async () => {
 		await clearDatabase();
 	});
 
@@ -258,6 +272,9 @@ describe("PUT /feature-flag/:featureFlagId", () => {
 	afterEach(async () => {
 		vi.restoreAllMocks();
 		vi.clearAllMocks();
+	});
+
+	afterAll(async () => {
 		await clearDatabase();
 	});
 
@@ -396,6 +413,9 @@ describe("DELETE /feature-flag/:featureFlagId", () => {
 	afterEach(async () => {
 		vi.restoreAllMocks();
 		vi.clearAllMocks();
+	});
+
+	afterAll(async () => {
 		await clearDatabase();
 	});
 

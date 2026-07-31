@@ -8,6 +8,7 @@ import { verifyAdminAuthentication } from "../../middleware/index.js";
 import { db } from "../../database.js";
 import { publisherClient } from "@stela/publisher-utils";
 import { mockVerifyAdminAuthentication } from "../../../test/middleware_mocks.js";
+import { runFixtures } from "../../../test/run_fixtures.js";
 
 vi.mock("../../database");
 vi.mock("../../middleware");
@@ -15,9 +16,11 @@ vi.mock("@stela/publisher-utils");
 vi.mock("@stela/logger");
 
 const loadFixtures = async (): Promise<void> => {
-	await db.sql("archive.fixtures.create_test_accounts");
-	await db.sql("archive.fixtures.create_test_archives");
-	await db.sql("archive.fixtures.create_test_records");
+	await runFixtures(db, [
+		"archive.fixtures.create_test_accounts",
+		"archive.fixtures.create_test_archives",
+		"archive.fixtures.create_test_records",
+	]);
 };
 
 const clearDatabase = async (): Promise<void> => {

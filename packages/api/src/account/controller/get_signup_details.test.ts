@@ -1,18 +1,29 @@
 import request from "supertest";
-import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
+import {
+	afterAll,
+	afterEach,
+	beforeEach,
+	describe,
+	expect,
+	test,
+	vi,
+} from "vitest";
 import { logger } from "@stela/logger";
 import { app } from "../../app.js";
 import { db } from "../../database.js";
 import type { SignupDetails } from "../models.js";
 import { mockVerifyUserAuthentication } from "../../../test/middleware_mocks.js";
+import { runFixtures } from "../../../test/run_fixtures.js";
 
 vi.mock("../../database");
 vi.mock("../../middleware");
 vi.mock("@stela/logger");
 
 const loadFixtures = async (): Promise<void> => {
-	await db.sql("account.fixtures.create_test_accounts");
-	await db.sql("account.fixtures.create_test_invites");
+	await runFixtures(db, [
+		"account.fixtures.create_test_accounts",
+		"account.fixtures.create_test_invites",
+	]);
 };
 
 const clearDatabase = async (): Promise<void> => {
@@ -30,6 +41,9 @@ describe("getSignupDetails", () => {
 	});
 	afterEach(async () => {
 		vi.clearAllMocks();
+	});
+
+	afterAll(async () => {
 		await clearDatabase();
 	});
 

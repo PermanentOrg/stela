@@ -1,11 +1,20 @@
 import request from "supertest";
-import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
+import {
+	afterAll,
+	afterEach,
+	beforeEach,
+	describe,
+	expect,
+	test,
+	vi,
+} from "vitest";
 import { logger } from "@stela/logger";
 import { app } from "../app.js";
 import { db } from "../database.js";
 import { sendLegacyContactNotification } from "../email/index.js";
 import type { LegacyContact } from "./model.js";
 import { mockVerifyUserAuthentication } from "../../test/middleware_mocks.js";
+import { runFixtures } from "../../test/run_fixtures.js";
 
 vi.mock("@stela/logger");
 vi.mock("../database");
@@ -16,8 +25,10 @@ vi.mock("../email", () => ({
 
 describe("GET /legacy-contact", () => {
 	const loadFixtures = async (): Promise<void> => {
-		await db.sql("legacy_contact.fixtures.create_test_accounts");
-		await db.sql("legacy_contact.fixtures.create_test_legacy_contacts");
+		await runFixtures(db, [
+			"legacy_contact.fixtures.create_test_accounts",
+			"legacy_contact.fixtures.create_test_legacy_contacts",
+		]);
 	};
 
 	const clearDatabase = async (): Promise<void> => {
@@ -33,7 +44,8 @@ describe("GET /legacy-contact", () => {
 		await clearDatabase();
 		await loadFixtures();
 	});
-	afterEach(async () => {
+
+	afterAll(async () => {
 		await clearDatabase();
 	});
 
@@ -86,8 +98,11 @@ describe("POST /legacy-contact", () => {
 		await loadFixtures();
 	});
 	afterEach(async () => {
-		await clearDatabase();
 		vi.clearAllMocks();
+	});
+
+	afterAll(async () => {
+		await clearDatabase();
 	});
 
 	test("should successfully create a legacy contact", async () => {
@@ -170,8 +185,10 @@ describe("PUT /legacy-contact/:legacyContactId", () => {
 	const agent = request(app);
 
 	const loadFixtures = async (): Promise<void> => {
-		await db.sql("legacy_contact.fixtures.create_test_accounts");
-		await db.sql("legacy_contact.fixtures.create_test_legacy_contacts");
+		await runFixtures(db, [
+			"legacy_contact.fixtures.create_test_accounts",
+			"legacy_contact.fixtures.create_test_legacy_contacts",
+		]);
 	};
 
 	const clearDatabase = async (): Promise<void> => {
@@ -189,8 +206,11 @@ describe("PUT /legacy-contact/:legacyContactId", () => {
 		await loadFixtures();
 	});
 	afterEach(async () => {
-		await clearDatabase();
 		vi.clearAllMocks();
+	});
+
+	afterAll(async () => {
+		await clearDatabase();
 	});
 
 	test("should update a legacy contact's name and email", async () => {
