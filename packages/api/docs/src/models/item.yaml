@@ -1,3 +1,10 @@
+itemType:
+  type: string
+  description: The type of an item stored on Permanent
+  enum:
+    - record
+    - folder
+
 item:
   oneOf:
     - allOf:
@@ -5,16 +12,36 @@ item:
       - type: object
         properties:
           itemType:
-            type: string
-            enum:
-              - record
-              - folder
+            $ref: "#/itemType"
     - allOf:
       - $ref: "./record.yaml#/record"
       - type: object
         properties:
           itemType:
-            type: string
-            enum:
-              - record
-              - folder
+            $ref: "#/itemType"
+
+itemSummary:
+  type: object
+  properties:
+    id:
+      type: string
+    itemType:
+      $ref: "#/itemType"
+    displayName:
+      type: string
+    displayTime:
+      type: string
+      format: edtf
+    thumbnailUrls:
+      type: object
+      properties:
+        width200:
+          type: string
+        width256:
+          type: string
+        width500:
+          type: string
+        width1000:
+          type: string
+        width2000:
+          type: string

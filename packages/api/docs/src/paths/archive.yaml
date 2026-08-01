@@ -181,7 +181,7 @@ archives-id-folders-shared:
       schema:
         type: integer
   get:
-    summary: Get all the top-level shared folders in an archive
+    summary: Get all the top-level folders shared by an archive
     security:
       - bearerHttpAuthentication: []
     tags:
@@ -199,6 +199,57 @@ archives-id-folders-shared:
                   type: array
                   items:
                     $ref: "../models/folder.yaml#/folder"
+                pagination:
+                  $ref: "../models/pagination_metadata.yaml#/pagination"
+      "400":
+        $ref: "../errors.yaml#/400"
+      "401":
+        $ref: "../errors.yaml#/401"
+      "403":
+        $ref: "../errors.yaml#/403"
+      "404":
+        $ref: "../errors.yaml#/404"
+      "500":
+        $ref: "../errors.yaml#/500"
+archives/{id}/received-shares:
+  parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: string
+    - name: cursor
+      description: |
+        The id of the share right before the first share you want returned.
+        In most cases, this will be that of the last share on the previous page.
+      in: query
+      required: false
+      schema:
+        type: string
+    - name: pageSize
+      in: query
+      required: true
+      schema:
+        type: integer
+  get:
+    summary: Get all the shares received by an archive
+    security:
+      - bearerHttpAuthentication: []
+    tags:
+      - shares
+    operationId: get-archive-received-shares
+    responses:
+      "200":
+        description: A list of shares
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                items:
+                  type: array
+                  items:
+                    $ref: "../models/share.yaml#/share"
                 pagination:
                   $ref: "../models/pagination_metadata.yaml#/pagination"
       "400":

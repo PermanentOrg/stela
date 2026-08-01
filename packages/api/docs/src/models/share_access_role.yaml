@@ -1,0 +1,9 @@
+shareAccessRole:
+  type: string
+  description: The role that defines an archive's permissions on an item shared from another archive.
+  enum:
+    - viewer
+    - contributor
+    - editor
+    - curator
+    - owner
