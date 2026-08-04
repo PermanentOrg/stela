@@ -3,5 +3,7 @@ pagination:
   properties:
     nextCursor:
       type: string
+    nextPage:
+      type: string
     totalPages:
       type: integer
