@@ -16,19 +16,22 @@ import {
 	mockExtractUserEmailFromAuthToken,
 } from "../../test/middleware_mocks.js";
 import { mockSqlCall } from "../../test/mock_sql.js";
+import { runFixtures } from "../../test/run_fixtures.js";
 
 vi.mock("../database");
 vi.mock("../middleware");
 vi.mock("uuid");
 
 const loadFixtures = async (): Promise<void> => {
-	await db.sql("share_link.fixtures.create_test_accounts");
-	await db.sql("share_link.fixtures.create_test_archives");
-	await db.sql("share_link.fixtures.create_test_account_archives");
-	await db.sql("share_link.fixtures.create_test_records");
-	await db.sql("share_link.fixtures.create_test_folders");
-	await db.sql("share_link.fixtures.create_test_folder_links");
-	await db.sql("share_link.fixtures.create_test_shareby_urls");
+	await runFixtures(db, [
+		"share_link.fixtures.create_test_accounts",
+		"share_link.fixtures.create_test_archives",
+		"share_link.fixtures.create_test_account_archives",
+		"share_link.fixtures.create_test_records",
+		"share_link.fixtures.create_test_folders",
+		"share_link.fixtures.create_test_folder_links",
+		"share_link.fixtures.create_test_shareby_urls",
+	]);
 };
 
 const clearDatabase = async (): Promise<void> => {

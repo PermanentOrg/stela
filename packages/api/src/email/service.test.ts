@@ -1,5 +1,13 @@
 import type { MessagesSendSuccessResponse } from "@mailchimp/mailchimp_transactional";
-import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
+import {
+	afterAll,
+	afterEach,
+	beforeEach,
+	describe,
+	expect,
+	test,
+	vi,
+} from "vitest";
 import {
 	sendLegacyContactNotification,
 	sendArchiveStewardNotification,
@@ -9,6 +17,7 @@ import {
 } from "./service.js";
 import { MailchimpTransactional } from "../mailchimp.js";
 import { db } from "../database.js";
+import { runFixtures } from "../../test/run_fixtures.js";
 
 vi.mock("../database");
 vi.mock("../mailchimp", () => ({
@@ -23,12 +32,14 @@ const testLegacyContactId = "0cb0738c-5607-42d0-8014-8666a8d6ba13";
 const testDirectiveId = "39b2a5fa-3508-4030-91b6-21dc6ec7a1ab";
 
 const loadFixtures = async (): Promise<void> => {
-	await db.sql("email.fixtures.create_test_accounts");
-	await db.sql("email.fixtures.create_test_legacy_contacts");
-	await db.sql("email.fixtures.create_test_archives");
-	await db.sql("email.fixtures.create_test_account_archives");
-	await db.sql("email.fixtures.create_test_directives");
-	await db.sql("email.fixtures.create_test_profile_items");
+	await runFixtures(db, [
+		"email.fixtures.create_test_accounts",
+		"email.fixtures.create_test_legacy_contacts",
+		"email.fixtures.create_test_archives",
+		"email.fixtures.create_test_account_archives",
+		"email.fixtures.create_test_directives",
+		"email.fixtures.create_test_profile_items",
+	]);
 };
 
 const clearDatabase = async (): Promise<void> => {
@@ -44,8 +55,11 @@ describe("sendLegacyContactNotification", () => {
 	});
 
 	afterEach(async () => {
-		await clearDatabase();
 		vi.clearAllMocks();
+	});
+
+	afterAll(async () => {
+		await clearDatabase();
 	});
 
 	test("should send legacy contact notification successfully", async () => {
@@ -105,8 +119,11 @@ describe("sendArchiveNotification", () => {
 	});
 
 	afterEach(async () => {
-		await clearDatabase();
 		vi.clearAllMocks();
+	});
+
+	afterAll(async () => {
+		await clearDatabase();
 	});
 
 	test("should send archive steward notification successfully", async () => {
@@ -293,8 +310,11 @@ describe("sendInvitationNotification", () => {
 	});
 
 	afterEach(async () => {
-		await clearDatabase();
 		vi.clearAllMocks();
+	});
+
+	afterAll(async () => {
+		await clearDatabase();
 	});
 
 	test("send invite email should call mailchimp successfully", async () => {
@@ -376,8 +396,11 @@ describe("sendGiftNotification", () => {
 	});
 
 	afterEach(async () => {
-		await clearDatabase();
 		vi.clearAllMocks();
+	});
+
+	afterAll(async () => {
+		await clearDatabase();
 	});
 
 	test("send gift email should call mailchimp successfully", async () => {

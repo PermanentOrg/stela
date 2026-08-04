@@ -1,20 +1,31 @@
 import request from "supertest";
-import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
+import {
+	afterAll,
+	afterEach,
+	beforeEach,
+	describe,
+	expect,
+	test,
+	vi,
+} from "vitest";
 import { logger } from "@stela/logger";
 import { app } from "../../app.js";
 import { db } from "../../database.js";
 import { GB } from "../../constants.js";
 import { mockVerifyUserAuthentication } from "../../../test/middleware_mocks.js";
+import { runFixtures } from "../../../test/run_fixtures.js";
 
 vi.mock("../../database");
 vi.mock("../../middleware");
 vi.mock("@stela/logger");
 
 const loadFixtures = async (): Promise<void> => {
-	await db.sql("archive.fixtures.create_test_accounts");
-	await db.sql("archive.fixtures.create_test_archives");
-	await db.sql("archive.fixtures.create_test_account_archives");
-	await db.sql("archive.fixtures.create_test_account_space");
+	await runFixtures(db, [
+		"archive.fixtures.create_test_accounts",
+		"archive.fixtures.create_test_archives",
+		"archive.fixtures.create_test_account_archives",
+		"archive.fixtures.create_test_account_space",
+	]);
 };
 
 const clearDatabase = async (): Promise<void> => {
@@ -34,8 +45,11 @@ describe("getPayerAccountStorage", () => {
 		await loadFixtures();
 	});
 	afterEach(async () => {
-		await clearDatabase();
 		vi.clearAllMocks();
+	});
+
+	afterAll(async () => {
+		await clearDatabase();
 	});
 
 	test("should return payer account storage", async () => {

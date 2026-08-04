@@ -1,5 +1,13 @@
 import request from "supertest";
-import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
+import {
+	afterAll,
+	afterEach,
+	beforeEach,
+	describe,
+	expect,
+	test,
+	vi,
+} from "vitest";
 import { logger } from "@stela/logger";
 import { app } from "../../app.js";
 import { db } from "../../database.js";
@@ -32,8 +40,11 @@ describe("GET /account", () => {
 	});
 
 	afterEach(async () => {
-		await clearDatabase();
 		vi.clearAllMocks();
+	});
+
+	afterAll(async () => {
+		await clearDatabase();
 	});
 
 	test("should call verifyAdminAuthentication", async () => {

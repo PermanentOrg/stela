@@ -5,18 +5,21 @@ import { app } from "../../app.js";
 import { db } from "../../database.js";
 import { mockVerifyUserAuthentication } from "../../../test/middleware_mocks.js";
 import type { Archive } from "../models.js";
+import { runFixtures } from "../../../test/run_fixtures.js";
 
 vi.mock("../../database");
 vi.mock("../../middleware");
 vi.mock("@stela/logger");
 
 const loadFixtures = async (): Promise<void> => {
-	await db.sql("archive.fixtures.create_test_accounts");
-	await db.sql("archive.fixtures.create_test_archives");
-	await db.sql("archive.fixtures.create_test_account_archives");
-	await db.sql("archive.fixtures.create_test_profile_items");
-	await db.sql("archive.fixtures.create_test_text_data");
-	await db.sql("archive.fixtures.create_test_folders");
+	await runFixtures(db, [
+		"archive.fixtures.create_test_accounts",
+		"archive.fixtures.create_test_archives",
+		"archive.fixtures.create_test_account_archives",
+		"archive.fixtures.create_test_profile_items",
+		"archive.fixtures.create_test_text_data",
+		"archive.fixtures.create_test_folders",
+	]);
 };
 
 const clearDatabase = async (): Promise<void> => {

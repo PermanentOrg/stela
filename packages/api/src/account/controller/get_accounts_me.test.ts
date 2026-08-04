@@ -1,21 +1,32 @@
 import request from "supertest";
-import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
+import {
+	afterAll,
+	afterEach,
+	beforeEach,
+	describe,
+	expect,
+	test,
+	vi,
+} from "vitest";
 import { logger } from "@stela/logger";
 import { app } from "../../app.js";
 import { db } from "../../database.js";
 import { verifyUserAuthentication } from "../../middleware/index.js";
 import { mockVerifyUserAuthentication } from "../../../test/middleware_mocks.js";
 import type { Account } from "../models.js";
+import { runFixtures } from "../../../test/run_fixtures.js";
 
 vi.mock("../../database");
 vi.mock("../../middleware");
 vi.mock("@stela/logger");
 
 const setupDatabase = async (): Promise<void> => {
-	await db.sql("account.fixtures.create_test_accounts");
-	await db.sql("account.fixtures.create_test_archives");
-	await db.sql("account.fixtures.create_test_account_archives");
-	await db.sql("account.fixtures.create_test_profile_items");
+	await runFixtures(db, [
+		"account.fixtures.create_test_accounts",
+		"account.fixtures.create_test_archives",
+		"account.fixtures.create_test_account_archives",
+		"account.fixtures.create_test_profile_items",
+	]);
 };
 
 const clearDatabase = async (): Promise<void> => {
@@ -37,8 +48,11 @@ describe("GET /accounts/me", () => {
 	});
 
 	afterEach(async () => {
-		await clearDatabase();
 		vi.clearAllMocks();
+	});
+
+	afterAll(async () => {
+		await clearDatabase();
 	});
 
 	test("should call verifyUserAuthentication", async () => {

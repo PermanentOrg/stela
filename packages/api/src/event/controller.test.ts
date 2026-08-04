@@ -1,5 +1,13 @@
 import request from "supertest";
-import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
+import {
+	afterAll,
+	afterEach,
+	beforeEach,
+	describe,
+	expect,
+	test,
+	vi,
+} from "vitest";
 import type { NextFunction } from "express";
 import createError from "http-errors";
 import { db } from "../database.js";
@@ -9,6 +17,7 @@ import {
 	verifyUserOrAdminOrDelegatedCallAuthentication,
 } from "../middleware/index.js";
 import type { ChecklistItem } from "./models.js";
+import { runFixtures } from "../../test/run_fixtures.js";
 import {
 	mockVerifyUserOrAdminOrDelegatedCallAuthentication,
 	mockVerifyUserAuthentication,
@@ -481,8 +490,10 @@ describe("GET /event/checklist", () => {
 	};
 
 	const loadFixtures = async (): Promise<void> => {
-		await db.sql("event.fixtures.create_test_accounts");
-		await db.sql("event.fixtures.create_test_events");
+		await runFixtures(db, [
+			"event.fixtures.create_test_accounts",
+			"event.fixtures.create_test_events",
+		]);
 	};
 
 	const clearDatabase = async (): Promise<void> => {
@@ -498,6 +509,9 @@ describe("GET /event/checklist", () => {
 	afterEach(async () => {
 		vi.restoreAllMocks();
 		vi.clearAllMocks();
+	});
+
+	afterAll(async () => {
 		await clearDatabase();
 	});
 

@@ -1,5 +1,13 @@
 import type { NextFunction } from "express";
-import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
+import {
+	afterAll,
+	afterEach,
+	beforeEach,
+	describe,
+	expect,
+	test,
+	vi,
+} from "vitest";
 import request from "supertest";
 import { logger } from "@stela/logger";
 import createError from "http-errors";
@@ -27,9 +35,12 @@ describe("GET /folder/{id}/share_links", () => {
 	});
 
 	afterEach(async () => {
-		await clearDatabase();
 		vi.restoreAllMocks();
 		vi.clearAllMocks();
+	});
+
+	afterAll(async () => {
+		await clearDatabase();
 	});
 
 	test("expect to return share links for a folder", async () => {

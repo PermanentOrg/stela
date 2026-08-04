@@ -8,18 +8,21 @@ import { verifyUserAuthentication } from "../../middleware/index.js";
 import { db } from "../../database.js";
 import type { GetSharedFoldersResponse } from "../models.js";
 import { mockVerifyUserAuthentication } from "../../../test/middleware_mocks.js";
+import { runFixtures } from "../../../test/run_fixtures.js";
 
 vi.mock("../../database");
 vi.mock("../../middleware");
 vi.mock("@stela/logger");
 
 const loadFixtures = async (): Promise<void> => {
-	await db.sql("archive.fixtures.create_test_accounts");
-	await db.sql("archive.fixtures.create_test_archives");
-	await db.sql("archive.fixtures.create_test_account_archives");
-	await db.sql("archive.fixtures.create_test_folders");
-	await db.sql("archive.fixtures.create_test_folder_links");
-	await db.sql("archive.fixtures.create_test_shares");
+	await runFixtures(db, [
+		"archive.fixtures.create_test_accounts",
+		"archive.fixtures.create_test_archives",
+		"archive.fixtures.create_test_account_archives",
+		"archive.fixtures.create_test_folders",
+		"archive.fixtures.create_test_folder_links",
+		"archive.fixtures.create_test_shares",
+	]);
 };
 
 const clearDatabase = async (): Promise<void> => {

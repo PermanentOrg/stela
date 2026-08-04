@@ -4,14 +4,17 @@ import { logger } from "@stela/logger";
 import { app } from "../../app.js";
 import { db } from "../../database.js";
 import { mockVerifyAdminAuthentication } from "../../../test/middleware_mocks.js";
+import { runFixtures } from "../../../test/run_fixtures.js";
 
 vi.mock("../../database");
 vi.mock("../../middleware");
 vi.mock("@stela/logger");
 
 const loadFixtures = async (): Promise<void> => {
-	await db.sql("archive.fixtures.create_test_accounts");
-	await db.sql("archive.fixtures.create_test_archives");
+	await runFixtures(db, [
+		"archive.fixtures.create_test_accounts",
+		"archive.fixtures.create_test_archives",
+	]);
 };
 
 const clearDatabase = async (): Promise<void> => {

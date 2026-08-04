@@ -4,16 +4,19 @@ import { logger } from "@stela/logger";
 import { app } from "../../app.js";
 import { db } from "../../database.js";
 import type { FeaturedArchive } from "../models.js";
+import { runFixtures } from "../../../test/run_fixtures.js";
 
 vi.mock("../../database");
 vi.mock("@stela/logger");
 
 const loadFixtures = async (): Promise<void> => {
-	await db.sql("archive.fixtures.create_test_accounts");
-	await db.sql("archive.fixtures.create_test_archives");
-	await db.sql("archive.fixtures.create_test_featured_archives");
-	await db.sql("archive.fixtures.create_test_folders");
-	await db.sql("archive.fixtures.create_test_profile_items");
+	await runFixtures(db, [
+		"archive.fixtures.create_test_accounts",
+		"archive.fixtures.create_test_archives",
+		"archive.fixtures.create_test_featured_archives",
+		"archive.fixtures.create_test_folders",
+		"archive.fixtures.create_test_profile_items",
+	]);
 };
 
 const clearDatabase = async (): Promise<void> => {

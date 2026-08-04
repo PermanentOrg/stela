@@ -1,5 +1,13 @@
 import request from "supertest";
-import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
+import {
+	afterAll,
+	afterEach,
+	beforeEach,
+	describe,
+	expect,
+	test,
+	vi,
+} from "vitest";
 import createError from "http-errors";
 import type { NextFunction } from "express";
 import { app } from "../app.js";
@@ -345,8 +353,11 @@ describe("POST /idpuser/enable-two-factor", () => {
 	});
 
 	afterEach(async () => {
-		await clearDatabase();
 		vi.restoreAllMocks();
+	});
+
+	afterAll(async () => {
+		await clearDatabase();
 	});
 
 	test("should return a 401 status if the caller is not authenticated", async () => {

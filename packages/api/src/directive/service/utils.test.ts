@@ -1,7 +1,8 @@
 import { NotFound } from "http-errors";
-import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
+import { afterAll, beforeEach, describe, expect, test, vi } from "vitest";
 import { db } from "../../database.js";
 import { confirmArchiveOwnership } from "./utils.js";
+import { runFixtures } from "../../../test/run_fixtures.js";
 
 vi.mock("../../database");
 
@@ -9,9 +10,11 @@ const testArchiveId = "1";
 const testEmail = "test@permanent.org";
 
 const loadFixtures = async (): Promise<void> => {
-	await db.sql("directive.fixtures.create_test_accounts");
-	await db.sql("directive.fixtures.create_test_archives");
-	await db.sql("directive.fixtures.create_test_account_archives");
+	await runFixtures(db, [
+		"directive.fixtures.create_test_accounts",
+		"directive.fixtures.create_test_archives",
+		"directive.fixtures.create_test_account_archives",
+	]);
 };
 
 const clearDatabase = async (): Promise<void> => {
@@ -23,7 +26,8 @@ describe("confirmArchiveOwnership", () => {
 		await clearDatabase();
 		await loadFixtures();
 	});
-	afterEach(async () => {
+
+	afterAll(async () => {
 		await clearDatabase();
 	});
 

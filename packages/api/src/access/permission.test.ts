@@ -1,5 +1,13 @@
 import createError from "http-errors";
-import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
+import {
+	afterAll,
+	afterEach,
+	beforeEach,
+	describe,
+	expect,
+	test,
+	vi,
+} from "vitest";
 import {
 	getArchiveAccessRole,
 	getRecordAccessRole,
@@ -8,17 +16,20 @@ import {
 } from "./permission.js";
 import { AccessRole } from "./models.js";
 import { db } from "../database.js";
+import { runFixtures } from "../../test/run_fixtures.js";
 
 vi.mock("../database");
 
 const loadFixtures = async (): Promise<void> => {
-	await db.sql("access.fixtures.create_test_accounts");
-	await db.sql("access.fixtures.create_test_archives");
-	await db.sql("access.fixtures.create_test_account_archives");
-	await db.sql("access.fixtures.create_test_records");
-	await db.sql("access.fixtures.create_test_folders");
-	await db.sql("access.fixtures.create_test_folder_links");
-	await db.sql("access.fixtures.create_test_accesses");
+	await runFixtures(db, [
+		"access.fixtures.create_test_accounts",
+		"access.fixtures.create_test_archives",
+		"access.fixtures.create_test_account_archives",
+		"access.fixtures.create_test_records",
+		"access.fixtures.create_test_folders",
+		"access.fixtures.create_test_folder_links",
+		"access.fixtures.create_test_accesses",
+	]);
 };
 
 const clearDatabase = async (): Promise<void> => {
@@ -35,6 +46,9 @@ describe("getArchiveAccessRole", () => {
 
 	afterEach(async () => {
 		vi.restoreAllMocks();
+	});
+
+	afterAll(async () => {
 		await clearDatabase();
 	});
 
@@ -99,6 +113,9 @@ describe("getRecordAccessRole", () => {
 
 	afterEach(async () => {
 		vi.restoreAllMocks();
+	});
+
+	afterAll(async () => {
 		await clearDatabase();
 	});
 
@@ -223,7 +240,7 @@ describe("getFolderAccessRole", () => {
 		await loadFixtures();
 	});
 
-	afterEach(async () => {
+	afterAll(async () => {
 		await clearDatabase();
 	});
 
@@ -317,6 +334,9 @@ describe("isItemPublic", () => {
 
 	afterEach(async () => {
 		vi.restoreAllMocks();
+	});
+
+	afterAll(async () => {
 		await clearDatabase();
 	});
 	test("should return true for a public record", async () => {
