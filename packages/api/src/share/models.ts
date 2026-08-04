@@ -1,6 +1,18 @@
-import type { AccessRole } from "../access/models.js";
+import type { AccessRole, ShareAccessRole } from "../access/models.js";
+import type { ItemSummary } from "../item/models.js";
+import type { ArchiveSummary } from "../archive/models.js";
 
 export interface Share {
+	id: string;
+	item: ItemSummary;
+	accessRole: ShareAccessRole;
+	archive: ArchiveSummary;
+	status: PrettyShareStatus;
+	createdAt: string;
+	updatedAt: string;
+}
+
+export interface ShareSummary {
 	id: string;
 	accessRole: AccessRole;
 	status: ShareStatus;
@@ -24,4 +36,9 @@ export enum ShareStatus {
 	Ok = "status.generic.ok",
 	Pending = "status.generic.pending",
 	Deleted = "status.generic.deleted",
+}
+
+export enum PrettyShareStatus {
+	Ok = "ok",
+	Pending = "pending",
 }

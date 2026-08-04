@@ -1,4 +1,4 @@
-import type { PendingShare, Share } from "../share/models.js";
+import type { PendingShare, ShareSummary } from "../share/models.js";
 import type { Tag } from "../tag/models.js";
 import type { ArchiveRecord } from "../record/models.js";
 import type { Location, LocationInput } from "../location/models.js";
@@ -35,7 +35,7 @@ export interface FolderRow {
 		id: string;
 		folderLinkId: string;
 	};
-	shares?: Share[];
+	shares?: ShareSummary[];
 	pendingShares: PendingShare[] | null;
 	tags?: Tag[];
 	archive: {
@@ -89,7 +89,7 @@ export interface Folder {
 		id: string;
 		folderLinkId: string;
 	};
-	shares?: Share[];
+	shares?: ShareSummary[];
 	pendingShares: PendingShare[] | null;
 	tags?: Tag[];
 	archive: {

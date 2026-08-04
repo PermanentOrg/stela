@@ -3,8 +3,24 @@ archive (
   archiveid, archivenbr, payeraccountid, public, type, thumburl200, status
 )
 VALUES
-(1, '0001-0001', 2, false, 'type.archive.person', null, 'status.generic.ok'),
-(2, '0001-0002', 3, false, 'type.archive.person', null, 'status.generic.ok'),
+(
+  1,
+  '0001-0001',
+  2,
+  false,
+  'type.archive.person',
+  'https://test-archive-thumbnail',
+  'status.generic.ok'
+),
+(
+  2,
+  '0001-0002',
+  3,
+  false,
+  'type.archive.person',
+  'https://test-archive-thumbnail',
+  'status.generic.ok'
+),
 (
   3,
   '0001-0003',

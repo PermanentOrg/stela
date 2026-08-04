@@ -32,16 +32,22 @@ itemSummary:
     displayTime:
       type: string
       format: edtf
+      nullable: true
     thumbnailUrls:
       type: object
       properties:
         width200:
           type: string
+          nullable: true
         width256:
           type: string
+          nullable: true
         width500:
           type: string
+          nullable: true
         width1000:
           type: string
+          nullable: true
         width2000:
           type: string
+          nullable: true

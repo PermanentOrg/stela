@@ -7,6 +7,14 @@ export enum AccessRole {
 	Manager = "access.role.manager",
 }
 
+export enum ShareAccessRole {
+	Contributor = "contributor",
+	Curator = "curator",
+	Owner = "owner",
+	Viewer = "viewer",
+	Editor = "editor",
+}
+
 export enum ArchiveMembershipRole {
 	Contributor = "contributor",
 	Curator = "curator",

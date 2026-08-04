@@ -3,7 +3,7 @@ import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 import type { FolderChildItem, Folder } from "../models.js";
 import type { ArchiveFile } from "../../record/models.js";
 import type { Tag } from "../../tag/models.js";
-import type { Share } from "../../share/models.js";
+import type { ShareSummary } from "../../share/models.js";
 import { app } from "../../app.js";
 import {
 	extractUserEmailFromAuthToken,
@@ -302,10 +302,10 @@ describe("GET /folder/{id}/children", () => {
 
 				expect(record.shares.length).toEqual(2);
 				const shareViewer = record.shares.find(
-					(share: Share) => share.id === "3",
+					(share: ShareSummary) => share.id === "3",
 				);
 				const shareContributor = record.shares.find(
-					(share: Share) => share.id === "4",
+					(share: ShareSummary) => share.id === "4",
 				);
 				expect(shareViewer).toBeDefined();
 				if (shareViewer !== undefined) {
