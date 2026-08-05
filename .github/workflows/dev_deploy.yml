@@ -50,23 +50,6 @@ jobs:
       - name: Terraform Validate
         id: validate
         run: terraform validate -no-color
-      - name: Terraform Plan
-        id: plan
-        run: |
-          terraform plan -no-color -input=false \
-          -var "image_overrides={
-            \"access-copy-dev-lambda\"           = \"$ACCESS_COPY_LAMBDA_IMAGE_TAG\",
-            \"account-space-update-dev-lambda\"  = \"$ACCOUNT_SPACE_UPDATE_IMAGE_TAG\",
-            \"archivematica-cleanup-dev\"        = \"$AM_CLEANUP_IMAGE_TAG\",
-            \"event-send-dev\"                   = \"$EVENT_SEND_IMAGE_TAG\",
-            \"file-copier-dev-lambda\"           = \"$FILE_COPIER_LAMBDA_IMAGE_TAG\",
-            \"file-url-refresh-dev\"             = \"$FILE_URL_REFRESH_IMAGE_TAG\",
-            \"metadata-attacher-dev-lambda\"     = \"$METADATA_ATTACHER_LAMBDA_IMAGE_TAG\",
-            \"record-thumbnail-dev-lambda\"      = \"$RECORD_THUMBNAIL_LAMBDA_IMAGE_TAG\",
-            \"stela-dev\"                        = \"$API_IMAGE_TAG\",
-            \"thumbnail-refresh-dev\"            = \"$THUMBNAIL_REFRESH_IMAGE_TAG\",
-            \"trigger-archivematica-dev-lambda\" = \"$TRIGGER_ARCHIVEMATICA_IMAGE_TAG\"
-          }"
       - name: Terraform Apply
         run: |
           terraform apply -auto-approve -input=false \
