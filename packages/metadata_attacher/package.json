@@ -30,7 +30,7 @@
 		"test": "npm run clear-database && npm run create-database && npm run set-up-database && vitest run"
 	},
 	"dependencies": {
-		"@aws-sdk/client-s3": "^3.1075.0",
+		"@aws-sdk/client-s3": "^3.1097.0",
 		"@sentry/aws-serverless": "^10.69.0",
 		"@stela/logger": "^1.0.0",
 		"@stela/s3-utils": "^1.0.0",

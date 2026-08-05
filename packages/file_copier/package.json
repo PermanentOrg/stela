@@ -30,7 +30,7 @@
 		"test": "npm run clear-database && npm run create-database && npm run set-up-database && vitest run"
 	},
 	"dependencies": {
-		"@aws-sdk/client-s3": "^3.1075.0",
+		"@aws-sdk/client-s3": "^3.1097.0",
 		"@sentry/aws-serverless": "^10.69.0",
 		"@sentry/node": "^10.69.0",
 		"@sentry/profiling-node": "^10.69.0",
