@@ -96,23 +96,6 @@ jobs:
       - name: Terraform Validate
         id: validate
         run: terraform validate -no-color
-      - name: Terraform Plan
-        id: plan
-        run: |
-          terraform plan -no-color -input=false \
-          -var="image_overrides={
-            \"access-copy-staging-lambda\"           = \"$ACCESS_COPY_LAMBDA_IMAGE_TAG\",
-            \"account-space-update-staging-lambda\"  = \"$ACCOUNT_SPACE_UPDATE_IMAGE_TAG\",
-            \"archivematica-cleanup-staging\"        = \"$AM_CLEANUP_IMAGE_TAG\",
-            \"event-send-staging\"                   = \"$EVENT_SEND_IMAGE_TAG\",
-            \"file-copier-staging-lambda\"           = \"$FILE_COPIER_LAMBDA_IMAGE_TAG\",
-            \"file-url-refresh-staging\"             = \"$FILE_URL_REFRESH_IMAGE_TAG\",
-            \"metadata-attacher-staging-lambda\"     = \"$METADATA_ATTACHER_LAMBDA_IMAGE_TAG\",
-            \"record-thumbnail-staging-lambda\"      = \"$RECORD_THUMBNAIL_LAMBDA_IMAGE_TAG\",
-            \"stela-staging\"                        = \"$API_IMAGE_TAG\",
-            \"thumbnail-refresh-staging\"            = \"$THUMBNAIL_REFRESH_IMAGE_TAG\",
-            \"trigger-archivematica-staging-lambda\" = \"$TRIGGER_ARCHIVEMATICA_IMAGE_TAG\"
-          }"
       - name: Terraform Apply
         run: |
           terraform apply -auto-approve -input=false \

@@ -60,21 +60,6 @@ jobs:
       - name: Terraform Validate
         id: validate
         run: terraform validate -no-color
-      - name: Terraform Plan
-        id: plan
-        run: |
-          terraform plan -no-color -input=false \
-          -var="stela_image=$API_IMAGE_TAG" \
-          -var="archivematica_cleanup_image=$AM_CLEANUP_IMAGE_TAG" \
-          -var="record_thumbnail_lambda_image=$RECORD_THUMBNAIL_LAMBDA_IMAGE_TAG" \
-          -var="thumbnail_refresh_image=$THUMBNAIL_REFRESH_IMAGE_TAG" \
-          -var="file_url_refresh_image=$FILE_URL_REFRESH_IMAGE_TAG" \
-          -var="access_copy_lambda_image=$ACCESS_COPY_LAMBDA_IMAGE_TAG" \
-          -var="account_space_updater_lambda_image=$ACCOUNT_SPACE_UPDATE_IMAGE_TAG" \
-          -var="trigger_archivematica_lambda_image=$TRIGGER_ARCHIVEMATICA_IMAGE_TAG" \
-          -var="metadata_attacher_lambda_image=$METADATA_ATTACHER_LAMBDA_IMAGE_TAG" \
-          -var="event_send_image=$EVENT_SEND_IMAGE_TAG" \
-          -var="file_copier_lambda_image=$FILE_COPIER_LAMBDA_IMAGE_TAG"
       - name: Terraform Apply
         run: |
           terraform apply -auto-approve -input=false \
