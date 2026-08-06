@@ -1,48 +1,38 @@
 WITH all_archives AS (
   SELECT
+    archive.archiveid AS id,
     archive.archiveid AS "archiveId",
-    archive.archivenbr AS "archiveNbr",
     basic_profile_item.string1 AS name,
     text_data.valuetext AS description,
     archive.public,
     archive.publicdt AS "publicAt",
     archive.allowpublicdownload AS "allowPublicDownload",
+    archive.milestonesortorder AS "milestoneSortOrder",
+    archive.createddt AS "createdAt",
+    archive.updateddt AS "updatedAt",
+    root_folder.folderid AS "rootFolderId",
+    archive.payeraccountid AS "payerAccountId",
+    user_access.accessrole AS "callerMembershipRole",
+    CASE
+      WHEN archive.status = 'status.generic.orphaned' THEN 'orphaned'
+      WHEN archive.status = 'status.archive.gen_avatar' THEN 'generate-avatar'
+      WHEN archive.status IN ('status.generic.ok', 'status.auth.ok') THEN 'ok'
+    END AS status,
+    CASE
+      WHEN archive.type = 'type.archive.person' THEN 'person'
+      WHEN archive.type = 'type.archive.family' THEN 'group'
+      WHEN archive.type IN (
+        'type.archive.organization',
+        'type.archive.nonprofit'
+      ) THEN 'organization'
+    END AS type,
     JSONB_BUILD_OBJECT(
       'width200', archive.thumburl200,
       'width500', archive.thumburl500,
       'width1000', archive.thumburl1000,
       'width2000', archive.thumburl2000
     ) AS "thumbnailUrls",
-    archive.milestonesortorder AS "milestoneSortOrder",
-    archive.status,
-    archive.type,
-    archive.createddt AS "createdAt",
-    archive.updateddt AS "updatedAt",
-    root_folder.folderid AS "rootFolderId",
-    CASE
-      WHEN :isAdmin
-        THEN
-          JSONB_BUILD_OBJECT(
-            'name', owner_account.fullname,
-            'email', owner_account.primaryemail,
-            'phoneNumber', owner_account.primaryphone
-          )
-      ELSE NULL
-    END AS owner,
-    archive.payeraccountid AS "payerAccountId",
-    CASE
-      WHEN :callerMembershipRoles::text[] != '{}'::text[]
-        THEN user_access.accessrole
-      ELSE NULL
-    END AS "callerMembershipRole",
-    ROW_NUMBER() OVER (
-      ORDER BY
-        TS_RANK(
-          TO_TSVECTOR('english', basic_profile_item.string1),
-          PLAINTO_TSQUERY('english', :searchQuery)
-        ) DESC,
-        basic_profile_item.string1
-    ) AS rank
+    ROW_NUMBER() OVER (ORDER BY archive.archiveid ASC) AS rank
   FROM
     archive
   INNER JOIN
@@ -67,17 +57,8 @@ WITH all_archives AS (
       archive.archiveid = root_folder.archiveid
       AND root_folder.type = 'type.folder.root.root'
   LEFT JOIN
-    account_archive AS owner_account_archive
-    ON
-      archive.archiveid = owner_account_archive.archiveid
-      AND owner_account_archive.accessrole = 'access.role.owner'
-      AND owner_account_archive.status = 'status.generic.ok'
-  LEFT JOIN
-    account AS owner_account
-    ON owner_account_archive.accountid = owner_account.accountid
-  LEFT JOIN
     account AS user_access_account
-    ON user_access_account.primaryemail = :userEmail
+    ON user_access_account.primaryemail = :accountEmail
   LEFT JOIN
     account_archive AS user_access
     ON
@@ -87,26 +68,21 @@ WITH all_archives AS (
   WHERE
     archive.status != 'status.generic.deleted'
     AND (
-      :searchQuery = ''
-      OR PLAINTO_TSQUERY('english', :searchQuery)
-      @@ TO_TSVECTOR('english', basic_profile_item.string1)
-    )
-    AND (
-      :callerMembershipRoles::text[] = '{}'::text[]
-      OR user_access.accessrole = ANY(:callerMembershipRoles::text[])
+      :archiveIds::BIGINT[] IS NULL
+      OR archive.archiveid = ANY(:archiveIds::BIGINT[])
     )
     AND (
       (archive.public IS NOT NULL AND archive.public)
-      OR (NOT :isAdmin AND EXISTS (
+      OR EXISTS (
         SELECT 1
         FROM account_archive
         INNER JOIN account
           ON account_archive.accountid = account.accountid
         WHERE
           account_archive.archiveid = archive.archiveid
-          AND account.primaryemail = :userEmail
+          AND account.primaryemail = :accountEmail
           AND account_archive.status = 'status.generic.ok'
-      ))
+      )
     )
 ),
 
@@ -119,13 +95,13 @@ cursor AS (
 ),
 
 total_pages AS (
-  SELECT CEILING(COUNT(*) / :pageSize::numeric)::int AS total_pages
+  SELECT CEILING(COUNT(*) / :pageSize::NUMERIC)::INT AS total_pages
   FROM all_archives
 )
 
 SELECT
+  id,
   "archiveId",
-  "archiveNbr",
   name,
   description,
   public,
@@ -138,7 +114,6 @@ SELECT
   "createdAt",
   "updatedAt",
   "rootFolderId",
-  owner,
   "payerAccountId",
   "callerMembershipRole",
   (SELECT total_pages.total_pages FROM total_pages) AS "totalPages"
