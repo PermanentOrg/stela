@@ -211,6 +211,7 @@ describe("GET /records/:recordId", () => {
 					},
 				},
 			],
+			accessRole: "owner",
 		});
 		expect(record).toMatchObject({
 			pendingShares: expect.arrayContaining([

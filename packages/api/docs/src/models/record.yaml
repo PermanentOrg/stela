@@ -50,6 +50,7 @@ record:
     - createdAt
     - updatedAt
     - archive
+    - accessRole
   properties:
     id:
       type: string
@@ -158,3 +159,11 @@ record:
           type: string
         name:
           type: string
+    accessRole:
+      description: >
+        The caller's effective access role for this record — the most
+        permissive role available across all applicable access paths:
+        membership in the record's archive, an archive-to-archive share
+        targeting the record, a valid share token, or public access to the
+        record.
+      $ref: "./archive_membership_role.yaml#/archiveMembershipRole"

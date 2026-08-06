@@ -289,7 +289,52 @@ all_records AS (
       archive.archivenbr,
       'name',
       profile_item.string1
-    ) AS archive
+    ) AS archive,
+    (
+      SELECT account_archive.accessrole
+      FROM account_archive
+      INNER JOIN account
+        ON account_archive.accountid = account.accountid
+      WHERE
+        account_archive.archiveid = record.archiveid
+        AND account.primaryemail = :accountEmail
+        AND account_archive.status = 'status.generic.ok'
+        AND account.status = 'status.auth.ok'
+    ) AS "archiveAccessRole",
+    (
+      SELECT
+        ARRAY_AGG(
+          JSONB_BUILD_OBJECT(
+            'archiveAccessRole',
+            account_archive.accessrole,
+            'shareAccessRole',
+            access.accessrole
+          )
+        )
+      FROM access
+      INNER JOIN folder_link AS share_folder_link
+        ON
+          access.folder_linkid = share_folder_link.folder_linkid
+          AND share_folder_link.recordid = record.recordid
+          AND share_folder_link.status = 'status.generic.ok'
+      INNER JOIN account_archive
+        ON
+          access.archiveid = account_archive.archiveid
+          AND account_archive.status = 'status.generic.ok'
+      INNER JOIN account
+        ON
+          account_archive.accountid = account.accountid
+          AND account.primaryemail = :accountEmail
+          AND account.status = 'status.auth.ok'
+      WHERE
+        access.status = 'status.generic.ok'
+    ) AS "shareAccessRoles",
+    (
+      :shareToken::TEXT IS NOT NULL
+      AND :shareToken = ANY(
+        aggregated_ancestor_unrestricted_share_tokens.tokens
+      )
+    ) AS "shareTokenGrantsAccess"
   FROM
     record
   INNER JOIN
@@ -333,14 +378,14 @@ all_records AS (
       folder_link.parentfolderid = parent_folder.folderid
       AND parent_folder.status != 'status.generic.deleted'
   LEFT JOIN
-    access
+    access AS share_access
     ON
-      folder_link.folder_linkid = access.folder_linkid
-      AND access.status = 'status.generic.ok'
+      folder_link.folder_linkid = share_access.folder_linkid
+      AND share_access.status = 'status.generic.ok'
   LEFT JOIN
     account_archive AS share_account_archive
     ON
-      access.archiveid = share_account_archive.archiveid
+      share_access.archiveid = share_account_archive.archiveid
       AND share_account_archive.status = 'status.generic.ok'
   LEFT JOIN
     account AS share_account
