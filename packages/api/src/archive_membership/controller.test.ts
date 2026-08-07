@@ -24,7 +24,7 @@ const loadFixtures = async (): Promise<void> => {
 
 const clearDatabase = async (): Promise<void> => {
 	await db.query(
-		"TRUNCATE account, archive, profile_item, account_archive CASCADE",
+		"TRUNCATE account, archive, profile_item, account_archive, event CASCADE",
 	);
 };
 
@@ -328,5 +328,206 @@ describe("PATCH /archive-memberships/:id", () => {
 		expect(archiveMembershipResult.rows[0]?.accessRole).toEqual(
 			"access.role.viewer",
 		);
+	});
+});
+
+describe("DELETE /archive-memberships/:id", () => {
+	const agent = request(app);
+
+	beforeEach(async () => {
+		mockVerifyUserAuthentication(
+			"test@permanent.org",
+			"315aedc2-67d5-4144-9f0d-ee547d98af9c",
+		);
+		mockExtractIp("0.0.0.0");
+		await loadFixtures();
+	});
+
+	afterEach(async () => {
+		vi.restoreAllMocks();
+		vi.resetAllMocks();
+		await clearDatabase();
+	});
+
+	test("should return 204 when a member deletes their own membership", async () => {
+		mockVerifyUserAuthentication(
+			"test+1@permanent.org",
+			"bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
+		);
+		await agent.delete("/api/v2/archive-memberships/2").expect(204);
+	});
+
+	test("should hard delete the membership row from the database", async () => {
+		mockVerifyUserAuthentication(
+			"test+1@permanent.org",
+			"bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
+		);
+		await agent.delete("/api/v2/archive-memberships/2").expect(204);
+
+		const result = await db.query(
+			"SELECT * FROM account_archive WHERE account_archiveid = 2",
+		);
+		expect(result.rows).toHaveLength(0);
+	});
+
+	test("should allow a manager or owner to delete another member's non-owner membership", async () => {
+		await agent.delete("/api/v2/archive-memberships/2").expect(204);
+
+		const result = await db.query(
+			"SELECT * FROM account_archive WHERE account_archiveid = 2",
+		);
+		expect(result.rows).toHaveLength(0);
+	});
+
+	test("should create an archive_membership.delete event containing the entire deleted row", async () => {
+		await agent.delete("/api/v2/archive-memberships/2").expect(204);
+
+		const eventResult = await db.query<{
+			entity: string;
+			action: string;
+			version: number;
+			entityId: string;
+			body: Record<string, unknown>;
+		}>(
+			`SELECT
+				entity,
+				action,
+				version,
+				entity_id AS "entityId",
+				body
+			FROM event
+			WHERE entity = 'archive_membership' AND action = 'delete'`,
+		);
+		expect(eventResult.rows).toHaveLength(1);
+		const {
+			rows: [event],
+		} = eventResult;
+		expect(event?.version).toEqual(1);
+		expect(event?.entityId).toEqual("2");
+		expect(event?.body["deletedArchiveMembership"]).toEqual({
+			id: "2",
+			accountId: "2",
+			archiveId: "1",
+			accessRole: "access.role.viewer",
+			position: "0",
+			type: "type.account.standard",
+			status: "status.generic.pending",
+			createdAt: expect.any(String) as unknown,
+			updatedAt: expect.any(String) as unknown,
+		});
+	});
+
+	test("should return 400 if the request body is missing fields", async () => {
+		mockVerifyUserAuthentication("dddddddd-dddd-dddd-dddd-dddddddddddd");
+		await agent.delete("/api/v2/archive-memberships/2").expect(400);
+	});
+
+	test("should return 403 if a non-manager tries to delete another member's membership", async () => {
+		mockVerifyUserAuthentication(
+			"test+3@permanent.org",
+			"dddddddd-dddd-dddd-dddd-dddddddddddd",
+		);
+		await agent.delete("/api/v2/archive-memberships/2").expect(403);
+	});
+
+	test("should return 404 if a non-member tries to delete another member's membership", async () => {
+		mockVerifyUserAuthentication(
+			"test+2@permanent.org",
+			"cccccccc-cccc-cccc-cccc-cccccccccccc",
+		);
+		await agent.delete("/api/v2/archive-memberships/2").expect(404);
+	});
+
+	test("should return 403 if trying to delete an owner-level membership", async () => {
+		await agent.delete("/api/v2/archive-memberships/1").expect(403);
+	});
+
+	test("should return 404 if the membership does not exist", async () => {
+		await agent.delete("/api/v2/archive-memberships/9999").expect(404);
+	});
+
+	test("should return 404 if the membership is already deleted", async () => {
+		await agent.delete("/api/v2/archive-memberships/4").expect(404);
+	});
+
+	test("should return 401 if the caller is not authenticated", async () => {
+		vi.mocked(verifyUserAuthentication).mockImplementation(
+			async (_, __, next: NextFunction) => {
+				next(new createError.Unauthorized("Invalid token"));
+			},
+		);
+		await agent.delete("/api/v2/archive-memberships/2").expect(401);
+	});
+
+	test("should return 500 if the archive membership permissions data call fails", async () => {
+		vi.spyOn(db, "sql").mockRejectedValue(new Error("Test error"));
+		await agent.delete("/api/v2/archive-memberships/2").expect(500);
+	});
+
+	test("should return 500 if the archive access role call fails", async () => {
+		mockSqlCall(
+			db,
+			"access.queries.get_archive_access_role",
+			{ archiveId: "1", email: "test@permanent.org" },
+			{ reject: new Error("Test error") },
+		);
+		await agent.delete("/api/v2/archive-memberships/2").expect(500);
+	});
+
+	test("should return 500 if the delete query fails", async () => {
+		mockSqlCall(
+			db,
+			"archive_membership.queries.delete_archive_membership",
+			{ id: "2" },
+			{ reject: new Error("Test error") },
+		);
+		await agent.delete("/api/v2/archive-memberships/2").expect(500);
+	});
+
+	test("should return 404 if the delete query deletes 0 rows", async () => {
+		mockSqlCall(
+			db,
+			"archive_membership.queries.delete_archive_membership",
+			{ id: "2" },
+			{ resolve: { rows: [] } },
+		);
+		await agent.delete("/api/v2/archive-memberships/2").expect(404);
+	});
+
+	test("should return 500 and roll back if event insertion fails", async () => {
+		mockSqlCall(
+			db,
+			"event.queries.create_event",
+			{
+				entity: "archive_membership",
+				action: "delete",
+				version: 1,
+				actorType: "user",
+				actorId: "315aedc2-67d5-4144-9f0d-ee547d98af9c",
+				entityId: "2",
+				ip: "0.0.0.0",
+				userAgent: undefined,
+				body: {
+					deletedArchiveMembership: {
+						id: "2",
+						accountId: "2",
+						archiveId: "1",
+						accessRole: "access.role.viewer",
+						position: "0",
+						type: "type.account.standard",
+						status: "status.generic.pending",
+						createdAt: expect.any(Date) as unknown,
+						updatedAt: expect.any(Date) as unknown,
+					},
+				},
+			},
+			{ reject: new Error("test error") },
+		);
+		await agent.delete("/api/v2/archive-memberships/2").expect(500);
+
+		const result = await db.query(
+			"SELECT * FROM account_archive WHERE account_archiveid = 2",
+		);
+		expect(result.rows).toHaveLength(1);
 	});
 });
