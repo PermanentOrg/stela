@@ -76,7 +76,7 @@ npm run test -w @stela/account_space_updater
 npm run test -ws
 ```
 
-### Lint Pipeline (in order)
+### Linting
 
 The `@stela/api` lint script runs these checks sequentially:
 
@@ -85,6 +85,9 @@ The `@stela/api` lint script runs these checks sequentially:
 3. `eslint --max-warnings 0 ./src --ext .ts` — linting
 4. SQLFluff via Docker — SQL linting (`packages/api/src/*/queries/` and `packages/api/src/*/fixtures/`)
 5. `redocly lint docs/src/api.yaml` — OpenAPI documentation
+
+Linting rules should never be disabled on a line-by-line basis. If a rule is not universally applicable it should be deactivated globally
+(but there is almost always a way to obey the rules)
 
 ### Testing
 
@@ -97,6 +100,10 @@ Tests for `@stela/api` require a running PostgreSQL instance. The test setup:
 Other workspace tests can generally run independently.
 
 ## API Architecture
+
+### Documentation
+
+OpenAPI specifications for the api live in `packages/api/docs`.
 
 ### Base Path
 
@@ -143,10 +150,6 @@ exampleController.get(
       const result = await serviceFunction(req.body.emailFromAuthToken, ...);
       res.status(HTTP_STATUS.SUCCESSFUL.OK).send(result);
     } catch (error) {
-      if (isValidationError(error)) {
-        res.status(HTTP_STATUS.CLIENT_ERROR.BAD_REQUEST).json({ error: error.message });
-        return;
-      }
       next(error);
     }
   },
@@ -157,7 +160,6 @@ Key conventions:
 
 - Authentication middleware injects `emailFromAuthToken` and `userSubjectFromAuthToken` into `req.body`
 - Validation uses Joi with TypeScript `asserts` type guards
-- Validation errors produce 400 responses; other errors are passed to `next()`
 - HTTP status codes come from `@pdc/http-status-codes`
 - Error creation uses the `http-errors` library
 
@@ -303,6 +305,10 @@ describe("GET /endpoint", () => {
 	});
 });
 ```
+
+### Fixtures
+
+Tests use fixture files to load data into the test database. Fixture files should never be shared across domain modules
 
 Key patterns:
 
