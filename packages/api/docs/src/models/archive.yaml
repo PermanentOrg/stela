@@ -61,7 +61,8 @@ archive:
           type: string
     callerMembershipRole:
       description: The authenticated user's archive membership role. Only returned when filtering by callerMembershipRole.
-      $ref: "./archive_membership_role.yaml#/archiveMembershipRole"
+      allOf:
+        - $ref: "./archive_membership_role.yaml#/archiveMembershipRole"
     status:
       type: string
       enum:
