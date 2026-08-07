@@ -11,6 +11,31 @@ shareSummary:
       type: string
     archive:
       $ref: "#/shareArchive"
+share:
+  description: >
+    A share granting one archive access to a record or folder that lives in another
+  type: object
+  properties:
+    id:
+      type: string
+    item:
+      $ref: "./item.yaml#/itemSummary"
+    accessRole:
+      $ref: "./share_access_role.yaml#/shareAccessRole"
+    archive:
+      $ref: "./archive.yaml#/archiveSummary"
+    status:
+      type: string
+      enum:
+        - ok
+        - pending
+    createdAt:
+      type: string
+      format: date-time
+    updatedAt:
+      type: string
+      format: date-time
+
 pendingShare:
   description: >
     A pending share invitation on an item

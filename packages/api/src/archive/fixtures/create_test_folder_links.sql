@@ -49,6 +49,18 @@ VALUES
   'access.role.owner'
 ),
 (
+  4,
+  4,
+  3,
+  10,
+  2,
+  'status.generic.deleted',
+  'type.folder_link.folder',
+  CURRENT_TIMESTAMP,
+  CURRENT_TIMESTAMP,
+  'access.role.owner'
+),
+(
   10,
   200,
   2,

@@ -1,5 +1,5 @@
 import type { FileType } from "@stela/permanent_models";
-import type { PendingShare, Share } from "../share/models.js";
+import type { PendingShare, ShareSummary } from "../share/models.js";
 import type { Tag } from "../tag/models.js";
 import type { Location, LocationInput } from "../location/models.js";
 
@@ -37,7 +37,7 @@ export interface ArchiveRecord {
 	parentFolderArchiveNumber: string;
 	tags: Tag[];
 	archiveArchiveNumber: string;
-	shares: Share[];
+	shares: ShareSummary[];
 	pendingShares: PendingShare[] | null;
 	location: Location;
 	archive: {
@@ -86,7 +86,7 @@ export interface ArchiveRecordRow {
 	parentFolderArchiveNumber: string;
 	tags: Tag[];
 	archiveArchiveNumber: string;
-	shares: Share[];
+	shares: ShareSummary[];
 	pendingShares: PendingShare[] | null;
 	location: Location;
 	archive: {

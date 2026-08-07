@@ -1,5 +1,6 @@
 import { Router } from "express";
 import type { Request, Response, NextFunction } from "express";
+import { HTTP_STATUS } from "@pdc/http-status-codes";
 import {
 	verifyUserAuthentication,
 	verifyAdminAuthentication,
@@ -14,7 +15,7 @@ import {
 	validateGetSharedFoldersQuery,
 } from "../validators.js";
 import { archiveService } from "../service/index.js";
-import { HTTP_STATUS } from "@pdc/http-status-codes";
+import { validatePaginationParameters } from "../../validators/shared.js";
 
 export const archiveController = Router();
 
@@ -174,6 +175,29 @@ archiveController.get(
 			validateBodyFromAuthentication(req.body);
 			validateGetSharedFoldersQuery(req.query);
 			const response = await archiveService.getSharedFolders(
+				req.params.archiveId,
+				req.body.emailFromAuthToken,
+				{
+					pageSize: req.query.pageSize,
+					cursor: req.query.cursor,
+				},
+			);
+			res.json(response);
+		} catch (err) {
+			next(err);
+		}
+	},
+);
+
+archiveController.get(
+	"/:archiveId/received-shares",
+	verifyUserAuthentication,
+	async (req: Request, res: Response, next: NextFunction) => {
+		try {
+			validateArchiveIdFromParams(req.params);
+			validateBodyFromAuthentication(req.body);
+			validatePaginationParameters(req.query);
+			const response = await archiveService.getReceivedShares(
 				req.params.archiveId,
 				req.body.emailFromAuthToken,
 				{

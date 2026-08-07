@@ -1,5 +1,6 @@
 import { ArchiveMembershipRole } from "../access/models.js";
 import type { Folder } from "../folder/models.js";
+import type { Share } from "../share/models.js";
 
 export { ArchiveMembershipRole };
 
@@ -83,6 +84,26 @@ export interface GetArchivesResponse {
 
 export interface GetSharedFoldersResponse {
 	items: Folder[];
+	pagination: {
+		nextCursor: string | undefined;
+		nextPage: string | undefined;
+		totalPages: number;
+	};
+}
+
+export interface ArchiveSummary {
+	id: string;
+	name: string;
+	thumbnailUrls: {
+		width200: string | null;
+		width500: string | null;
+		width1000: string | null;
+		width2000: string | null;
+	};
+}
+
+export interface GetReceivedSharesResponse {
+	items: Share[];
 	pagination: {
 		nextCursor: string | undefined;
 		nextPage: string | undefined;

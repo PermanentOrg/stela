@@ -9,32 +9,6 @@ tag:
       type: string
     type:
       type: string
-share:
-  description: >
-    Record Tag Object
-  type: object
-  properties:
-    shareId:
-      type: string
-    archiveId:
-      type: string
-    accessRole:
-      type: string
-    status:
-      type: string
-    archive:
-      $ref: "../models/record.yaml#/shareArchive"
-shareArchive:
-  description: >
-    Record Share Archive Object
-  type: object
-  properties:
-    archiveId:
-      type: string
-    thumbUrl200:
-      type: string
-    name:
-      type: string
 record:
   description: >
     Generic Record object
@@ -137,7 +111,7 @@ record:
     shares:
       type: array
       items:
-        $ref: "./record.yaml#/share"
+        $ref: "./share.yaml#/shareSummary"
     pendingShares:
       nullable: true
       type: array

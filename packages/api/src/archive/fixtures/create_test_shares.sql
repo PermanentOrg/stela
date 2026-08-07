@@ -49,6 +49,18 @@ VALUES
   CURRENT_TIMESTAMP
 ),
 (
+  4,
+  4,
+  1,
+  'access.role.viewer',
+  'status.generic.ok',
+  'type.share.folder',
+  NULL,
+  0,
+  CURRENT_TIMESTAMP,
+  CURRENT_TIMESTAMP
+),
+(
   10,
   10,
   2,

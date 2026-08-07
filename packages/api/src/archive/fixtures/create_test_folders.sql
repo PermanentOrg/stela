@@ -9,7 +9,8 @@ folder (
   status,
   createddt,
   type,
-  thumburl500
+  thumburl500,
+  displaytime
 )
 VALUES
 (
@@ -22,6 +23,7 @@ VALUES
   'status.generic.ok',
   CURRENT_TIMESTAMP - '2 days'::interval,
   'type.folder.public',
+  NULL,
   NULL
 ),
 (
@@ -34,6 +36,7 @@ VALUES
   'status.generic.ok',
   CURRENT_TIMESTAMP,
   'type.folder.private',
+  NULL,
   NULL
 ),
 (
@@ -46,7 +49,8 @@ VALUES
   'status.generic.ok',
   CURRENT_TIMESTAMP,
   'type.folder.private',
-  NULL
+  'https://test-folder-thumbnail',
+  '2026-08-01'
 ),
 (
   4,
@@ -58,6 +62,7 @@ VALUES
   'status.generic.deleted',
   CURRENT_TIMESTAMP,
   'type.folder.private',
+  NULL,
   NULL
 ),
 (
@@ -70,6 +75,7 @@ VALUES
   'status.generic.ok',
   CURRENT_TIMESTAMP,
   'type.folder.public',
+  NULL,
   NULL
 ),
 (
@@ -82,6 +88,7 @@ VALUES
   'status.generic.ok',
   CURRENT_TIMESTAMP + '1 day'::interval,
   'type.folder.private',
+  NULL,
   NULL
 ),
 (
@@ -94,7 +101,8 @@ VALUES
   'status.generic.ok',
   CURRENT_TIMESTAMP,
   'type.folder.root.public',
-  'https://test-folder-thumbnail'
+  'https://test-folder-thumbnail',
+  NULL
 ),
 (
   8,
@@ -106,6 +114,7 @@ VALUES
   'status.generic.deleted',
   '2020-01-01 00:00:00',
   'type.folder.private',
+  NULL,
   NULL
 ),
 (
@@ -118,7 +127,8 @@ VALUES
   'status.generic.ok',
   CURRENT_TIMESTAMP,
   'type.folder.root.private',
-  'https://test-folder-thumbnail'
+  'https://test-folder-thumbnail',
+  NULL
 ),
 (
   10,
@@ -130,7 +140,8 @@ VALUES
   'status.generic.ok',
   CURRENT_TIMESTAMP,
   'type.folder.root.private',
-  'https://test-folder-thumbnail'
+  'https://test-folder-thumbnail',
+  NULL
 ),
 (
   11,
@@ -142,7 +153,8 @@ VALUES
   'status.generic.ok',
   CURRENT_TIMESTAMP,
   'type.folder.root.private',
-  'https://test-folder-thumbnail'
+  'https://test-folder-thumbnail',
+  NULL
 ),
 (
   100,
@@ -154,6 +166,7 @@ VALUES
   'status.generic.ok',
   CURRENT_TIMESTAMP,
   'type.folder.root.root',
+  NULL,
   NULL
 ),
 (
@@ -166,6 +179,7 @@ VALUES
   'status.generic.ok',
   CURRENT_TIMESTAMP,
   'type.folder.root.root',
+  NULL,
   NULL
 ),
 (
@@ -178,6 +192,7 @@ VALUES
   'status.generic.ok',
   CURRENT_TIMESTAMP,
   'type.folder.root.root',
+  NULL,
   NULL
 ),
 (
@@ -190,6 +205,7 @@ VALUES
   'status.generic.ok',
   CURRENT_TIMESTAMP,
   'type.folder.root.root',
+  NULL,
   NULL
 ),
 (
@@ -202,6 +218,7 @@ VALUES
   'status.generic.ok',
   CURRENT_TIMESTAMP,
   'type.folder.root.root',
+  NULL,
   NULL
 ),
 (
@@ -214,5 +231,6 @@ VALUES
   'status.generic.ok',
   CURRENT_TIMESTAMP,
   'type.folder.private',
+  NULL,
   NULL
 );
