@@ -1,10 +1,38 @@
 INSERT INTO
 archive (
-  archiveid, archivenbr, payeraccountid, public, type, thumburl200, status
+  archiveid,
+  archivenbr,
+  payeraccountid,
+  public,
+  type,
+  thumburl200,
+  status,
+  createddt,
+  updateddt
 )
 VALUES
-(1, '0001-0001', 2, false, 'type.archive.person', null, 'status.generic.ok'),
-(2, '0001-0002', 3, false, 'type.archive.person', null, 'status.generic.ok'),
+(
+  1,
+  '0001-0001',
+  2,
+  false,
+  'type.archive.person',
+  'https://test-archive-thumbnail',
+  'status.generic.ok',
+  '2026-08-06',
+  '2026-08-06'
+),
+(
+  2,
+  '0001-0002',
+  3,
+  false,
+  'type.archive.person',
+  null,
+  'status.generic.ok',
+  null,
+  null
+),
 (
   3,
   '0001-0003',
@@ -12,7 +40,9 @@ VALUES
   true,
   'type.archive.person',
   'https://test-archive-thumbnail',
-  'status.generic.ok'
+  'status.generic.ok',
+  null,
+  null
 ),
 (
   4,
@@ -21,7 +51,9 @@ VALUES
   true,
   'type.archive.person',
   'https://test-archive-thumbnail',
-  'status.generic.deleted'
+  'status.generic.deleted',
+  null,
+  null
 ),
 (
   5,
@@ -30,5 +62,7 @@ VALUES
   true,
   'type.archive.person',
   'https://test-archive-thumbnail',
-  'status.generic.ok'
+  'status.generic.ok',
+  null,
+  null
 );

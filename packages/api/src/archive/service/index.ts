@@ -7,6 +7,8 @@ import { getSharedFolders } from "./get_shared_folders.js";
 import { backfillLedger } from "./backfill_ledger.js";
 import { searchArchives } from "./search_archives.js";
 import { updateArchive } from "./update_archive.js";
+import { getArchive } from "./get_archive.js";
+import { getArchives } from "./get_archives.js";
 
 export const archiveService = {
 	getPublicTags,
@@ -18,4 +20,6 @@ export const archiveService = {
 	backfillLedger,
 	searchArchives,
 	updateArchive,
+	getArchive,
+	getArchives,
 };

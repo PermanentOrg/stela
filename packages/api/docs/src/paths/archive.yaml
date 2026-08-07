@@ -112,7 +112,6 @@ archives/{id}:
       - bearerHttpAuthentication: []
     tags:
       - archives
-      - unimplemented
     operationId: get-archives-id
     responses:
       "200":
@@ -126,6 +125,10 @@ archives/{id}:
                   $ref: "../models/archive.yaml#/archive"
       "400":
         $ref: "../errors.yaml#/400"
+      "401":
+        $ref: "../errors.yaml#/401"
+      "404":
+        $ref: "../errors.yaml#/404"
       "500":
         $ref: "../errors.yaml#/500"
   patch:
