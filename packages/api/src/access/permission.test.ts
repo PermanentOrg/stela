@@ -13,8 +13,11 @@ import {
 	getRecordAccessRole,
 	getFolderAccessRole,
 	isItemPublic,
+	leastPermissiveAccessRole,
+	mostPermissiveAccessRole,
+	resolveAccessRole,
 } from "./permission.js";
-import { AccessRole } from "./models.js";
+import { AccessRole, ArchiveMembershipRole } from "./models.js";
 import { db } from "../database.js";
 import { runFixtures } from "../../test/run_fixtures.js";
 
@@ -367,5 +370,126 @@ describe("isItemPublic", () => {
 				createError.InternalServerError("Failed to access database"),
 			);
 		}
+	});
+});
+
+describe("leastPermissiveAccessRole", () => {
+	test("returns the lesser of two roles", () => {
+		expect(
+			leastPermissiveAccessRole(AccessRole.Owner, AccessRole.Viewer),
+		).toEqual(AccessRole.Viewer);
+	});
+
+	test("returns the other role when one side is null", () => {
+		expect(leastPermissiveAccessRole(null, AccessRole.Editor)).toEqual(
+			AccessRole.Editor,
+		);
+		expect(leastPermissiveAccessRole(AccessRole.Editor, null)).toEqual(
+			AccessRole.Editor,
+		);
+	});
+
+	test("returns null when both sides are null", () => {
+		expect(leastPermissiveAccessRole(null, null)).toBeNull();
+	});
+});
+
+describe("mostPermissiveAccessRole", () => {
+	test("returns the greatest role among the list", () => {
+		expect(
+			mostPermissiveAccessRole([
+				AccessRole.Viewer,
+				AccessRole.Manager,
+				AccessRole.Contributor,
+			]),
+		).toEqual(AccessRole.Manager);
+	});
+
+	test("ignores null and undefined entries", () => {
+		expect(
+			mostPermissiveAccessRole([null, undefined, AccessRole.Curator]),
+		).toEqual(AccessRole.Curator);
+	});
+
+	test("returns null when every entry is null, undefined, or the list is empty", () => {
+		expect(mostPermissiveAccessRole([null, undefined])).toBeNull();
+		expect(mostPermissiveAccessRole([])).toBeNull();
+	});
+});
+
+describe("resolveAccessRole", () => {
+	test("returns the archive membership role when it is the only applicable path", () => {
+		const accessRole = resolveAccessRole({
+			archiveAccessRole: AccessRole.Owner,
+			shareAccessRoles: null,
+			shareTokenGrantsAccess: false,
+			isPublic: false,
+		});
+		expect(accessRole).toEqual(ArchiveMembershipRole.Owner);
+	});
+
+	test("caps a share's role at the sharing archive's own membership role", () => {
+		const accessRole = resolveAccessRole({
+			archiveAccessRole: null,
+			shareAccessRoles: [
+				{
+					archiveAccessRole: AccessRole.Viewer,
+					shareAccessRole: AccessRole.Manager,
+				},
+			],
+			shareTokenGrantsAccess: false,
+			isPublic: false,
+		});
+		expect(accessRole).toEqual(ArchiveMembershipRole.Viewer);
+	});
+
+	test("returns the most permissive role across every applicable path", () => {
+		const accessRole = resolveAccessRole({
+			archiveAccessRole: AccessRole.Viewer,
+			shareAccessRoles: [
+				{
+					archiveAccessRole: AccessRole.Manager,
+					shareAccessRole: AccessRole.Curator,
+				},
+			],
+			shareTokenGrantsAccess: true,
+			isPublic: true,
+		});
+		expect(accessRole).toEqual(ArchiveMembershipRole.Curator);
+	});
+
+	test("grants viewer access via a share token alone", () => {
+		const accessRole = resolveAccessRole({
+			archiveAccessRole: null,
+			shareAccessRoles: null,
+			shareTokenGrantsAccess: true,
+			isPublic: false,
+		});
+		expect(accessRole).toEqual(ArchiveMembershipRole.Viewer);
+	});
+
+	test("grants viewer access via public access alone", () => {
+		const accessRole = resolveAccessRole({
+			archiveAccessRole: null,
+			shareAccessRoles: null,
+			shareTokenGrantsAccess: false,
+			isPublic: true,
+		});
+		expect(accessRole).toEqual(ArchiveMembershipRole.Viewer);
+	});
+
+	test("throws an internal server error when no access path applies", () => {
+		expect(() =>
+			resolveAccessRole({
+				archiveAccessRole: null,
+				shareAccessRoles: null,
+				shareTokenGrantsAccess: false,
+				isPublic: false,
+			}),
+		).toThrow(
+			createError.InternalServerError(
+				"Unable to resolve caller's access role for item",
+			),
+		);
 	});
 });

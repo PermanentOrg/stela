@@ -1,6 +1,10 @@
 import createError from "http-errors";
 import { logger } from "@stela/logger";
-import { AccessRole } from "./models.js";
+import {
+	AccessRole,
+	type ArchiveMembershipRole,
+	accessRoleToArchiveMembershipRole,
+} from "./models.js";
 import { db } from "../database.js";
 
 const VIEWER_ACCESS_ROLE_RANK = 1;
@@ -25,17 +29,65 @@ export const accessRoleLessThan = (
 	return accessRoleRank.get(roleOne) < accessRoleRank.get(roleTwo);
 };
 
-const moreLimitedAccessRole = (
-	roleOne: AccessRole | null,
-	roleTwo: AccessRole | null,
+export const leastPermissiveAccessRole = (
+	roleOne: AccessRole | null | undefined,
+	roleTwo: AccessRole | null | undefined,
 ): AccessRole | null => {
-	if (roleOne === null) {
-		return roleTwo;
+	if (roleOne === null || roleOne === undefined) {
+		return roleTwo ?? null;
 	}
-	if (roleTwo === null) {
+	if (roleTwo === null || roleTwo === undefined) {
 		return roleOne;
 	}
 	return accessRoleLessThan(roleOne, roleTwo) ? roleOne : roleTwo;
+};
+
+export const mostPermissiveAccessRole = (
+	roles: Array<AccessRole | null | undefined>,
+): AccessRole | null =>
+	roles.reduce<AccessRole | null>((accumulator, role) => {
+		if (role === null || role === undefined) {
+			return accumulator;
+		}
+		if (accumulator === null) {
+			return role;
+		}
+		return accessRoleLessThan(accumulator, role) ? role : accumulator;
+	}, null);
+
+export interface ShareAccessRolePair {
+	archiveAccessRole: AccessRole;
+	shareAccessRole: AccessRole;
+}
+
+export const resolveAccessRole = (input: {
+	archiveAccessRole: AccessRole | null;
+	shareAccessRoles: ShareAccessRolePair[] | null;
+	shareTokenGrantsAccess: boolean;
+	isPublic: boolean;
+}): ArchiveMembershipRole => {
+	const roles: Array<AccessRole | null> = [
+		input.archiveAccessRole,
+		...(input.shareAccessRoles ?? []).map((share) =>
+			leastPermissiveAccessRole(share.archiveAccessRole, share.shareAccessRole),
+		),
+	];
+	if (input.shareTokenGrantsAccess) {
+		roles.push(AccessRole.Viewer);
+	}
+	if (input.isPublic) {
+		roles.push(AccessRole.Viewer);
+	}
+
+	const accessRole = mostPermissiveAccessRole(roles);
+	if (accessRole === null) {
+		// Should be unreachable: the SQL WHERE clause that selects a row already
+		// guarantees at least one access path applies.
+		throw createError.InternalServerError(
+			"Unable to resolve caller's access role for item",
+		);
+	}
+	return accessRoleToArchiveMembershipRole(accessRole);
 };
 
 export const getItemAccessRole = async (
@@ -61,19 +113,11 @@ export const getItemAccessRole = async (
 		throw createError.NotFound();
 	}
 
-	const accessRole = result.rows
-		.map((row) =>
-			moreLimitedAccessRole(row.archiveAccessRole, row.shareAccessRole),
-		)
-		.reduce((accumulator, role) => {
-			if (accumulator === null) {
-				return role;
-			}
-			if (role === null) {
-				return accumulator;
-			}
-			return accessRoleLessThan(accumulator, role) ? role : accumulator;
-		});
+	const accessRole = mostPermissiveAccessRole(
+		result.rows.map((row) =>
+			leastPermissiveAccessRole(row.archiveAccessRole, row.shareAccessRole),
+		),
+	);
 
 	if (accessRole === null) {
 		throw createError.NotFound();

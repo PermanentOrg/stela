@@ -23,6 +23,7 @@ import {
 import {
 	getFolderAccessRole,
 	accessRoleLessThan,
+	resolveAccessRole,
 } from "../access/permission.js";
 import { AccessRole } from "../access/models.js";
 import { getRecords } from "../record/service.js";
@@ -100,15 +101,29 @@ export const prettifyFolderView = (view: FolderView): PrettyFolderView => {
 	}
 };
 
-const mapFolderRow = (row: FolderRow): Folder => ({
-	...row,
-	size: row.size === null ? null : +row.size,
-	imageRatio: +(row.imageRatio ?? 0),
-	sort: prettifyFolderSortType(row.sort),
-	type: prettifyFolderType(row.type),
-	status: prettifyFolderStatus(row.status),
-	view: prettifyFolderView(row.view),
-});
+const mapFolderRow = (row: FolderRow): Folder => {
+	const {
+		archiveAccessRole,
+		shareAccessRoles,
+		shareTokenGrantsAccess,
+		...rest
+	} = row;
+	return {
+		...rest,
+		size: row.size === null ? null : +row.size,
+		imageRatio: +(row.imageRatio ?? 0),
+		sort: prettifyFolderSortType(row.sort),
+		type: prettifyFolderType(row.type),
+		status: prettifyFolderStatus(row.status),
+		view: prettifyFolderView(row.view),
+		accessRole: resolveAccessRole({
+			archiveAccessRole,
+			shareAccessRoles,
+			shareTokenGrantsAccess,
+			isPublic: row.publicAt !== null && new Date(row.publicAt) <= new Date(),
+		}),
+	};
+};
 
 export const getFolders = async (
 	folderIds: string[],
