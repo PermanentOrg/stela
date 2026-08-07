@@ -1,0 +1,57 @@
+INSERT INTO
+account_archive (
+  account_archiveid,
+  accountid,
+  archiveid,
+  accessrole,
+  position,
+  type,
+  status,
+  createddt,
+  updateddt
+)
+VALUES
+(
+  1,
+  1,
+  1,
+  'access.role.owner',
+  0,
+  'type.account.standard',
+  'status.generic.ok',
+  CURRENT_TIMESTAMP,
+  CURRENT_TIMESTAMP
+),
+(
+  2,
+  2,
+  1,
+  'access.role.viewer',
+  0,
+  'type.account.standard',
+  'status.generic.pending',
+  CURRENT_TIMESTAMP,
+  CURRENT_TIMESTAMP
+),
+(
+  3,
+  4,
+  1,
+  'access.role.editor',
+  0,
+  'type.account.standard',
+  'status.generic.ok',
+  CURRENT_TIMESTAMP,
+  CURRENT_TIMESTAMP
+),
+(
+  4,
+  2,
+  1,
+  'access.role.editor',
+  0,
+  'type.account.standard',
+  'status.generic.deleted',
+  CURRENT_TIMESTAMP,
+  CURRENT_TIMESTAMP
+);

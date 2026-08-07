@@ -14,6 +14,7 @@ import { featureController } from "../feature_flag/index.js";
 import { folderController, foldersController } from "../folder/index.js";
 import { shareLinkController } from "../share_link/index.js";
 import { storagePurchaseController } from "../storage_purchase/index.js";
+import { archiveMembershipController } from "../archive_membership/index.js";
 
 const apiRoutes = express.Router();
 apiRoutes.get("/health", healthController.getHealth);
@@ -37,5 +38,6 @@ apiRoutes.use("/folders", foldersController);
 apiRoutes.use("/folder", folderController); // Deprecated path maintained to avoid breaking changes
 apiRoutes.use("/share-links", shareLinkController);
 apiRoutes.use("/storage-purchases", storagePurchaseController);
+apiRoutes.use("/archive-memberships", archiveMembershipController);
 
 export { apiRoutes };

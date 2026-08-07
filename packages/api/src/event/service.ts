@@ -1,4 +1,5 @@
 import createError from "http-errors";
+import type { TinyPg } from "tinypg";
 import { logger } from "@stela/logger";
 import { db } from "../database.js";
 import type { CreateEventRequest, ChecklistItem } from "./models.js";
@@ -8,6 +9,13 @@ import {
 } from "../database_util.js";
 
 export const createEvent = async (data: CreateEventRequest): Promise<void> => {
+	await createEventInTransaction(data, db);
+};
+
+export const createEventInTransaction = async (
+	data: CreateEventRequest,
+	transactionDb: TinyPg,
+): Promise<void> => {
 	const actorType =
 		data.userSubjectFromAuthToken === undefined ? "admin" : "user";
 	const event = {
@@ -22,7 +30,7 @@ export const createEvent = async (data: CreateEventRequest): Promise<void> => {
 		body: data.body,
 	};
 
-	const result = await db
+	const result = await transactionDb
 		.sql<{ id: string }>("event.queries.create_event", event)
 		.catch((err: unknown) => {
 			if (isInvalidEnumError(err)) {
