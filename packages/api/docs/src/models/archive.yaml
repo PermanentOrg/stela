@@ -68,7 +68,6 @@ archive:
       enum:
         - ok
         - orphaned
-        - deleted
         - generate-avatar
     type:
       $ref: "./archive_type.yaml#/archiveType"
