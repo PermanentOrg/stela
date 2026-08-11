@@ -25,3 +25,10 @@ export interface UpdateArchiveMembershipRequest {
 	userAgent?: string | undefined;
 	ip?: string | undefined;
 }
+
+export interface DeleteArchiveMembershipRequest {
+	emailFromAuthToken: string;
+	userSubjectFromAuthToken: string;
+	userAgent?: string | undefined;
+	ip?: string | undefined;
+}

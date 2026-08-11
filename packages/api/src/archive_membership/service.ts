@@ -12,6 +12,7 @@ import {
 import type {
 	ArchiveMembership,
 	UpdateArchiveMembershipRequest,
+	DeleteArchiveMembershipRequest,
 } from "./models.js";
 import { createEventInTransaction } from "../event/service.js";
 
@@ -19,6 +20,18 @@ interface PermissionsDataRow {
 	archiveId: string;
 	accountEmail: string;
 	isOwner: boolean;
+}
+
+interface DeletedArchiveMembershipRow {
+	id: string;
+	accountId: string;
+	archiveId: string;
+	accessRole: string | null;
+	position: string;
+	type: string;
+	status: string;
+	createdAt: Date | null;
+	updatedAt: Date | null;
 }
 
 const validateUpdateArchiveMembershipPermissions = async (
@@ -145,6 +158,96 @@ const updateArchiveMembership = async (
 	return updatedResult.rows[0];
 };
 
+const validateDeleteArchiveMembershipPermissions = async (
+	archiveMembershipId: string,
+	requestData: DeleteArchiveMembershipRequest,
+): Promise<void> => {
+	const permissionsResult = await db
+		.sql<PermissionsDataRow>(
+			"archive_membership.queries.get_account_membership_permissions_data",
+			{ id: archiveMembershipId },
+		)
+		.catch((err: unknown) => {
+			logger.error(err);
+			throw new createError.InternalServerError("Failed to access database");
+		});
+
+	if (permissionsResult.rows[0] === undefined) {
+		throw new createError.NotFound("Archive membership not found");
+	}
+
+	const {
+		rows: [{ archiveId, accountEmail, isOwner: archiveMembershipIsOwnerLevel }],
+	} = permissionsResult;
+
+	if (archiveMembershipIsOwnerLevel) {
+		throw new createError.Forbidden(
+			"Cannot delete an owner-level archive membership",
+		);
+	}
+
+	if (requestData.emailFromAuthToken === accountEmail) {
+		return;
+	}
+
+	const callerRole = await getArchiveAccessRole(
+		archiveId,
+		requestData.emailFromAuthToken,
+	);
+	if (accessRoleLessThan(callerRole, AccessRole.Manager)) {
+		throw new createError.Forbidden(
+			"Caller does not have sufficient permissions to delete this archive membership",
+		);
+	}
+};
+
+const deleteArchiveMembership = async (
+	id: string,
+	requestData: DeleteArchiveMembershipRequest,
+): Promise<void> => {
+	await validateDeleteArchiveMembershipPermissions(id, requestData);
+
+	await db.transaction(async (transactionDb) => {
+		const deleteResult = await transactionDb
+			.sql<DeletedArchiveMembershipRow>(
+				"archive_membership.queries.delete_archive_membership",
+				{ id },
+			)
+			.catch((err: unknown) => {
+				logger.error(err);
+				throw new createError.InternalServerError(
+					"Failed to delete archive membership",
+				);
+			});
+
+		if (deleteResult.rows[0] === undefined) {
+			throw new createError.NotFound("Archive membership not found");
+		}
+
+		const {
+			rows: [deletedArchiveMembership],
+		} = deleteResult;
+
+		await createEventInTransaction(
+			{
+				userSubjectFromAuthToken: requestData.userSubjectFromAuthToken,
+				userEmailFromAuthToken: requestData.emailFromAuthToken,
+				entity: "archive_membership",
+				action: "delete",
+				version: 1,
+				entityId: id,
+				ip: requestData.ip ?? "",
+				userAgent: requestData.userAgent,
+				body: {
+					deletedArchiveMembership,
+				},
+			},
+			transactionDb,
+		);
+	});
+};
+
 export const archiveMembershipService = {
 	updateArchiveMembership,
+	deleteArchiveMembership,
 };

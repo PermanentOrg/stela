@@ -55,3 +55,26 @@ archive-memberships/{id}:
         $ref: "../errors.yaml#/404"
       "500":
         $ref: "../errors.yaml#/500"
+  delete:
+    summary: Delete an archive membership
+    description: |
+      Deletes an archive membership. Archive memberships can be deleted by the account in the membership,
+      or by any manager or owner of the archive. Memberships at the owner level cannot be deleted by this endpoint.
+    security:
+      - bearerHttpAuthentication: []
+    tags:
+      - archive-membership
+    operationId: delete-archive-membership
+    responses:
+      "204":
+        description: The membership has been deleted, nothing is returned
+      "400":
+        $ref: "../errors.yaml#/400"
+      "401":
+        $ref: "../errors.yaml#/401"
+      "403":
+        $ref: "../errors.yaml#/403"
+      "404":
+        $ref: "../errors.yaml#/404"
+      "500":
+        $ref: "../errors.yaml#/500"
