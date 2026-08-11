@@ -56,7 +56,7 @@ WITH all_archives AS (
     ON
       archive.archiveid = description_profile_item.archiveid
       AND description_profile_item.fieldnameui = 'profile.description'
-      AND basic_profile_item.status != 'status.generic.deleted'
+      AND description_profile_item.status != 'status.generic.deleted'
   LEFT JOIN
     text_data
     ON
