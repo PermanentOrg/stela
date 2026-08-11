@@ -54,7 +54,21 @@ export enum MilestoneSortOrder {
 	ReverseChronological = "reverse_chronological",
 }
 
+export enum ArchiveStatus {
+	Ok = "ok",
+	Orphaned = "orphaned",
+	GenerateAvatar = "generate-avatar",
+}
+
+export enum ArchiveType {
+	Person = "person",
+	Group = "group",
+	Organization = "organization",
+	Nonprofit = "nonprofit",
+}
+
 export interface Archive {
+	id: string;
 	archiveId: string;
 	rootFolderId: string;
 	description?: string | null;
@@ -67,8 +81,8 @@ export interface Archive {
 	owner?: ArchiveOwner | null;
 	milestoneSortOrder: MilestoneSortOrder;
 	callerMembershipRole?: ArchiveMembershipRole | null;
-	status: string;
-	type: string;
+	status: ArchiveStatus;
+	type: ArchiveType;
 	createdAt: string;
 	updatedAt: string;
 }

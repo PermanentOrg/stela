@@ -152,6 +152,24 @@ archiveController.get(
 	},
 );
 
+archiveController.get(
+	"/:archiveId",
+	verifyUserAuthentication,
+	async (req: Request, res: Response, next: NextFunction) => {
+		try {
+			validateArchiveIdFromParams(req.params);
+			validateBodyFromAuthentication(req.body);
+			const archive = await archiveService.getArchive(
+				req.params.archiveId,
+				req.body.emailFromAuthToken,
+			);
+			res.json({ data: archive });
+		} catch (err) {
+			next(err);
+		}
+	},
+);
+
 archiveController.post(
 	"/:archiveId/backfill-ledger",
 	verifyAdminAuthentication,
