@@ -92,11 +92,12 @@ resource "aws_iam_role_policy" "trigger_archivematica_dev_lambda_policy" {
 }
 
 resource "aws_lambda_function" "trigger_archivematica_dev_lambda" {
-  package_type  = "Image"
-  image_uri     = local.desired_images["trigger-archivematica-dev-lambda"]
-  function_name = "trigger-archivematica-dev-lambda"
-  role          = aws_iam_role.trigger_archivematica_dev_lambda_role.arn
-  timeout       = 30
+  package_type                   = "Image"
+  image_uri                      = local.desired_images["trigger-archivematica-dev-lambda"]
+  function_name                  = "trigger-archivematica-dev-lambda"
+  role                           = aws_iam_role.trigger_archivematica_dev_lambda_role.arn
+  timeout                        = 30
+  reserved_concurrent_executions = 1
 
   vpc_config {
     security_group_ids = [var.dev_security_group_id]

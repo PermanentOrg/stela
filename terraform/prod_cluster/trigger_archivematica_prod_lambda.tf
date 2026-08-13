@@ -86,11 +86,12 @@ resource "aws_iam_role_policy" "trigger_archivematica_prod_lambda_policy" {
 }
 
 resource "aws_lambda_function" "trigger_archivematica_prod_lambda" {
-  package_type  = "Image"
-  image_uri     = var.trigger_archivematica_lambda_image
-  function_name = "trigger-archivematica-prod-lambda"
-  role          = aws_iam_role.trigger_archivematica_prod_lambda_role.arn
-  timeout       = 30
+  package_type                   = "Image"
+  image_uri                      = var.trigger_archivematica_lambda_image
+  function_name                  = "trigger-archivematica-prod-lambda"
+  role                           = aws_iam_role.trigger_archivematica_prod_lambda_role.arn
+  timeout                        = 30
+  reserved_concurrent_executions = 1
 
   vpc_config {
     security_group_ids = [var.prod_security_group_id]
