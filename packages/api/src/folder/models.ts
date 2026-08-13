@@ -2,6 +2,8 @@ import type { PendingShare, ShareSummary } from "../share/models.js";
 import type { Tag } from "../tag/models.js";
 import type { ArchiveRecord } from "../record/models.js";
 import type { Location, LocationInput } from "../location/models.js";
+import type { AccessRole, ArchiveMembershipRole } from "../access/models.js";
+import type { ShareAccessRolePair } from "../access/permission.js";
 
 export type FolderChildItem =
 	| (ArchiveRecord & { itemType: "record" | "folder" })
@@ -56,7 +58,8 @@ export interface FolderRow {
 		folderLinkIds: string[];
 		archiveNumbers: Array<string | null>;
 	};
-	publicAt?: string;
+	publicAt: string | null;
+	isPublic: boolean;
 	sort: FolderSortOrder;
 	thumbnailUrls?: ThumbnailUrls;
 	type: FolderType;
@@ -69,6 +72,9 @@ export interface FolderRow {
 			name: string;
 		};
 	};
+	archiveAccessRole: AccessRole | null;
+	shareAccessRoles: ShareAccessRolePair[] | null;
+	shareTokenGrantsAccess: boolean;
 }
 
 export interface ThumbnailUrls {
@@ -110,7 +116,7 @@ export interface Folder {
 		folderLinkIds: string[];
 		archiveNumbers: Array<string | null>;
 	};
-	publicAt?: string;
+	publicAt: string | null;
 	sort: PrettyFolderSortOrder;
 	thumbnailUrls?: ThumbnailUrls;
 	type: PrettyFolderType;
@@ -123,6 +129,7 @@ export interface Folder {
 			name: string;
 		};
 	};
+	accessRole: ArchiveMembershipRole;
 }
 
 export interface FolderLink {
