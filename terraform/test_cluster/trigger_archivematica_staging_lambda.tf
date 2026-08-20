@@ -8,11 +8,12 @@ resource "aws_sqs_queue" "trigger_archivematica_staging_deadletter_queue" {
 }
 
 resource "aws_sqs_queue" "trigger_archivematica_staging_queue" {
-  name = "trigger-archivematica-staging-queue"
+  name                       = "trigger-archivematica-staging-queue"
+  visibility_timeout_seconds = 720
 
   redrive_policy = jsonencode({
     deadLetterTargetArn = aws_sqs_queue.trigger_archivematica_staging_deadletter_queue.arn
-    maxReceiveCount     = 3
+    maxReceiveCount     = 10
   })
 }
 
@@ -96,8 +97,8 @@ resource "aws_lambda_function" "trigger_archivematica_staging_lambda" {
   image_uri                      = local.desired_images["trigger-archivematica-staging-lambda"]
   function_name                  = "trigger-archivematica-staging-lambda"
   role                           = aws_iam_role.trigger_archivematica_staging_lambda_role.arn
-  timeout                        = 30
-  reserved_concurrent_executions = 1
+  timeout                        = 120
+  reserved_concurrent_executions = 2
 
   vpc_config {
     security_group_ids = [var.staging_security_group_id]
@@ -113,6 +114,7 @@ resource "aws_lambda_function" "trigger_archivematica_staging_lambda" {
       ARCHIVEMATICA_API_KEY              = var.staging_archivematica_api_key
       ARCHIVEMATICA_ORIGINAL_LOCATION_ID = var.staging_archivematica_original_location_id
       ARCHIVEMATICA_PROCESSING_WORKFLOW  = var.staging_archivematica_processing_workflow
+      SUBMISSION_DELAY_MS                = "12000"
       NODE_OPTIONS                       = "--import ./packages/trigger_archivematica/dist/instrument.js"
     }
   }
@@ -121,6 +123,10 @@ resource "aws_lambda_function" "trigger_archivematica_staging_lambda" {
 resource "aws_lambda_event_source_mapping" "trigger_archivematica_staging_event_source_mapping" {
   event_source_arn                   = aws_sqs_queue.trigger_archivematica_staging_queue.arn
   function_name                      = aws_lambda_function.trigger_archivematica_staging_lambda.arn
-  batch_size                         = 10
+  batch_size                         = 1
   maximum_batching_window_in_seconds = 0
+
+  scaling_config {
+    maximum_concurrency = 2
+  }
 }

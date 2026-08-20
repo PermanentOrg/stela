@@ -1,3 +1,4 @@
+import { setTimeout as sleep } from "node:timers/promises";
 import type { SQSHandler, SQSEvent, SQSRecord } from "aws-lambda";
 import * as Sentry from "@sentry/aws-serverless";
 import { validateSqsMessage } from "@stela/s3-utils";
@@ -10,6 +11,7 @@ import {
 	ARCHIVEMATICA_API_KEY,
 	ARCHIVEMATICA_ORIGINAL_LOCATION_ID,
 	ARCHIVEMATICA_PROCESSING_WORKFLOW,
+	SUBMISSION_DELAY_MS,
 } from "./env.js";
 
 export const extractRecordIdFromNewRecordMessage = (
@@ -91,5 +93,7 @@ export const handler: SQSHandler = Sentry.wrapHandler(
 				}
 			}),
 		);
+
+		await sleep(Number(SUBMISSION_DELAY_MS));
 	},
 );

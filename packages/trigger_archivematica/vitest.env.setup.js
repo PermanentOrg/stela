@@ -5,3 +5,4 @@ process.env.ARCHIVEMATICA_ORIGINAL_LOCATION_ID =
 process.env.ARCHIVEMATICA_PROCESSING_WORKFLOW = "default";
 process.env.ENV = "test";
 process.env.SENTRY_DSN = "test";
+process.env.SUBMISSION_DELAY_MS = "0";

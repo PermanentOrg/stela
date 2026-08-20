@@ -8,11 +8,12 @@ resource "aws_sqs_queue" "trigger_archivematica_dev_deadletter_queue" {
 }
 
 resource "aws_sqs_queue" "trigger_archivematica_dev_queue" {
-  name = "trigger-archivematica-dev-queue"
+  name                       = "trigger-archivematica-dev-queue"
+  visibility_timeout_seconds = 720
 
   redrive_policy = jsonencode({
     deadLetterTargetArn = aws_sqs_queue.trigger_archivematica_dev_deadletter_queue.arn
-    maxReceiveCount     = 3
+    maxReceiveCount     = 10
   })
 }
 
@@ -96,8 +97,8 @@ resource "aws_lambda_function" "trigger_archivematica_dev_lambda" {
   image_uri                      = local.desired_images["trigger-archivematica-dev-lambda"]
   function_name                  = "trigger-archivematica-dev-lambda"
   role                           = aws_iam_role.trigger_archivematica_dev_lambda_role.arn
-  timeout                        = 30
-  reserved_concurrent_executions = 1
+  timeout                        = 120
+  reserved_concurrent_executions = 2
 
   vpc_config {
     security_group_ids = [var.dev_security_group_id]
@@ -113,6 +114,7 @@ resource "aws_lambda_function" "trigger_archivematica_dev_lambda" {
       ARCHIVEMATICA_API_KEY              = var.dev_archivematica_api_key
       ARCHIVEMATICA_ORIGINAL_LOCATION_ID = var.dev_archivematica_original_location_id
       ARCHIVEMATICA_PROCESSING_WORKFLOW  = var.dev_archivematica_processing_workflow
+      SUBMISSION_DELAY_MS                = "12000"
       NODE_OPTIONS                       = "--import ./packages/trigger_archivematica/dist/instrument.js"
     }
   }
@@ -121,6 +123,10 @@ resource "aws_lambda_function" "trigger_archivematica_dev_lambda" {
 resource "aws_lambda_event_source_mapping" "trigger_archivematica_dev_event_source_mapping" {
   event_source_arn                   = aws_sqs_queue.trigger_archivematica_dev_queue.arn
   function_name                      = aws_lambda_function.trigger_archivematica_dev_lambda.arn
-  batch_size                         = 10
+  batch_size                         = 1
   maximum_batching_window_in_seconds = 0
+
+  scaling_config {
+    maximum_concurrency = 2
+  }
 }
