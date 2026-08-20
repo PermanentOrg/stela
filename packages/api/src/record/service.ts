@@ -13,7 +13,6 @@ import {
 	getRecordAccessRole,
 	accessRoleLessThan,
 	getArchiveAccessRole,
-	resolveAccessRole,
 } from "../access/permission.js";
 import { AccessRole } from "../access/models.js";
 import { shareLinkService } from "../share_link/service.js";
@@ -22,26 +21,11 @@ import { getFolders } from "../folder/service.js";
 import { type Folder, PrettyFolderType } from "../folder/models.js";
 import { insertLocation, updateLocation } from "../location/service.js";
 
-const mapRecordRow = (row: ArchiveRecordRow): ArchiveRecord => {
-	const {
-		archiveAccessRole,
-		shareAccessRoles,
-		shareTokenGrantsAccess,
-		isPublic,
-		...rest
-	} = row;
-	return {
-		...rest,
-		size: +(row.size ?? 0),
-		imageRatio: +(row.imageRatio ?? 0),
-		accessRole: resolveAccessRole({
-			archiveAccessRole,
-			shareAccessRoles,
-			shareTokenGrantsAccess,
-			isPublic,
-		}),
-	};
-};
+const mapRecordRow = (row: ArchiveRecordRow): ArchiveRecord => ({
+	...row,
+	size: +(row.size ?? 0),
+	imageRatio: +(row.imageRatio ?? 0),
+});
 
 export const getRecords = async (requestQuery: {
 	recordIds: string[] | undefined;

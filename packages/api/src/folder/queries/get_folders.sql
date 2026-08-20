@@ -207,7 +207,7 @@ account_by_share AS (
       account_archive.archiveid = access.archiveid
   WHERE
     account.primaryemail = :email
-    AND access.status = 'status.generic.ok'
+    AND access.status != 'status.generic.deleted'
     AND account_archive.status = 'status.generic.ok'
 ),
 
@@ -234,7 +234,6 @@ all_folders AS (
     folder.status,
     folder.view,
     folder_link.folder_linkid AS "folderLinkId",
-    COALESCE(folder.publicdt <= NOW(), FALSE) AS "isPublic",
     CASE
       WHEN
         EXISTS (
@@ -326,55 +325,7 @@ all_folders AS (
       folder.thumburl2000,
       '256',
       folder.thumbnail256
-    ) AS "thumbnailUrls",
-    (
-      SELECT account_archive.accessrole
-      FROM account_archive
-      INNER JOIN account
-        ON account_archive.accountid = account.accountid
-      WHERE
-        :email IS NOT NULL
-        AND account_archive.archiveid = folder.archiveid
-        AND account.primaryemail = :email
-        AND account_archive.status = 'status.generic.ok'
-        AND account.status = 'status.auth.ok'
-      ORDER BY account_archive.account_archiveid
-      LIMIT 1
-    ) AS "archiveAccessRole",
-    (
-      SELECT
-        ARRAY_AGG(
-          JSONB_BUILD_OBJECT(
-            'archiveAccessRole',
-            account_archive.accessrole,
-            'shareAccessRole',
-            access.accessrole
-          )
-        )
-      FROM access
-      INNER JOIN folder_link AS share_folder_link
-        ON
-          access.folder_linkid = share_folder_link.folder_linkid
-          AND share_folder_link.folderid = folder.folderid
-          AND share_folder_link.status = 'status.generic.ok'
-      INNER JOIN account_archive
-        ON
-          access.archiveid = account_archive.archiveid
-          AND account_archive.status = 'status.generic.ok'
-      INNER JOIN account
-        ON
-          account_archive.accountid = account.accountid
-          AND account.primaryemail = :email
-          AND account.status = 'status.auth.ok'
-      WHERE
-        access.status = 'status.generic.ok'
-    ) AS "shareAccessRoles",
-    (
-      :shareToken::text IS NOT NULL
-      AND :shareToken = ANY(
-        aggregated_ancestor_unrestricted_share_tokens.tokens
-      )
-    ) AS "shareTokenGrantsAccess"
+    ) AS "thumbnailUrls"
   FROM
     folder
   INNER JOIN
@@ -394,7 +345,7 @@ all_folders AS (
     folder_link
     ON
       folder.folderid = folder_link.folderid
-      AND folder_link.status = 'status.generic.ok'
+      AND folder_link.status != 'status.generic.deleted'
   LEFT JOIN
     folder_size
     ON

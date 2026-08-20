@@ -21,7 +21,6 @@ folder:
     - status
     - createdAt
     - updatedAt
-    - accessRole
   properties:
     id:
       type: string
@@ -155,11 +154,3 @@ folder:
         - timeline
         - grid
         - deprecated
-    accessRole:
-      description: >
-        The caller's effective access role for this folder — the most
-        permissive role available across all applicable access paths:
-        membership in the folder's archive, an archive-to-archive share
-        targeting the folder, a valid share token, or public access to the
-        folder.
-      $ref: "./archive_membership_role.yaml#/archiveMembershipRole"
