@@ -35,6 +35,7 @@ export const backfillLedger = async (archiveId: string): Promise<void> => {
 					id: record.recordId,
 					body: JSON.stringify(message),
 					attributes: { Entity: "record", Action: "create" },
+					messageGroupId: "admin",
 				})
 				.catch((err: unknown) => {
 					logger.error(err);

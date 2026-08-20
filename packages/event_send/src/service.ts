@@ -78,6 +78,7 @@ export const sendEvents = async (): Promise<void> => {
 			body: event.body,
 		}),
 		attributes: { Entity: event.entity, Action: event.action },
+		messageGroupId: event.actorId,
 	}));
 
 	for (const event of events.rows) {
