@@ -2,8 +2,6 @@ import type { FileType } from "@stela/permanent_models";
 import type { PendingShare, ShareSummary } from "../share/models.js";
 import type { Tag } from "../tag/models.js";
 import type { Location, LocationInput } from "../location/models.js";
-import type { AccessRole, ArchiveMembershipRole } from "../access/models.js";
-import type { ShareAccessRolePair } from "../access/permission.js";
 
 export interface ArchiveRecord {
 	id: string;
@@ -12,7 +10,7 @@ export interface ArchiveRecord {
 	displayName: string;
 	archiveNumber?: string;
 	description?: string;
-	publicAt: string | null;
+	publicAt?: string;
 	downloadName?: string;
 	uploadFileName: string;
 	uploadAccountId: string;
@@ -53,7 +51,6 @@ export interface ArchiveRecord {
 			name: string;
 		};
 	};
-	accessRole: ArchiveMembershipRole;
 }
 
 export interface ArchiveRecordRow {
@@ -63,8 +60,7 @@ export interface ArchiveRecordRow {
 	displayName: string;
 	archiveNumber?: string;
 	description?: string;
-	publicAt: string | null;
-	isPublic: boolean;
+	publicAt?: string;
 	downloadName?: string;
 	uploadFileName: string;
 	uploadAccountId: string;
@@ -104,9 +100,6 @@ export interface ArchiveRecordRow {
 			name: string;
 		};
 	};
-	archiveAccessRole: AccessRole | null;
-	shareAccessRoles: ShareAccessRolePair[] | null;
-	shareTokenGrantsAccess: boolean;
 }
 
 export interface ArchiveFile {

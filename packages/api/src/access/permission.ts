@@ -1,10 +1,6 @@
 import createError from "http-errors";
 import { logger } from "@stela/logger";
-import {
-	AccessRole,
-	type ArchiveMembershipRole,
-	accessRoleToArchiveMembershipRole,
-} from "./models.js";
+import { AccessRole } from "./models.js";
 import { db } from "../database.js";
 
 const VIEWER_ACCESS_ROLE_RANK = 1;
@@ -14,78 +10,32 @@ const CURATOR_ACCESS_ROLE_RANK = 4;
 const MANAGER_ACCESS_ROLE_RANK = 5;
 const OWNER_ACCESS_ROLE_RANK = 6;
 
-const accessRoleRank = new Map();
-accessRoleRank.set(AccessRole.Viewer, VIEWER_ACCESS_ROLE_RANK);
-accessRoleRank.set(AccessRole.Contributor, CONTRIBUTOR_ACCESS_ROLE_RANK);
-accessRoleRank.set(AccessRole.Editor, EDITOR_ACCESS_ROLE_RANK);
-accessRoleRank.set(AccessRole.Curator, CURATOR_ACCESS_ROLE_RANK);
-accessRoleRank.set(AccessRole.Manager, MANAGER_ACCESS_ROLE_RANK);
-accessRoleRank.set(AccessRole.Owner, OWNER_ACCESS_ROLE_RANK);
-
 export const accessRoleLessThan = (
 	roleOne: AccessRole,
 	roleTwo: AccessRole,
-): boolean => accessRoleRank.get(roleOne) < accessRoleRank.get(roleTwo);
+): boolean => {
+	const accessRoleRank = new Map();
+	accessRoleRank.set(AccessRole.Viewer, VIEWER_ACCESS_ROLE_RANK);
+	accessRoleRank.set(AccessRole.Contributor, CONTRIBUTOR_ACCESS_ROLE_RANK);
+	accessRoleRank.set(AccessRole.Editor, EDITOR_ACCESS_ROLE_RANK);
+	accessRoleRank.set(AccessRole.Curator, CURATOR_ACCESS_ROLE_RANK);
+	accessRoleRank.set(AccessRole.Manager, MANAGER_ACCESS_ROLE_RANK);
+	accessRoleRank.set(AccessRole.Owner, OWNER_ACCESS_ROLE_RANK);
 
-export const leastPermissiveAccessRole = (
-	roleOne: AccessRole | null | undefined,
-	roleTwo: AccessRole | null | undefined,
+	return accessRoleRank.get(roleOne) < accessRoleRank.get(roleTwo);
+};
+
+const moreLimitedAccessRole = (
+	roleOne: AccessRole | null,
+	roleTwo: AccessRole | null,
 ): AccessRole | null => {
-	if (roleOne === null || roleOne === undefined) {
-		return roleTwo ?? null;
+	if (roleOne === null) {
+		return roleTwo;
 	}
-	if (roleTwo === null || roleTwo === undefined) {
+	if (roleTwo === null) {
 		return roleOne;
 	}
 	return accessRoleLessThan(roleOne, roleTwo) ? roleOne : roleTwo;
-};
-
-export const mostPermissiveAccessRole = (
-	roles: Array<AccessRole | null | undefined>,
-): AccessRole | null =>
-	roles.reduce<AccessRole | null>((accumulator, role) => {
-		if (role === null || role === undefined) {
-			return accumulator;
-		}
-		if (accumulator === null) {
-			return role;
-		}
-		return accessRoleLessThan(accumulator, role) ? role : accumulator;
-	}, null);
-
-export interface ShareAccessRolePair {
-	archiveAccessRole: AccessRole;
-	shareAccessRole: AccessRole;
-}
-
-export const resolveAccessRole = (input: {
-	archiveAccessRole: AccessRole | null;
-	shareAccessRoles: ShareAccessRolePair[] | null;
-	shareTokenGrantsAccess: boolean;
-	isPublic: boolean;
-}): ArchiveMembershipRole => {
-	const roles: Array<AccessRole | null> = [
-		input.archiveAccessRole,
-		...(input.shareAccessRoles ?? []).map((share) =>
-			leastPermissiveAccessRole(share.archiveAccessRole, share.shareAccessRole),
-		),
-	];
-	if (input.shareTokenGrantsAccess) {
-		roles.push(AccessRole.Viewer);
-	}
-	if (input.isPublic) {
-		roles.push(AccessRole.Viewer);
-	}
-
-	const accessRole = mostPermissiveAccessRole(roles);
-	if (accessRole === null) {
-		// Should be unreachable: the SQL WHERE clause that selects a row already
-		// guarantees at least one access path applies.
-		throw createError.InternalServerError(
-			"Unable to resolve caller's access role for item",
-		);
-	}
-	return accessRoleToArchiveMembershipRole(accessRole);
 };
 
 export const getItemAccessRole = async (
@@ -100,7 +50,7 @@ export const getItemAccessRole = async (
 	const result = await db
 		.sql<{
 			archiveAccessRole: AccessRole;
-			shareAccessRole: AccessRole | null;
+			shareAccessRole: AccessRole;
 		}>(query, { itemId, email: callerEmail })
 		.catch((err: unknown) => {
 			logger.error(err);
@@ -111,11 +61,19 @@ export const getItemAccessRole = async (
 		throw createError.NotFound();
 	}
 
-	const accessRole = mostPermissiveAccessRole(
-		result.rows.map((row) =>
-			leastPermissiveAccessRole(row.archiveAccessRole, row.shareAccessRole),
-		),
-	);
+	const accessRole = result.rows
+		.map((row) =>
+			moreLimitedAccessRole(row.archiveAccessRole, row.shareAccessRole),
+		)
+		.reduce((accumulator, role) => {
+			if (accumulator === null) {
+				return role;
+			}
+			if (role === null) {
+				return accumulator;
+			}
+			return accessRoleLessThan(accumulator, role) ? role : accumulator;
+		});
 
 	if (accessRole === null) {
 		throw createError.NotFound();

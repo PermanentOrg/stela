@@ -208,16 +208,6 @@ describe("GET /records", () => {
 		const { body } = response as { body: GetRecordsResponse };
 		expect(body.items).toHaveLength(1);
 		expect(body.items[0]?.recordId).toEqual("10001");
-		expect(body.items[0]?.accessRole).toEqual("viewer");
-	});
-
-	test("expect accessRole to reflect the caller's own archive membership even when a lesser share role also applies", async () => {
-		const response = await agent
-			.get("/api/v2/records?recordIds[]=10002&pageSize=100")
-			.expect(200);
-		const { body } = response as { body: GetRecordsResponse };
-		expect(body.items).toHaveLength(1);
-		expect(body.items[0]?.accessRole).toEqual("owner");
 	});
 
 	test("expect not to return a private record when not logged in", async () => {
@@ -239,7 +229,6 @@ describe("GET /records", () => {
 		const { body } = response as { body: GetRecordsResponse };
 		expect(body.items).toHaveLength(1);
 		expect(body.items[0]?.recordId).toEqual("10002");
-		expect(body.items[0]?.accessRole).toEqual("viewer");
 	});
 
 	test("expect not to return a private record when share token provided is not unlisted", async () => {
@@ -274,7 +263,6 @@ describe("GET /records", () => {
 		const { body } = response as { body: GetRecordsResponse };
 		expect(body.items).toHaveLength(1);
 		expect(body.items[0]?.recordId).toEqual("10002");
-		expect(body.items[0]?.accessRole).toEqual("viewer");
 	});
 
 	test("expect to return a private record shared with the logged in account", async () => {
@@ -284,7 +272,6 @@ describe("GET /records", () => {
 		const { body } = response as { body: GetRecordsResponse };
 		expect(body.items).toHaveLength(1);
 		expect(body.items[0]?.recordId).toEqual("10006");
-		expect(body.items[0]?.accessRole).toEqual("viewer");
 	});
 
 	test("expect to not return a record in a deleted archive", async () => {
@@ -322,9 +309,6 @@ describe("GET /records", () => {
 		);
 		expect(recordIds).toHaveLength(2);
 		expect(recordIds).toEqual(expect.arrayContaining(["10001", "10008"]));
-		body.items.forEach((record: ArchiveRecord) => {
-			expect(record.accessRole).toEqual("viewer");
-		});
 	});
 
 	test("expect to log error and return 500 if database lookup fails", async () => {
