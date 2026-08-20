@@ -114,6 +114,24 @@ describe("GET /folders", () => {
 		expect(body.pagination).toBeDefined();
 	});
 
+	test("expect accessRole to reflect the caller's own archive membership even though the folder is also public", async () => {
+		const response = await agent
+			.get("/api/v2/folders?folderIds[]=1&pageSize=100")
+			.expect(200);
+		const { body } = response as { body: GetFoldersResponse };
+		expect(body.items[0]?.accessRole).toEqual("owner");
+	});
+
+	test("expect accessRole to reflect an archive-to-archive share when the caller has no membership in the folder's own archive", async () => {
+		mockExtractUserEmailFromAuthToken("test+2@permanent.org");
+		const response = await agent
+			.get("/api/v2/folders?folderIds[]=2&pageSize=100")
+			.expect(200);
+		const { body } = response as { body: GetFoldersResponse };
+		expect(body.items).toHaveLength(1);
+		expect(body.items[0]?.accessRole).toEqual("viewer");
+	});
+
 	test("expect no more than pageSize items to be returned", async () => {
 		const response = await agent
 			.get(
@@ -206,6 +224,7 @@ describe("GET /folders", () => {
 		const { body } = response as { body: GetFoldersResponse };
 		expect(body.items).toHaveLength(1);
 		expect(body.items[0]?.folderId).toEqual("1");
+		expect(body.items[0]?.accessRole).toEqual("viewer");
 	});
 
 	test("should not return a private folder if the user is not authenticated", async () => {
@@ -227,6 +246,7 @@ describe("GET /folders", () => {
 		const { body } = response as { body: GetFoldersResponse };
 		expect(body.items).toHaveLength(1);
 		expect(body.items[0]?.folderId).toEqual("2");
+		expect(body.items[0]?.accessRole).toEqual("viewer");
 	});
 
 	test("should not retrieve a deleted folder", async () => {
