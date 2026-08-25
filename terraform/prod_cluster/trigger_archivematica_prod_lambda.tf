@@ -2,12 +2,11 @@ resource "aws_sqs_queue" "trigger_archivematica_prod_deadletter_queue" {
   name = "trigger-archivematica-prod-deadletter-queue"
 }
 resource "aws_sqs_queue" "trigger_archivematica_prod_queue" {
-  name                       = "trigger-archivematica-prod-queue"
-  visibility_timeout_seconds = 720
+  name = "trigger-archivematica-prod-queue"
 
   redrive_policy = jsonencode({
     deadLetterTargetArn = aws_sqs_queue.trigger_archivematica_prod_deadletter_queue.arn
-    maxReceiveCount     = 10
+    maxReceiveCount     = 3
   })
 }
 
@@ -87,12 +86,11 @@ resource "aws_iam_role_policy" "trigger_archivematica_prod_lambda_policy" {
 }
 
 resource "aws_lambda_function" "trigger_archivematica_prod_lambda" {
-  package_type                   = "Image"
-  image_uri                      = var.trigger_archivematica_lambda_image
-  function_name                  = "trigger-archivematica-prod-lambda"
-  role                           = aws_iam_role.trigger_archivematica_prod_lambda_role.arn
-  timeout                        = 120
-  reserved_concurrent_executions = 2
+  package_type  = "Image"
+  image_uri     = var.trigger_archivematica_lambda_image
+  function_name = "trigger-archivematica-prod-lambda"
+  role          = aws_iam_role.trigger_archivematica_prod_lambda_role.arn
+  timeout       = 30
 
   vpc_config {
     security_group_ids = [var.prod_security_group_id]
@@ -108,7 +106,7 @@ resource "aws_lambda_function" "trigger_archivematica_prod_lambda" {
       ARCHIVEMATICA_API_KEY              = var.archivematica_api_key
       ARCHIVEMATICA_ORIGINAL_LOCATION_ID = var.archivematica_original_location_id
       ARCHIVEMATICA_PROCESSING_WORKFLOW  = var.archivematica_processing_workflow
-      SUBMISSION_DELAY_MS                = "60000"
+      SUBMISSION_DELAY_MS                = "0"
       NODE_OPTIONS                       = "--import ./packages/trigger_archivematica/dist/instrument.js"
     }
   }
@@ -117,10 +115,6 @@ resource "aws_lambda_function" "trigger_archivematica_prod_lambda" {
 resource "aws_lambda_event_source_mapping" "trigger_archivematica_prod_event_source_mapping" {
   event_source_arn                   = aws_sqs_queue.trigger_archivematica_prod_queue.arn
   function_name                      = aws_lambda_function.trigger_archivematica_prod_lambda.arn
-  batch_size                         = 1
+  batch_size                         = 10
   maximum_batching_window_in_seconds = 0
-
-  scaling_config {
-    maximum_concurrency = 2
-  }
 }
