@@ -273,6 +273,47 @@ describe("GET /folders", () => {
 		expect(body.items).toHaveLength(2);
 	});
 
+	test("should include pending shares in the shares field for a caller with manager or owner access", async () => {
+		const response = await agent
+			.get("/api/v2/folders?folderIds[]=12&pageSize=100")
+			.expect(200);
+		const { body } = response as { body: GetFoldersResponse };
+		expect(body.items).toHaveLength(1);
+		expect(body.items[0]?.accessRole).toEqual("owner");
+		expect(body.items[0]?.shares).toHaveLength(2);
+		expect(body.items[0]?.shares?.map((share) => share.status).sort()).toEqual([
+			"status.generic.ok",
+			"status.generic.pending",
+		]);
+	});
+
+	test("should include pending shares in the shares field for a caller with manager access", async () => {
+		mockExtractUserEmailFromAuthToken("test+2@permanent.org");
+		const response = await agent
+			.get("/api/v2/folders?folderIds[]=12&pageSize=100")
+			.expect(200);
+		const { body } = response as { body: GetFoldersResponse };
+		expect(body.items).toHaveLength(1);
+		expect(body.items[0]?.accessRole).toEqual("manager");
+		expect(body.items[0]?.shares).toHaveLength(2);
+		expect(body.items[0]?.shares?.map((share) => share.status).sort()).toEqual([
+			"status.generic.ok",
+			"status.generic.pending",
+		]);
+	});
+
+	test("should exclude pending shares from the shares field for a caller without manager or owner access", async () => {
+		mockExtractUserEmailFromAuthToken("test+4@permanent.org");
+		const response = await agent
+			.get("/api/v2/folders?folderIds[]=12&pageSize=100")
+			.expect(200);
+		const { body } = response as { body: GetFoldersResponse };
+		expect(body.items).toHaveLength(1);
+		expect(body.items[0]?.accessRole).toEqual("curator");
+		expect(body.items[0]?.shares).toHaveLength(1);
+		expect(body.items[0]?.shares?.[0]?.status).toEqual("status.generic.ok");
+	});
+
 	test("should throw a 500 error if database call fails", async () => {
 		vi.spyOn(db, "sql").mockRejectedValue(new Error("test error"));
 		await agent.get("/api/v2/folders?folderIds[]=2&pageSize=100").expect(500);

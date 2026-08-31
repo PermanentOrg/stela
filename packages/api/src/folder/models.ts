@@ -95,7 +95,7 @@ export interface Folder {
 		id: string;
 		folderLinkId: string;
 	};
-	shares?: ShareSummary[];
+	shares: ShareSummary[] | null;
 	pendingShares: PendingShare[] | null;
 	tags?: Tag[];
 	archive: {

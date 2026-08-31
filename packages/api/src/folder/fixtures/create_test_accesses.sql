@@ -27,7 +27,16 @@ INSERT INTO access (
 (
   8,
   5,
-  'access.role.viewer',
+  'access.role.manager',
+  'status.generic.ok',
+  'type.access.share',
+  CURRENT_TIMESTAMP,
+  CURRENT_TIMESTAMP
+),
+(
+  8,
+  3,
+  'access.role.curator',
   'status.generic.ok',
   'type.access.share',
   CURRENT_TIMESTAMP,

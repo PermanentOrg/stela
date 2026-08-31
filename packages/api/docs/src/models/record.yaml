@@ -110,6 +110,7 @@ record:
     archiveArchiveNumber:
       type: string
     shares:
+      nullable: true
       type: array
       items:
         $ref: "./share.yaml#/shareSummary"

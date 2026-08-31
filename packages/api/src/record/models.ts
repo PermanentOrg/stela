@@ -39,7 +39,7 @@ export interface ArchiveRecord {
 	parentFolderArchiveNumber: string;
 	tags: Tag[];
 	archiveArchiveNumber: string;
-	shares: ShareSummary[];
+	shares: ShareSummary[] | null;
 	pendingShares: PendingShare[] | null;
 	location: Location;
 	archive: {
@@ -90,7 +90,7 @@ export interface ArchiveRecordRow {
 	parentFolderArchiveNumber: string;
 	tags: Tag[];
 	archiveArchiveNumber: string;
-	shares: ShareSummary[];
+	shares?: ShareSummary[];
 	pendingShares: PendingShare[] | null;
 	location: Location;
 	archive: {

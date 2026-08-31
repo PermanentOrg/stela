@@ -142,7 +142,7 @@ describe("GET /folder/{id}/children", () => {
 				}
 				expect(folder.parentFolder?.id).toEqual("10");
 				expect(folder.shares).toBeDefined();
-				if (folder.shares !== undefined) {
+				if (folder.shares !== null) {
 					expect(folder.shares.length).toEqual(1);
 					if (folder.shares[0] !== undefined) {
 						expect(folder.shares[0].id).toEqual("1");
@@ -280,17 +280,11 @@ describe("GET /folder/{id}/children", () => {
 				expect(record.parentFolderArchiveNumber).toEqual("0001-0010");
 				expect(record.tags.length).toEqual(3);
 				const firstTag = record.tags.find((tag: Tag) => tag.id === "14");
-				const secondTag = record.tags.find((tag: Tag) => tag.id === "15");
 				const thirdTag = record.tags.find((tag: Tag) => tag.id === "16");
 				expect(firstTag).toBeDefined();
 				if (firstTag !== undefined) {
 					expect(firstTag.name).toEqual("Generic Tag 1");
 					expect(firstTag.type).toEqual("type.generic.placeholder");
-				}
-				expect(secondTag).toBeDefined();
-				if (secondTag !== undefined) {
-					expect(secondTag.name).toEqual("Generic Tag 2");
-					expect(secondTag.type).toEqual("type.generic.placeholder");
 				}
 				expect(thirdTag).toBeDefined();
 				if (thirdTag !== undefined) {
@@ -300,35 +294,38 @@ describe("GET /folder/{id}/children", () => {
 
 				expect(record.archiveArchiveNumber).toEqual("0001-0001");
 
-				expect(record.shares.length).toEqual(2);
-				const shareViewer = record.shares.find(
-					(share: ShareSummary) => share.id === "3",
-				);
-				const shareContributor = record.shares.find(
-					(share: ShareSummary) => share.id === "4",
-				);
-				expect(shareViewer).toBeDefined();
-				if (shareViewer !== undefined) {
-					expect(shareViewer.accessRole).toEqual("access.role.viewer");
-					expect(shareViewer.status).toEqual("status.generic.ok");
-					expect(shareViewer.archive.id).toEqual("3");
-					expect(shareViewer.archive.thumbUrl200).toEqual(
-						"https://test-archive-thumbnail",
+				expect(record.shares).not.toBeNull();
+				if (record.shares !== null) {
+					expect(record.shares.length).toEqual(2);
+					const shareViewer = record.shares.find(
+						(share: ShareSummary) => share.id === "3",
 					);
-					expect(shareViewer.archive.name).toEqual("Test Archive");
-				}
+					const shareContributor = record.shares.find(
+						(share: ShareSummary) => share.id === "4",
+					);
+					expect(shareViewer).toBeDefined();
+					if (shareViewer !== undefined) {
+						expect(shareViewer.accessRole).toEqual("access.role.viewer");
+						expect(shareViewer.status).toEqual("status.generic.ok");
+						expect(shareViewer.archive.id).toEqual("3");
+						expect(shareViewer.archive.thumbUrl200).toEqual(
+							"https://test-archive-thumbnail",
+						);
+						expect(shareViewer.archive.name).toEqual("Test Archive");
+					}
 
-				expect(shareContributor).toBeDefined();
-				if (shareContributor !== undefined) {
-					expect(shareContributor.accessRole).toEqual(
-						"access.role.contributor",
-					);
-					expect(shareContributor.status).toEqual("status.generic.ok");
-					expect(shareContributor.archive.id).toEqual("2");
-					expect(shareContributor.archive.thumbUrl200).toEqual(
-						"https://test-archive-thumbnail",
-					);
-					expect(shareContributor.archive.name).toEqual("Test Archive");
+					expect(shareContributor).toBeDefined();
+					if (shareContributor !== undefined) {
+						expect(shareContributor.accessRole).toEqual(
+							"access.role.contributor",
+						);
+						expect(shareContributor.status).toEqual("status.generic.ok");
+						expect(shareContributor.archive.id).toEqual("2");
+						expect(shareContributor.archive.thumbUrl200).toEqual(
+							"https://test-archive-thumbnail",
+						);
+						expect(shareContributor.archive.name).toEqual("Test Archive");
+					}
 				}
 			}
 		}

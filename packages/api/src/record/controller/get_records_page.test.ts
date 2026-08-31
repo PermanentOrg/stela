@@ -327,6 +327,47 @@ describe("GET /records", () => {
 		});
 	});
 
+	test("expect the shares field to include pending shares for a caller with manager or owner access", async () => {
+		const response = await agent
+			.get("/api/v2/records?recordIds[]=10002&pageSize=100")
+			.expect(200);
+		const { body } = response as { body: GetRecordsResponse };
+		expect(body.items).toHaveLength(1);
+		expect(body.items[0]?.accessRole).toEqual("owner");
+		expect(body.items[0]?.shares).toHaveLength(2);
+		expect(body.items[0]?.shares?.map((share) => share.status).sort()).toEqual([
+			"status.generic.ok",
+			"status.generic.pending",
+		]);
+	});
+
+	test("expect the shares field to include pending shares for a caller with manager access", async () => {
+		mockExtractUserEmailFromAuthToken("TEST+4@permanent.org");
+		const response = await agent
+			.get("/api/v2/records?recordIds[]=10002&pageSize=100")
+			.expect(200);
+		const { body } = response as { body: GetRecordsResponse };
+		expect(body.items).toHaveLength(1);
+		expect(body.items[0]?.accessRole).toEqual("manager");
+		expect(body.items[0]?.shares).toHaveLength(2);
+		expect(body.items[0]?.shares?.map((share) => share.status).sort()).toEqual([
+			"status.generic.ok",
+			"status.generic.pending",
+		]);
+	});
+
+	test("expect the shares field to exclude pending shares for a caller without manager or owner access", async () => {
+		mockExtractUserEmailFromAuthToken("test+5@permanent.org");
+		const response = await agent
+			.get("/api/v2/records?recordIds[]=10002&pageSize=100")
+			.expect(200);
+		const { body } = response as { body: GetRecordsResponse };
+		expect(body.items).toHaveLength(1);
+		expect(body.items[0]?.accessRole).toEqual("curator");
+		expect(body.items[0]?.shares).toHaveLength(1);
+		expect(body.items[0]?.shares?.[0]?.status).toEqual("status.generic.ok");
+	});
+
 	test("expect to log error and return 500 if database lookup fails", async () => {
 		const testError = new Error("test error");
 		vi.spyOn(db, "sql").mockImplementation(async () => {

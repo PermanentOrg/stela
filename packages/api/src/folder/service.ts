@@ -25,11 +25,15 @@ import {
 	accessRoleLessThan,
 	resolveAccessRole,
 } from "../access/permission.js";
-import { AccessRole } from "../access/models.js";
+import {
+	AccessRole,
+	archiveMembershipRoleToAccessRole,
+} from "../access/models.js";
 import { getRecords } from "../record/service.js";
 import { shareLinkService } from "../share_link/service.js";
 import type { ShareLink } from "../share_link/models.js";
 import { insertLocation, updateLocation } from "../location/service.js";
+import { ShareStatus } from "../share/models.js";
 
 export const prettifyFolderSortType = (
 	sortType: FolderSortOrder,
@@ -107,8 +111,15 @@ const mapFolderRow = (row: FolderRow): Folder => {
 		shareAccessRoles,
 		shareTokenGrantsAccess,
 		isPublic,
+		shares,
 		...rest
 	} = row;
+	const accessRole = resolveAccessRole({
+		archiveAccessRole,
+		shareAccessRoles,
+		shareTokenGrantsAccess,
+		isPublic,
+	});
 	return {
 		...rest,
 		size: row.size === null ? null : +row.size,
@@ -117,12 +128,14 @@ const mapFolderRow = (row: FolderRow): Folder => {
 		type: prettifyFolderType(row.type),
 		status: prettifyFolderStatus(row.status),
 		view: prettifyFolderView(row.view),
-		accessRole: resolveAccessRole({
-			archiveAccessRole,
-			shareAccessRoles,
-			shareTokenGrantsAccess,
-			isPublic,
-		}),
+		shares:
+			(accessRoleLessThan(
+				archiveMembershipRoleToAccessRole(accessRole),
+				AccessRole.Manager,
+			)
+				? shares?.filter((share) => share.status === ShareStatus.Ok)
+				: shares) ?? null,
+		accessRole,
 	};
 };
 
