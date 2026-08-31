@@ -11,6 +11,7 @@ export interface Message {
 	id: string;
 	body: string;
 	attributes?: Record<string, string>;
+	messageGroupId?: string;
 }
 
 const CHUNK_SIZE = 10;
@@ -49,6 +50,9 @@ const batchPublishMessages = async (
 								{ DataType: "String", StringValue: value },
 							]),
 						);
+					}
+					if (message.messageGroupId !== undefined) {
+						entry.MessageGroupId = message.messageGroupId;
 					}
 					return entry;
 				}),
