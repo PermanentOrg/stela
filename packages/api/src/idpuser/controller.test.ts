@@ -33,8 +33,8 @@ const mockRetrieveUserByEmail = (
 	methods: Array<{
 		id: string;
 		method: string;
-		email: string;
-		mobilePhone: string;
+		email?: string;
+		mobilePhone?: string;
 	}>,
 	successful: boolean,
 	exception?: { code: string; message: string },
@@ -191,6 +191,23 @@ describe("/idpuser", () => {
 		const methods = [
 			{ id: "1", method: "email", email: "test1@example.com", mobilePhone: "" },
 			{ id: "2", method: "sms", mobilePhone: "1234567890", email: "" },
+		];
+
+		mockRetrieveUserByEmail(methods, true);
+		const expected = [
+			{ methodId: "1", method: "email", value: "test1@example.com" },
+			{ methodId: "2", method: "sms", value: "1234567890" },
+		];
+
+		const response = await agent.get("/api/v2/idpuser");
+
+		expect(response.body).toEqual(expected);
+	});
+
+	test("should correctly map values when FusionAuth omits the inapplicable field", async () => {
+		const methods = [
+			{ id: "1", method: "email", email: "test1@example.com" },
+			{ id: "2", method: "sms", mobilePhone: "1234567890" },
 		];
 
 		mockRetrieveUserByEmail(methods, true);

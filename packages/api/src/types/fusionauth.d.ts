@@ -39,8 +39,8 @@ declare module "@fusionauth/typescript-client" {
 						methods: Array<{
 							id: string;
 							method: string;
-							email: string;
-							mobilePhone: string;
+							email?: string;
+							mobilePhone?: string;
 						}>;
 					};
 				};
