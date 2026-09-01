@@ -58,7 +58,7 @@
 		"@types/pg": "^8.20.0",
 		"@types/supertest": "^7.2.0",
 		"eslint": "^9.39.5",
-		"eslint-config-love": "^154.1.0",
+		"eslint-config-love": "154.1.0",
 		"eslint-config-prettier": "^10.1.8",
 		"@vitest/eslint-plugin": "^1.6.24",
 		"node-mocks-http": "^1.17.2",
