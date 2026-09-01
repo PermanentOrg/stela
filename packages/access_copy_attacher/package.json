@@ -31,9 +31,9 @@
 	},
 	"dependencies": {
 		"@aws-sdk/client-s3": "^3.1097.0",
-		"@sentry/aws-serverless": "^10.69.0",
-		"@sentry/node": "^10.69.0",
-		"@sentry/profiling-node": "^10.69.0",
+		"@sentry/aws-serverless": "^10.71.0",
+		"@sentry/node": "^10.71.0",
+		"@sentry/profiling-node": "^10.71.0",
 		"@stela/archivematica-utils": "^1.0.0",
 		"@stela/file-utils": "^1.0.0",
 		"@stela/logger": "^1.0.0",
