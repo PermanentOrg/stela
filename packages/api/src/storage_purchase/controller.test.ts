@@ -279,9 +279,11 @@ describe("POST /storage-purchases/stripe/webhook", () => {
 	});
 
 	test("should return 400 if Stripe signature verification fails", async () => {
-		const signatureError = new Stripe.errors.StripeSignatureVerificationError({
-			type: "api_error",
-		});
+		const signatureError = new Stripe.errors.StripeSignatureVerificationError(
+			"invalid_sig",
+			"{}",
+			{ type: "api_error" },
+		);
 		vi.spyOn(stripeClient.webhooks, "constructEvent").mockImplementationOnce(
 			vi.fn().mockImplementation(() => {
 				throw signatureError;
