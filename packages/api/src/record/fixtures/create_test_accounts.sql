@@ -53,4 +53,13 @@ VALUES
   'type.account.standard',
   'Jenny Rando',
   null
+),
+(
+  7,
+  'test+5@permanent.org',
+  'status.auth.ok',
+  '{}',
+  'type.account.standard',
+  'Jorge Rando',
+  null
 );

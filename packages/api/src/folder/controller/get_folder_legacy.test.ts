@@ -274,7 +274,7 @@ describe("GET /folder (deprecated alias, no pagination)", () => {
 			expect(folders[0].parentFolder?.id).toEqual("10");
 			expect(folders[0].parentFolder?.folderLinkId).toEqual("10");
 			expect(folders[0].shares).toBeDefined();
-			if (folders[0].shares !== undefined) {
+			if (folders[0].shares !== null) {
 				expect(folders[0].shares.length).toEqual(1);
 				if (folders[0].shares[0] !== undefined) {
 					expect(folders[0].shares[0].id).toEqual("1");

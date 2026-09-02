@@ -120,4 +120,15 @@ VALUES
   'status.generic.deleted',
   CURRENT_TIMESTAMP,
   CURRENT_TIMESTAMP
+),
+(
+  40,
+  6,
+  3,
+  'access.role.curator',
+  0,
+  'type.account.standard',
+  'status.generic.ok',
+  CURRENT_TIMESTAMP,
+  CURRENT_TIMESTAMP
 );

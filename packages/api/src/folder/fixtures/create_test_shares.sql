@@ -50,4 +50,22 @@ INSERT INTO share (
   'status.generic.deleted',
   NOW(),
   NOW()
+),
+(
+  6,
+  8,
+  2,
+  'access.role.contributor',
+  'status.generic.ok',
+  NOW(),
+  NOW()
+),
+(
+  7,
+  8,
+  3,
+  'access.role.editor',
+  'status.generic.pending',
+  NOW(),
+  NOW()
 );

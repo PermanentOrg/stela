@@ -87,4 +87,26 @@ VALUES
   'status.generic.ok',
   CURRENT_TIMESTAMP,
   CURRENT_TIMESTAMP
+),
+(
+  40,
+  6,
+  1,
+  'access.role.manager',
+  0,
+  'type.account.standard',
+  'status.generic.ok',
+  CURRENT_TIMESTAMP,
+  CURRENT_TIMESTAMP
+),
+(
+  41,
+  7,
+  1,
+  'access.role.curator',
+  0,
+  'type.account.standard',
+  'status.generic.ok',
+  CURRENT_TIMESTAMP,
+  CURRENT_TIMESTAMP
 );

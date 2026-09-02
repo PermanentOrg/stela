@@ -73,7 +73,7 @@ aggregated_shares AS (
   INNER JOIN folder_link
     ON share.folder_linkid = folder_link.folder_linkid
   WHERE
-    share.status = 'status.generic.ok'
+    share.status != 'status.generic.deleted'
     AND folder_link.folderid = ANY(:folderIds)
   GROUP BY share.folder_linkid
 ),

@@ -15,12 +15,16 @@ import {
 	getArchiveAccessRole,
 	resolveAccessRole,
 } from "../access/permission.js";
-import { AccessRole } from "../access/models.js";
+import {
+	AccessRole,
+	archiveMembershipRoleToAccessRole,
+} from "../access/models.js";
 import { shareLinkService } from "../share_link/service.js";
 import type { ShareLink } from "../share_link/models.js";
 import { getFolders } from "../folder/service.js";
 import { type Folder, PrettyFolderType } from "../folder/models.js";
 import { insertLocation, updateLocation } from "../location/service.js";
+import { ShareStatus } from "../share/models.js";
 
 const mapRecordRow = (row: ArchiveRecordRow): ArchiveRecord => {
 	const {
@@ -28,18 +32,27 @@ const mapRecordRow = (row: ArchiveRecordRow): ArchiveRecord => {
 		shareAccessRoles,
 		shareTokenGrantsAccess,
 		isPublic,
+		shares,
 		...rest
 	} = row;
+	const accessRole = resolveAccessRole({
+		archiveAccessRole,
+		shareAccessRoles,
+		shareTokenGrantsAccess,
+		isPublic,
+	});
 	return {
 		...rest,
 		size: +(row.size ?? 0),
 		imageRatio: +(row.imageRatio ?? 0),
-		accessRole: resolveAccessRole({
-			archiveAccessRole,
-			shareAccessRoles,
-			shareTokenGrantsAccess,
-			isPublic,
-		}),
+		shares:
+			(accessRoleLessThan(
+				archiveMembershipRoleToAccessRole(accessRole),
+				AccessRole.Manager,
+			)
+				? shares?.filter((share) => share.status === ShareStatus.Ok)
+				: shares) ?? null,
+		accessRole,
 	};
 };
 

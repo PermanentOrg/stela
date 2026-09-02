@@ -272,7 +272,7 @@ VALUES
 ),
 (
   10,
-  3,
+  1,
   NULL,
   'My Files',
   'My Files',

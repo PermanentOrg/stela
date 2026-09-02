@@ -42,6 +42,7 @@ folder:
         folderLinkId:
           type: string
     shares:
+      nullable: true
       type: array
       items:
         $ref: "../models/share.yaml#/shareSummary"
