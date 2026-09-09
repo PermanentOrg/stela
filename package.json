@@ -64,7 +64,7 @@
 		"node-mocks-http": "^1.17.2",
 		"prettier": "^3.7.4",
 		"tsc-watch": "^7.2.0",
-		"vitest": "^4.1.10",
+		"vitest": "^4.1.11",
 		"@vitest/coverage-v8": "^4.1.10",
 		"tslint-tinypg": "^2.0.2",
 		"typescript": "^5.9.3",
