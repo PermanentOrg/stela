@@ -214,6 +214,40 @@ archives-id-folders-shared:
         $ref: "../errors.yaml#/404"
       "500":
         $ref: "../errors.yaml#/500"
+archives/{id}/payer-account-storage:
+  parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: string
+  get:
+    summary: Get the storage of an archive's payer account
+    description: >
+      Returns the storage allotment and usage of the account that pays for the given archive.
+      Returns 404 if the archive has no payer account or if the caller is not an active member
+      of that archive.
+    security:
+      - bearerHttpAuthentication: []
+    tags:
+      - archives
+      - storage
+    operationId: get-archive-payer-account-storage
+    responses:
+      "200":
+        description: The storage of the archive's payer account
+        content:
+          application/json:
+            schema:
+              $ref: "../models/account_storage.yaml#/accountStorage"
+      "400":
+        $ref: "../errors.yaml#/400"
+      "401":
+        $ref: "../errors.yaml#/401"
+      "404":
+        $ref: "../errors.yaml#/404"
+      "500":
+        $ref: "../errors.yaml#/500"
 archives/{id}/received-shares:
   parameters:
     - name: id

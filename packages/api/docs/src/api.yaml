@@ -78,6 +78,8 @@ paths:
     $ref: "./paths/archive.yaml#/archives~1{id}"
   /archives/{id}/folders/shared:
     $ref: "./paths/archive.yaml#/archives-id-folders-shared"
+  /archives/{id}/payer-account-storage:
+    $ref: "./paths/archive.yaml#/archives~1{id}~1payer-account-storage"
   /archives/{id}/received-shares:
     $ref: "./paths/archive.yaml#/archives~1{id}~1received-shares"
   /archive-memberships/{id}:
