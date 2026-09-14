@@ -1,0 +1,43 @@
+accountStorage:
+  description: >
+    An account's storage allotment and usage. Space and file counts are returned as strings
+    because they may exceed the range of a JSON number.
+  type: object
+  required:
+    - accountSpaceId
+    - accountId
+    - spaceLeft
+    - spaceTotal
+    - filesLeft
+    - filesTotal
+    - status
+    - type
+    - createdDt
+    - updatedDt
+  properties:
+    accountSpaceId:
+      type: string
+    accountId:
+      type: string
+    spaceLeft:
+      description: Bytes of storage remaining
+      type: string
+    spaceTotal:
+      description: Total bytes of storage allotted
+      type: string
+    filesLeft:
+      description: Number of files that can still be uploaded
+      type: string
+    filesTotal:
+      description: Total number of files allotted
+      type: string
+    status:
+      type: string
+    type:
+      type: string
+    createdDt:
+      type: string
+      format: date-time
+    updatedDt:
+      type: string
+      format: date-time
