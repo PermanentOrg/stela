@@ -36,7 +36,8 @@ const getOptionalValueFromAuthToken = async (
 		(introspectionResponse) =>
 			introspectionResponse === null
 				? false
-				: introspectionResponse.wasSuccessful(),
+				: introspectionResponse.wasSuccessful() &&
+					introspectionResponse.response.active,
 	);
 	if (
 		successfulIntrospectionResponse === undefined ||

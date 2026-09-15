@@ -621,6 +621,23 @@ describe("extractUserEmailFromAuthToken", () => {
 		expect(emailFromAuthToken).toBe(testEmail);
 	});
 
+	test("Request body will have email if the first introspect call is inactive but the second one is valid", async () => {
+		const request = createRequest({
+			headers: { Authorization: "Bearer test" },
+		});
+		vi.spyOn(fusionAuthClient, "introspectAccessToken").mockImplementationOnce(
+			async () => expiredTokenIntrospectionResponse,
+		);
+		vi.spyOn(fusionAuthClient, "introspectAccessToken").mockImplementationOnce(
+			async () => successfulIntrospectionResponse,
+		);
+		await extractUserEmailFromAuthToken(request, createResponse(), vi.fn());
+		const {
+			body: { emailFromAuthToken },
+		} = request as { body: { emailFromAuthToken: string } };
+		expect(emailFromAuthToken).toBe(testEmail);
+	});
+
 	test("Request body will have email if token is valid but one introspect call throws", async () => {
 		const request = createRequest({
 			headers: { Authorization: "Bearer test" },
