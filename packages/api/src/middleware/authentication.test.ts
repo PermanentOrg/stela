@@ -424,7 +424,10 @@ describe("verifyUserOrAdminAuthentication", () => {
 			.mockImplementationOnce(async () => expiredTokenIntrospectionResponse)
 			.mockImplementationOnce(async () => successfulIntrospectionResponse);
 
-		await verifyUserOrAdminAuthentication(request, createResponse(), vi.fn());
+		const next = vi.fn();
+		await verifyUserOrAdminAuthentication(request, createResponse(), next);
+		expect(next).toHaveBeenCalledTimes(1);
+		expect(next).toHaveBeenCalledWith();
 		const {
 			body: { adminSubjectFromAuthToken, adminEmailFromAuthToken },
 		} = request as {
@@ -462,6 +465,22 @@ describe("verifyUserOrAdminAuthentication", () => {
 				}
 			},
 		);
+	});
+
+	test("should pass along non-unauthorized errors without trying the admin token", async () => {
+		const request = createRequest({
+			headers: { Authorization: "Bearer test" },
+		});
+		const testError = new Error("FusionAuth is unreachable");
+		const introspectAccessTokenSpy = vi
+			.spyOn(fusionAuthClient, "introspectAccessToken")
+			.mockRejectedValueOnce(testError);
+
+		const next = vi.fn();
+		await verifyUserOrAdminAuthentication(request, createResponse(), next);
+		expect(next).toHaveBeenCalledTimes(1);
+		expect(next).toHaveBeenCalledWith(testError);
+		expect(introspectAccessTokenSpy).toHaveBeenCalledTimes(1);
 	});
 
 	test("should add subject and email to the request body if SFTP token is valid", async () => {
