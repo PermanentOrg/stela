@@ -6,6 +6,7 @@ import {
 	verifyAdminAuthentication,
 	extractUserIsAdminFromAuthToken,
 	extractUserEmailFromAuthToken,
+	extractIp,
 } from "../../middleware/index.js";
 import {
 	validateArchiveIdFromParams,
@@ -13,11 +14,35 @@ import {
 	validateSearchQuery,
 	validatePatchArchiveBody,
 	validateGetSharedFoldersQuery,
+	validateCreateArchiveRequest,
 } from "../validators.js";
 import { archiveService } from "../service/index.js";
 import { validatePaginationParameters } from "../../validators/shared.js";
+import { ArchiveType } from "../models.js";
 
 export const archiveController = Router();
+
+archiveController.post(
+	"/",
+	verifyUserAuthentication,
+	extractIp,
+	async (req: Request, res: Response, next: NextFunction) => {
+		try {
+			validateCreateArchiveRequest(req.body);
+			const archive = await archiveService.createArchive({
+				emailFromAuthToken: req.body.emailFromAuthToken,
+				userSubjectFromAuthToken: req.body.userSubjectFromAuthToken,
+				ip: req.body.ip,
+				userAgent: req.get("User-Agent"),
+				name: req.body.name,
+				type: req.body.type ?? ArchiveType.Person,
+			});
+			res.status(HTTP_STATUS.SUCCESSFUL.OK).json({ data: archive });
+		} catch (err) {
+			next(err);
+		}
+	},
+);
 
 archiveController.get(
 	"/",

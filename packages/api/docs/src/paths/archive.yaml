@@ -73,18 +73,27 @@ archives:
       - bearerHttpAuthentication: []
     tags:
       - archives
-      - unimplemented
     operationId: post-archives
     requestBody:
+      required: true
       content:
         application/json:
           schema:
             type: object
+            required:
+              - name
             properties:
               name:
                 type: string
               type:
-                $ref: "../models/archive_type.yaml#/archiveType"
+                description: >-
+                  Defaults to `person` if omitted.
+                type: string
+                default: person
+                enum:
+                  - person
+                  - group
+                  - organization
     responses:
       "200":
         description: The created archive
@@ -97,6 +106,8 @@ archives:
                   $ref: "../models/archive.yaml#/archive"
       "400":
         $ref: "../errors.yaml#/400"
+      "401":
+        $ref: "../errors.yaml#/401"
       "500":
         $ref: "../errors.yaml#/500"
 archives/{id}:
