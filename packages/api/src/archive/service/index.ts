@@ -10,6 +10,7 @@ import { searchArchives } from "./search_archives.js";
 import { updateArchive } from "./update_archive.js";
 import { getArchive } from "./get_archive.js";
 import { getArchives } from "./get_archives.js";
+import { createArchive } from "./create_archive.js";
 
 export const archiveService = {
 	getPublicTags,
@@ -24,4 +25,5 @@ export const archiveService = {
 	updateArchive,
 	getArchive,
 	getArchives,
+	createArchive,
 };

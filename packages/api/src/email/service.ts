@@ -1,5 +1,9 @@
 import { MailchimpTransactional } from "../mailchimp.js";
 import { db } from "../database.js";
+import {
+	type AccessRole,
+	accessRoleToArchiveMembershipRole,
+} from "../access/models.js";
 
 const defaultFromEmail = "support@permanent.org";
 const defaultMessage = {
@@ -175,4 +179,53 @@ export const sendGiftNotification = async (
 			{ name: "note", content: note },
 		],
 	});
+};
+
+export const sendShareInvitationAcceptanceNotification = async (
+	inviteIds: string[],
+): Promise<void> => {
+	const detailsResult = await db.sql<{
+		inviterEmail: string;
+		inviterFullName: string;
+		newAccountFullName: string;
+		shareName: string;
+		accessRole: AccessRole;
+	}>("email.queries.get_share_invitation_acceptance_details", {
+		inviteIds,
+	});
+	const { rows } = detailsResult;
+
+	const clickUrl = `https://${process.env["SITE_URL"] ?? ""}/app/login`;
+
+	await Promise.all(
+		rows.map(
+			async (details: {
+				inviterEmail: string;
+				inviterFullName: string;
+				newAccountFullName: string;
+				shareName: string;
+				accessRole: AccessRole;
+			}) => {
+				const prettyAccessRole = accessRoleToArchiveMembershipRole(
+					details.accessRole,
+				);
+				await sendEmail("share-invitation-acceptance", {
+					fromName: details.newAccountFullName,
+					toData: [
+						{ email: details.inviterEmail, name: details.inviterFullName },
+					],
+					subject: "",
+					mergeVariables: [
+						{ name: "to_fullname", content: details.inviterFullName },
+						{ name: "from_fullname", content: details.newAccountFullName },
+						{ name: "share_name", content: details.shareName },
+						{ name: "access_role", content: prettyAccessRole },
+						{ name: "click_url", content: clickUrl },
+						{ name: "from_pa_name", content: details.newAccountFullName },
+						{ name: "to_pa_name", content: details.inviterFullName },
+					],
+				});
+			},
+		),
+	);
 };
