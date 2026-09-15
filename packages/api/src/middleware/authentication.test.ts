@@ -717,45 +717,6 @@ describe("extractUserIsAdminFromAuthToken", () => {
 	});
 });
 
-describe("extractUserIsAdminFromAuthToken", () => {
-	test("is admin will be true if there is an valid auth token", async () => {
-		const request = createRequest({
-			headers: { Authorization: "Bearer test" },
-		});
-		vi.spyOn(fusionAuthClient, "introspectAccessToken").mockImplementationOnce(
-			async () => successfulIntrospectionResponse,
-		);
-		await extractUserIsAdminFromAuthToken(request, createResponse(), vi.fn());
-		const {
-			body: { admin },
-		} = request as { body: { admin: boolean } };
-		expect(admin).toBe(true);
-	});
-
-	test("is admin will be false if there is no auth token", async () => {
-		const request = createRequest({ headers: { Authorization: "" } });
-		await extractUserIsAdminFromAuthToken(request, createResponse(), vi.fn());
-		const {
-			body: { admin },
-		} = request as { body: { admin: boolean } };
-		expect(admin).toBe(false);
-	});
-
-	test("is admin will be false if there is an invalid auth token", async () => {
-		const request = createRequest({
-			headers: { Authorization: "Bearer test" },
-		});
-		vi.spyOn(fusionAuthClient, "introspectAccessToken").mockImplementationOnce(
-			async () => failedIntrospectionResponse,
-		);
-		await extractUserIsAdminFromAuthToken(request, createResponse(), vi.fn());
-		const {
-			body: { admin },
-		} = request as { body: { admin: boolean } };
-		expect(admin).toBe(false);
-	});
-});
-
 describe("extractShareTokenFromHeaders", () => {
 	test("should add the share token to the request body if the token present", async () => {
 		const testShareToken = "cfa6f6a2-7005-42d6-a6b1-1ec4645a5227";
