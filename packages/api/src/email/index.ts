@@ -3,6 +3,7 @@ import {
 	sendArchiveStewardNotification,
 	sendInvitationNotification,
 	sendGiftNotification,
+	sendShareInvitationAcceptanceNotification,
 } from "./service.js";
 
 export {
@@ -10,4 +11,5 @@ export {
 	sendArchiveStewardNotification,
 	sendInvitationNotification,
 	sendGiftNotification,
+	sendShareInvitationAcceptanceNotification,
 };

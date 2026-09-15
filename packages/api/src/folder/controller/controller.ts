@@ -9,13 +9,7 @@ import {
 	extractUserEmailFromAuthToken,
 	verifyUserAuthentication,
 } from "../../middleware/index.js";
-import {
-	patchFolder,
-	getFolders,
-	getFoldersPage,
-	getFolderChildren,
-	getFolderShareLinks,
-} from "../service.js";
+import { folderService } from "../service/index.js";
 import {
 	validatePatchFolderRequest,
 	validateFolderRequest,
@@ -38,8 +32,11 @@ folderController.patch(
 		try {
 			validateFolderRequest(req.params);
 			validatePatchFolderRequest(req.body);
-			const folderId = await patchFolder(req.params.folderId, req.body);
-			const [folder] = await getFolders(
+			const folderId = await folderService.patchFolder(
+				req.params.folderId,
+				req.body,
+			);
+			const [folder] = await folderService.getFolders(
 				[folderId],
 				req.body.emailFromAuthToken,
 			);
@@ -65,7 +62,7 @@ folderController.get(
 		try {
 			validateOptionalAuthenticationValues(req.body);
 			validateGetFoldersQuery(req.query);
-			const folders = await getFolders(
+			const folders = await folderService.getFolders(
 				req.query.folderIds,
 				req.body.emailFromAuthToken,
 				req.body.shareToken,
@@ -86,7 +83,7 @@ folderController.get(
 			validateOptionalAuthenticationValues(req.body);
 			validatePaginationParameters(req.query);
 			validateFolderRequest(req.params);
-			const response = await getFolderChildren(
+			const response = await folderService.getFolderChildren(
 				req.params.folderId,
 				{ pageSize: req.query.pageSize, cursor: req.query.cursor },
 				req.body.emailFromAuthToken,
@@ -106,7 +103,7 @@ folderController.get(
 		try {
 			validateFolderRequest(req.params);
 			validateBodyFromAuthentication(req.body);
-			const shareLinks = await getFolderShareLinks(
+			const shareLinks = await folderService.getFolderShareLinks(
 				req.body.emailFromAuthToken,
 				req.params.folderId,
 			);
@@ -127,7 +124,7 @@ foldersController.get(
 		try {
 			validateOptionalAuthenticationValues(req.body);
 			validateGetFoldersPageQuery(req.query);
-			const response = await getFoldersPage({
+			const response = await folderService.getFoldersPage({
 				folderIds: req.query.folderIds,
 				email: req.body.emailFromAuthToken,
 				shareToken: req.body.shareToken,

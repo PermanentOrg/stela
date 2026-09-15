@@ -21,7 +21,7 @@ import {
 } from "../access/models.js";
 import { shareLinkService } from "../share_link/service.js";
 import type { ShareLink } from "../share_link/models.js";
-import { getFolders } from "../folder/service.js";
+import { getFolders } from "../folder/service/get_folder.js";
 import { type Folder, PrettyFolderType } from "../folder/models.js";
 import { insertLocation, updateLocation } from "../location/service.js";
 import { ShareStatus } from "../share/models.js";
