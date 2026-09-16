@@ -222,8 +222,9 @@ const verifyUserOrAdminAuthentication = async (
 				req.body.adminSubjectFromAuthToken = subject;
 				req.body.adminEmailFromAuthToken = email;
 				next();
+			} else {
+				next(err);
 			}
-			next(err);
 		}
 	} catch (err) {
 		next(err);

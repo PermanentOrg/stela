@@ -424,7 +424,10 @@ describe("verifyUserOrAdminAuthentication", () => {
 			.mockImplementationOnce(async () => expiredTokenIntrospectionResponse)
 			.mockImplementationOnce(async () => successfulIntrospectionResponse);
 
-		await verifyUserOrAdminAuthentication(request, createResponse(), vi.fn());
+		const next = vi.fn();
+		await verifyUserOrAdminAuthentication(request, createResponse(), next);
+		expect(next).toHaveBeenCalledTimes(1);
+		expect(next).toHaveBeenCalledWith();
 		const {
 			body: { adminSubjectFromAuthToken, adminEmailFromAuthToken },
 		} = request as {
@@ -462,6 +465,22 @@ describe("verifyUserOrAdminAuthentication", () => {
 				}
 			},
 		);
+	});
+
+	test("should pass along non-unauthorized errors without trying the admin token", async () => {
+		const request = createRequest({
+			headers: { Authorization: "Bearer test" },
+		});
+		const testError = new Error("FusionAuth is unreachable");
+		const introspectAccessTokenSpy = vi
+			.spyOn(fusionAuthClient, "introspectAccessToken")
+			.mockRejectedValueOnce(testError);
+
+		const next = vi.fn();
+		await verifyUserOrAdminAuthentication(request, createResponse(), next);
+		expect(next).toHaveBeenCalledTimes(1);
+		expect(next).toHaveBeenCalledWith(testError);
+		expect(introspectAccessTokenSpy).toHaveBeenCalledTimes(1);
 	});
 
 	test("should add subject and email to the request body if SFTP token is valid", async () => {
@@ -675,45 +694,6 @@ describe("extractUserEmailFromAuthToken", () => {
 		const next = vi.fn();
 		await extractUserEmailFromAuthToken(request, createResponse(), next);
 		expect(next).toHaveBeenCalledWith(testError);
-	});
-});
-
-describe("extractUserIsAdminFromAuthToken", () => {
-	test("is admin will be true if there is an valid auth token", async () => {
-		const request = createRequest({
-			headers: { Authorization: "Bearer test" },
-		});
-		vi.spyOn(fusionAuthClient, "introspectAccessToken").mockImplementationOnce(
-			async () => successfulIntrospectionResponse,
-		);
-		await extractUserIsAdminFromAuthToken(request, createResponse(), vi.fn());
-		const {
-			body: { admin },
-		} = request as { body: { admin: boolean } };
-		expect(admin).toBe(true);
-	});
-
-	test("is admin will be false if there is no auth token", async () => {
-		const request = createRequest({ headers: { Authorization: "" } });
-		await extractUserIsAdminFromAuthToken(request, createResponse(), vi.fn());
-		const {
-			body: { admin },
-		} = request as { body: { admin: boolean } };
-		expect(admin).toBe(false);
-	});
-
-	test("is admin will be false if there is an invalid auth token", async () => {
-		const request = createRequest({
-			headers: { Authorization: "Bearer test" },
-		});
-		vi.spyOn(fusionAuthClient, "introspectAccessToken").mockImplementationOnce(
-			async () => failedIntrospectionResponse,
-		);
-		await extractUserIsAdminFromAuthToken(request, createResponse(), vi.fn());
-		const {
-			body: { admin },
-		} = request as { body: { admin: boolean } };
-		expect(admin).toBe(false);
 	});
 });
 
