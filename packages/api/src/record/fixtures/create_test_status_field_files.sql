@@ -1,0 +1,85 @@
+INSERT INTO file (
+  fileid,
+  archiveid,
+  size,
+  format,
+  type,
+  status,
+  fileurl,
+  downloadurl,
+  createddt,
+  updateddt
+)
+VALUES
+(
+  20001,
+  100,
+  1024,
+  'file.format.archivematica.access',
+  'type.file.image.jpeg',
+  'status.generic.ok',
+  'https://localcdn.permanent.org/20001/file',
+  'https://localcdn.permanent.org/20001/download',
+  '2023-06-21T00:00:00.000Z',
+  '2023-06-21T00:00:00.000Z'
+),
+(
+  20002,
+  100,
+  1024,
+  'file.format.original',
+  'type.file.image.jpeg',
+  'status.generic.ok',
+  'https://localcdn.permanent.org/20002/file',
+  'https://localcdn.permanent.org/20002/download',
+  '2023-06-21T00:00:00.000Z',
+  '2023-06-21T00:00:00.000Z'
+),
+(
+  20003,
+  100,
+  1024,
+  'file.format.original',
+  'type.file.image.jpeg',
+  'status.generic.ok',
+  'https://localcdn.permanent.org/20003/file',
+  'https://localcdn.permanent.org/20003/download',
+  '2023-06-21T00:00:00.000Z',
+  '2023-06-21T00:00:00.000Z'
+),
+(
+  20004,
+  100,
+  1024,
+  'file.format.converted',
+  'type.file.image.jpg',
+  'status.generic.ok',
+  'https://localcdn.permanent.org/20004/file',
+  'https://localcdn.permanent.org/20004/download',
+  '2023-06-21T00:00:00.000Z',
+  '2023-06-21T00:00:00.000Z'
+),
+(
+  20005,
+  100,
+  1024,
+  'file.format.original',
+  'type.file.archive.zip',
+  'status.generic.ok',
+  'https://localcdn.permanent.org/20005/file',
+  'https://localcdn.permanent.org/20005/download',
+  '2023-06-21T00:00:00.000Z',
+  '2023-06-21T00:00:00.000Z'
+),
+(
+  20006,
+  100,
+  1024,
+  'file.format.original',
+  'type.file.video.mp4',
+  'status.generic.ok',
+  'https://localcdn.permanent.org/20006/file',
+  'https://localcdn.permanent.org/20006/download',
+  '2023-06-21T00:00:00.000Z',
+  '2023-06-21T00:00:00.000Z'
+);

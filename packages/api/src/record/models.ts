@@ -54,6 +54,8 @@ export interface ArchiveRecord {
 		};
 	};
 	accessRole: ArchiveMembershipRole;
+	accessCopyStatus: AccessCopyStatus | null;
+	thumbnailUrls: RecordThumbnailUrls;
 }
 
 export interface ArchiveRecordRow {
@@ -107,6 +109,29 @@ export interface ArchiveRecordRow {
 	archiveAccessRole: AccessRole | null;
 	shareAccessRoles: ShareAccessRolePair[] | null;
 	shareTokenGrantsAccess: boolean;
+	accessCopyStatus: AccessCopyStatus | null;
+	thumbnailUrls: RecordThumbnailUrls;
+}
+
+export enum AccessCopyStatus {
+	Ok = "ok",
+	Processing = "processing",
+	Failed = "failed",
+}
+
+export enum Thumbnail256Status {
+	Ok = "ok",
+	Processing = "processing",
+	Failed = "failed",
+}
+
+export interface RecordThumbnailUrls {
+	width256Status: Thumbnail256Status | null;
+	"200": string | null;
+	"500": string | null;
+	"1000": string | null;
+	"2000": string | null;
+	"256": string | null;
 }
 
 export interface ArchiveFile {
@@ -177,6 +202,7 @@ export enum RecordType {
 export enum FileFormat {
 	Original = "file.format.original",
 	Converted = "file.format.converted",
+	ArchivematicaAccess = "file.format.archivematica.access",
 }
 
 enum FolderLinkType {
