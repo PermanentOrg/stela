@@ -2,6 +2,15 @@ import { ArchiveMembershipRole } from "../access/models.js";
 import type { Folder } from "../folder/models.js";
 import type { Share } from "../share/models.js";
 
+export const ARCHIVE_TYPE_TO_DB_VALUE: Record<
+	"person" | "group" | "organization",
+	string
+> = {
+	person: "type.archive.person",
+	group: "type.archive.family",
+	organization: "type.archive.organization",
+};
+
 export { ArchiveMembershipRole };
 
 export interface Tag {
@@ -123,4 +132,12 @@ export interface GetReceivedSharesResponse {
 		nextPage: string | undefined;
 		totalPages: number;
 	};
+}
+
+export interface CreateArchiveRequest {
+	emailFromAuthToken: string;
+	userSubjectFromAuthToken: string;
+	name: string;
+	type?: "person" | "group" | "organization";
+	ip: string;
 }

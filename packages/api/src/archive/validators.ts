@@ -4,7 +4,11 @@ import {
 	fieldsFromUserAuthentication,
 } from "../validators/index.js";
 import { paginationFields } from "../validators/shared.js";
-import { ArchiveMembershipRole, type MilestoneSortOrder } from "./models.js";
+import {
+	ArchiveMembershipRole,
+	type CreateArchiveRequest,
+	type MilestoneSortOrder,
+} from "./models.js";
 
 export { validateBodyFromAuthentication };
 
@@ -93,6 +97,24 @@ export const validatePatchArchiveBody: (data: unknown) => asserts data is {
 			milestoneSortOrder: Joi.string()
 				.valid("chronological", "reverse_chronological")
 				.required(),
+		})
+		.validate(data);
+	if (validation.error !== undefined) {
+		throw validation.error;
+	}
+};
+
+export const validateCreateArchiveRequest: (
+	data: unknown,
+) => asserts data is CreateArchiveRequest = (
+	data: unknown,
+): asserts data is CreateArchiveRequest => {
+	const validation = Joi.object()
+		.keys({
+			...fieldsFromUserAuthentication,
+			name: Joi.string().trim().min(1).required(),
+			type: Joi.string().valid("person", "group", "organization").optional(),
+			ip: Joi.string().ip().required(),
 		})
 		.validate(data);
 	if (validation.error !== undefined) {
