@@ -218,6 +218,108 @@ all_records AS (
     CASE
       WHEN
         EXISTS (
+          SELECT 1 FROM UNNEST(aggregated_files.files) AS files
+          WHERE
+            files ->> 'format' = 'file.format.archivematica.access'
+            AND files ->> 'type' != 'type.file.unknown.null'
+        )
+        THEN 'ok'
+      WHEN
+        EXISTS (
+          SELECT 1 FROM UNNEST(aggregated_files.files) AS files
+          WHERE
+            files ->> 'format' = 'file.format.original'
+            AND files ->> 'type' IN (
+              'type.file.image.bmp',
+              'type.file.image.gif',
+              'type.file.image.jpeg',
+              'type.file.image.png',
+              'type.file.image.tiff',
+              'type.file.image.tif',
+              'type.file.image.jpg',
+              'type.file.image.heic',
+              'type.file.video.avi',
+              'type.file.video.mov',
+              'type.file.video.ogv',
+              'type.file.video.webm',
+              'type.file.video.mp4',
+              'type.file.document.doc',
+              'type.file.document.docx',
+              'type.file.document.rtf',
+              'type.file.document.eml',
+              'type.file.document.odt',
+              'type.file.pdf.pdf',
+              'type.file.pdf.pdfa',
+              'type.file.presentation.ppt',
+              'type.file.presentation.pptx',
+              'type.file.presentation.key',
+              'type.file.presentation.odp',
+              'type.file.spreadsheet.xls',
+              'type.file.spreadsheet.xlsx',
+              'type.file.spreadsheet.ods',
+              'type.file.document.txt',
+              'type.file.audio.aac',
+              'type.file.audio.aiff',
+              'type.file.audio.flac',
+              'type.file.audio.m4a',
+              'type.file.audio.ogg',
+              'type.file.audio.wav',
+              'type.file.audio.wma',
+              'type.file.audio.mp3'
+            )
+        )
+        AND record.createddt > CURRENT_TIMESTAMP - '1 day'::INTERVAL
+        THEN 'processing'
+      WHEN
+        EXISTS (
+          SELECT 1 FROM UNNEST(aggregated_files.files) AS files
+          WHERE
+            files ->> 'format' = 'file.format.original'
+            AND files ->> 'type' IN (
+              'type.file.image.bmp',
+              'type.file.image.gif',
+              'type.file.image.jpeg',
+              'type.file.image.png',
+              'type.file.image.tiff',
+              'type.file.image.tif',
+              'type.file.image.jpg',
+              'type.file.image.heic',
+              'type.file.video.avi',
+              'type.file.video.mov',
+              'type.file.video.ogv',
+              'type.file.video.webm',
+              'type.file.video.mp4',
+              'type.file.document.doc',
+              'type.file.document.docx',
+              'type.file.document.rtf',
+              'type.file.document.eml',
+              'type.file.document.odt',
+              'type.file.pdf.pdf',
+              'type.file.pdf.pdfa',
+              'type.file.presentation.ppt',
+              'type.file.presentation.pptx',
+              'type.file.presentation.key',
+              'type.file.presentation.odp',
+              'type.file.spreadsheet.xls',
+              'type.file.spreadsheet.xlsx',
+              'type.file.spreadsheet.ods',
+              'type.file.document.txt',
+              'type.file.audio.aac',
+              'type.file.audio.aiff',
+              'type.file.audio.flac',
+              'type.file.audio.m4a',
+              'type.file.audio.ogg',
+              'type.file.audio.wav',
+              'type.file.audio.wma',
+              'type.file.audio.mp3'
+            )
+        )
+        AND record.createddt < CURRENT_TIMESTAMP - '1 day'::INTERVAL
+        THEN 'failed'
+    END AS "accessCopyStatus",
+    CASE
+      WHEN
+        EXISTS (
           SELECT 1
           FROM account_archive
           INNER JOIN account
@@ -234,6 +336,74 @@ all_records AS (
         THEN aggregated_pending_shares.pending_shares_as_json
     END AS "pendingShares",
     JSON_BUILD_OBJECT(
+      'width256Status',
+      CASE
+        WHEN record.thumbnail256 IS NOT NULL THEN 'ok'
+        WHEN
+          EXISTS (
+            SELECT 1 FROM UNNEST(aggregated_files.files) AS files
+            WHERE
+              files ->> 'format' = 'file.format.original'
+              AND files ->> 'type' IN (
+                'type.file.image.bmp',
+                'type.file.image.gif',
+                'type.file.image.jpeg',
+                'type.file.image.png',
+                'type.file.image.tiff',
+                'type.file.image.tif',
+                'type.file.image.jpg',
+                'type.file.image.heic',
+                'type.file.document.doc',
+                'type.file.document.docx',
+                'type.file.document.rtf',
+                'type.file.document.eml',
+                'type.file.document.odt',
+                'type.file.pdf.pdf',
+                'type.file.pdf.pdfa',
+                'type.file.presentation.ppt',
+                'type.file.presentation.pptx',
+                'type.file.presentation.key',
+                'type.file.presentation.odp',
+                'type.file.spreadsheet.xls',
+                'type.file.spreadsheet.xlsx',
+                'type.file.spreadsheet.ods'
+              )
+          )
+          AND record.createddt > CURRENT_TIMESTAMP - '1 day'::INTERVAL
+          THEN 'processing'
+        WHEN
+          EXISTS (
+            SELECT 1 FROM UNNEST(aggregated_files.files) AS files
+            WHERE
+              files ->> 'format' = 'file.format.original'
+              AND files ->> 'type' IN (
+                'type.file.image.bmp',
+                'type.file.image.gif',
+                'type.file.image.jpeg',
+                'type.file.image.png',
+                'type.file.image.tiff',
+                'type.file.image.tif',
+                'type.file.image.jpg',
+                'type.file.image.heic',
+                'type.file.document.doc',
+                'type.file.document.docx',
+                'type.file.document.rtf',
+                'type.file.document.eml',
+                'type.file.document.odt',
+                'type.file.pdf.pdf',
+                'type.file.pdf.pdfa',
+                'type.file.presentation.ppt',
+                'type.file.presentation.pptx',
+                'type.file.presentation.key',
+                'type.file.presentation.odp',
+                'type.file.spreadsheet.xls',
+                'type.file.spreadsheet.xlsx',
+                'type.file.spreadsheet.ods'
+              )
+          )
+          AND record.createddt < CURRENT_TIMESTAMP - '1 day'::INTERVAL
+          THEN 'failed'
+      END,
       '200',
       record.thumburl200,
       '500',

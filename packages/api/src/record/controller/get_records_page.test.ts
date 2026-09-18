@@ -11,7 +11,12 @@ import {
 import request from "supertest";
 import { app } from "../../app.js";
 import { db } from "../../database.js";
-import type { ArchiveRecord, GetRecordsResponse } from "../models.js";
+import {
+	AccessCopyStatus,
+	Thumbnail256Status,
+	type ArchiveRecord,
+	type GetRecordsResponse,
+} from "../models.js";
 import { runFixtures } from "../../../test/run_fixtures.js";
 import {
 	mockExtractShareTokenFromHeaders,
@@ -45,6 +50,21 @@ const setupDatabase = async (): Promise<void> => {
 		"record.fixtures.create_test_invite_shares",
 		"record.fixtures.create_test_account_space",
 		"record.fixtures.create_test_archive_nbr",
+	]);
+};
+
+const setupStatusFieldDatabase = async (): Promise<void> => {
+	await runFixtures(db, [
+		"record.fixtures.create_test_accounts",
+		"record.fixtures.create_test_archives",
+		"record.fixtures.create_test_account_archives",
+		"record.fixtures.create_test_status_field_archives",
+		"record.fixtures.create_test_status_field_account_archives",
+		"record.fixtures.create_test_status_field_folders",
+		"record.fixtures.create_test_status_field_records",
+		"record.fixtures.create_test_status_field_files",
+		"record.fixtures.create_test_status_field_record_files",
+		"record.fixtures.create_test_status_field_folder_links",
 	]);
 };
 
@@ -378,5 +398,100 @@ describe("GET /records", () => {
 			.get("/api/v2/records?recordIds[]=10001&pageSize=100")
 			.expect(500);
 		expect(logger.error).toHaveBeenCalledWith(testError);
+	});
+});
+
+describe("GET /records accessCopyStatus and thumbnailUrls.width256Status", () => {
+	beforeEach(async () => {
+		mockExtractUserEmailFromAuthToken("test@permanent.org");
+		mockExtractShareTokenFromHeaders();
+		await clearDatabase();
+		await setupStatusFieldDatabase();
+	});
+
+	afterEach(async () => {
+		vi.restoreAllMocks();
+		vi.clearAllMocks();
+	});
+
+	afterAll(async () => {
+		await clearDatabase();
+	});
+
+	const agent = request(app);
+
+	test("expect accessCopyStatus to be ok when an archivematica access copy file exists", async () => {
+		const response = await agent
+			.get("/api/v2/records?recordIds[]=20001&pageSize=100")
+			.expect(200);
+		const { body } = response as { body: GetRecordsResponse };
+		expect(body.items).toHaveLength(1);
+		expect(body.items[0]?.accessCopyStatus).toEqual(AccessCopyStatus.Ok);
+		expect(body.items[0]?.thumbnailUrls.width256Status).toBeNull();
+	});
+
+	test("expect accessCopyStatus and thumbnailUrls.width256Status to be processing for a recent record with only an original image file", async () => {
+		const response = await agent
+			.get("/api/v2/records?recordIds[]=20002&pageSize=100")
+			.expect(200);
+		const { body } = response as { body: GetRecordsResponse };
+		expect(body.items).toHaveLength(1);
+		expect(body.items[0]?.accessCopyStatus).toEqual(
+			AccessCopyStatus.Processing,
+		);
+		expect(body.items[0]?.thumbnailUrls.width256Status).toEqual(
+			Thumbnail256Status.Processing,
+		);
+	});
+
+	test("expect thumbnailUrls.width256Status and accessCopyStatus to be failed for an old record with only an original image file and no 256px thumbnail", async () => {
+		const response = await agent
+			.get("/api/v2/records?recordIds[]=20003&pageSize=100")
+			.expect(200);
+		const { body } = response as { body: GetRecordsResponse };
+		expect(body.items).toHaveLength(1);
+		expect(body.items[0]?.thumbnailUrls.width256Status).toEqual(
+			Thumbnail256Status.Failed,
+		);
+		expect(body.items[0]?.accessCopyStatus).toBe(AccessCopyStatus.Failed);
+	});
+
+	test("expect thumbnailUrls.width256Status to be ok and the URL fields to pass through record thumbnail columns when a 256px thumbnail already exists", async () => {
+		const response = await agent
+			.get("/api/v2/records?recordIds[]=20004&pageSize=100")
+			.expect(200);
+		const { body } = response as { body: GetRecordsResponse };
+		expect(body.items).toHaveLength(1);
+		expect(body.items[0]?.accessCopyStatus).toBeNull();
+		expect(body.items[0]?.thumbnailUrls).toEqual({
+			width256Status: Thumbnail256Status.Ok,
+			"200": "https://localcdn.permanent.org/20004/thumb200.jpg",
+			"500": "https://localcdn.permanent.org/20004/thumb500.jpg",
+			"1000": "https://localcdn.permanent.org/20004/thumb1000.jpg",
+			"2000": "https://localcdn.permanent.org/20004/thumb2000.jpg",
+			"256": "https://localcdn.permanent.org/20004/thumb256.jpg",
+		});
+	});
+
+	test("expect accessCopyStatus and thumbnailUrls.width256Status to both be null for a record whose only file is an unsupported type", async () => {
+		const response = await agent
+			.get("/api/v2/records?recordIds[]=20005&pageSize=100")
+			.expect(200);
+		const { body } = response as { body: GetRecordsResponse };
+		expect(body.items).toHaveLength(1);
+		expect(body.items[0]?.accessCopyStatus).toBeNull();
+		expect(body.items[0]?.thumbnailUrls.width256Status).toBeNull();
+	});
+
+	test("expect accessCopyStatus to be processing for video files while thumbnailUrls.width256Status stays null, since 256px thumbnails aren't generated for video", async () => {
+		const response = await agent
+			.get("/api/v2/records?recordIds[]=20006&pageSize=100")
+			.expect(200);
+		const { body } = response as { body: GetRecordsResponse };
+		expect(body.items).toHaveLength(1);
+		expect(body.items[0]?.accessCopyStatus).toEqual(
+			AccessCopyStatus.Processing,
+		);
+		expect(body.items[0]?.thumbnailUrls.width256Status).toBeNull();
 	});
 });

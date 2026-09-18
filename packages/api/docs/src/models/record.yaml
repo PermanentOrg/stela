@@ -65,6 +65,12 @@ record:
     thumbnailUrls:
       type: object
       properties:
+        width256Status:
+          type: string
+          enum:
+            - ok
+            - processing
+            - failed
         200:
           type: string
         256:
@@ -93,6 +99,12 @@ record:
       type: array
       items:
         $ref: "./archive_file.yaml#/archiveFile"
+    accessCopyStatus:
+      type: string
+      enum:
+        - ok
+        - processing
+        - failed
     folderLinkId:
       type: string
     folderLinkType:
