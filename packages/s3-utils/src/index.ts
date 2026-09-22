@@ -13,6 +13,36 @@ const yearsUntilCdnUrlExpiration = 1;
 export { validateSqsMessage };
 export type { S3Object, S3Bucket };
 
+// left unescaped by `encodeURIComponent`; escaped to match PHP's `rawurlencode`
+const rfc5987Escapes = new Map([
+	["!", "%21"],
+	["'", "%27"],
+	["(", "%28"],
+	[")", "%29"],
+	["*", "%2A"],
+]);
+
+const encodeRfc5987 = (value: string): string =>
+	encodeURIComponent(value).replace(
+		/[!'\(\)*]/gv,
+		(character) => rfc5987Escapes.get(character) ?? character,
+	);
+
+export const NON_PRINTABLE_ASCII = /[^\x20-\x7e]/gv;
+
+// modern browsers take `filename*=`, older ones need `filename=`
+export const buildContentDisposition = (fileName: string): string => {
+	const asciiFallback = fileName
+		.replace(NON_PRINTABLE_ASCII, "_")
+		.replace(/["\\]/gv, "_");
+
+	const disposition = `attachment; filename="${asciiFallback}"`;
+
+	return asciiFallback === fileName
+		? disposition
+		: `${disposition}; filename*=UTF-8''${encodeRfc5987(fileName)}`;
+};
+
 export const constructSignedCdnUrl = (
 	key: string,
 	fileName?: string,
@@ -20,7 +50,10 @@ export const constructSignedCdnUrl = (
 	let url = `${process.env["CLOUDFRONT_URL"] ?? ""}${key}`;
 	if (fileName !== undefined) {
 		const urlObject = new URL(url);
-		urlObject.searchParams.append("response-content-disposition", fileName);
+		urlObject.searchParams.append(
+			"response-content-disposition",
+			buildContentDisposition(fileName),
+		);
 		url = urlObject.toString();
 	}
 	const expirationTime = new Date();
