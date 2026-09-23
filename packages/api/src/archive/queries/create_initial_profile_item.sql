@@ -1,0 +1,33 @@
+INSERT INTO profile_item (
+  archiveid,
+  fieldnameui,
+  string1,
+  otherid1,
+  status,
+  type,
+  publicdt,
+  createddt,
+  updateddt
+) VALUES
+(
+  :archiveId,
+  'profile.basic',
+  :name,
+  NULL,
+  'status.generic.ok',
+  'type.profile_item.basic',
+  CURRENT_TIMESTAMP,
+  CURRENT_TIMESTAMP,
+  CURRENT_TIMESTAMP
+),
+(
+  :archiveId,
+  'profile.timezone',
+  NULL,
+  88,
+  'status.generic.ok',
+  'type.profile_item.timezone',
+  CURRENT_TIMESTAMP,
+  CURRENT_TIMESTAMP,
+  CURRENT_TIMESTAMP
+);
