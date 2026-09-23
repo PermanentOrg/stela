@@ -1,0 +1,64 @@
+INSERT INTO record_file (
+  record_fileid,
+  recordid,
+  fileid,
+  status,
+  type,
+  createddt,
+  updateddt
+)
+VALUES
+(
+  20001,
+  20001,
+  20001,
+  'status.generic.ok',
+  'type.generic.placeholder',
+  '2023-06-21T00:00:00.000Z',
+  '2023-06-21T00:00:00.000Z'
+),
+(
+  20002,
+  20002,
+  20002,
+  'status.generic.ok',
+  'type.generic.placeholder',
+  '2023-06-21T00:00:00.000Z',
+  '2023-06-21T00:00:00.000Z'
+),
+(
+  20003,
+  20003,
+  20003,
+  'status.generic.ok',
+  'type.generic.placeholder',
+  '2023-06-21T00:00:00.000Z',
+  '2023-06-21T00:00:00.000Z'
+),
+(
+  20004,
+  20004,
+  20004,
+  'status.generic.ok',
+  'type.generic.placeholder',
+  '2023-06-21T00:00:00.000Z',
+  '2023-06-21T00:00:00.000Z'
+),
+(
+  20005,
+  20005,
+  20005,
+  'status.generic.ok',
+  'type.generic.placeholder',
+  '2023-06-21T00:00:00.000Z',
+  '2023-06-21T00:00:00.000Z'
+),
+(
+  20006,
+  20006,
+  20006,
+  'status.generic.ok',
+  'type.generic.placeholder',
+  '2023-06-21T00:00:00.000Z',
+  '2023-06-21T00:00:00.000Z'
+);

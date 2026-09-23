@@ -65,6 +65,13 @@ record:
     thumbnailUrls:
       type: object
       properties:
+        width256Status:
+          description: This field will be null for record types where we never generate thumbnails
+          type: string
+          enum:
+            - ok
+            - processing
+            - failed
         200:
           type: string
         256:
@@ -93,6 +100,13 @@ record:
       type: array
       items:
         $ref: "./archive_file.yaml#/archiveFile"
+    accessCopyStatus:
+      description: This field will be null for record types where we never generate access copies
+      type: string
+      enum:
+        - ok
+        - processing
+        - failed
     folderLinkId:
       type: string
     folderLinkType:
