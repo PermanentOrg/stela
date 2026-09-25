@@ -72,12 +72,13 @@ export const handler: SQSHandler = Sentry.wrapHandler(
 				const fileExtension = path.extname(key);
 
 				const parentFile = await db
-					.sql<{ archiveId: string; uploadFileName: string; recordId: string }>(
-						"queries.get_file",
-						{
-							fileId: parentFileId,
-						},
-					)
+					.sql<{
+						archiveId: string;
+						recordDownloadName: string;
+						recordId: string;
+					}>("queries.get_file", {
+						fileId: parentFileId,
+					})
 					.catch((err: unknown) => {
 						logger.error(err);
 						throw err;
@@ -118,8 +119,8 @@ export const handler: SQSHandler = Sentry.wrapHandler(
 						downloadUrl: constructSignedCdnUrl(
 							key,
 							`${path.basename(
-								parentFile.rows[0].uploadFileName,
-								path.extname(parentFile.rows[0].uploadFileName),
+								parentFile.rows[0].recordDownloadName,
+								path.extname(parentFile.rows[0].recordDownloadName),
 							)}${fileExtension}`,
 						),
 						urlExpiration: cdnExpirationTime.toISOString(),

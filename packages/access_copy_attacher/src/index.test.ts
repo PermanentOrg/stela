@@ -373,7 +373,11 @@ describe("handler", () => {
 				command: "",
 				row_count: 1,
 				rows: [
-					{ archiveId: "1", uploadFileName: "test_file.png", recordId: "1" },
+					{
+						archiveId: "1",
+						recordDownloadName: "test_file.png",
+						recordId: "1",
+					},
 				],
 			})
 			.mockRejectedValueOnce(testError);

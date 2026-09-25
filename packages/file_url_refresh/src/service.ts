@@ -8,7 +8,7 @@ import { db } from "./database.js";
 interface FileData {
 	id: string;
 	cloudPath: string | null;
-	uploadName: string;
+	recordDownloadName: string;
 	type: FileType;
 	format:
 		| "file.format.1920x1080"
@@ -34,8 +34,8 @@ export const refreshFileUrls = async (): Promise<void> => {
 					: constructSignedCdnUrl(
 							file.cloudPath,
 							file.format === "file.format.original"
-								? file.uploadName
-								: `${parse(file.uploadName).name}.${getFileExtensionByFileType(file.type)}`,
+								? file.recordDownloadName
+								: `${parse(file.recordDownloadName).name}.${getFileExtensionByFileType(file.type)}`,
 						);
 			try {
 				await db.sql("queries.update_file_url", {

@@ -1,6 +1,6 @@
 SELECT
   file.archiveid AS "archiveId",
-  record.uploadfilename AS "uploadFileName",
+  record.downloadname AS "recordDownloadName",
   record.recordid AS "recordId"
 FROM
   file
