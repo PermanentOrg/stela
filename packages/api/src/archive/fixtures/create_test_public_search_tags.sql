@@ -1,0 +1,57 @@
+INSERT INTO
+tag (tagid, name, archiveid, status, type, createddt, updateddt)
+VALUES
+(
+  501,
+  'Harriet',
+  102,
+  'status.generic.ok',
+  'type.generic.placeholder',
+  CURRENT_TIMESTAMP,
+  CURRENT_TIMESTAMP
+),
+(
+  502,
+  'Cambridge',
+  102,
+  'status.generic.ok',
+  'type.tag.metadata.birthplace',
+  CURRENT_TIMESTAMP,
+  CURRENT_TIMESTAMP
+),
+(
+  503,
+  'Harriet deleted tag',
+  102,
+  'status.generic.deleted',
+  'type.generic.placeholder',
+  CURRENT_TIMESTAMP,
+  CURRENT_TIMESTAMP
+),
+(
+  504,
+  'Harriet deleted link',
+  102,
+  'status.generic.ok',
+  'type.generic.placeholder',
+  CURRENT_TIMESTAMP,
+  CURRENT_TIMESTAMP
+),
+(
+  505,
+  'Maryland',
+  101,
+  'status.generic.ok',
+  'type.tag.metadata.location',
+  CURRENT_TIMESTAMP,
+  CURRENT_TIMESTAMP
+),
+(
+  506,
+  'Keepsake',
+  101,
+  'status.generic.ok',
+  'type.generic.placeholder',
+  CURRENT_TIMESTAMP,
+  CURRENT_TIMESTAMP
+);

@@ -1,0 +1,128 @@
+publicArchiveSearchResult:
+  description: >
+    A public archive that matched a public archive search, together with the
+    public content inside it that matched the query.
+  type: object
+  required:
+    - archive
+    - totalMatchCount
+    - matches
+  properties:
+    archive:
+      $ref: "./archive.yaml#/archiveSummary"
+    totalMatchCount:
+      description: >
+        The total number of matches in this archive. This may be larger than
+        the number of entries in `matches`, which is capped.
+      type: integer
+      minimum: 1
+    matches:
+      description: >
+        The matches in this archive, most relevant first. At most 10 matches
+        are returned per archive.
+      type: array
+      maxItems: 10
+      minItems: 1
+      items:
+        $ref: "#/publicArchiveSearchMatch"
+
+publicArchiveSearchMatch:
+  oneOf:
+    - $ref: "#/archiveNameMatch"
+    - $ref: "#/milestoneMatch"
+    - $ref: "#/itemMatch"
+  discriminator:
+    propertyName: matchType
+    mapping:
+      archiveName: "#/archiveNameMatch"
+      milestone: "#/milestoneMatch"
+      item: "#/itemMatch"
+
+archiveNameMatch:
+  description: The query matched the archive's name.
+  type: object
+  required:
+    - matchType
+  properties:
+    matchType:
+      type: string
+      enum:
+        - archiveName
+
+milestoneMatch:
+  description: The query matched a public milestone on the archive's profile.
+  type: object
+  required:
+    - matchType
+    - matchedFields
+    - milestone
+  properties:
+    matchType:
+      type: string
+      enum:
+        - milestone
+    matchedFields:
+      type: array
+      minItems: 1
+      uniqueItems: true
+      items:
+        type: string
+        enum:
+          - title
+          - description
+    milestone:
+      $ref: "#/milestone"
+
+itemMatch:
+  description: >
+    The query matched a public folder or record in the archive, either by the
+    item's own name or description, or by the name or type of a tag on it.
+  type: object
+  required:
+    - matchType
+    - matchedFields
+    - item
+  properties:
+    matchType:
+      type: string
+      enum:
+        - item
+    matchedFields:
+      type: array
+      minItems: 1
+      uniqueItems: true
+      items:
+        type: string
+        enum:
+          - name
+          - description
+          - tagName
+          - tagType
+    item:
+      $ref: "./item.yaml#/itemSummary"
+    matchedTags:
+      description: >
+        The tags on this item that matched the query. Present only when
+        `matchedFields` includes `tagName` or `tagType`.
+      type: array
+      items:
+        $ref: "./tag.yaml#/tagSummary"
+
+milestone:
+  description: A milestone from an archive's public profile
+  type: object
+  required:
+    - id
+    - title
+  properties:
+    id:
+      type: string
+    title:
+      type: string
+    description:
+      type: string
+      nullable: true
+    date:
+      type: string
+      format: edtf
+      nullable: true

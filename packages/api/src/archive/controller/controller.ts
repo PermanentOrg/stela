@@ -11,6 +11,7 @@ import {
 	validateArchiveIdFromParams,
 	validateBodyFromAuthentication,
 	validateSearchQuery,
+	validatePublicArchiveSearchQuery,
 	validatePatchArchiveBody,
 	validateGetSharedFoldersQuery,
 } from "../validators.js";
@@ -54,6 +55,25 @@ archiveController.get(
 				},
 				req.body.admin ?? false,
 				req.body.emailFromAuthToken,
+			);
+			res.json(response);
+		} catch (err) {
+			next(err);
+		}
+	},
+);
+
+archiveController.get(
+	"/public/search",
+	async (req: Request, res: Response, next: NextFunction) => {
+		try {
+			validatePublicArchiveSearchQuery(req.query);
+			const response = await archiveService.searchPublicArchives(
+				req.query.query,
+				{
+					pageSize: req.query.pageSize,
+					cursor: req.query.cursor,
+				},
 			);
 			res.json(response);
 		} catch (err) {

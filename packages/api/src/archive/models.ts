@@ -1,6 +1,8 @@
 import { ArchiveMembershipRole } from "../access/models.js";
 import type { Folder } from "../folder/models.js";
 import type { Share } from "../share/models.js";
+import type { ItemSummary } from "../item/models.js";
+import type { TagSummary } from "../tag/models.js";
 
 export { ArchiveMembershipRole };
 
@@ -118,6 +120,50 @@ export interface ArchiveSummary {
 
 export interface GetReceivedSharesResponse {
 	items: Share[];
+	pagination: {
+		nextCursor: string | undefined;
+		nextPage: string | undefined;
+		totalPages: number;
+	};
+}
+
+export interface Milestone {
+	id: string;
+	title: string;
+	description: string | null;
+	date: string | null;
+}
+
+export interface ArchiveNameMatch {
+	matchType: "archiveName";
+}
+
+export interface MilestoneMatch {
+	matchType: "milestone";
+	matchedFields: Array<"title" | "description">;
+	milestone: Milestone;
+}
+
+export interface ItemMatch {
+	matchType: "item";
+	matchedFields: Array<"name" | "description" | "tagName" | "tagType">;
+	item: ItemSummary;
+	matchedTags?: TagSummary[];
+}
+
+export type PublicArchiveSearchMatch =
+	| ArchiveNameMatch
+	| MilestoneMatch
+	| ItemMatch;
+
+export interface PublicArchiveSearchResult {
+	archive: ArchiveSummary;
+	totalMatchCount: number;
+	matches: PublicArchiveSearchMatch[];
+}
+
+export interface SearchPublicArchivesResponse {
+	items: PublicArchiveSearchResult[];
 	pagination: {
 		nextCursor: string | undefined;
 		nextPage: string | undefined;

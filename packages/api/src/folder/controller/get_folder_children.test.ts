@@ -2,7 +2,7 @@ import request from "supertest";
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 import type { FolderChildItem, Folder } from "../models.js";
 import type { ArchiveFile } from "../../record/models.js";
-import type { Tag } from "../../tag/models.js";
+import type { TagSummary } from "../../tag/models.js";
 import type { ShareSummary } from "../../share/models.js";
 import { app } from "../../app.js";
 import {
@@ -279,8 +279,8 @@ describe("GET /folder/{id}/children", () => {
 				expect(record.parentFolderLinkId).toEqual("10");
 				expect(record.parentFolderArchiveNumber).toEqual("0001-0010");
 				expect(record.tags.length).toEqual(3);
-				const firstTag = record.tags.find((tag: Tag) => tag.id === "14");
-				const thirdTag = record.tags.find((tag: Tag) => tag.id === "16");
+				const firstTag = record.tags.find((tag: TagSummary) => tag.id === "14");
+				const thirdTag = record.tags.find((tag: TagSummary) => tag.id === "16");
 				expect(firstTag).toBeDefined();
 				if (firstTag !== undefined) {
 					expect(firstTag.name).toEqual("Generic Tag 1");

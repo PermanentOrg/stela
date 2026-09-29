@@ -74,6 +74,8 @@ paths:
     $ref: "./paths/folder.yaml#/folders-id-share-links"
   /archives:
     $ref: "./paths/archive.yaml#/archives"
+  /archives/public/search:
+    $ref: "./paths/archive.yaml#/archives-public-search"
   /archives/{id}:
     $ref: "./paths/archive.yaml#/archives~1{id}"
   /archives/{id}/folders/shared:

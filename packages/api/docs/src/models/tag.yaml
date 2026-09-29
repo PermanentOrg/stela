@@ -1,6 +1,6 @@
-tag:
+tagSummary:
   description: >
-    Record Tag Object
+    A summary of a tag on a record or folder
   type: object
   properties:
     id:

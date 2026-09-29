@@ -57,7 +57,7 @@ folder:
     tags:
       type: array
       items:
-        $ref: "../models/tag.yaml#/tag"
+        $ref: "../models/tag.yaml#/tagSummary"
     archive:
       type: object
       required: [id]

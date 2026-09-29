@@ -99,6 +99,87 @@ archives:
         $ref: "../errors.yaml#/400"
       "500":
         $ref: "../errors.yaml#/500"
+archives-public-search:
+  parameters:
+    - name: query
+      in: query
+      required: true
+      description: |
+        The text to search for. Leading and trailing whitespace is trimmed, and the trimmed
+        value must be between 3 and 100 characters long.
+
+        The query is split into words, and a field matches when every query word matches
+        the start of some word in that field, in any order and regardless of case. For
+        example, `smi fam` matches "The Smith Family". Punctuation and search operators in
+        the query have no special meaning. A query that contains no words (for example,
+        only punctuation) returns no results.
+      schema:
+        type: string
+        minLength: 3
+        maxLength: 100
+    - name: pageSize
+      in: query
+      required: true
+      description: The number of archives to return per page.
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 50
+    - name: cursor
+      in: query
+      required: false
+      description: |
+        An opaque cursor from the `pagination.nextCursor` field of a previous response.
+        Omit it to request the first page. A malformed cursor is rejected; a cursor that
+        does not correspond to a result returns an empty page.
+      schema:
+        type: string
+  get:
+    summary: Search public archives
+    description: |
+      Search public archives for a query string, returning each matching archive along
+      with the public content inside it that matched.
+
+      The query is compared against:
+      - the archive's name (the `profile.basic` profile item)
+      - the title and description of the archive's public profile milestones
+      - the names and descriptions of public folders and records in the archive,
+        excluding the archive's root folders
+      - the names of tags on public folders and records in the archive, and, for
+        custom metadata tags (type `type.tag.metadata.<field>`), the `<field>` name
+
+      Only public, non-deleted archives are searched. Within them, only public,
+      non-deleted folders, records, milestones and tags are considered. Private content
+      never affects which archives are returned, which matches are returned, or the
+      match counts.
+
+      Results are the same for every caller. Authentication and share-token headers
+      are ignored.
+    security: []
+    tags:
+      - archives
+    operationId: search-public-archives
+    responses:
+      "200":
+        description: A page of matching public archives, ordered by relevance
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - items
+                - pagination
+              properties:
+                items:
+                  type: array
+                  items:
+                    $ref: "../models/public_archive_search.yaml#/publicArchiveSearchResult"
+                pagination:
+                  $ref: "../models/pagination_metadata.yaml#/pagination"
+      "400":
+        $ref: "../errors.yaml#/400"
+      "500":
+        $ref: "../errors.yaml#/500"
 archives/{id}:
   parameters:
     - name: id

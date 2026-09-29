@@ -1,0 +1,62 @@
+INSERT INTO
+archive (
+  archiveid,
+  archivenbr,
+  public,
+  type,
+  thumburl200,
+  status,
+  createddt,
+  updateddt
+)
+VALUES
+(
+  101,
+  '0101-0000',
+  true,
+  'type.archive.person',
+  'https://test-archive-thumbnail-101',
+  'status.generic.ok',
+  CURRENT_TIMESTAMP,
+  CURRENT_TIMESTAMP
+),
+(
+  102,
+  '0102-0000',
+  true,
+  'type.archive.group',
+  NULL,
+  'status.generic.ok',
+  CURRENT_TIMESTAMP,
+  CURRENT_TIMESTAMP
+),
+(
+  103,
+  '0103-0000',
+  false,
+  'type.archive.person',
+  NULL,
+  'status.generic.ok',
+  CURRENT_TIMESTAMP,
+  CURRENT_TIMESTAMP
+),
+(
+  104,
+  '0104-0000',
+  true,
+  'type.archive.person',
+  NULL,
+  'status.generic.deleted',
+  CURRENT_TIMESTAMP,
+  CURRENT_TIMESTAMP
+),
+(
+  105,
+  '0105-0000',
+  true,
+  'type.archive.organization',
+  NULL,
+  'status.generic.ok',
+  CURRENT_TIMESTAMP,
+  CURRENT_TIMESTAMP
+);

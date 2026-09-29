@@ -1,0 +1,80 @@
+INSERT INTO
+record (
+  recordid,
+  archiveid,
+  publicdt,
+  displayname,
+  description,
+  uploadaccountid,
+  uploadpayeraccountid,
+  uploadfilename,
+  downloadname,
+  status,
+  type
+)
+VALUES
+(
+  401,
+  101,
+  '2023-01-01',
+  'Portrait of Harriet',
+  'Photograph taken in 1895',
+  2,
+  2,
+  'portrait.jpg',
+  'portrait.jpg',
+  'status.generic.ok',
+  'type.record.image'
+),
+(
+  402,
+  101,
+  '2023-01-01',
+  'Letter',
+  'Written by Harriet',
+  2,
+  2,
+  'letter.jpg',
+  'letter.jpg',
+  'status.generic.ok',
+  'type.record.image'
+),
+(
+  403,
+  101,
+  NULL,
+  'Harriet private record',
+  NULL,
+  2,
+  2,
+  'private.jpg',
+  'private.jpg',
+  'status.generic.ok',
+  'type.record.image'
+),
+(
+  404,
+  102,
+  '2023-01-01',
+  'Meeting Minutes',
+  NULL,
+  2,
+  2,
+  'minutes.pdf',
+  'minutes.pdf',
+  'status.generic.ok',
+  'type.record.pdf'
+),
+(
+  405,
+  102,
+  NULL,
+  'Budget',
+  NULL,
+  2,
+  2,
+  'budget.pdf',
+  'budget.pdf',
+  'status.generic.ok',
+  'type.record.pdf'
+);

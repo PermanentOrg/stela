@@ -1,5 +1,5 @@
 import type { PendingShare, ShareSummary } from "../share/models.js";
-import type { Tag } from "../tag/models.js";
+import type { TagSummary } from "../tag/models.js";
 import type { ArchiveRecord } from "../record/models.js";
 import type { Location, LocationInput } from "../location/models.js";
 import type { AccessRole, ArchiveMembershipRole } from "../access/models.js";
@@ -39,7 +39,7 @@ export interface FolderRow {
 	};
 	shares?: ShareSummary[];
 	pendingShares: PendingShare[] | null;
-	tags?: Tag[];
+	tags?: TagSummary[];
 	archive: {
 		id: string;
 		name: string;
@@ -97,7 +97,7 @@ export interface Folder {
 	};
 	shares: ShareSummary[] | null;
 	pendingShares: PendingShare[] | null;
-	tags?: Tag[];
+	tags?: TagSummary[];
 	archive: {
 		id: string;
 		name: string;

@@ -1,0 +1,66 @@
+INSERT INTO
+tag_link (tagid, refid, reftable, status, type, createddt, updateddt)
+VALUES
+(
+  501,
+  404,
+  'record',
+  'status.generic.ok',
+  'type.generic.placeholder',
+  CURRENT_TIMESTAMP,
+  CURRENT_TIMESTAMP
+),
+(
+  501,
+  405,
+  'record',
+  'status.generic.ok',
+  'type.generic.placeholder',
+  CURRENT_TIMESTAMP,
+  CURRENT_TIMESTAMP
+),
+(
+  502,
+  404,
+  'record',
+  'status.generic.ok',
+  'type.generic.placeholder',
+  CURRENT_TIMESTAMP,
+  CURRENT_TIMESTAMP
+),
+(
+  503,
+  404,
+  'record',
+  'status.generic.ok',
+  'type.generic.placeholder',
+  CURRENT_TIMESTAMP,
+  CURRENT_TIMESTAMP
+),
+(
+  504,
+  404,
+  'record',
+  'status.generic.deleted',
+  'type.generic.placeholder',
+  CURRENT_TIMESTAMP,
+  CURRENT_TIMESTAMP
+),
+(
+  505,
+  401,
+  'record',
+  'status.generic.ok',
+  'type.generic.placeholder',
+  CURRENT_TIMESTAMP,
+  CURRENT_TIMESTAMP
+),
+(
+  506,
+  401,
+  'record',
+  'status.generic.ok',
+  'type.generic.placeholder',
+  CURRENT_TIMESTAMP,
+  CURRENT_TIMESTAMP
+);

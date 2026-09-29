@@ -63,6 +63,41 @@ export const validateSearchQuery: (data: unknown) => asserts data is {
 	}
 };
 
+const MINIMUM_PUBLIC_SEARCH_QUERY_LENGTH = 3;
+const MAXIMUM_PUBLIC_SEARCH_QUERY_LENGTH = 100;
+const MAXIMUM_PUBLIC_SEARCH_PAGE_SIZE = 50;
+// Cursors are archive ids; limiting their length keeps them within BIGINT.
+const ARCHIVE_ID_CURSOR_PATTERN = /^\d{1,18}$/;
+
+export const validatePublicArchiveSearchQuery: (
+	data: unknown,
+) => asserts data is {
+	query: string;
+	pageSize: number;
+	cursor?: string | undefined;
+} = (
+	data: unknown,
+): asserts data is {
+	query: string;
+	pageSize: number;
+	cursor?: string | undefined;
+} => {
+	const validation = Joi.object()
+		.keys({
+			query: Joi.string()
+				.trim()
+				.min(MINIMUM_PUBLIC_SEARCH_QUERY_LENGTH)
+				.max(MAXIMUM_PUBLIC_SEARCH_QUERY_LENGTH)
+				.required(),
+			pageSize: paginationFields.pageSize.max(MAXIMUM_PUBLIC_SEARCH_PAGE_SIZE),
+			cursor: Joi.string().pattern(ARCHIVE_ID_CURSOR_PATTERN).optional(),
+		})
+		.validate(data);
+	if (validation.error !== undefined) {
+		throw validation.error;
+	}
+};
+
 export const validateGetSharedFoldersQuery: (data: unknown) => asserts data is {
 	pageSize: number;
 	cursor?: string;
