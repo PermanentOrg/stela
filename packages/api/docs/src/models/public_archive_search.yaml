@@ -18,8 +18,10 @@ publicArchiveSearchResult:
       minimum: 1
     matches:
       description: >
-        The matches in this archive, most relevant first. At most 10 matches
-        are returned per archive.
+        The matches in this archive, most relevant first: matches containing
+        more of the query's words come first, then matches with fewer
+        misspelled words, then the archive name, milestones and items, in that
+        order. At most 10 matches are returned per archive.
       type: array
       maxItems: 10
       minItems: 1
@@ -38,16 +40,30 @@ publicArchiveSearchMatch:
       milestone: "#/milestoneMatch"
       item: "#/itemMatch"
 
+matchedWords:
+  description: >
+    The words of the query that this match matched, in the order they appear
+    in the query. Words are in the normalized, lowercase form used for
+    matching, and words the search ignored are never included.
+  type: array
+  minItems: 1
+  uniqueItems: true
+  items:
+    type: string
+
 archiveNameMatch:
   description: The query matched the archive's name.
   type: object
   required:
     - matchType
+    - matchedWords
   properties:
     matchType:
       type: string
       enum:
         - archiveName
+    matchedWords:
+      $ref: "#/matchedWords"
 
 milestoneMatch:
   description: The query matched a public milestone on the archive's profile.
@@ -55,6 +71,7 @@ milestoneMatch:
   required:
     - matchType
     - matchedFields
+    - matchedWords
     - milestone
   properties:
     matchType:
@@ -70,6 +87,8 @@ milestoneMatch:
         enum:
           - title
           - description
+    matchedWords:
+      $ref: "#/matchedWords"
     milestone:
       $ref: "#/milestone"
 
@@ -81,6 +100,7 @@ itemMatch:
   required:
     - matchType
     - matchedFields
+    - matchedWords
     - item
   properties:
     matchType:
@@ -98,6 +118,8 @@ itemMatch:
           - description
           - tagName
           - tagType
+    matchedWords:
+      $ref: "#/matchedWords"
     item:
       $ref: "./item.yaml#/itemSummary"
     matchedTags:

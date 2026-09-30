@@ -1,27 +1,42 @@
--- Search public archives, and the public content inside them, for words
--- that start with each word of :query. The user's text is split into words
--- by the text search parser, and each word is quoted and escaped before it is
--- turned into a prefix query, so operators and punctuation in :query have no
--- special meaning. Comparisons use the 'simple' configuration so that they
--- match the existing full-text indexes on folder, record and profile_item.
-WITH search_terms AS MATERIALIZED (
+-- Search public archives, and the public content inside them, for the words
+-- of :query. The text search parser splits :query into words; each word is
+-- quoted and escaped before it becomes a prefix query, so operators and
+-- punctuation in :query have no special meaning. A field matches a word when
+-- one of its words starts with that word, or, for record and folder names,
+-- when it contains a close misspelling of it (pg_trgm word similarity). A
+-- match only needs one query word; matches with more words rank first.
+-- Comparisons use the 'simple' configuration so that they match the existing
+-- full-text indexes on folder, record and profile_item.
+WITH query_word AS MATERIALIZED (
   SELECT
+    parsed_word.lexeme AS word,
+    parsed_word.positions[1] AS word_position
+  FROM
+    UNNEST(TO_TSVECTOR('simple', :query)) AS parsed_word
+),
+
+-- Words shorter than :minimumWordLength are dropped, unless every word is
+-- that short.
+search_word AS MATERIALIZED (
+  SELECT
+    query_word.word,
+    query_word.word_position,
     TO_TSQUERY(
       'simple',
-      ARRAY_TO_STRING(
-        ARRAY(
-          SELECT
-            ''''
-            || REPLACE(
-              REPLACE(word, CHR(92), CHR(92) || CHR(92)), '''', ''''''
-            )
-            || ''':*'
-          FROM
-            UNNEST(TSVECTOR_TO_ARRAY(TO_TSVECTOR('simple', :query))) AS word
-        ),
-        ' & '
+      ''''
+      || REPLACE(
+        REPLACE(query_word.word, CHR(92), CHR(92) || CHR(92)), '''', ''''''
       )
-    ) AS ts_query
+      || ''':*'
+    ) AS word_query
+  FROM query_word
+  WHERE
+    LENGTH(query_word.word) >= :minimumWordLength
+    OR NOT EXISTS (
+      SELECT 1
+      FROM query_word AS long_word
+      WHERE LENGTH(long_word.word) >= :minimumWordLength
+    )
 ),
 
 public_archive AS MATERIALIZED (
@@ -45,32 +60,14 @@ public_archive AS MATERIALIZED (
     AND archive.status != 'status.generic.deleted'
 ),
 
-archive_name_match AS (
-  SELECT public_archive.archiveid
-  FROM
-    public_archive
-  WHERE
-    TO_TSVECTOR('simple', public_archive.name)
-    @@ (SELECT search_terms.ts_query FROM search_terms)
-),
-
-milestone_candidate AS (
+-- The public_* sets below are inlined wherever they are used, so that the
+-- planner can still use the text and trigram indexes on the base tables.
+public_milestone AS NOT MATERIALIZED (
   SELECT
     milestone.archiveid,
     milestone.profile_itemid,
     milestone.string1 AS title,
-    milestone.string2 AS description,
-    milestone.day1,
-    COALESCE(
-      TO_TSVECTOR('simple', milestone.string1)
-      @@ (SELECT search_terms.ts_query FROM search_terms),
-      FALSE
-    ) AS title_matched,
-    COALESCE(
-      TO_TSVECTOR('simple', milestone.string2)
-      @@ (SELECT search_terms.ts_query FROM search_terms),
-      FALSE
-    ) AS description_matched
+    milestone.string2 AS description
   FROM
     profile_item AS milestone
   INNER JOIN
@@ -83,83 +80,37 @@ milestone_candidate AS (
     AND milestone.publicdt <= CURRENT_TIMESTAMP
 ),
 
-milestone_match AS (
-  SELECT
-    milestone_candidate.archiveid,
-    milestone_candidate.profile_itemid,
-    milestone_candidate.title,
-    milestone_candidate.description,
-    milestone_candidate.day1,
-    milestone_candidate.title_matched,
-    milestone_candidate.description_matched
-  FROM
-    milestone_candidate
-  WHERE
-    milestone_candidate.title_matched
-    OR milestone_candidate.description_matched
-),
-
-folder_match AS (
+public_folder AS NOT MATERIALIZED (
   SELECT
     folder.archiveid,
-    'folder'::TEXT AS item_type,
-    folder.folderid AS item_id,
-    COALESCE(
-      TO_TSVECTOR('simple', folder.displayname)
-      @@ (SELECT search_terms.ts_query FROM search_terms),
-      FALSE
-    ) AS name_matched,
-    COALESCE(
-      TO_TSVECTOR('simple', folder.description)
-      @@ (SELECT search_terms.ts_query FROM search_terms),
-      FALSE
-    ) AS description_matched
+    folder.folderid,
+    folder.displayname,
+    folder.description
   FROM
     folder
   INNER JOIN
     public_archive
     ON folder.archiveid = public_archive.archiveid
   WHERE
-    (
-      TO_TSVECTOR('simple', folder.displayname)
-      @@ (SELECT search_terms.ts_query FROM search_terms)
-      OR TO_TSVECTOR('simple', folder.description)
-      @@ (SELECT search_terms.ts_query FROM search_terms)
-    )
-    AND folder.publicdt IS NOT NULL
+    folder.publicdt IS NOT NULL
     AND folder.publicdt <= CURRENT_TIMESTAMP
     AND folder.status != 'status.generic.deleted'
     AND folder.type NOT LIKE 'type.folder.root.%'
 ),
 
-record_match AS (
+public_record AS NOT MATERIALIZED (
   SELECT
     record.archiveid,
-    'record'::TEXT AS item_type,
-    record.recordid AS item_id,
-    COALESCE(
-      TO_TSVECTOR('simple', record.displayname)
-      @@ (SELECT search_terms.ts_query FROM search_terms),
-      FALSE
-    ) AS name_matched,
-    COALESCE(
-      TO_TSVECTOR('simple', record.description)
-      @@ (SELECT search_terms.ts_query FROM search_terms),
-      FALSE
-    ) AS description_matched
+    record.recordid,
+    record.displayname,
+    record.description
   FROM
     record
   INNER JOIN
     public_archive
     ON record.archiveid = public_archive.archiveid
   WHERE
-    (
-      TO_TSVECTOR('simple', record.displayname)
-      @@ (SELECT search_terms.ts_query FROM search_terms)
-      OR TO_TSVECTOR('simple', record.description)
-      @@ (SELECT search_terms.ts_query FROM search_terms)
-    )
-    AND record.publicdt IS NOT NULL
+    record.publicdt IS NOT NULL
     AND record.publicdt <= CURRENT_TIMESTAMP
     AND record.status != 'status.generic.deleted'
 ),
@@ -167,232 +118,455 @@ record_match AS (
 -- Only custom metadata tags have a meaningful type: the part of
 -- 'type.tag.metadata.<field>' after the prefix is the field name the web app
 -- displays. Keyword tags share generic types, so their type is not searched.
-tag_candidate AS (
+matching_tag AS (
   SELECT
     tag.tagid,
     tag.archiveid,
-    tag.name,
-    tag.type,
-    COALESCE(
-      TO_TSVECTOR('simple', tag.name)
-      @@ (SELECT search_terms.ts_query FROM search_terms),
-      FALSE
-    ) AS name_matched,
-    COALESCE(
-      tag.type LIKE 'type.tag.metadata.%'
-      AND TO_TSVECTOR(
-        'simple',
-        SUBSTRING(tag.type FROM LENGTH('type.tag.metadata.') + 1)
-      )
-      @@ (SELECT search_terms.ts_query FROM search_terms),
-      FALSE
-    ) AS type_matched
+    'tagName'::TEXT AS field,
+    search_word.word,
+    search_word.word_position
   FROM
     tag
   INNER JOIN
     public_archive
     ON tag.archiveid = public_archive.archiveid
+  INNER JOIN
+    search_word
+    ON TO_TSVECTOR('simple', tag.name) @@ search_word.word_query
+  WHERE
+    tag.status = 'status.generic.ok'
+  UNION ALL
+  SELECT
+    tag.tagid,
+    tag.archiveid,
+    'tagType'::TEXT AS field,
+    search_word.word,
+    search_word.word_position
+  FROM
+    tag
+  INNER JOIN
+    public_archive
+    ON tag.archiveid = public_archive.archiveid
+  INNER JOIN
+    search_word
+    ON
+      tag.type LIKE 'type.tag.metadata.%'
+      AND TO_TSVECTOR(
+        'simple',
+        SUBSTRING(tag.type FROM LENGTH('type.tag.metadata.') + 1)
+      )
+      @@ search_word.word_query
   WHERE
     tag.status = 'status.generic.ok'
 ),
 
-tagged_item_match AS (
+-- One row per matched field and query word. exact is FALSE for typo matches.
+search_hit AS (
   SELECT
-    tag_candidate.archiveid,
-    tag_link.reftable AS item_type,
-    tag_link.refid AS item_id,
-    tag_candidate.name_matched AS tag_name_matched,
-    tag_candidate.type_matched AS tag_type_matched,
-    JSONB_BUILD_OBJECT(
-      'id', tag_candidate.tagid::TEXT,
-      'name', tag_candidate.name,
-      'type', tag_candidate.type
-    ) AS tag_data
+    public_archive.archiveid,
+    'archiveName'::TEXT AS match_kind,
+    public_archive.archiveid AS match_id,
+    'name'::TEXT AS field,
+    search_word.word,
+    search_word.word_position,
+    TRUE AS exact,
+    NULL::BIGINT AS tag_id
   FROM
-    tag_candidate
+    public_archive
+  INNER JOIN
+    search_word
+    ON TO_TSVECTOR('simple', public_archive.name) @@ search_word.word_query
+  UNION ALL
+  SELECT
+    public_milestone.archiveid,
+    'milestone'::TEXT AS match_kind,
+    public_milestone.profile_itemid AS match_id,
+    'title'::TEXT AS field,
+    search_word.word,
+    search_word.word_position,
+    TRUE AS exact,
+    NULL::BIGINT AS tag_id
+  FROM
+    public_milestone
+  INNER JOIN
+    search_word
+    ON TO_TSVECTOR('simple', public_milestone.title) @@ search_word.word_query
+  UNION ALL
+  SELECT
+    public_milestone.archiveid,
+    'milestone'::TEXT AS match_kind,
+    public_milestone.profile_itemid AS match_id,
+    'description'::TEXT AS field,
+    search_word.word,
+    search_word.word_position,
+    TRUE AS exact,
+    NULL::BIGINT AS tag_id
+  FROM
+    public_milestone
+  INNER JOIN
+    search_word
+    ON
+      TO_TSVECTOR('simple', public_milestone.description)
+      @@ search_word.word_query
+  UNION ALL
+  SELECT
+    public_folder.archiveid,
+    'folder'::TEXT AS match_kind,
+    public_folder.folderid AS match_id,
+    'name'::TEXT AS field,
+    search_word.word,
+    search_word.word_position,
+    TRUE AS exact,
+    NULL::BIGINT AS tag_id
+  FROM
+    search_word
+  INNER JOIN
+    public_folder
+    ON
+      TO_TSVECTOR('simple', public_folder.displayname)
+      @@ search_word.word_query
+  UNION ALL
+  SELECT
+    public_folder.archiveid,
+    'folder'::TEXT AS match_kind,
+    public_folder.folderid AS match_id,
+    'name'::TEXT AS field,
+    search_word.word,
+    search_word.word_position,
+    FALSE AS exact,
+    NULL::BIGINT AS tag_id
+  FROM
+    search_word
+  INNER JOIN
+    public_folder
+    ON search_word.word <% public_folder.displayname
+  UNION ALL
+  SELECT
+    public_folder.archiveid,
+    'folder'::TEXT AS match_kind,
+    public_folder.folderid AS match_id,
+    'description'::TEXT AS field,
+    search_word.word,
+    search_word.word_position,
+    TRUE AS exact,
+    NULL::BIGINT AS tag_id
+  FROM
+    search_word
+  INNER JOIN
+    public_folder
+    ON
+      TO_TSVECTOR('simple', public_folder.description)
+      @@ search_word.word_query
+  UNION ALL
+  SELECT
+    public_record.archiveid,
+    'record'::TEXT AS match_kind,
+    public_record.recordid AS match_id,
+    'name'::TEXT AS field,
+    search_word.word,
+    search_word.word_position,
+    TRUE AS exact,
+    NULL::BIGINT AS tag_id
+  FROM
+    search_word
+  INNER JOIN
+    public_record
+    ON
+      TO_TSVECTOR('simple', public_record.displayname)
+      @@ search_word.word_query
+  UNION ALL
+  SELECT
+    public_record.archiveid,
+    'record'::TEXT AS match_kind,
+    public_record.recordid AS match_id,
+    'name'::TEXT AS field,
+    search_word.word,
+    search_word.word_position,
+    FALSE AS exact,
+    NULL::BIGINT AS tag_id
+  FROM
+    search_word
+  INNER JOIN
+    public_record
+    ON search_word.word <% public_record.displayname
+  UNION ALL
+  SELECT
+    public_record.archiveid,
+    'record'::TEXT AS match_kind,
+    public_record.recordid AS match_id,
+    'description'::TEXT AS field,
+    search_word.word,
+    search_word.word_position,
+    TRUE AS exact,
+    NULL::BIGINT AS tag_id
+  FROM
+    search_word
+  INNER JOIN
+    public_record
+    ON
+      TO_TSVECTOR('simple', public_record.description)
+      @@ search_word.word_query
+  UNION ALL
+  SELECT
+    matching_tag.archiveid,
+    tag_link.reftable::TEXT AS match_kind,
+    tag_link.refid AS match_id,
+    matching_tag.field,
+    matching_tag.word,
+    matching_tag.word_position,
+    TRUE AS exact,
+    matching_tag.tagid AS tag_id
+  FROM
+    matching_tag
   INNER JOIN
     tag_link
     ON
-      tag_candidate.tagid = tag_link.tagid
+      matching_tag.tagid = tag_link.tagid
       AND tag_link.status = 'status.generic.ok'
   LEFT JOIN
-    folder
+    public_folder
     ON
       tag_link.reftable = 'folder'
-      AND tag_link.refid = folder.folderid
-      AND tag_candidate.archiveid = folder.archiveid
-      AND folder.publicdt IS NOT NULL
-      AND folder.publicdt <= CURRENT_TIMESTAMP
-      AND folder.status != 'status.generic.deleted'
-      AND folder.type NOT LIKE 'type.folder.root.%'
+      AND tag_link.refid = public_folder.folderid
+      AND matching_tag.archiveid = public_folder.archiveid
   LEFT JOIN
-    record
+    public_record
     ON
       tag_link.reftable = 'record'
-      AND tag_link.refid = record.recordid
-      AND tag_candidate.archiveid = record.archiveid
-      AND record.publicdt IS NOT NULL
-      AND record.publicdt <= CURRENT_TIMESTAMP
-      AND record.status != 'status.generic.deleted'
+      AND tag_link.refid = public_record.recordid
+      AND matching_tag.archiveid = public_record.archiveid
   WHERE
-    (tag_candidate.name_matched OR tag_candidate.type_matched)
-    AND (folder.folderid IS NOT NULL OR record.recordid IS NOT NULL)
+    public_folder.folderid IS NOT NULL
+    OR public_record.recordid IS NOT NULL
 ),
 
-item_match_part AS (
+word_hit AS (
   SELECT
-    folder_match.archiveid,
-    folder_match.item_type,
-    folder_match.item_id,
-    folder_match.name_matched,
-    folder_match.description_matched,
-    FALSE AS tag_name_matched,
-    FALSE AS tag_type_matched,
-    NULL::JSONB AS tag_data
-  FROM folder_match
-  UNION ALL
-  SELECT
-    record_match.archiveid,
-    record_match.item_type,
-    record_match.item_id,
-    record_match.name_matched,
-    record_match.description_matched,
-    FALSE AS tag_name_matched,
-    FALSE AS tag_type_matched,
-    NULL::JSONB AS tag_data
-  FROM record_match
-  UNION ALL
-  SELECT
-    tagged_item_match.archiveid,
-    tagged_item_match.item_type,
-    tagged_item_match.item_id,
-    FALSE AS name_matched,
-    FALSE AS description_matched,
-    tagged_item_match.tag_name_matched,
-    tagged_item_match.tag_type_matched,
-    tagged_item_match.tag_data
-  FROM tagged_item_match
-),
-
-item_match AS (
-  SELECT
-    item_match_part.archiveid,
-    item_match_part.item_type,
-    item_match_part.item_id,
-    BOOL_OR(item_match_part.name_matched) AS name_matched,
-    BOOL_OR(item_match_part.description_matched) AS description_matched,
-    BOOL_OR(item_match_part.tag_name_matched) AS tag_name_matched,
-    BOOL_OR(item_match_part.tag_type_matched) AS tag_type_matched,
-    JSONB_AGG(
-      item_match_part.tag_data
-      ORDER BY (item_match_part.tag_data ->> 'id')::BIGINT
-    ) FILTER (WHERE item_match_part.tag_data IS NOT NULL) AS matched_tags
-  FROM item_match_part
+    search_hit.archiveid,
+    search_hit.match_kind,
+    search_hit.match_id,
+    search_hit.word,
+    search_hit.word_position,
+    BOOL_OR(search_hit.exact) AS exact
+  FROM search_hit
   GROUP BY
-    item_match_part.archiveid,
-    item_match_part.item_type,
-    item_match_part.item_id
+    search_hit.archiveid,
+    search_hit.match_kind,
+    search_hit.match_id,
+    search_hit.word,
+    search_hit.word_position
+),
+
+word_summary AS (
+  SELECT
+    word_hit.archiveid,
+    word_hit.match_kind,
+    word_hit.match_id,
+    ARRAY_AGG(word_hit.word ORDER BY word_hit.word_position) AS matched_words,
+    COUNT(*)::INT AS matched_word_count,
+    (COUNT(*) FILTER (WHERE word_hit.exact))::INT AS exact_word_count
+  FROM word_hit
+  GROUP BY
+    word_hit.archiveid,
+    word_hit.match_kind,
+    word_hit.match_id
+),
+
+field_summary AS (
+  SELECT
+    search_hit.archiveid,
+    search_hit.match_kind,
+    search_hit.match_id,
+    BOOL_OR(search_hit.field = 'name') AS name_matched,
+    BOOL_OR(search_hit.field = 'title') AS title_matched,
+    BOOL_OR(search_hit.field = 'description') AS description_matched,
+    BOOL_OR(search_hit.field = 'tagName') AS tag_name_matched,
+    BOOL_OR(search_hit.field = 'tagType') AS tag_type_matched
+  FROM search_hit
+  GROUP BY
+    search_hit.archiveid,
+    search_hit.match_kind,
+    search_hit.match_id
+),
+
+matched_tag AS (
+  SELECT DISTINCT
+    search_hit.archiveid,
+    search_hit.match_kind,
+    search_hit.match_id,
+    search_hit.tag_id
+  FROM search_hit
+  WHERE search_hit.tag_id IS NOT NULL
+),
+
+tag_summary AS (
+  SELECT
+    matched_tag.archiveid,
+    matched_tag.match_kind,
+    matched_tag.match_id,
+    JSONB_AGG(
+      JSONB_BUILD_OBJECT(
+        'id', tag.tagid::TEXT,
+        'name', tag.name,
+        'type', tag.type
+      )
+      ORDER BY tag.tagid
+    ) AS matched_tags
+  FROM
+    matched_tag
+  INNER JOIN
+    tag
+    ON matched_tag.tag_id = tag.tagid
+  GROUP BY
+    matched_tag.archiveid,
+    matched_tag.match_kind,
+    matched_tag.match_id
+),
+
+match_summary AS (
+  SELECT
+    word_summary.archiveid,
+    word_summary.match_kind,
+    word_summary.match_id,
+    word_summary.matched_words,
+    word_summary.matched_word_count,
+    word_summary.exact_word_count,
+    field_summary.name_matched,
+    field_summary.title_matched,
+    field_summary.description_matched,
+    field_summary.tag_name_matched,
+    field_summary.tag_type_matched,
+    field_summary.name_matched::INT
+    + field_summary.title_matched::INT
+    + field_summary.description_matched::INT
+    + field_summary.tag_name_matched::INT
+    + field_summary.tag_type_matched::INT AS matched_field_count,
+    tag_summary.matched_tags
+  FROM
+    word_summary
+  INNER JOIN
+    field_summary
+    ON
+      word_summary.archiveid = field_summary.archiveid
+      AND word_summary.match_kind = field_summary.match_kind
+      AND word_summary.match_id = field_summary.match_id
+  LEFT JOIN
+    tag_summary
+    ON
+      word_summary.archiveid = tag_summary.archiveid
+      AND word_summary.match_kind = tag_summary.match_kind
+      AND word_summary.match_id = tag_summary.match_id
 ),
 
 search_match AS (
   SELECT
-    archive_name_match.archiveid,
-    0 AS match_group,
-    1 AS matched_field_count,
-    '' AS sort_name,
-    '' AS sort_type,
-    0::BIGINT AS sort_id,
-    JSONB_BUILD_OBJECT('matchType', 'archiveName') AS match_data
-  FROM archive_name_match
-  UNION ALL
-  SELECT
-    milestone_match.archiveid,
-    1 AS match_group,
-    milestone_match.title_matched::INT
-    + milestone_match.description_matched::INT AS matched_field_count,
-    COALESCE(milestone_match.title, '') AS sort_name,
-    '' AS sort_type,
-    milestone_match.profile_itemid AS sort_id,
-    JSONB_BUILD_OBJECT(
-      'matchType', 'milestone',
-      'matchedFields', TO_JSONB(ARRAY_REMOVE(ARRAY[
-        CASE WHEN milestone_match.title_matched THEN 'title' END,
-        CASE WHEN milestone_match.description_matched THEN 'description' END
-      ], NULL)),
-      'milestone', JSONB_BUILD_OBJECT(
-        'id', milestone_match.profile_itemid::TEXT,
-        'title', milestone_match.title,
-        'description', milestone_match.description,
-        'date', milestone_match.day1::TEXT
-      )
-    ) AS match_data
-  FROM milestone_match
-  UNION ALL
-  SELECT
-    item_match.archiveid,
-    2 AS match_group,
-    item_match.name_matched::INT
-    + item_match.description_matched::INT
-    + item_match.tag_name_matched::INT
-    + item_match.tag_type_matched::INT AS matched_field_count,
-    COALESCE(item_record.displayname, item_folder.displayname, '')
-      AS sort_name,
-    item_match.item_type AS sort_type,
-    item_match.item_id AS sort_id,
-    JSONB_BUILD_OBJECT(
-      'matchType', 'item',
-      'matchedFields', TO_JSONB(ARRAY_REMOVE(ARRAY[
-        CASE WHEN item_match.name_matched THEN 'name' END,
-        CASE WHEN item_match.description_matched THEN 'description' END,
-        CASE WHEN item_match.tag_name_matched THEN 'tagName' END,
-        CASE WHEN item_match.tag_type_matched THEN 'tagType' END
-      ], NULL)),
-      'item', JSONB_BUILD_OBJECT(
-        'id', item_match.item_id::TEXT,
-        'itemType', item_match.item_type,
-        'displayName',
-        COALESCE(item_record.displayname, item_folder.displayname),
-        'displayTime',
-        COALESCE(item_record.displaytime, item_folder.displaytime),
-        'thumbnailUrls', JSONB_BUILD_OBJECT(
-          'width200',
-          COALESCE(item_record.thumburl200, item_folder.thumburl200),
-          'width256',
-          COALESCE(item_record.thumbnail256, item_folder.thumbnail256),
-          'width500',
-          COALESCE(item_record.thumburl500, item_folder.thumburl500),
-          'width1000',
-          COALESCE(item_record.thumburl1000, item_folder.thumburl1000),
-          'width2000',
-          COALESCE(item_record.thumburl2000, item_folder.thumburl2000)
+    match_summary.archiveid,
+    match_summary.matched_word_count,
+    match_summary.exact_word_count,
+    match_summary.matched_field_count,
+    CASE match_summary.match_kind
+      WHEN 'archiveName' THEN 0
+      WHEN 'milestone' THEN 1
+      ELSE 2
+    END AS match_group,
+    COALESCE(
+      milestone.string1, item_record.displayname, item_folder.displayname, ''
+    ) AS sort_name,
+    match_summary.match_kind AS sort_type,
+    match_summary.match_id AS sort_id,
+    CASE match_summary.match_kind
+      WHEN 'archiveName'
+        THEN
+          JSONB_BUILD_OBJECT(
+            'matchType', 'archiveName',
+            'matchedWords', TO_JSONB(match_summary.matched_words)
+          )
+      WHEN 'milestone'
+        THEN
+          JSONB_BUILD_OBJECT(
+            'matchType', 'milestone',
+            'matchedFields', TO_JSONB(ARRAY_REMOVE(ARRAY[
+              CASE WHEN match_summary.title_matched THEN 'title' END,
+              CASE
+                WHEN match_summary.description_matched THEN 'description'
+              END
+            ], NULL)),
+            'matchedWords', TO_JSONB(match_summary.matched_words),
+            'milestone', JSONB_BUILD_OBJECT(
+              'id', milestone.profile_itemid::TEXT,
+              'title', milestone.string1,
+              'description', milestone.string2,
+              'date', milestone.day1::TEXT
+            )
+          )
+      ELSE
+        JSONB_BUILD_OBJECT(
+          'matchType', 'item',
+          'matchedFields', TO_JSONB(ARRAY_REMOVE(ARRAY[
+            CASE WHEN match_summary.name_matched THEN 'name' END,
+            CASE
+              WHEN match_summary.description_matched THEN 'description'
+            END,
+            CASE WHEN match_summary.tag_name_matched THEN 'tagName' END,
+            CASE WHEN match_summary.tag_type_matched THEN 'tagType' END
+          ], NULL)),
+          'matchedWords', TO_JSONB(match_summary.matched_words),
+          'item', JSONB_BUILD_OBJECT(
+            'id', match_summary.match_id::TEXT,
+            'itemType', match_summary.match_kind,
+            'displayName',
+            COALESCE(item_record.displayname, item_folder.displayname),
+            'displayTime',
+            COALESCE(item_record.displaytime, item_folder.displaytime),
+            'thumbnailUrls', JSONB_BUILD_OBJECT(
+              'width200',
+              COALESCE(item_record.thumburl200, item_folder.thumburl200),
+              'width256',
+              COALESCE(item_record.thumbnail256, item_folder.thumbnail256),
+              'width500',
+              COALESCE(item_record.thumburl500, item_folder.thumburl500),
+              'width1000',
+              COALESCE(item_record.thumburl1000, item_folder.thumburl1000),
+              'width2000',
+              COALESCE(item_record.thumburl2000, item_folder.thumburl2000)
+            )
+          )
         )
-      )
-    )
-    || CASE
-      WHEN item_match.matched_tags IS NULL THEN '{}'::JSONB
-      ELSE JSONB_BUILD_OBJECT('matchedTags', item_match.matched_tags)
+        || CASE
+          WHEN match_summary.matched_tags IS NULL THEN '{}'::JSONB
+          ELSE JSONB_BUILD_OBJECT('matchedTags', match_summary.matched_tags)
+        END
     END AS match_data
   FROM
-    item_match
+    match_summary
+  LEFT JOIN
+    profile_item AS milestone
+    ON
+      match_summary.match_kind = 'milestone'
+      AND match_summary.match_id = milestone.profile_itemid
   LEFT JOIN
     folder AS item_folder
     ON
-      item_match.item_type = 'folder'
-      AND item_match.item_id = item_folder.folderid
+      match_summary.match_kind = 'folder'
+      AND match_summary.match_id = item_folder.folderid
   LEFT JOIN
     record AS item_record
     ON
-      item_match.item_type = 'record'
-      AND item_match.item_id = item_record.recordid
+      match_summary.match_kind = 'record'
+      AND match_summary.match_id = item_record.recordid
 ),
 
 ranked_match AS (
   SELECT
     search_match.archiveid,
     search_match.match_data,
+    search_match.match_group,
+    search_match.matched_word_count,
     ROW_NUMBER() OVER (
       PARTITION BY search_match.archiveid
       ORDER BY
+        search_match.matched_word_count DESC,
+        search_match.exact_word_count DESC,
         search_match.match_group ASC,
         search_match.matched_field_count DESC,
         search_match.sort_name ASC,
@@ -406,8 +580,8 @@ archive_result AS (
   SELECT
     ranked_match.archiveid,
     COUNT(*)::INT AS total_match_count,
-    BOOL_OR(ranked_match.match_data ->> 'matchType' = 'archiveName')
-      AS name_matched,
+    MAX(ranked_match.matched_word_count) AS best_word_count,
+    BOOL_OR(ranked_match.match_group = 0) AS name_matched,
     JSONB_AGG(ranked_match.match_data ORDER BY ranked_match.match_rank)
       FILTER (WHERE ranked_match.match_rank <= :maxMatchesPerArchive)
       AS matches
@@ -427,6 +601,7 @@ ranked_archive AS (
     archive_result.matches,
     ROW_NUMBER() OVER (
       ORDER BY
+        archive_result.best_word_count DESC,
         archive_result.name_matched DESC,
         archive_result.total_match_count DESC,
         public_archive.name ASC,

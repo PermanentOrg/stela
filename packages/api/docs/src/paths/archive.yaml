@@ -108,11 +108,18 @@ archives-public-search:
         The text to search for. Leading and trailing whitespace is trimmed, and the trimmed
         value must be between 3 and 100 characters long.
 
-        The query is split into words, and a field matches when every query word matches
-        the start of some word in that field, in any order and regardless of case. For
-        example, `smi fam` matches "The Smith Family". Punctuation and search operators in
-        the query have no special meaning. A query that contains no words (for example,
-        only punctuation) returns no results.
+        The query is split into words. A field matches a query word when some word in the
+        field starts with it, regardless of case; for example, `smi` matches "The Smith
+        Family". Record and folder names also match close misspellings of a query word, so
+        `harriett` matches "Portrait of Harriet".
+
+        A match needs only one of the query's words. Matches that contain more of the
+        query's words are ranked first, and exact matches rank above misspellings; each
+        match reports the words it matched in `matchedWords`.
+
+        Words shorter than 3 characters are ignored when the query also contains a longer
+        word. Punctuation and search operators in the query have no special meaning. A
+        query that contains no words (for example, only punctuation) returns no results.
       schema:
         type: string
         minLength: 3
@@ -147,6 +154,9 @@ archives-public-search:
         excluding the archive's root folders
       - the names of tags on public folders and records in the archive, and, for
         custom metadata tags (type `type.tag.metadata.<field>`), the `<field>` name
+
+      Archives are ordered by their best match (the most query words matched), then by
+      whether their name matched, then by their number of matches.
 
       Only public, non-deleted archives are searched. Within them, only public,
       non-deleted folders, records, milestones and tags are considered. Private content

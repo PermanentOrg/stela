@@ -136,17 +136,20 @@ export interface Milestone {
 
 export interface ArchiveNameMatch {
 	matchType: "archiveName";
+	matchedWords: string[];
 }
 
 export interface MilestoneMatch {
 	matchType: "milestone";
 	matchedFields: Array<"title" | "description">;
+	matchedWords: string[];
 	milestone: Milestone;
 }
 
 export interface ItemMatch {
 	matchType: "item";
 	matchedFields: Array<"name" | "description" | "tagName" | "tagType">;
+	matchedWords: string[];
 	item: ItemSummary;
 	matchedTags?: TagSummary[];
 }

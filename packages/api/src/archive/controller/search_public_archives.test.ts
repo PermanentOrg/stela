@@ -95,10 +95,11 @@ describe("GET /archives/public/search", () => {
 				},
 				totalMatchCount: 3,
 				matches: [
-					{ matchType: "archiveName" },
+					{ matchType: "archiveName", matchedWords: ["harriet"] },
 					{
 						matchType: "item",
 						matchedFields: ["description"],
+						matchedWords: ["harriet"],
 						item: {
 							id: "402",
 							itemType: "record",
@@ -110,6 +111,7 @@ describe("GET /archives/public/search", () => {
 					{
 						matchType: "item",
 						matchedFields: ["name"],
+						matchedWords: ["harriet"],
 						item: {
 							id: "401",
 							itemType: "record",
@@ -136,6 +138,7 @@ describe("GET /archives/public/search", () => {
 					{
 						matchType: "milestone",
 						matchedFields: ["title"],
+						matchedWords: ["harriet"],
 						milestone: {
 							id: "201",
 							title: "Founded by Harriet Jones",
@@ -146,6 +149,7 @@ describe("GET /archives/public/search", () => {
 					{
 						matchType: "item",
 						matchedFields: ["tagName"],
+						matchedWords: ["harriet"],
 						item: {
 							id: "404",
 							itemType: "record",
@@ -194,8 +198,88 @@ describe("GET /archives/public/search", () => {
 	test("should match word prefixes in any order", async () => {
 		const response = await search({ query: "tub harr", pageSize: "10" });
 
-		expect(archiveIds(response)).toEqual(["101"]);
-		expect(response.items[0]?.matches).toEqual([{ matchType: "archiveName" }]);
+		expect(archiveIds(response)).toEqual(["101", "102"]);
+		expect(response.items[0]?.matches[0]).toEqual({
+			matchType: "archiveName",
+			matchedWords: ["tub", "harr"],
+		});
+	});
+
+	test("should return matches for only some of the query's words", async () => {
+		const plain = await search({ query: "harriet", pageSize: "10" });
+		const partial = await search({ query: "harriet zebra", pageSize: "10" });
+
+		expect(partial.items).toEqual(plain.items);
+	});
+
+	test("should rank matches with more of the query's words first", async () => {
+		const { items } = await search({
+			query: "portrait harriet",
+			pageSize: "10",
+		});
+
+		expect(items[0]?.archive.id).toEqual("101");
+		expect(items[0]?.matches).toEqual([
+			expect.objectContaining({
+				matchType: "item",
+				matchedWords: ["portrait", "harriet"],
+				item: expect.objectContaining({ id: "401" }),
+			}),
+			{ matchType: "archiveName", matchedWords: ["harriet"] },
+			expect.objectContaining({
+				matchType: "item",
+				matchedWords: ["harriet"],
+				item: expect.objectContaining({ id: "402" }),
+			}),
+		]);
+	});
+
+	test("should ignore short words when the query has longer ones", async () => {
+		const plain = await search({ query: "harriet", pageSize: "10" });
+		const withShortWord = await search({ query: "of harriet", pageSize: "10" });
+
+		expect(withShortWord.items).toEqual(plain.items);
+	});
+
+	test("should use short words when the query has no longer ones", async () => {
+		const response = await search({ query: "of by", pageSize: "10" });
+
+		expect(archiveIds(response)).toEqual(["101", "102"]);
+		expect(response.items[0]?.matches).toEqual([
+			expect.objectContaining({
+				matchedWords: ["by"],
+				item: expect.objectContaining({ id: "402" }),
+			}),
+			expect.objectContaining({
+				matchedWords: ["of"],
+				item: expect.objectContaining({ id: "401" }),
+			}),
+		]);
+	});
+
+	test("should match misspellings of record and folder names only", async () => {
+		const { items } = await search({ query: "harriett", pageSize: "10" });
+
+		expect(items).toEqual([
+			expect.objectContaining({
+				archive: expect.objectContaining({ id: "101" }),
+				totalMatchCount: 1,
+				matches: [
+					{
+						matchType: "item",
+						matchedFields: ["name"],
+						matchedWords: ["harriett"],
+						item: {
+							id: "401",
+							itemType: "record",
+							displayName: "Portrait of Harriet",
+							displayTime: null,
+							thumbnailUrls: nullItemThumbnails,
+						},
+					},
+				],
+			}),
+		]);
 	});
 
 	test("should match folder names", async () => {
@@ -208,6 +292,7 @@ describe("GET /archives/public/search", () => {
 			{
 				matchType: "item",
 				matchedFields: ["name"],
+				matchedWords: ["railroad", "underground"],
 				item: {
 					id: "301",
 					itemType: "folder",
@@ -226,6 +311,7 @@ describe("GET /archives/public/search", () => {
 			{
 				matchType: "milestone",
 				matchedFields: ["description"],
+				matchedWords: ["araminta"],
 				milestone: {
 					id: "205",
 					title: "Early life",

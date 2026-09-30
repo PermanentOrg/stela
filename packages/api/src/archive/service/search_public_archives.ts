@@ -7,6 +7,8 @@ import type {
 } from "../models.js";
 
 const MAXIMUM_MATCHES_PER_ARCHIVE = 10;
+// Shorter query words are ignored unless every word in the query is shorter.
+const MINIMUM_SEARCH_WORD_LENGTH = 3;
 
 interface PublicArchiveSearchRow extends PublicArchiveSearchResult {
 	archiveId: string;
@@ -46,6 +48,7 @@ export const searchPublicArchives = async (
 			pageSize: pagination.pageSize,
 			cursor: pagination.cursor,
 			maxMatchesPerArchive: MAXIMUM_MATCHES_PER_ARCHIVE,
+			minimumWordLength: MINIMUM_SEARCH_WORD_LENGTH,
 		})
 		.catch((err: unknown) => {
 			logger.error(err);
