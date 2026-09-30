@@ -52,7 +52,8 @@ WITH all_children AS (
             WHERE folder.folderid = :parentFolderId
           ) = 'sort.type_desc'
             THEN type
-        END) DESC
+        END) DESC,
+        folder_linkid ASC
     ) AS rank
   FROM (
     SELECT
