@@ -69,22 +69,36 @@ archives:
         $ref: "../errors.yaml#/500"
   post:
     summary: Create an archive
+    description: |
+      This endpoint is not compatible with the legacy POST /account/post endpoint; that endpoint expects
+      the archive creation endpoint to handle storage rewards for accepted invitations, while this one
+      expects the account creation endpoint to do that. Therefore this endpoint should not be used until
+      clients have migrated to the v2 POST /accounts endpoint for account creation.
     security:
       - bearerHttpAuthentication: []
     tags:
       - archives
-      - unimplemented
     operationId: post-archives
     requestBody:
+      required: true
       content:
         application/json:
           schema:
             type: object
+            required:
+              - name
             properties:
               name:
                 type: string
               type:
-                $ref: "../models/archive_type.yaml#/archiveType"
+                description: >-
+                  Defaults to `person` if omitted.
+                type: string
+                default: person
+                enum:
+                  - person
+                  - group
+                  - organization
     responses:
       "200":
         description: The created archive
@@ -97,6 +111,8 @@ archives:
                   $ref: "../models/archive.yaml#/archive"
       "400":
         $ref: "../errors.yaml#/400"
+      "401":
+        $ref: "../errors.yaml#/401"
       "500":
         $ref: "../errors.yaml#/500"
 archives/{id}:
