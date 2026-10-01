@@ -52,7 +52,7 @@
 		"joi": "^18.2.8",
 		"memoizee": "^0.4.17",
 		"newrelic": "^14.1.0",
-		"pg": "^8.21.0",
+		"pg": "^8.23.0",
 		"require-env-variable": "^4.0.2",
 		"stripe": "^22.5.0",
 		"tinypg": "^7.0.1",

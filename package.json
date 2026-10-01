@@ -55,7 +55,7 @@
 		"@types/http-errors": "^2.0.1",
 		"@types/mailchimp__mailchimp_transactional": "1.0.11",
 		"@types/node": "^24.10.1",
-		"@types/pg": "^8.20.0",
+		"@types/pg": "^8.23.1",
 		"@types/supertest": "^7.2.1",
 		"eslint": "^9.39.5",
 		"eslint-config-love": "154.1.0",
