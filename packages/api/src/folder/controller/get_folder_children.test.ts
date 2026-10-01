@@ -467,7 +467,7 @@ describe("GET /folder/{id}/children", () => {
 
 	test("should include pagination data in response", async () => {
 		const response = await agent
-			.get("/api/v2/folders/10/children?pageSize=1")
+			.get("/api/v2/folders/10/children?pageSize=2")
 			.expect(200);
 		const {
 			body: { pagination: paginationData },
@@ -480,11 +480,11 @@ describe("GET /folder/{id}/children", () => {
 				};
 			};
 		};
-		expect(paginationData.nextCursor).toEqual("1");
+		expect(paginationData.nextCursor).toEqual("11");
 		expect(paginationData.nextPage).toEqual(
 			`https://${
 				process.env["SITE_URL"] ?? ""
-			}/api/v2/folders/10/children?pageSize=1&cursor=1`,
+			}/api/v2/folders/10/children?pageSize=2&cursor=11`,
 		);
 		expect(paginationData.totalPages).toEqual(2);
 	});
