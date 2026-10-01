@@ -69,7 +69,7 @@
 		"tslint-tinypg": "^2.0.2",
 		"typescript": "^5.9.3",
 		"typescript-cp": "^0.1.11",
-		"typescript-eslint": "^8.68.0",
+		"typescript-eslint": "^8.70.1",
 		"vitest-mock-extended": "^5.1.1"
 	},
 	"type": "module"
