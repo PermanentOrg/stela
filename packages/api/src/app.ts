@@ -1,5 +1,4 @@
 import "./instrument.js";
-import * as Sentry from "@sentry/node";
 import express from "express";
 import cors from "cors";
 import expressWinston from "express-winston";
@@ -39,7 +38,6 @@ app.use((req, _res, next) => {
 
 app.use("/api/v2", apiRoutes);
 app.use(handleValidationError);
-Sentry.setupExpressErrorHandler(app);
 app.use(handleError);
 
 export { app };
