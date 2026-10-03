@@ -166,4 +166,16 @@ VALUES
   'access.role.owner',
   'status.generic.ok',
   'type.folder_link.private'
+),
+(
+  14,
+  9,
+  NULL,
+  10,
+  10,
+  1,
+  1,
+  'access.role.owner',
+  'status.generic.ok',
+  'type.folder_link.private'
 );
