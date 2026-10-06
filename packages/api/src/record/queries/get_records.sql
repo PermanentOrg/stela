@@ -220,8 +220,11 @@ all_records AS (
         EXISTS (
           SELECT 1 FROM UNNEST(aggregated_files.files) AS files
           WHERE
-            files ->> 'format' = 'file.format.archivematica.access'
-            AND files ->> 'type' != 'type.file.unknown.null'
+            (
+              files ->> 'format' = 'file.format.archivematica.access'
+              AND files ->> 'type' != 'type.file.unknown.null'
+            )
+            OR files ->> 'format' = 'file.format.converted'
         )
         THEN 'ok'
       WHEN
@@ -371,6 +374,7 @@ all_records AS (
           )
           AND record.createddt > CURRENT_TIMESTAMP - '1 day'::INTERVAL
           THEN 'processing'
+        WHEN record.thumburl500 IS NOT NULL THEN NULL
         WHEN
           EXISTS (
             SELECT 1 FROM UNNEST(aggregated_files.files) AS files

@@ -462,7 +462,6 @@ describe("GET /records accessCopyStatus and thumbnailUrls.width256Status", () =>
 			.expect(200);
 		const { body } = response as { body: GetRecordsResponse };
 		expect(body.items).toHaveLength(1);
-		expect(body.items[0]?.accessCopyStatus).toBeNull();
 		expect(body.items[0]?.thumbnailUrls).toEqual({
 			width256Status: Thumbnail256Status.Ok,
 			"200": "https://localcdn.permanent.org/20004/thumb200.jpg",
@@ -492,6 +491,16 @@ describe("GET /records accessCopyStatus and thumbnailUrls.width256Status", () =>
 		expect(body.items[0]?.accessCopyStatus).toEqual(
 			AccessCopyStatus.Processing,
 		);
+		expect(body.items[0]?.thumbnailUrls.width256Status).toBeNull();
+	});
+
+	test("expect accessCopyStatus to be ok and thumbnailUrls.width256Status to be null for old file that hasn't been processed by Archivematica", async () => {
+		const response = await agent
+			.get("/api/v2/records?recordIds[]=20007&pageSize=100")
+			.expect(200);
+		const { body } = response as { body: GetRecordsResponse };
+		expect(body.items).toHaveLength(1);
+		expect(body.items[0]?.accessCopyStatus).toEqual(AccessCopyStatus.Ok);
 		expect(body.items[0]?.thumbnailUrls.width256Status).toBeNull();
 	});
 });

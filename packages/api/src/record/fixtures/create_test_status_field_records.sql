@@ -132,4 +132,23 @@ VALUES
   NULL,
   NULL,
   NULL
+),
+(
+  20007,
+  100,
+  NULL,
+  NULL,
+  'File from before Archivematica was used',
+  2,
+  2,
+  'video.mp4',
+  'video.mp4',
+  'status.generic.ok',
+  'type.record.video',
+  CURRENT_TIMESTAMP,
+  NULL,
+  NULL,
+  NULL,
+  NULL,
+  NULL
 );
