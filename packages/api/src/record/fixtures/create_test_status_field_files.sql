@@ -82,4 +82,28 @@ VALUES
   'https://localcdn.permanent.org/20006/download',
   '2023-06-21T00:00:00.000Z',
   '2023-06-21T00:00:00.000Z'
+),
+(
+  20007,
+  100,
+  1024,
+  'file.format.original',
+  'type.file.video.mkv',
+  'status.generic.ok',
+  'https://localcdn.permanent.org/20006/file',
+  'https://localcdn.permanent.org/20006/download',
+  '2023-06-21T00:00:00.000Z',
+  '2023-06-21T00:00:00.000Z'
+),
+(
+  20008,
+  100,
+  1024,
+  'file.format.converted',
+  'type.file.video.mp4',
+  'status.generic.ok',
+  'https://localcdn.permanent.org/20006/file',
+  'https://localcdn.permanent.org/20006/download',
+  '2023-06-21T00:00:00.000Z',
+  '2023-06-21T00:00:00.000Z'
 );

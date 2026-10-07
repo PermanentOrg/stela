@@ -82,4 +82,16 @@ VALUES
   'access.role.owner',
   'status.generic.ok',
   'type.folder_link.private'
+),
+(
+  20007,
+  20007,
+  NULL,
+  100,
+  NULL,
+  100,
+  1,
+  'access.role.owner',
+  'status.generic.ok',
+  'type.folder_link.private'
 );
