@@ -36,6 +36,9 @@ updates:
       aws-sdk:
         patterns:
           - "@aws-sdk/*"
+      vitest:
+        patterns:
+          - "*vitest*"
 
   - package-ecosystem: "github-actions"
     directory: ".github/workflows"
