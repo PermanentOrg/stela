@@ -185,6 +185,38 @@ describe("batchPublishMessages", () => {
 			process.env["AWS_ENDPOINT_URL"] = originalEndpoint;
 		}
 	});
+
+	test("should set MessageGroupId only on messages that provide one", async () => {
+		mockSend.mockResolvedValue({ Failed: [] });
+
+		const messages = [
+			{ id: "1", body: "message 1", messageGroupId: "tenant-a" },
+			{ id: "2", body: "message 2" },
+		];
+
+		await publisherClient.batchPublishMessages("topic", messages);
+
+		const {
+			mock: {
+				calls: [firstCallArguments],
+			},
+		} = mockSend as {
+			mock: { calls: Array<Array<{ __input: PublishBatchInput }>> };
+		};
+		expect(firstCallArguments).toBeDefined();
+		if (firstCallArguments !== undefined) {
+			expect(firstCallArguments[0]).toBeDefined();
+			if (firstCallArguments[0] !== undefined) {
+				expect(firstCallArguments[0].__input).toEqual({
+					TopicArn: "topic",
+					PublishBatchRequestEntries: [
+						{ Id: "1", Message: "message 1", MessageGroupId: "tenant-a" },
+						{ Id: "2", Message: "message 2" },
+					],
+				});
+			}
+		}
+	});
 });
 
 describe("publishMessage", () => {
