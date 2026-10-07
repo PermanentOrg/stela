@@ -1,0 +1,159 @@
+INSERT INTO invite (
+  inviteid,
+  email,
+  byarchiveid,
+  byaccountid,
+  token,
+  status,
+  type,
+  createddt,
+  updateddt
+) VALUES
+(
+  1,
+  'newaccount@permanent.org',
+  1,
+  1,
+  'token-1',
+  'status.invite.pending',
+  'type.invite.share',
+  CURRENT_TIMESTAMP,
+  CURRENT_TIMESTAMP
+),
+(
+  2,
+  'newaccount@permanent.org',
+  1,
+  1,
+  'token-2',
+  'status.invite.revoked',
+  'type.invite.share',
+  CURRENT_TIMESTAMP,
+  CURRENT_TIMESTAMP
+),
+(
+  3,
+  'nullfields@permanent.org',
+  1,
+  1,
+  'token-3',
+  'status.invite.pending',
+  'type.invite.share',
+  CURRENT_TIMESTAMP,
+  CURRENT_TIMESTAMP
+),
+(
+  4,
+  'recordshare@permanent.org',
+  1,
+  1,
+  'token-4',
+  'status.invite.pending',
+  'type.invite.share',
+  CURRENT_TIMESTAMP,
+  CURRENT_TIMESTAMP
+),
+(
+  5,
+  'newaccount@permanent.org',
+  1,
+  1,
+  'token-5',
+  'status.invite.pending',
+  'type.invite.invite_early_access',
+  CURRENT_TIMESTAMP,
+  CURRENT_TIMESTAMP
+),
+(
+  6,
+  'MixedCase@Permanent.org',
+  1,
+  1,
+  'token-6',
+  'status.invite.pending',
+  'type.invite.share',
+  CURRENT_TIMESTAMP,
+  CURRENT_TIMESTAMP
+),
+(
+  7,
+  'newaccount@permanent.org',
+  1,
+  1,
+  'token-7',
+  'status.invite.pending',
+  'type.invite.share',
+  CURRENT_TIMESTAMP,
+  CURRENT_TIMESTAMP
+);
+
+INSERT INTO invite_share (
+  invite_shareid,
+  inviteid,
+  folder_linkid,
+  accessrole,
+  status,
+  type,
+  createddt,
+  updateddt
+) VALUES
+(
+  1,
+  1,
+  1,
+  'access.role.viewer',
+  'status.invite.pending',
+  'type.invite.share',
+  CURRENT_TIMESTAMP,
+  CURRENT_TIMESTAMP
+),
+(
+  2,
+  2,
+  1,
+  'access.role.editor',
+  'status.invite.pending',
+  'type.invite.share',
+  CURRENT_TIMESTAMP,
+  CURRENT_TIMESTAMP
+),
+(
+  3,
+  3,
+  NULL,
+  NULL,
+  'status.invite.pending',
+  'type.invite.share',
+  CURRENT_TIMESTAMP,
+  CURRENT_TIMESTAMP
+),
+(
+  4,
+  4,
+  3,
+  'access.role.viewer',
+  'status.invite.pending',
+  'type.invite.share',
+  CURRENT_TIMESTAMP,
+  CURRENT_TIMESTAMP
+),
+(
+  5,
+  6,
+  1,
+  'access.role.bogus',
+  'status.invite.pending',
+  'type.invite.share',
+  CURRENT_TIMESTAMP,
+  CURRENT_TIMESTAMP
+),
+(
+  6,
+  7,
+  1,
+  'access.role.editor',
+  'status.invite.pending',
+  'type.invite.share',
+  CURRENT_TIMESTAMP,
+  CURRENT_TIMESTAMP
+);

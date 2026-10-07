@@ -14,6 +14,7 @@ import {
 	sendInvitationNotification,
 	sendGiftNotification,
 	sendEmail,
+	sendShareInvitationAcceptanceNotification,
 } from "./service.js";
 import { MailchimpTransactional } from "../mailchimp.js";
 import { db } from "../database.js";
@@ -475,5 +476,108 @@ describe("sendGiftNotification", () => {
 		);
 
 		expect(MailchimpTransactional.messages.sendTemplate).not.toHaveBeenCalled();
+	});
+});
+
+describe("sendShareInvitationAcceptanceNotification", () => {
+	afterEach(async () => {
+		await db.query(
+			"TRUNCATE account, archive, account_archive, profile_item, folder, folder_link, invite, invite_share CASCADE",
+		);
+		vi.clearAllMocks();
+	});
+
+	test("should send the acceptance email to the original inviter", async () => {
+		await runFixtures(db, [
+			"email.fixtures.create_test_share_invitation_acceptance",
+		]);
+		const mockResponse: MessagesSendSuccessResponse[] = [
+			{
+				status: "sent",
+				_id: "test",
+				email: "inviter@permanent.org",
+				reject_reason: null,
+			},
+		];
+		vi.mocked(MailchimpTransactional.messages.sendTemplate).mockResolvedValue(
+			mockResponse,
+		);
+
+		await sendShareInvitationAcceptanceNotification(["1"]);
+
+		expect(MailchimpTransactional.messages.sendTemplate).toHaveBeenCalledTimes(
+			1,
+		);
+		expect(MailchimpTransactional.messages.sendTemplate).toHaveBeenCalledWith(
+			expect.objectContaining({
+				template_name: "share-invitation-acceptance",
+				message: expect.objectContaining({
+					to: [{ email: "inviter@permanent.org", name: "Inviter Fullname" }],
+					global_merge_vars: expect.arrayContaining([
+						{ name: "to_fullname", content: "Inviter Fullname" },
+						{ name: "from_fullname", content: "New Account Fullname" },
+						{ name: "share_name", content: "Shared Folder" },
+						{ name: "access_role", content: "viewer" },
+					]) as unknown,
+				}) as unknown,
+			}),
+		);
+	});
+
+	test("should do nothing if there is no accepted share invite for the email", async () => {
+		await sendShareInvitationAcceptanceNotification([]);
+		expect(MailchimpTransactional.messages.sendTemplate).not.toHaveBeenCalled();
+	});
+
+	test("should send one email per accepted share invite when multiple exist", async () => {
+		await runFixtures(db, [
+			"email.fixtures.create_test_share_invitation_acceptance",
+		]);
+		const mockResponse: MessagesSendSuccessResponse[] = [
+			{
+				status: "sent",
+				_id: "test",
+				email: "someone@permanent.org",
+				reject_reason: null,
+			},
+		];
+		vi.mocked(MailchimpTransactional.messages.sendTemplate).mockResolvedValue(
+			mockResponse,
+		);
+
+		await sendShareInvitationAcceptanceNotification(["1", "2"]);
+
+		expect(MailchimpTransactional.messages.sendTemplate).toHaveBeenCalledTimes(
+			2,
+		);
+		expect(MailchimpTransactional.messages.sendTemplate).toHaveBeenCalledWith(
+			expect.objectContaining({
+				template_name: "share-invitation-acceptance",
+				message: expect.objectContaining({
+					to: [{ email: "inviter@permanent.org", name: "Inviter Fullname" }],
+					global_merge_vars: expect.arrayContaining([
+						{ name: "share_name", content: "Shared Folder" },
+						{ name: "access_role", content: "viewer" },
+					]) as unknown,
+				}) as unknown,
+			}),
+		);
+		expect(MailchimpTransactional.messages.sendTemplate).toHaveBeenCalledWith(
+			expect.objectContaining({
+				template_name: "share-invitation-acceptance",
+				message: expect.objectContaining({
+					to: [
+						{
+							email: "secondinviter@permanent.org",
+							name: "Second Inviter Fullname",
+						},
+					],
+					global_merge_vars: expect.arrayContaining([
+						{ name: "share_name", content: "Second Shared Folder" },
+						{ name: "access_role", content: "editor" },
+					]) as unknown,
+				}) as unknown,
+			}),
+		);
 	});
 });
