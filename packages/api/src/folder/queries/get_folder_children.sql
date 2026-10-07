@@ -103,7 +103,7 @@ cursor AS (
 ),
 
 total_pages AS (
-  SELECT CEILING(COUNT(*) / :pageSize) AS total_pages
+  SELECT CEILING(COUNT(*)::FLOAT / :pageSize) AS total_pages
   FROM all_children
 )
 
