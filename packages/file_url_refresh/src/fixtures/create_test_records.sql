@@ -31,7 +31,7 @@ VALUES
   1024,
   2,
   'public_file.png',
-  'public_file.png',
+  'Renamed File.png',
   'status.generic.ok',
   'type.record.image',
   'https://testcdn.permanent.org/0001-0001.thumb.w200?Expires=1757200649&Policy=test-policy&Signature=test-signature&Key-Pair-Id=test-key-pair',
