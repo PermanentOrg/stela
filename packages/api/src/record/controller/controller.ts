@@ -25,9 +25,10 @@ import {
 	validateCreateRecordCopyRequest,
 } from "../validators.js";
 import {
-	validateBodyFromAuthentication,
-	validateOptionalAuthenticationValues,
-} from "../../validators/shared.js";
+	validateClientIp,
+	validateOptionalAuthentication,
+	validateUserAuthentication,
+} from "../../validators/index.js";
 import { HTTP_STATUS } from "@pdc/http-status-codes";
 
 export const recordController = Router();
@@ -38,13 +39,14 @@ recordController.get(
 	extractShareTokenFromHeaders,
 	async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			validateOptionalAuthenticationValues(req.body);
+			const auth = req.metadata?.auth ?? {};
+			validateOptionalAuthentication(auth);
 			validateGetRecordQuery(req.query);
 			const records = await getRecords({
 				recordIds: req.query.recordIds,
 				archiveId: req.query.archiveId,
-				accountEmail: req.body.emailFromAuthToken,
-				shareToken: req.body.shareToken,
+				accountEmail: auth.email,
+				shareToken: auth.shareToken,
 			});
 			res.send(records);
 		} catch (error) {
@@ -59,13 +61,14 @@ recordController.get(
 	extractShareTokenFromHeaders,
 	async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			validateOptionalAuthenticationValues(req.body);
+			const auth = req.metadata?.auth ?? {};
+			validateOptionalAuthentication(auth);
 			validateSingleRecordParams(req.params);
 			const records = await getRecords({
 				recordIds: [req.params.recordId],
 				archiveId: undefined,
-				accountEmail: req.body.emailFromAuthToken,
-				shareToken: req.body.shareToken,
+				accountEmail: auth.email,
+				shareToken: auth.shareToken,
 			});
 			res.send({ data: records[0] });
 		} catch (error) {
@@ -79,13 +82,19 @@ recordController.patch(
 	verifyUserAuthentication,
 	async (req: Request, res: Response, next: NextFunction) => {
 		try {
+			const auth = req.metadata?.auth;
+			validateUserAuthentication(auth);
 			validateSingleRecordParams(req.params);
 			validatePatchRecordRequest(req.body);
-			const recordId = await patchRecord(req.params.recordId, req.body);
+			const recordId = await patchRecord(
+				req.params.recordId,
+				auth.email,
+				req.body,
+			);
 			const record = await getRecords({
 				recordIds: [recordId],
 				archiveId: undefined,
-				accountEmail: req.body.emailFromAuthToken,
+				accountEmail: auth.email,
 			});
 
 			res.status(HTTP_STATUS.SUCCESSFUL.OK).send({ data: record[0] });
@@ -100,10 +109,11 @@ recordController.get(
 	verifyUserAuthentication,
 	async (req: Request, res: Response, next: NextFunction) => {
 		try {
+			const auth = req.metadata?.auth;
+			validateUserAuthentication(auth);
 			validateSingleRecordParams(req.params);
-			validateBodyFromAuthentication(req.body);
 			const shareLinks = await getRecordShareLinks(
-				req.body.emailFromAuthToken,
+				auth.email,
 				req.params.recordId,
 			);
 			res.status(HTTP_STATUS.SUCCESSFUL.OK).send({ items: shareLinks });
@@ -119,13 +129,17 @@ recordController.post(
 	extractIp,
 	async (req: Request, res: Response, next: NextFunction) => {
 		try {
+			const auth = req.metadata?.auth;
+			validateUserAuthentication(auth);
+			const clientIp = req.metadata?.clientIp;
+			validateClientIp(clientIp);
 			validateSingleRecordParams(req.params);
 			validateCreateRecordCopyRequest(req.body);
-			const record = await createRecordCopy(
-				req.params.recordId,
-				req.body,
-				req.headers["user-agent"],
-			);
+			const record = await createRecordCopy(req.params.recordId, req.body, {
+				email: auth.email,
+				ip: clientIp,
+				userAgent: req.headers["user-agent"],
+			});
 			res.status(HTTP_STATUS.SUCCESSFUL.OK).send({ data: record });
 		} catch (err) {
 			next(err);
@@ -141,13 +155,14 @@ recordsController.get(
 	extractShareTokenFromHeaders,
 	async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			validateOptionalAuthenticationValues(req.body);
+			const auth = req.metadata?.auth ?? {};
+			validateOptionalAuthentication(auth);
 			validateGetRecordsPageQuery(req.query);
 			const response = await getRecordsPage({
 				recordIds: req.query.recordIds,
 				archiveId: req.query.archiveId,
-				accountEmail: req.body.emailFromAuthToken,
-				shareToken: req.body.shareToken,
+				accountEmail: auth.email,
+				shareToken: auth.shareToken,
 				pageSize: req.query.pageSize,
 				cursor: req.query.cursor,
 			});

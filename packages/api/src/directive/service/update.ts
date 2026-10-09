@@ -15,13 +15,14 @@ import type {
 
 export const updateDirective = async (
 	directiveId: string,
+	callerEmail: string,
 	requestBody: UpdateDirectiveRequest,
 ): Promise<Directive> => {
 	const accessResult = await db.sql<{ hasAccess: boolean }>(
 		"directive.queries.check_directive_ownership",
 		{
 			directiveId,
-			email: requestBody.emailFromAuthToken,
+			email: callerEmail,
 		},
 	);
 	if (

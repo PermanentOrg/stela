@@ -10,8 +10,6 @@ describe("validatePatchFolderRequest", () => {
 		let error = null;
 		try {
 			validatePatchFolderRequest({
-				emailFromAuthToken: "user@example.com",
-				userSubjectFromAuthToken: "5c3473b6-cf2e-4c55-a80e-8db51d1bc5fd",
 				displayDate: null,
 			});
 		} catch (err) {
@@ -23,9 +21,19 @@ describe("validatePatchFolderRequest", () => {
 	test("should raise an error when all fields are missing", () => {
 		let error = null;
 		try {
+			validatePatchFolderRequest({});
+		} catch (err) {
+			error = err;
+		} finally {
+			expect(error).not.toBeNull();
+		}
+	});
+	test("should raise an error if the body contains authentication fields", () => {
+		let error = null;
+		try {
 			validatePatchFolderRequest({
 				emailFromAuthToken: "user@example.com",
-				userSubjectFromAuthToken: "5c3473b6-cf2e-4c55-a80e-8db51d1bc5fd",
+				displayDate: null,
 			});
 		} catch (err) {
 			error = err;
@@ -37,8 +45,6 @@ describe("validatePatchFolderRequest", () => {
 		let error = null;
 		try {
 			validatePatchFolderRequest({
-				emailFromAuthToken: "user@example.com",
-				userSubjectFromAuthToken: "5c3473b6-cf2e-4c55-a80e-8db51d1bc5fd",
 				displayDate: null,
 			});
 		} catch (err) {
@@ -52,8 +58,6 @@ describe("validatePatchFolderRequest", () => {
 		let error = null;
 		try {
 			validatePatchFolderRequest({
-				emailFromAuthToken: "user@example.com",
-				userSubjectFromAuthToken: "5c3473b6-cf2e-4c55-a80e-8db51d1bc5fd",
 				displayDate: true,
 			});
 		} catch (err) {
@@ -67,8 +71,6 @@ describe("validatePatchFolderRequest", () => {
 		let error = null;
 		try {
 			validatePatchFolderRequest({
-				emailFromAuthToken: "user@example.com",
-				userSubjectFromAuthToken: "5c3473b6-cf2e-4c55-a80e-8db51d1bc5fd",
 				location: {
 					name: "Jean Valjean's House",
 					city: "Paris",
@@ -89,8 +91,6 @@ describe("validatePatchFolderRequest", () => {
 		let error = null;
 		try {
 			validatePatchFolderRequest({
-				emailFromAuthToken: "user@example.com",
-				userSubjectFromAuthToken: "5c3473b6-cf2e-4c55-a80e-8db51d1bc5fd",
 				location: {},
 			});
 		} catch (err) {
@@ -104,8 +104,6 @@ describe("validatePatchFolderRequest", () => {
 		let error = null;
 		try {
 			validatePatchFolderRequest({
-				emailFromAuthToken: "user@example.com",
-				userSubjectFromAuthToken: "5c3473b6-cf2e-4c55-a80e-8db51d1bc5fd",
 				location: { id: "1", name: "Jean Valjean's House" },
 			});
 		} catch (err) {
@@ -119,8 +117,6 @@ describe("validatePatchFolderRequest", () => {
 		let error = null;
 		try {
 			validatePatchFolderRequest({
-				emailFromAuthToken: "user@example.com",
-				userSubjectFromAuthToken: "5c3473b6-cf2e-4c55-a80e-8db51d1bc5fd",
 				location: {
 					streetNumber: "55",
 					streetName: "Rue Plumet",

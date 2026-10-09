@@ -1,11 +1,9 @@
 export interface CreateLegacyContactRequest {
-	emailFromAuthToken: string;
 	email: string;
 	name: string;
 }
 
 export interface UpdateLegacyContactRequest {
-	emailFromAuthToken: string;
 	email?: string;
 	name?: string;
 }

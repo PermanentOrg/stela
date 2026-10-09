@@ -1,15 +1,11 @@
 import { validateRecalculateFolderThumbnailsRequest } from "./validators.js";
 import { describe, expect, test } from "vitest";
 
-const adminSubjectFromAuthToken = "fcb2b59b-df07-4e79-ad20-bf7f067a965e";
-
 describe("validateRecalculateFolderThumbnailsRequest", () => {
 	test("should not error if the request is valid", () => {
 		let error = null;
 		try {
 			validateRecalculateFolderThumbnailsRequest({
-				emailFromAuthToken: "test@permanent.org",
-				adminSubjectFromAuthToken,
 				beginTimestamp: "2023-07-30",
 				endTimestamp: "2023-07-31",
 			});
@@ -31,53 +27,10 @@ describe("validateRecalculateFolderThumbnailsRequest", () => {
 		}
 	};
 
-	test("should error if emailFromAuthToken is missing", () => {
-		expectErrorForRequestObject({
-			adminSubjectFromAuthToken,
-			beginTimestamp: "2023-07-30",
-			endTimestamp: "2023-07-31",
-		});
-	});
-
-	test("should error if emailFromAuthToken is wrong type", () => {
-		expectErrorForRequestObject({
-			emailFromAuthToken: 123,
-			adminSubjectFromAuthToken,
-			beginTimestamp: "2023-07-30",
-			endTimestamp: "2023-07-31",
-		});
-	});
-
-	test("should error if emailFromAuthToken is wrong format", () => {
-		expectErrorForRequestObject({
-			emailFromAuthToken: "not_an_email",
-			adminSubjectFromAuthToken,
-			beginTimestamp: "2023-07-30",
-			endTimestamp: "2023-07-31",
-		});
-	});
-
-	test("should error if adminSubjectFromAuthToken is missing", () => {
+	test("should error if authentication fields are supplied in the body", () => {
 		expectErrorForRequestObject({
 			emailFromAuthToken: "test@permanent.org",
-			beginTimestamp: "2023-07-30",
-			endTimestamp: "2023-07-31",
-		});
-	});
-
-	test("should error if adminSubjectFromAuthToken is wrong type", () => {
-		expectErrorForRequestObject({
-			adminSubjectFromAuthToken: 12345,
-			emailFromAuthToken: "test@permanent.org",
-			beginTimestamp: "2023-07-30",
-			endTimestamp: "2023-07-31",
-		});
-	});
-
-	test("should error if adminSubjectFromAuthToken is wrong format", () => {
-		expectErrorForRequestObject({
-			adminSubjectFromAuthToken: "not a uuid",
-			emailFromAuthToken: "test@permanent.org",
+			adminSubjectFromAuthToken: "fcb2b59b-df07-4e79-ad20-bf7f067a965e",
 			beginTimestamp: "2023-07-30",
 			endTimestamp: "2023-07-31",
 		});
@@ -85,16 +38,12 @@ describe("validateRecalculateFolderThumbnailsRequest", () => {
 
 	test("should error if beginTimestamp is missing", () => {
 		expectErrorForRequestObject({
-			adminSubjectFromAuthToken,
-			emailFromAuthToken: "test@permanent.org",
 			endTimestamp: "2023-07-31",
 		});
 	});
 
 	test("should error if beginTimestamp is wrong type", () => {
 		expectErrorForRequestObject({
-			adminSubjectFromAuthToken,
-			emailFromAuthToken: "test@permanent.org",
 			beginTimestamp: "not_a_date",
 			endTimestamp: "2023-07-31",
 		});
@@ -102,8 +51,6 @@ describe("validateRecalculateFolderThumbnailsRequest", () => {
 
 	test("should error if beginTimestamp is wrong format", () => {
 		expectErrorForRequestObject({
-			adminSubjectFromAuthToken,
-			emailFromAuthToken: "test@permanent.org",
 			beginTimestamp: "07/31/23",
 			endTimestamp: "2023-07-31",
 		});
@@ -111,16 +58,12 @@ describe("validateRecalculateFolderThumbnailsRequest", () => {
 
 	test("should error if endTimestamp is missing", () => {
 		expectErrorForRequestObject({
-			adminSubjectFromAuthToken,
-			emailFromAuthToken: "test@permanent.org",
 			beginTimestamp: "2023-07-30",
 		});
 	});
 
 	test("should error if endTimestamp is wrong type", () => {
 		expectErrorForRequestObject({
-			adminSubjectFromAuthToken,
-			emailFromAuthToken: "test@permanent.org",
 			beginTimestamp: "2023-07-30",
 			endTimestamp: "not_a_date",
 		});
@@ -128,8 +71,6 @@ describe("validateRecalculateFolderThumbnailsRequest", () => {
 
 	test("should error if endTimestamp is wrong format", () => {
 		expectErrorForRequestObject({
-			adminSubjectFromAuthToken,
-			emailFromAuthToken: "test@permanent.org",
 			beginTimestamp: "2023-07-30",
 			endTimestamp: "07/31/23",
 		});

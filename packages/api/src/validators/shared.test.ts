@@ -1,374 +1,227 @@
 import {
-	validateBodyFromAuthentication,
-	validateBodyFromAdminAuthentication,
-	fieldsFromUserOrAdminAuthentication,
-	validateIsAdminFromAuthentication,
-	validateOptionalAuthenticationValues,
+	validateUserAuthentication,
+	validateAdminAuthentication,
+	validateUserOrAdminAuthentication,
+	validateOptionalAuthentication,
+	validateClientIp,
 	validatePaginationParameters,
 } from "./shared.js";
 import { describe, expect, test } from "vitest";
 
-describe("validateBodyFromAuthentication", () => {
-	test("should find no errors in valid parameter set", () => {
-		let error = null;
-		try {
-			validateBodyFromAuthentication({
-				emailFromAuthToken: "test@permanent.org",
-				userSubjectFromAuthToken: "b2a6787c-f255-465a-8eb0-1583004d4a4f",
-			});
-		} catch (err) {
-			error = err;
-		} finally {
-			expect(error).toBeNull();
-		}
+const testEmail = "test@permanent.org";
+const testSubject = "b2a6787c-f255-465a-8eb0-1583004d4a4f";
+const testShareToken = "cfa6f6a2-7005-42d6-a6b1-1ec4645a5227";
+
+describe("validateUserAuthentication", () => {
+	const validAuth = { kind: "user", email: testEmail, subject: testSubject };
+
+	test("should find no errors in valid user authentication", () => {
+		expect(() => {
+			validateUserAuthentication(validAuth);
+		}).not.toThrow();
 	});
-	test("should raise an error if emailFromAuthToken is missing", () => {
-		let error = null;
-		try {
-			validateBodyFromAuthentication({
-				userSubjectFromAuthToken: "b2a6787c-f255-465a-8eb0-1583004d4a4f",
-			});
-		} catch (err) {
-			error = err;
-		} finally {
-			expect(error).not.toBeNull();
-		}
+	test("should allow a share token", () => {
+		expect(() => {
+			validateUserAuthentication({ ...validAuth, shareToken: testShareToken });
+		}).not.toThrow();
 	});
-	test("should raise an error if emailFromAuthToken is the wrong type", () => {
-		let error = null;
-		try {
-			validateBodyFromAuthentication({
-				emailFromAuthToken: 1,
-				userSubjectFromAuthToken: "b2a6787c-f255-465a-8eb0-1583004d4a4f",
-			});
-		} catch (err) {
-			error = err;
-		} finally {
-			expect(error).not.toBeNull();
-		}
+	test("should raise an error if authentication is missing", () => {
+		expect(() => {
+			validateUserAuthentication(undefined);
+		}).toThrow('"value" is required');
 	});
-	test("should raise an error if emailFromAuthToken is an invalid value", () => {
-		let error = null;
-		try {
-			validateBodyFromAuthentication({
-				emailFromAuthToken: "not_an_email",
-				userSubjectFromAuthToken: "b2a6787c-f255-465a-8eb0-1583004d4a4f",
-			});
-		} catch (err) {
-			error = err;
-		} finally {
-			expect(error).not.toBeNull();
-		}
+	test("should raise an error if kind is admin", () => {
+		expect(() => {
+			validateUserAuthentication({ ...validAuth, kind: "admin" });
+		}).toThrow('"kind" must be [user]');
 	});
-	test("should raise an error if userSubjectFromAuthToken is missing", () => {
-		let error = null;
-		try {
-			validateBodyFromAuthentication({
-				emailFromAuthToken: "test@permanent.org",
-			});
-		} catch (err) {
-			error = err;
-		} finally {
-			expect(error).not.toBeNull();
-		}
+	test("should raise an error if email is missing", () => {
+		expect(() => {
+			validateUserAuthentication({ kind: "user", subject: testSubject });
+		}).toThrow('"email" is required');
 	});
-	test("should raise an error if userSubjectFromAuthToken is the wrong type", () => {
-		let error = null;
-		try {
-			validateBodyFromAuthentication({
-				emailFromAuthToken: "test@permanent.org",
-				userSubjectFromAuthToken: 1,
-			});
-		} catch (err) {
-			error = err;
-		} finally {
-			expect(error).not.toBeNull();
-		}
+	test("should raise an error if email is the wrong type", () => {
+		expect(() => {
+			validateUserAuthentication({ ...validAuth, email: 1 });
+		}).toThrow('"email" must be a string');
 	});
-	test("should raise an error if userSubjectFromAuthToken is the wrong format", () => {
-		let error = null;
-		try {
-			validateBodyFromAuthentication({
-				emailFromAuthToken: "test@permanent.org",
-				userSubjectFromAuthToken: "not_a_uuid",
-			});
-		} catch (err) {
-			error = err;
-		} finally {
-			expect(error).not.toBeNull();
-		}
+	test("should raise an error if email is an invalid value", () => {
+		expect(() => {
+			validateUserAuthentication({ ...validAuth, email: "not_an_email" });
+		}).toThrow('"email" must be a valid email');
+	});
+	test("should raise an error if subject is missing", () => {
+		expect(() => {
+			validateUserAuthentication({ kind: "user", email: testEmail });
+		}).toThrow('"subject" is required');
+	});
+	test("should raise an error if subject is the wrong type", () => {
+		expect(() => {
+			validateUserAuthentication({ ...validAuth, subject: 1 });
+		}).toThrow('"subject" must be a string');
+	});
+	test("should raise an error if subject is not a uuid", () => {
+		expect(() => {
+			validateUserAuthentication({ ...validAuth, subject: "not_a_uuid" });
+		}).toThrow('"subject" must be a valid GUID');
+	});
+	test("should raise an error if there are unexpected fields", () => {
+		expect(() => {
+			validateUserAuthentication({ ...validAuth, admin: true });
+		}).toThrow('"admin" is not allowed');
 	});
 });
 
-describe("validateBodyFromAdminAuthentication", () => {
-	test("should find no errors in valid parameter set", () => {
-		let error = null;
-		try {
-			validateBodyFromAdminAuthentication({
-				emailFromAuthToken: "test@permanent.org",
-				adminSubjectFromAuthToken: "b2a6787c-f255-465a-8eb0-1583004d4a4f",
-			});
-		} catch (err) {
-			error = err;
-		} finally {
-			expect(error).toBeNull();
-		}
+describe("validateAdminAuthentication", () => {
+	const validAuth = { kind: "admin", email: testEmail, subject: testSubject };
+
+	test("should find no errors in valid admin authentication", () => {
+		expect(() => {
+			validateAdminAuthentication(validAuth);
+		}).not.toThrow();
 	});
-	test("should raise an error if emailFromAuthToken is missing", () => {
-		let error = null;
-		try {
-			validateBodyFromAdminAuthentication({
-				adminSubjectFromAuthToken: "b2a6787c-f255-465a-8eb0-1583004d4a4f",
-			});
-		} catch (err) {
-			error = err;
-		} finally {
-			expect(error).not.toBeNull();
-		}
+	test("should raise an error if authentication is missing", () => {
+		expect(() => {
+			validateAdminAuthentication(undefined);
+		}).toThrow('"value" is required');
 	});
-	test("should raise an error if emailFromAuthToken is the wrong type", () => {
-		let error = null;
-		try {
-			validateBodyFromAdminAuthentication({
-				emailFromAuthToken: 1,
-				adminSubjectFromAuthToken: "b2a6787c-f255-465a-8eb0-1583004d4a4f",
-			});
-		} catch (err) {
-			error = err;
-		} finally {
-			expect(error).not.toBeNull();
-		}
+	test("should raise an error if kind is user", () => {
+		expect(() => {
+			validateAdminAuthentication({ ...validAuth, kind: "user" });
+		}).toThrow('"kind" must be [admin]');
 	});
-	test("should raise an error if emailFromAuthToken is an invalid value", () => {
-		let error = null;
-		try {
-			validateBodyFromAdminAuthentication({
-				emailFromAuthToken: "not_an_email",
-				adminSubjectFromAuthToken: "b2a6787c-f255-465a-8eb0-1583004d4a4f",
-			});
-		} catch (err) {
-			error = err;
-		} finally {
-			expect(error).not.toBeNull();
-		}
+	test("should raise an error if email is missing", () => {
+		expect(() => {
+			validateAdminAuthentication({ kind: "admin", subject: testSubject });
+		}).toThrow('"email" is required');
 	});
-	test("should raise an error if adminSubjectFromAuthToken is missing", () => {
-		let error = null;
-		try {
-			validateBodyFromAdminAuthentication({
-				emailFromAuthToken: "test@permanent.org",
-			});
-		} catch (err) {
-			error = err;
-		} finally {
-			expect(error).not.toBeNull();
-		}
+	test("should raise an error if email is an invalid value", () => {
+		expect(() => {
+			validateAdminAuthentication({ ...validAuth, email: "not_an_email" });
+		}).toThrow('"email" must be a valid email');
 	});
-	test("should raise an error if adminSubjectFromAuthToken is the wrong type", () => {
-		let error = null;
-		try {
-			validateBodyFromAdminAuthentication({
-				emailFromAuthToken: "test@permanent.org",
-				adminSubjectFromAuthToken: 1,
-			});
-		} catch (err) {
-			error = err;
-		} finally {
-			expect(error).not.toBeNull();
-		}
+	test("should raise an error if subject is missing", () => {
+		expect(() => {
+			validateAdminAuthentication({ kind: "admin", email: testEmail });
+		}).toThrow('"subject" is required');
 	});
-	test("should raise an error if adminSubjectFromAuthToken is the wrong format", () => {
-		let error = null;
-		try {
-			validateBodyFromAdminAuthentication({
-				emailFromAuthToken: "test@permanent.org",
-				adminSubjectFromAuthToken: "not_a_uuid",
-			});
-		} catch (err) {
-			error = err;
-		} finally {
-			expect(error).not.toBeNull();
-		}
+	test("should raise an error if subject is not a uuid", () => {
+		expect(() => {
+			validateAdminAuthentication({ ...validAuth, subject: "not_a_uuid" });
+		}).toThrow('"subject" must be a valid GUID');
 	});
 });
 
-describe("fieldsFromUserOrAdminAuthentication", () => {
-	const expectFailedValidation = (data: unknown): void => {
-		const validation = fieldsFromUserOrAdminAuthentication.validate(data);
-		expect(validation.error).toBeTruthy();
-	};
-	const expectSuccessfulValidation = (data: unknown): void => {
-		const validation = fieldsFromUserOrAdminAuthentication.validate(data);
-		expect(validation.error).toBeFalsy();
-	};
-	test("should be invalid if empty", () => {
-		expectFailedValidation({});
+describe("validateUserOrAdminAuthentication", () => {
+	test("should find no errors in valid user authentication", () => {
+		expect(() => {
+			validateUserOrAdminAuthentication({
+				kind: "user",
+				email: testEmail,
+				subject: testSubject,
+			});
+		}).not.toThrow();
 	});
-	test("should be invalid if no subject is present", () => {
-		expectFailedValidation({ userEmailFromAuthToken: "test@permanent.org" });
-		expectFailedValidation({ adminEmailFromAuthToken: "test@permanent.org" });
+	test("should find no errors in valid admin authentication", () => {
+		expect(() => {
+			validateUserOrAdminAuthentication({
+				kind: "admin",
+				email: testEmail,
+				subject: testSubject,
+			});
+		}).not.toThrow();
 	});
-	test("should be invalid if no email is present", () => {
-		expectFailedValidation({
-			userSubjectFromAuthToken: "def2920e-8bfd-451a-bdc8-622f52f3dc02",
-		});
-		expectFailedValidation({
-			adminSubjectFromAuthToken: "def2920e-8bfd-451a-bdc8-622f52f3dc02",
-		});
+	test("should raise an error if authentication is missing", () => {
+		expect(() => {
+			validateUserOrAdminAuthentication(undefined);
+		}).toThrow();
 	});
-	test("should be invalid if email is not an email", () => {
-		expectFailedValidation({
-			userEmailFromAuthToken: "not_an_email",
-			userSubjectFromAuthToken: "def2920e-8bfd-451a-bdc8-622f52f3dc02",
-		});
-		expectFailedValidation({
-			adminEmailFromAuthToken: "not_an_email",
-			adminSubjectFromAuthToken: "def2920e-8bfd-451a-bdc8-622f52f3dc02",
-		});
+	test("should raise an error if kind is missing", () => {
+		expect(() => {
+			validateUserOrAdminAuthentication({
+				email: testEmail,
+				subject: testSubject,
+			});
+		}).toThrow();
 	});
-	test("should be invalid if subject is not a uuid", () => {
-		expectFailedValidation({
-			userEmailFromAuthToken: "test@permanent.org",
-			userSubjectFromAuthToken: "not_a_uuid",
-		});
-		expectFailedValidation({
-			adminEmailFromAuthToken: "test@permanent.org",
-			adminSubjectFromAuthToken: "not_a_uuid",
-		});
+	test("should raise an error if kind is invalid", () => {
+		expect(() => {
+			validateUserOrAdminAuthentication({
+				kind: "superuser",
+				email: testEmail,
+				subject: testSubject,
+			});
+		}).toThrow();
 	});
-	test("should be valid if user email and subject are present", () => {
-		expectSuccessfulValidation({
-			userEmailFromAuthToken: "test@permanent.org",
-			userSubjectFromAuthToken: "51d9cca8-b260-4173-a194-8e10bcf6721e",
-		});
+	test("should raise an error if email is missing", () => {
+		expect(() => {
+			validateUserOrAdminAuthentication({ kind: "user", subject: testSubject });
+		}).toThrow();
 	});
-	test("should be valid if admin email and subject are present", () => {
-		expectSuccessfulValidation({
-			adminEmailFromAuthToken: "test@permanent.org",
-			adminSubjectFromAuthToken: "51d9cca8-b260-4173-a194-8e10bcf6721e",
-		});
-	});
-	test("should be invalid if both admin and user fields are present", () => {
-		expectFailedValidation({
-			adminEmailFromAuthToken: "test@permanent.org",
-			adminSubjectFromAuthToken: "51d9cca8-b260-4173-a194-8e10bcf6721e",
-			userEmailFromAuthToken: "test@permanent.org",
-			userSubjectFromAuthToken: "51d9cca8-b260-4173-a194-8e10bcf6721e",
-		});
-	});
-	test("should be invalid if both admin and user fields are mismatched", () => {
-		expectFailedValidation({
-			adminEmailFromAuthToken: "test@permanent.org",
-			userSubjectFromAuthToken: "51d9cca8-b260-4173-a194-8e10bcf6721e",
-		});
-		expectFailedValidation({
-			adminSubjectFromAuthToken: "51d9cca8-b260-4173-a194-8e10bcf6721e",
-			userEmailFromAuthToken: "test@permanent.org",
-		});
+	test("should raise an error if subject is missing", () => {
+		expect(() => {
+			validateUserOrAdminAuthentication({ kind: "admin", email: testEmail });
+		}).toThrow();
 	});
 });
 
-describe("validateIsAdminFromAuthentication", () => {
-	test("should find no errors in valid parameter set", () => {
-		let error = null;
-		try {
-			validateIsAdminFromAuthentication({
-				admin: true,
+describe("validateOptionalAuthentication", () => {
+	test("should find no errors with an email and share token", () => {
+		expect(() => {
+			validateOptionalAuthentication({
+				kind: "user",
+				email: testEmail,
+				shareToken: testShareToken,
 			});
-		} catch (err) {
-			error = err;
-		} finally {
-			expect(error).toBeNull();
-		}
+		}).not.toThrow();
 	});
-	test("should raise an error if admin is missing", () => {
-		let error = null;
-		try {
-			validateIsAdminFromAuthentication({
-				userSubjectFromAuthToken: "b2a6787c-f255-465a-8eb0-1583004d4a4f",
-			});
-		} catch (err) {
-			error = err;
-		} finally {
-			expect(error).not.toBeNull();
-		}
+	test("should find no errors with an empty object", () => {
+		expect(() => {
+			validateOptionalAuthentication({});
+		}).not.toThrow();
 	});
-	test("should raise an error if admin is the wrong type", () => {
-		let error = null;
-		try {
-			validateIsAdminFromAuthentication({
-				admin: "a string",
-			});
-		} catch (err) {
-			error = err;
-		} finally {
-			expect(error).not.toBeNull();
-		}
+	test("should find no errors if authentication is missing", () => {
+		expect(() => {
+			validateOptionalAuthentication(undefined);
+		}).not.toThrow();
+	});
+	test("should raise an error if email is invalid", () => {
+		expect(() => {
+			validateOptionalAuthentication({ kind: "user", email: "not_an_email" });
+		}).toThrow('"email" must be a valid email');
+	});
+	test("should raise an error if share token is the wrong type", () => {
+		expect(() => {
+			validateOptionalAuthentication({ shareToken: 1 });
+		}).toThrow('"shareToken" must be a string');
+	});
+	test("should raise an error if kind is admin", () => {
+		expect(() => {
+			validateOptionalAuthentication({ kind: "admin", email: testEmail });
+		}).toThrow('"kind" must be [user]');
 	});
 });
 
-describe("validateOptionalAuthenticationValues", () => {
-	test("should find no error if request body is empty", () => {
-		let error = null;
-		try {
-			validateOptionalAuthenticationValues({});
-		} catch (err) {
-			error = err;
-		} finally {
-			expect(error).toBeNull();
-		}
+describe("validateClientIp", () => {
+	test("should find no errors in a valid IPv4 address", () => {
+		expect(() => {
+			validateClientIp("127.0.0.1");
+		}).not.toThrow();
 	});
-	test("should accept a request with an email and a share token", () => {
-		let error = null;
-		try {
-			validateOptionalAuthenticationValues({
-				emailFromAuthToken: "test@permanent.org",
-				shareToken: "45e049b8-82c4-4d19-97d5-ff240cf95d73",
-			});
-		} catch (err) {
-			error = err;
-		} finally {
-			expect(error).toBeNull();
-		}
+	test("should find no errors in a valid IPv6 address", () => {
+		expect(() => {
+			validateClientIp("::1");
+		}).not.toThrow();
 	});
-	test("should error if emailFromAuthToken is not a string", () => {
-		let error = null;
-		try {
-			validateOptionalAuthenticationValues({
-				emailFromAuthToken: 0,
-				shareToken: "45e049b8-82c4-4d19-97d5-ff240cf95d73",
-			});
-		} catch (err) {
-			error = err;
-		} finally {
-			expect(error).not.toBeNull();
-		}
+	test("should raise an error if the IP is missing", () => {
+		expect(() => {
+			validateClientIp(undefined);
+		}).toThrow('"value" is required');
 	});
-	test("should error if emailFromAuthToken is not an email", () => {
-		let error = null;
-		try {
-			validateOptionalAuthenticationValues({
-				emailFromAuthToken: "not_an_email",
-				shareToken: "45e049b8-82c4-4d19-97d5-ff240cf95d73",
-			});
-		} catch (err) {
-			error = err;
-		} finally {
-			expect(error).not.toBeNull();
-		}
-	});
-	test("should error if shareToken is not a string", () => {
-		let error = null;
-		try {
-			validateOptionalAuthenticationValues({
-				emailFromAuthToken: "test@permanent.org",
-				shareToken: 0,
-			});
-		} catch (err) {
-			error = err;
-		} finally {
-			expect(error).not.toBeNull();
-		}
+	test("should raise an error if the IP is invalid", () => {
+		expect(() => {
+			validateClientIp("not_an_ip");
+		}).toThrow();
 	});
 });
 

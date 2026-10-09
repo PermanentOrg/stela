@@ -10,10 +10,7 @@ import {
 import {
 	validateUpdateTagsRequest,
 	validatePostMarketingTagsRequest,
-	validateBodyFromAuthentication,
-	validateBodyFromAdminAuthentication,
 	validateLeaveArchiveParams,
-	validateLeaveArchiveRequest,
 	validateCreateStorageAdjustmentRequest,
 	validateCreateStorageAdjustmentParams,
 	validateGetAccountsQuery,
@@ -25,7 +22,11 @@ import {
 } from "../service.js";
 import { claimPromo } from "../../promo/service.js";
 import { validateClaimPromoRequest } from "../../promo/validators.js";
-import type { LeaveArchiveRequest } from "../models.js";
+import {
+	validateAdminAuthentication,
+	validateClientIp,
+	validateUserAuthentication,
+} from "../../validators/index.js";
 
 export const accountController = Router();
 accountController.get(
@@ -33,7 +34,7 @@ accountController.get(
 	verifyAdminAuthentication,
 	async (req: Request, res: Response, next: NextFunction): Promise<void> => {
 		try {
-			validateBodyFromAdminAuthentication(req.body);
+			validateAdminAuthentication(req.metadata?.auth);
 			validateGetAccountsQuery(req.query);
 			const result = await getAccounts(req.query);
 			res.status(HTTP_STATUS.SUCCESSFUL.OK).json(result);
@@ -47,8 +48,10 @@ accountController.put(
 	verifyUserAuthentication,
 	async (req: Request, res: Response, next: NextFunction): Promise<void> => {
 		try {
+			const auth = req.metadata?.auth;
+			validateUserAuthentication(auth);
 			validateUpdateTagsRequest(req.body);
-			await accountService.updateTags(req.body);
+			await accountService.updateTags(auth.email, req.body);
 			res.json({});
 		} catch (err) {
 			next(err);
@@ -60,8 +63,9 @@ accountController.get(
 	verifyUserAuthentication,
 	async (req: Request, res: Response, next: NextFunction): Promise<void> => {
 		try {
-			validateBodyFromAuthentication(req.body);
-			const result = await accountService.getMarketingTags(req.body);
+			const auth = req.metadata?.auth;
+			validateUserAuthentication(auth);
+			const result = await accountService.getMarketingTags(auth.email);
 			res.status(HTTP_STATUS.SUCCESSFUL.OK).json(result);
 		} catch (err) {
 			next(err);
@@ -73,10 +77,9 @@ accountController.get(
 	verifyUserAuthentication,
 	async (req: Request, res: Response, next: NextFunction): Promise<void> => {
 		try {
-			validateBodyFromAuthentication(req.body);
-			const signupDetails = await accountService.getSignupDetails(
-				req.body.emailFromAuthToken,
-			);
+			const auth = req.metadata?.auth;
+			validateUserAuthentication(auth);
+			const signupDetails = await accountService.getSignupDetails(auth.email);
 			res.json(signupDetails);
 		} catch (err) {
 			next(err);
@@ -88,8 +91,9 @@ accountController.get(
 	verifyUserAuthentication,
 	async (req: Request, res: Response, next: NextFunction): Promise<void> => {
 		try {
-			validateBodyFromAuthentication(req.body);
-			const account = await accountService.getMe(req.body.emailFromAuthToken);
+			const auth = req.metadata?.auth;
+			validateUserAuthentication(auth);
+			const account = await accountService.getMe(auth.email);
 			res.status(HTTP_STATUS.SUCCESSFUL.OK).json({ data: account });
 		} catch (err) {
 			next(err);
@@ -102,15 +106,18 @@ accountController.delete(
 	extractIp,
 	async (req: Request, res: Response, next: NextFunction): Promise<void> => {
 		try {
-			validateLeaveArchiveRequest(req.body);
+			const auth = req.metadata?.auth;
+			validateUserAuthentication(auth);
+			const clientIp = req.metadata?.clientIp;
+			validateClientIp(clientIp);
 			validateLeaveArchiveParams(req.params);
 
-			const data: LeaveArchiveRequest = {
-				...req.params,
-				...req.body,
-			};
-
-			await accountService.leaveArchive(data);
+			await accountService.leaveArchive({
+				archiveId: req.params.archiveId,
+				emailFromAuthToken: auth.email,
+				userSubjectFromAuthToken: auth.subject,
+				ip: clientIp,
+			});
 
 			res.status(HTTP_STATUS.SUCCESSFUL.NO_CONTENT).send();
 		} catch (err) {
@@ -123,8 +130,13 @@ accountController.post(
 	verifyUserAuthentication,
 	async (req: Request, res: Response, next: NextFunction): Promise<void> => {
 		try {
+			const auth = req.metadata?.auth;
+			validateUserAuthentication(auth);
 			validatePostMarketingTagsRequest(req.body);
-			const result = await accountService.postMarketingTags(req.body);
+			const result = await accountService.postMarketingTags(
+				auth.email,
+				req.body,
+			);
 			res.json(result);
 		} catch (err) {
 			next(err);
@@ -136,8 +148,10 @@ accountController.post(
 	verifyUserAuthentication,
 	async (req: Request, res: Response, next: NextFunction): Promise<void> => {
 		try {
+			const auth = req.metadata?.auth;
+			validateUserAuthentication(auth);
 			validateClaimPromoRequest(req.body);
-			const result = await claimPromo(req.body);
+			const result = await claimPromo(auth.email, req.body);
 			res.status(HTTP_STATUS.SUCCESSFUL.OK).json({ data: result });
 		} catch (err) {
 			next(err);
@@ -149,6 +163,7 @@ accountController.post(
 	verifyAdminAuthentication,
 	async (req: Request, res: Response, next: NextFunction) => {
 		try {
+			validateAdminAuthentication(req.metadata?.auth);
 			validateCreateStorageAdjustmentRequest(req.body);
 			validateCreateStorageAdjustmentParams(req.params);
 			const result = await createStorageAdjustment(

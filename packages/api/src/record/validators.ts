@@ -1,7 +1,6 @@
 import Joi from "joi";
 import { parse as parseEDTF } from "@edtf-ts/core";
 import type { CreateRecordCopyRequest, PatchRecordRequest } from "./models.js";
-import { fieldsFromUserAuthentication } from "../validators/index.js";
 import { paginationFields } from "../validators/shared.js";
 import { locationInputSchema } from "../location/validators.js";
 import { EDTF_LEVEL_2 } from "../constants.js";
@@ -70,7 +69,6 @@ export const validatePatchRecordRequest: (
 ): asserts data is PatchRecordRequest => {
 	const validation = Joi.object()
 		.keys({
-			...fieldsFromUserAuthentication,
 			locationId: Joi.number().integer().optional().allow(null),
 			location: locationInputSchema.optional(),
 			description: Joi.string().optional().allow(null),
@@ -87,9 +85,7 @@ export const validatePatchRecordRequest: (
 				.optional()
 				.allow(null),
 		})
-		// We can't use .min(1) here due to the auth fields being in the body
-		// See: https://github.com/PermanentOrg/stela/issues/407
-		.or("locationId", "location", "description", "displayName", "displayTime")
+		.min(1)
 		.oxor("locationId", "location")
 		.unknown(false)
 		.validate(data);
@@ -106,9 +102,7 @@ export const validateCreateRecordCopyRequest: (
 ): asserts data is CreateRecordCopyRequest => {
 	const validation = Joi.object()
 		.keys({
-			...fieldsFromUserAuthentication,
 			destinationFolderId: Joi.string().required(),
-			ip: Joi.string().required(),
 		})
 		.unknown(false)
 		.validate(data);

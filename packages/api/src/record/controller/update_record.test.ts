@@ -96,6 +96,16 @@ describe("PATCH /records", () => {
 		await agent.patch("/api/v2/records/10001").send({}).expect(400);
 	});
 
+	test("expect auth values supplied in the body to cause a 400 error", async () => {
+		await agent
+			.patch("/api/v2/records/10001")
+			.send({
+				description: "a new description",
+				emailFromAuthToken: "test@permanent.org",
+			})
+			.expect(400);
+	});
+
 	test("expect non existent record to cause a 404 error", async () => {
 		await agent
 			.patch("/api/v2/records/111111111")

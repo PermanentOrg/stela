@@ -6,6 +6,7 @@ import { sendLegacyContactNotification } from "../../email/index.js";
 
 export const updateLegacyContact = async (
 	legacyContactId: string,
+	callerEmail: string,
 	requestBody: UpdateLegacyContactRequest,
 ): Promise<LegacyContact> => {
 	const legacyContactResult = await db
@@ -13,7 +14,7 @@ export const updateLegacyContact = async (
 			"legacy_contact.queries.update_legacy_contact",
 			{
 				legacyContactId,
-				primaryEmail: requestBody.emailFromAuthToken,
+				primaryEmail: callerEmail,
 				name: requestBody.name,
 				email: requestBody.email,
 			},

@@ -3,7 +3,6 @@ import type {
 	UpdateArchiveMembershipRequest,
 	DeleteArchiveMembershipRequest,
 } from "./models.js";
-import { fieldsFromUserAuthentication } from "../validators/index.js";
 import { ArchiveMembershipRole } from "../access/models.js";
 
 export const validateUpdateArchiveMembershipRequest: (
@@ -13,7 +12,6 @@ export const validateUpdateArchiveMembershipRequest: (
 ): asserts data is UpdateArchiveMembershipRequest => {
 	const validation = Joi.object()
 		.keys({
-			...fieldsFromUserAuthentication,
 			accessRole: Joi.string()
 				.valid(
 					...Object.values(ArchiveMembershipRole).filter(
@@ -22,7 +20,6 @@ export const validateUpdateArchiveMembershipRequest: (
 				)
 				.optional(),
 			status: Joi.string().valid("ok").optional(),
-			ip: Joi.string().ip().optional(),
 		})
 		.or("accessRole", "status")
 		.validate(data);
@@ -36,12 +33,7 @@ export const validateDeleteArchiveMembershipRequest: (
 ) => asserts data is DeleteArchiveMembershipRequest = (
 	data: unknown,
 ): asserts data is DeleteArchiveMembershipRequest => {
-	const validation = Joi.object()
-		.keys({
-			...fieldsFromUserAuthentication,
-			ip: Joi.string().ip().optional(),
-		})
-		.validate(data);
+	const validation = Joi.object().keys({}).validate(data);
 	if (validation.error !== undefined) {
 		throw validation.error;
 	}

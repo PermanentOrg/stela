@@ -2,6 +2,7 @@ import { Router } from "express";
 import type { Request, Response, NextFunction } from "express";
 import { verifyUserAuthentication } from "../middleware/index.js";
 import { validateGiftStorageRequest } from "./validators.js";
+import { validateUserAuthentication } from "../validators/index.js";
 import { issueGift } from "./service.js";
 import { HTTP_STATUS } from "@pdc/http-status-codes";
 
@@ -12,8 +13,10 @@ storageController.post(
 	verifyUserAuthentication,
 	async (req: Request, res: Response, next: NextFunction) => {
 		try {
+			const auth = req.metadata?.auth;
+			validateUserAuthentication(auth);
 			validateGiftStorageRequest(req.body);
-			const result = await issueGift(req.body);
+			const result = await issueGift(auth.email, req.body);
 
 			res.status(HTTP_STATUS.SUCCESSFUL.OK).json(result);
 		} catch (err) {

@@ -1,5 +1,4 @@
 export interface CreateDirectiveRequest {
-	emailFromAuthToken: string;
 	archiveId: string;
 	type: string;
 	trigger: {
@@ -10,7 +9,6 @@ export interface CreateDirectiveRequest {
 }
 
 export interface UpdateDirectiveRequest {
-	emailFromAuthToken: string;
 	type?: string;
 	trigger?: {
 		type?: string;

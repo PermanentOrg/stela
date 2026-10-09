@@ -9,16 +9,17 @@ import {
 	extractIp,
 	extractUserIsAdminFromAuthToken,
 } from "../src/middleware/index.js";
+import type * as authentication from "../src/middleware/authentication.js";
+
+const { setAuth } = await vi.importActual<typeof authentication>(
+	"../src/middleware/authentication.js",
+);
 
 export const mockExtractUserEmailFromAuthToken = (mockEmail?: string): void => {
 	vi.mocked(extractUserEmailFromAuthToken).mockImplementation(
-		async (
-			req: Request<unknown, unknown, { emailFromAuthToken?: string }>,
-			__,
-			next: NextFunction,
-		) => {
+		async (req: Request<unknown, unknown, unknown>, __, next: NextFunction) => {
 			if (mockEmail !== undefined) {
-				req.body.emailFromAuthToken = mockEmail;
+				setAuth(req, { kind: "user", email: mockEmail });
 			}
 			next();
 		},
@@ -29,17 +30,9 @@ export const mockExtractShareTokenFromHeaders = (
 	mockShareToken?: string,
 ): void => {
 	vi.mocked(extractShareTokenFromHeaders).mockImplementation(
-		(
-			req: Request<
-				unknown,
-				unknown,
-				{ emailFromAuthToken?: string; shareToken: string | undefined }
-			>,
-			__,
-			next: NextFunction,
-		) => {
+		(req: Request<unknown, unknown, unknown>, __, next: NextFunction) => {
 			if (mockShareToken !== undefined) {
-				req.body.shareToken = mockShareToken;
+				setAuth(req, { shareToken: mockShareToken });
 			}
 			next();
 		},
@@ -48,15 +41,10 @@ export const mockExtractShareTokenFromHeaders = (
 
 export const mockExtractIp = (ip?: string): void => {
 	vi.mocked(extractIp).mockImplementation(
-		(
-			req: Request<unknown, unknown, { ip?: string }>,
-			__,
-			next: NextFunction,
-		) => {
+		(req: Request<unknown, unknown, unknown>, __, next: NextFunction) => {
 			if (ip !== undefined) {
-				req.body.ip = ip;
+				req.metadata = { ...req.metadata, clientIp: ip };
 			}
-
 			next();
 		},
 	);
@@ -67,24 +55,12 @@ export const mockVerifyUserAuthentication = (
 	mockUserSubject?: string,
 ): void => {
 	vi.mocked(verifyUserAuthentication).mockImplementation(
-		async (
-			req: Request<
-				unknown,
-				unknown,
-				{
-					emailFromAuthToken?: string | undefined;
-					userSubjectFromAuthToken?: string | undefined;
-				}
-			>,
-			__,
-			next: NextFunction,
-		) => {
-			if (mockUserSubject !== undefined) {
-				req.body.userSubjectFromAuthToken = mockUserSubject;
-			}
-			if (mockUserEmail !== undefined) {
-				req.body.emailFromAuthToken = mockUserEmail;
-			}
+		async (req: Request<unknown, unknown, unknown>, __, next: NextFunction) => {
+			setAuth(req, {
+				kind: "user",
+				email: mockUserEmail,
+				subject: mockUserSubject,
+			});
 			next();
 		},
 	);
@@ -95,24 +71,12 @@ export const mockVerifyAdminAuthentication = (
 	mockAdminSubject?: string,
 ): void => {
 	vi.mocked(verifyAdminAuthentication).mockImplementation(
-		async (
-			req: Request<
-				unknown,
-				unknown,
-				{
-					emailFromAuthToken?: string;
-					adminSubjectFromAuthToken?: string;
-				}
-			>,
-			__,
-			next: NextFunction,
-		) => {
-			if (mockAdminSubject !== undefined) {
-				req.body.adminSubjectFromAuthToken = mockAdminSubject;
-			}
-			if (mockAdminEmail !== undefined) {
-				req.body.emailFromAuthToken = mockAdminEmail;
-			}
+		async (req: Request<unknown, unknown, unknown>, __, next: NextFunction) => {
+			setAuth(req, {
+				kind: "admin",
+				email: mockAdminEmail,
+				subject: mockAdminSubject,
+			});
 			next();
 		},
 	);
@@ -120,12 +84,10 @@ export const mockVerifyAdminAuthentication = (
 
 export const mockExtractUserIsAdminFromAuthToken = (isAdmin: boolean): void => {
 	vi.mocked(extractUserIsAdminFromAuthToken).mockImplementation(
-		async (
-			req: Request<unknown, unknown, { admin?: boolean }>,
-			__,
-			next: NextFunction,
-		) => {
-			req.body.admin = isAdmin;
+		async (req: Request<unknown, unknown, unknown>, __, next: NextFunction) => {
+			if (isAdmin) {
+				setAuth(req, { kind: "admin", email: "admin@permanent.org" });
+			}
 			next();
 		},
 	);
@@ -138,24 +100,20 @@ export const mockVerifyUserOrAdminOrDelegatedCallAuthentication = (
 	mockAdminSubject: string | undefined,
 ): void => {
 	vi.mocked(verifyUserOrAdminOrDelegatedCallAuthentication).mockImplementation(
-		async (
-			req: Request<
-				unknown,
-				unknown,
-				{
-					userEmailFromAuthToken?: string | undefined;
-					userSubjectFromAuthToken?: string | undefined;
-					adminEmailFromAuthToken?: string | undefined;
-					adminSubjectFromAuthToken?: string | undefined;
-				}
-			>,
-			__,
-			next: NextFunction,
-		) => {
-			req.body.userEmailFromAuthToken = mockUserEmail;
-			req.body.userSubjectFromAuthToken = mockUserSubject;
-			req.body.adminEmailFromAuthToken = mockAdminEmail;
-			req.body.adminSubjectFromAuthToken = mockAdminSubject;
+		async (req: Request<unknown, unknown, unknown>, __, next: NextFunction) => {
+			if (mockAdminEmail !== undefined || mockAdminSubject !== undefined) {
+				setAuth(req, {
+					kind: "admin",
+					email: mockAdminEmail,
+					subject: mockAdminSubject,
+				});
+			} else {
+				setAuth(req, {
+					kind: "user",
+					email: mockUserEmail,
+					subject: mockUserSubject,
+				});
+			}
 			next();
 		},
 	);

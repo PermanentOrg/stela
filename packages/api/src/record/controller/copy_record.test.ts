@@ -113,6 +113,24 @@ describe("POST /record/{recordId}/copies", () => {
 		await agent.post("/api/v2/records/10008/copies").send({}).expect(400);
 	});
 
+	test("expect 400 if the client IP could not be determined", async () => {
+		mockExtractIp();
+		await agent
+			.post("/api/v2/records/10008/copies")
+			.send({ destinationFolderId: "2" })
+			.expect(400);
+	});
+
+	test("expect 400 if auth values are supplied in the body", async () => {
+		await agent
+			.post("/api/v2/records/10008/copies")
+			.send({
+				destinationFolderId: "2",
+				emailFromAuthToken: "test@permanent.org",
+			})
+			.expect(400);
+	});
+
 	test("expect 404 if record does not exist", async () => {
 		await agent
 			.post("/api/v2/records/999999/copies")

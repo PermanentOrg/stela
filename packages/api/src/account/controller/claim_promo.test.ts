@@ -207,7 +207,17 @@ describe("POST /accounts/me/promo-claim", () => {
 		await agent.post("/api/v2/accounts/me/promo-claim").send({}).expect(400);
 	});
 
-	test("should return 400 if emailFromAuthToken is missing", async () => {
+	test("should return 400 if authentication fields are supplied in the body", async () => {
+		await agent
+			.post("/api/v2/accounts/me/promo-claim")
+			.send({
+				promoCode: "VALID_PROMO",
+				emailFromAuthToken: "test+other@permanent.org",
+			})
+			.expect(400);
+	});
+
+	test("should return 400 if the email from the auth token is missing", async () => {
 		mockVerifyUserAuthentication(
 			undefined,
 			"6b640c73-4963-47de-a096-4a05ff8dc5f5",
@@ -218,7 +228,7 @@ describe("POST /accounts/me/promo-claim", () => {
 			.expect(400);
 	});
 
-	test("should return 400 if userSubjectFromAuthToken is missing", async () => {
+	test("should return 400 if the subject from the auth token is missing", async () => {
 		mockVerifyUserAuthentication(testEmail, undefined);
 		await agent
 			.post("/api/v2/accounts/me/promo-claim")

@@ -93,6 +93,17 @@ describe("GET /records/:recordId", () => {
 		mockExtractUserEmailFromAuthToken("not an email");
 		await agent.get("/api/v2/record/10001").expect(400);
 	});
+	test("expect not to trust an email supplied in the request body", async () => {
+		mockExtractUserEmailFromAuthToken();
+		const response = await agent
+			.get("/api/v2/record/10002")
+			.send({ emailFromAuthToken: "test@permanent.org" })
+			.expect(200);
+		const {
+			body: { data: record },
+		} = response as { body: { data: ArchiveRecord | undefined } };
+		expect(record).toBeUndefined();
+	});
 	test("expect to receive a whole record", async () => {
 		const response = await agent.get("/api/v2/record/10008").expect(200);
 		const {

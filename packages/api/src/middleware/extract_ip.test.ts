@@ -8,10 +8,8 @@ describe("extractIp", () => {
 		const request = createRequest({ headers: { "X-Forwarded-For": testIp } });
 		extractIp(request, createResponse(), vi.fn());
 
-		const {
-			body: { ip },
-		} = request as { body: { ip: string } };
-		expect(ip).toBe(testIp);
+		expect(request.metadata?.clientIp).toBe(testIp);
+		expect(request.body).toEqual({});
 	});
 	test("should extract IP from the remoteAddress if not forwarded", () => {
 		const testIp = "192.168.0.1";
@@ -22,10 +20,8 @@ describe("extractIp", () => {
 		});
 		extractIp(request, createResponse(), vi.fn());
 
-		const {
-			body: { ip },
-		} = request as { body: { ip: string } };
-		expect(ip).toBe(testIp);
+		expect(request.metadata?.clientIp).toBe(testIp);
+		expect(request.body).toEqual({});
 	});
 	test("should extract IP from the remoteAddress if forwarded value is not an IP", () => {
 		const testIp = "192.168.0.1";
@@ -37,19 +33,15 @@ describe("extractIp", () => {
 		});
 		extractIp(request, createResponse(), vi.fn());
 
-		const {
-			body: { ip },
-		} = request as { body: { ip: string } };
-		expect(ip).toBe(testIp);
+		expect(request.metadata?.clientIp).toBe(testIp);
+		expect(request.body).toEqual({});
 	});
 	test("should extract the client IP from X-Forwarded-For header with multiple proxies", () => {
 		const testIp = "192.168.0.1";
 		const request = createRequest({ headers: { "X-Forwarded-For": testIp } });
 		extractIp(request, createResponse(), vi.fn());
 
-		const {
-			body: { ip },
-		} = request as { body: { ip: string } };
-		expect(ip).toBe(testIp);
+		expect(request.metadata?.clientIp).toBe(testIp);
+		expect(request.body).toEqual({});
 	});
 });

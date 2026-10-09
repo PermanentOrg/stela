@@ -28,7 +28,6 @@ describe("updateTags", () => {
 
 	test("should call updateListMemberTags with the correct arguments", async () => {
 		const requestBody: UpdateTagsRequest = {
-			emailFromAuthToken: "test@permanent.org",
 			addTags: ["tag1", "tag2"],
 			removeTags: ["tag3", "tag4"],
 		};
@@ -41,7 +40,7 @@ describe("updateTags", () => {
 		];
 
 		const expectedListId = process.env["MAILCHIMP_COMMUNITY_LIST_ID"] ?? "";
-		const expectedSubscriberHash = Md5.hashStr(requestBody.emailFromAuthToken);
+		const expectedSubscriberHash = Md5.hashStr("test@permanent.org");
 
 		vi.mocked(MailchimpMarketing.lists.updateListMemberTags).mockResolvedValue(
 			null,
@@ -72,7 +71,6 @@ describe("updateTags", () => {
 		await agent
 			.put("/api/v2/accounts/tags")
 			.send({
-				emailFromAuthToken: "test@permanent.org",
 				addTags: ["tag1", "tag2"],
 				removeTags: ["tag3", "tag4"],
 			})
@@ -86,7 +84,6 @@ describe("updateTags", () => {
 		await agent
 			.put("/api/v2/accounts/tags")
 			.send({
-				emailFromAuthToken: "test@permanent.org",
 				addTags: ["tag1", "tag2"],
 				removeTags: ["tag3", "tag4"],
 			})
@@ -100,7 +97,6 @@ describe("updateTags", () => {
 		await agent
 			.put("/api/v2/accounts/tags")
 			.send({
-				emailFromAuthToken: "test@permanent.org",
 				addTags: ["tag1", "tag2"],
 				removeTags: ["tag3", "tag4"],
 			})
@@ -111,7 +107,6 @@ describe("updateTags", () => {
 		await agent
 			.put("/api/v2/accounts/tags")
 			.send({
-				emailFromAuthToken: "test@permanent.org",
 				addTags: [1, 2, 4],
 				removeTags: ["tag3", "tag4"],
 			})
