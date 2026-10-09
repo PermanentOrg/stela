@@ -126,6 +126,34 @@ describe("POST /event", () => {
 		await agent.post("/api/v2/event").expect(400);
 	});
 
+	test("should return 400 if the body includes caller identity fields", async () => {
+		await agent
+			.post("/api/v2/event")
+			.send({
+				entity: "account",
+				action: "create",
+				version: 1,
+				entityId: "123",
+				body: {},
+				userSubjectFromAuthToken: "6a1f4c58-0c55-4a5e-8f0f-0d1b6c1d2e3f",
+			})
+			.expect(400);
+	});
+
+	test("should return 400 if the body includes an ip", async () => {
+		await agent
+			.post("/api/v2/event")
+			.send({
+				entity: "account",
+				action: "create",
+				version: 1,
+				entityId: "123",
+				body: {},
+				ip: "127.0.0.1",
+			})
+			.expect(400);
+	});
+
 	test("should return 400 if entity is missing", async () => {
 		await agent
 			.post("/api/v2/event")
@@ -529,7 +557,7 @@ describe("GET /event/checklist", () => {
 		await agent.get("/api/v2/event/checklist").expect(401);
 	});
 
-	test("should return 400 if emailFromAuthToken is not an email", async () => {
+	test("should return 400 if the email from the auth token is not an email", async () => {
 		mockVerifyUserAuthentication("not_an_email", testSubject);
 
 		await agent.get("/api/v2/event/checklist").expect(400);

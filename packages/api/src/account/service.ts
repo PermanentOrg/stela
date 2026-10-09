@@ -15,7 +15,6 @@ import type {
 	GetMarketingTagsResponse,
 	SignupDetails,
 	GetAccountArchiveResult,
-	LeaveArchiveRequest,
 	CreateStorageAdjustmentRequest,
 	StorageAdjustment,
 	Account,
@@ -24,6 +23,7 @@ import type {
 	GetAccountsResponse,
 	PostMarketingTagsRequest,
 } from "./models.js";
+import type { Caller } from "../models.js";
 
 const accountRowToAccount = (row: AccountRow): Account => {
 	const { totalPages: _, ...account } = row;
@@ -85,7 +85,10 @@ export const getAccounts = async (
 	};
 };
 
-const updateTags = async (requestBody: UpdateTagsRequest): Promise<void> => {
+const updateTags = async (
+	callerEmail: string,
+	requestBody: UpdateTagsRequest,
+): Promise<void> => {
 	const tags = (requestBody.addTags ?? [])
 		.map((tag): { name: string; status: "active" | "inactive" } => ({
 			name: tag,
@@ -103,7 +106,7 @@ const updateTags = async (requestBody: UpdateTagsRequest): Promise<void> => {
 	try {
 		await MailchimpMarketing.lists.updateListMemberTags(
 			process.env["MAILCHIMP_COMMUNITY_LIST_ID"] ?? "",
-			Md5.hashStr(requestBody.emailFromAuthToken),
+			Md5.hashStr(callerEmail),
 			{ tags },
 		);
 	} catch (err) {
@@ -117,9 +120,10 @@ const updateTags = async (requestBody: UpdateTagsRequest): Promise<void> => {
 };
 
 const postMarketingTags = async (
+	callerEmail: string,
 	requestBody: PostMarketingTagsRequest,
 ): Promise<{ items: string[] }> => {
-	const subscriberHash = Md5.hashStr(requestBody.emailFromAuthToken);
+	const subscriberHash = Md5.hashStr(callerEmail);
 	const listId = process.env["MAILCHIMP_COMMUNITY_LIST_ID"] ?? "";
 
 	try {
@@ -147,14 +151,13 @@ const postMarketingTags = async (
 	}
 };
 
-const getMarketingTags = async (requestBody: {
-	emailFromAuthToken: string;
-	userSubjectFromAuthToken: string;
-}): Promise<GetMarketingTagsResponse> => {
+const getMarketingTags = async (
+	callerEmail: string,
+): Promise<GetMarketingTagsResponse> => {
 	try {
 		const response = await MailchimpMarketing.lists.getListMemberTags(
 			process.env["MAILCHIMP_COMMUNITY_LIST_ID"] ?? "",
-			Md5.hashStr(requestBody.emailFromAuthToken),
+			Md5.hashStr(callerEmail),
 		);
 		return { items: response.tags.map((tag) => tag.name) };
 	} catch (err) {
@@ -189,12 +192,10 @@ const getSignupDetails = async (
 	return signupDetailResult.rows[0];
 };
 
-const leaveArchive = async ({
-	emailFromAuthToken,
-	userSubjectFromAuthToken,
-	archiveId,
-	ip,
-}: LeaveArchiveRequest): Promise<{
+const leaveArchive = async (
+	archiveId: string,
+	caller: Caller,
+): Promise<{
 	accountArchiveId: string;
 }> =>
 	await db.transaction(async (transactionDb) => {
@@ -203,7 +204,7 @@ const leaveArchive = async ({
 				"account.queries.get_account_archive",
 				{
 					archiveId,
-					email: emailFromAuthToken,
+					email: caller.email,
 				},
 			);
 
@@ -227,7 +228,7 @@ const leaveArchive = async ({
 			"account.queries.delete_account_archive",
 			{
 				archiveId,
-				email: emailFromAuthToken,
+				email: caller.email,
 			},
 		);
 
@@ -241,14 +242,14 @@ const leaveArchive = async ({
 			action: EVENT_ACTION.Delete,
 			entity: EVENT_ENTITY.AccountArchive,
 			entityId: accountArchive.accountArchiveId,
-			ip,
+			ip: caller.ip,
 			version: 1,
 			body: {
 				archiveId,
 				accountId: accountArchive.accountId,
-				accountPrimaryEmail: emailFromAuthToken,
+				accountPrimaryEmail: caller.email,
 			},
-			userSubjectFromAuthToken,
+			userSubjectFromAuthToken: caller.subject,
 		};
 
 		await createEvent(eventData);

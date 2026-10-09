@@ -11,12 +11,13 @@ import {
 	type CreateArchiveRequest,
 	ARCHIVE_TYPE_TO_DB_VALUE,
 } from "../models.js";
+import type { Caller } from "../../models.js";
 
 export const createArchive = async (
 	requestData: CreateArchiveRequest & {
-		userAgent: string | undefined;
 		type: "person" | "group" | "organization";
 	},
+	callerData: Caller,
 ): Promise<Archive> => {
 	const { archiveId, acceptedInviteIds } = await db.transaction(
 		async (transactionDb) => {
@@ -41,7 +42,7 @@ export const createArchive = async (
 
 			await transactionDb
 				.sql("archive.queries.create_account_archive", {
-					accountSubject: requestData.userSubjectFromAuthToken,
+					accountSubject: callerData.subject,
 					archiveId: newArchive.archiveId,
 				})
 				.catch((err: unknown) => {
@@ -70,21 +71,21 @@ export const createArchive = async (
 				});
 
 			const processedInviteIds = await processPendingInvites(
-				requestData.emailFromAuthToken,
+				callerData.email,
 				newArchive.archiveId,
 				transactionDb,
 			);
 
 			await createEventInTransaction(
 				{
-					userSubjectFromAuthToken: requestData.userSubjectFromAuthToken,
-					userEmailFromAuthToken: requestData.emailFromAuthToken,
+					userSubjectFromAuthToken: callerData.subject,
+					userEmailFromAuthToken: callerData.email,
 					entity: "archive",
 					action: "create",
 					version: 1,
 					entityId: newArchive.archiveId,
-					ip: requestData.ip,
-					userAgent: requestData.userAgent,
+					ip: callerData.ip,
+					userAgent: callerData.userAgent,
 					body: { name: requestData.name, type: requestData.type },
 				},
 				transactionDb,
@@ -97,7 +98,7 @@ export const createArchive = async (
 		},
 	);
 
-	const archive = await getArchive(archiveId, requestData.emailFromAuthToken);
+	const archive = await getArchive(archiveId, callerData.email);
 
 	if (acceptedInviteIds.length > 0) {
 		await sendShareInvitationAcceptanceNotification(acceptedInviteIds).catch(

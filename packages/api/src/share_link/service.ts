@@ -23,6 +23,7 @@ const APPROVAL_REQUIRED = 0;
 const DEFAULT_PAGE_SIZE = 10;
 
 const createShareLinkRequestParamsToDatabaseParams = (
+	callerEmail: string,
 	data: CreateShareLinkRequest,
 	itemIsPublic: boolean,
 	shareToken: string,
@@ -42,10 +43,11 @@ const createShareLinkRequestParamsToDatabaseParams = (
 	expirationTimestamp: data.expirationTimestamp,
 	urlToken: shareToken,
 	shareUrl: `https://${process.env["SITE_URL"] ?? ""}/share/${shareToken}`,
-	email: data.emailFromAuthToken,
+	email: callerEmail,
 });
 
 const updateShareLinkRequestParamsToDatabaseParams = (
+	callerEmail: string,
 	data: UpdateShareLinkRequest,
 	noApproval: number | null,
 	shareLinkId: string,
@@ -64,16 +66,17 @@ const updateShareLinkRequestParamsToDatabaseParams = (
 	expirationTimestamp: data.expirationTimestamp,
 	setExpirationTimestampToNull: data.expirationTimestamp === null,
 	shareLinkId,
-	email: data.emailFromAuthToken,
+	email: callerEmail,
 });
 
 const createShareLink = async (
+	callerEmail: string,
 	data: CreateShareLinkRequest,
 ): Promise<ShareLink> => {
 	const accessRole = await getItemAccessRole(
 		data.itemId,
 		data.itemType,
-		data.emailFromAuthToken,
+		callerEmail,
 	);
 	if (accessRoleLessThan(accessRole, AccessRole.Manager)) {
 		throw new createError.Forbidden(
@@ -93,6 +96,7 @@ const createShareLink = async (
 		.sql<ShareLinkRow>(
 			"share_link.queries.create_share_link",
 			createShareLinkRequestParamsToDatabaseParams(
+				callerEmail,
 				data,
 				itemIsPublic,
 				shareToken,
@@ -145,13 +149,14 @@ const postUpdateMaxUses = (
 
 const updateShareLink = async (
 	shareLinkId: string,
+	callerEmail: string,
 	data: UpdateShareLinkRequest,
 ): Promise<ShareLink> => {
 	const shareLinkResult = await db
 		.sql<ShareLink>("share_link.queries.get_share_links", {
 			shareLinkIds: [shareLinkId],
 			shareTokens: [],
-			email: data.emailFromAuthToken,
+			email: callerEmail,
 			pageSize: null,
 			cursor: undefined,
 		})
@@ -186,6 +191,7 @@ const updateShareLink = async (
 		.sql<ShareLinkRow>(
 			"share_link.queries.update_share_link",
 			updateShareLinkRequestParamsToDatabaseParams(
+				callerEmail,
 				data,
 				noApproval,
 				shareLinkId,

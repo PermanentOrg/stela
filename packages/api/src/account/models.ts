@@ -97,7 +97,6 @@ export interface GetAccountsResponse {
 }
 
 export interface UpdateTagsRequest {
-	emailFromAuthToken: string;
 	addTags?: string[];
 	removeTags?: string[];
 }
@@ -107,8 +106,6 @@ export interface GetMarketingTagsResponse {
 }
 
 export interface PostMarketingTagsRequest {
-	emailFromAuthToken: string;
-	userSubjectFromAuthToken: string;
 	tags: string[];
 }
 
@@ -123,16 +120,8 @@ export interface GetAccountArchiveResult {
 	type: string;
 	status: string;
 }
-export interface LeaveArchiveRequest {
-	emailFromAuthToken: string;
-	userSubjectFromAuthToken: string;
-	archiveId: string;
-	ip: string;
-}
 
 export interface CreateStorageAdjustmentRequest {
-	emailFromAuthToken: string;
-	accountEmail: string;
 	storageAmount: number;
 }
 

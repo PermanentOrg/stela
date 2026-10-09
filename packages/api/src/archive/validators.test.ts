@@ -45,10 +45,7 @@ describe("validateArchiveIdFromParams", () => {
 
 describe("validateCreateArchiveRequest", () => {
 	const validBody = {
-		emailFromAuthToken: "test@permanent.org",
-		userSubjectFromAuthToken: "82bd483e-914b-4bfe-abf9-92ffe86d7803",
 		name: "My Archive",
-		ip: "127.0.0.1",
 	};
 
 	test("should not throw for a valid body without type", () => {
@@ -85,17 +82,18 @@ describe("validateCreateArchiveRequest", () => {
 		}).toThrow();
 	});
 
-	test("should throw if emailFromAuthToken is missing", () => {
-		const { emailFromAuthToken: _email, ...rest } = validBody;
+	test("should reject auth fields supplied in the body", () => {
 		expect(() => {
-			validateCreateArchiveRequest(rest);
-		}).toThrow();
+			validateCreateArchiveRequest({
+				...validBody,
+				emailFromAuthToken: "test@permanent.org",
+			});
+		}).toThrow('"emailFromAuthToken" is not allowed');
 	});
 
-	test("should throw if ip is missing", () => {
-		const { ip: _ip, ...rest } = validBody;
+	test("should reject an ip supplied in the body", () => {
 		expect(() => {
-			validateCreateArchiveRequest(rest);
-		}).toThrow();
+			validateCreateArchiveRequest({ ...validBody, ip: "127.0.0.1" });
+		}).toThrow('"ip" is not allowed');
 	});
 });

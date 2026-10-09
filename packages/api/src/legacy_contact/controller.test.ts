@@ -149,7 +149,7 @@ describe("POST /legacy-contact", () => {
 		expect(logger.error).toHaveBeenCalledWith(testError);
 	});
 
-	test("should error if emailFromAuthToken doesn't correspond to an account", async () => {
+	test("should error if the caller's email doesn't correspond to an account", async () => {
 		mockVerifyUserAuthentication(
 			"not_an_account@permanent.org",
 			"88420040-ec8d-4bc8-88f8-defaa74a05a5",

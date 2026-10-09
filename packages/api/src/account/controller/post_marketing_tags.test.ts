@@ -42,8 +42,6 @@ describe("postMarketingTags", () => {
 		const response = await agent
 			.post("/api/v2/accounts/me/marketing-tags")
 			.send({
-				emailFromAuthToken: testEmail,
-				userSubjectFromAuthToken: testUserSubject,
 				tags: ["tag1", "tag2"],
 			})
 			.expect(200);
@@ -69,8 +67,6 @@ describe("postMarketingTags", () => {
 		await agent
 			.post("/api/v2/accounts/me/marketing-tags")
 			.send({
-				emailFromAuthToken: testEmail,
-				userSubjectFromAuthToken: testUserSubject,
 				tags: [],
 			})
 			.expect(400);
@@ -84,8 +80,6 @@ describe("postMarketingTags", () => {
 		await agent
 			.post("/api/v2/accounts/me/marketing-tags")
 			.send({
-				emailFromAuthToken: testEmail,
-				userSubjectFromAuthToken: testUserSubject,
 				tags: ["tag1"],
 			})
 			.expect(500);
@@ -113,8 +107,6 @@ describe("postMarketingTags", () => {
 		await agent
 			.post("/api/v2/accounts/me/marketing-tags")
 			.send({
-				emailFromAuthToken: testEmail,
-				userSubjectFromAuthToken: testUserSubject,
 				tags: ["tag1"],
 			})
 			.expect(404);
@@ -128,8 +120,6 @@ describe("postMarketingTags", () => {
 		await agent
 			.post("/api/v2/accounts/me/marketing-tags")
 			.send({
-				emailFromAuthToken: testEmail,
-				userSubjectFromAuthToken: testUserSubject,
 				tags: ["tag1"],
 			})
 			.expect(500);
@@ -138,21 +128,13 @@ describe("postMarketingTags", () => {
 	});
 
 	test("should return a bad request error if tags is missing", async () => {
-		await agent
-			.post("/api/v2/accounts/me/marketing-tags")
-			.send({
-				emailFromAuthToken: testEmail,
-				userSubjectFromAuthToken: testUserSubject,
-			})
-			.expect(400);
+		await agent.post("/api/v2/accounts/me/marketing-tags").send({}).expect(400);
 	});
 
 	test("should return a bad request error if tags contains non-strings", async () => {
 		await agent
 			.post("/api/v2/accounts/me/marketing-tags")
 			.send({
-				emailFromAuthToken: testEmail,
-				userSubjectFromAuthToken: testUserSubject,
 				tags: [1, 2, 3],
 			})
 			.expect(400);

@@ -1,6 +1,4 @@
 export interface StoragePurchaseRequest {
-	emailFromAuthToken: string;
-	userSubjectFromAuthToken: string;
 	amountInUSD: number;
 }
 

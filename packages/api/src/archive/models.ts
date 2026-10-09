@@ -135,9 +135,6 @@ export interface GetReceivedSharesResponse {
 }
 
 export interface CreateArchiveRequest {
-	emailFromAuthToken: string;
-	userSubjectFromAuthToken: string;
 	name: string;
 	type?: "person" | "group" | "organization";
-	ip: string;
 }

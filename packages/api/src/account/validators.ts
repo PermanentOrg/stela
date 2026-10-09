@@ -5,15 +5,7 @@ import type {
 	UpdateTagsRequest,
 	GetAccountsQuery,
 } from "./models.js";
-import {
-	fieldsFromUserAuthentication,
-	fieldsFromAdminAuthentication,
-	validateBodyFromAuthentication,
-	validateBodyFromAdminAuthentication,
-} from "../validators/index.js";
 import { paginationFields } from "../validators/shared.js";
-
-export { validateBodyFromAuthentication, validateBodyFromAdminAuthentication };
 
 export const validateUpdateTagsRequest: (
 	data: unknown,
@@ -22,7 +14,6 @@ export const validateUpdateTagsRequest: (
 ): asserts data is UpdateTagsRequest => {
 	const validation = Joi.object()
 		.keys({
-			...fieldsFromUserAuthentication,
 			addTags: Joi.array().items(Joi.string()),
 			removeTags: Joi.array().items(Joi.string()),
 		})
@@ -55,28 +46,6 @@ export const validateLeaveArchiveParams: (
 	}
 };
 
-export const validateLeaveArchiveRequest: (data: unknown) => asserts data is {
-	ip: string;
-	emailFromAuthToken: string;
-	userSubjectFromAuthToken: string;
-} = (
-	data: unknown,
-): asserts data is {
-	ip: string;
-	emailFromAuthToken: string;
-	userSubjectFromAuthToken: string;
-} => {
-	const validation = Joi.object()
-		.keys({
-			...fieldsFromUserAuthentication,
-			ip: Joi.string().ip().required(),
-		})
-		.validate(data);
-	if (validation.error !== undefined) {
-		throw validation.error;
-	}
-};
-
 export const validateCreateStorageAdjustmentRequest: (
 	data: unknown,
 ) => asserts data is CreateStorageAdjustmentRequest = (
@@ -84,7 +53,6 @@ export const validateCreateStorageAdjustmentRequest: (
 ): asserts data is CreateStorageAdjustmentRequest => {
 	const validation = Joi.object()
 		.keys({
-			...fieldsFromAdminAuthentication,
 			storageAmount: Joi.number().integer().not(0).required(),
 		})
 		.validate(data);
@@ -122,7 +90,6 @@ export const validatePostMarketingTagsRequest: (
 ): asserts data is PostMarketingTagsRequest => {
 	const validation = Joi.object()
 		.keys({
-			...fieldsFromUserAuthentication,
 			tags: Joi.array().items(Joi.string()).min(1).required(),
 		})
 		.validate(data);

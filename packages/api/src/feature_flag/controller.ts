@@ -14,7 +14,7 @@ import {
 	validateUpdateFeatureFlagRequest,
 	validateFeatureFlagParams,
 } from "./validators.js";
-import { validateIsAdminFromAuthentication } from "../validators/shared.js";
+import { validateAdminAuthentication } from "../validators/index.js";
 import { HTTP_STATUS } from "@pdc/http-status-codes";
 
 export const featureController = Router();
@@ -24,8 +24,9 @@ featureController.get(
 	extractUserIsAdminFromAuthToken,
 	async (req: Request, res: Response, next: NextFunction): Promise<void> => {
 		try {
-			validateIsAdminFromAuthentication(req.body);
-			const featureFlags = await featureService.getFeatureFlags(req.body.admin);
+			const featureFlags = await featureService.getFeatureFlags(
+				req.metadata?.auth?.kind === "admin",
+			);
 			res.json({ items: featureFlags });
 		} catch (err) {
 			next(err);
@@ -38,6 +39,7 @@ featureController.post(
 	verifyAdminAuthentication,
 	async (req: Request, res: Response, next: NextFunction) => {
 		try {
+			validateAdminAuthentication(req.metadata?.auth);
 			validateCreateFeatureFlagRequest(req.body);
 			const insertedFeatureFlag = await createFeatureService.createFeatureFlag(
 				req.body,
@@ -54,6 +56,7 @@ featureController.put(
 	verifyAdminAuthentication,
 	async (req: Request, res: Response, next: NextFunction) => {
 		try {
+			validateAdminAuthentication(req.metadata?.auth);
 			validateUpdateFeatureFlagRequest(req.body);
 			validateFeatureFlagParams(req.params);
 			const featureFlag = await updateFeatureService.updateFeatureFlag(

@@ -6,6 +6,7 @@ import {
 	validateStripeWebhookBody,
 } from "./validators.js";
 import { initiateStoragePurchase, handleStripeWebhook } from "./service.js";
+import { validateUserAuthentication } from "../validators/index.js";
 import { HTTP_STATUS } from "@pdc/http-status-codes";
 
 export const storagePurchaseController = Router();
@@ -35,8 +36,10 @@ storagePurchaseController.post(
 	verifyUserAuthentication,
 	async (req: Request, res: Response, next: NextFunction) => {
 		try {
+			const auth = req.metadata?.auth;
+			validateUserAuthentication(auth);
 			validateStoragePurchaseRequest(req.body);
-			const result = await initiateStoragePurchase(req.body);
+			const result = await initiateStoragePurchase(auth.email, req.body);
 			res.status(HTTP_STATUS.SUCCESSFUL.CREATED).json({ data: result });
 		} catch (err) {
 			next(err);

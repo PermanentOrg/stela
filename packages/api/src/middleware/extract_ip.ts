@@ -13,16 +13,19 @@ const extractClientIpFromProxyList = (
 };
 
 export const extractIp = (
-	req: Request<unknown, unknown, Record<string, string | undefined>>,
+	req: Request<unknown, unknown, unknown>,
 	_: Response,
 	next: NextFunction,
 ): void => {
 	const ipFromHeaders = extractClientIpFromProxyList(
 		req.get("X-Forwarded-For"),
 	);
-	req.body["ip"] =
-		Joi.string().ip().required().validate(ipFromHeaders).error === undefined
-			? ipFromHeaders
-			: req.socket.remoteAddress;
+	req.metadata = {
+		...req.metadata,
+		clientIp:
+			Joi.string().ip().required().validate(ipFromHeaders).error === undefined
+				? ipFromHeaders
+				: req.socket.remoteAddress,
+	};
 	next();
 };
