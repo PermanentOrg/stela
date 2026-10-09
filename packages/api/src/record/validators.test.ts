@@ -9,8 +9,6 @@ describe("validatePatchRecordRequest", () => {
 		let error = null;
 		try {
 			validatePatchRecordRequest({
-				emailFromAuthToken: "user@example.com",
-				userSubjectFromAuthToken: "5c3473b6-cf2e-4c55-a80e-8db51d1bc5fd",
 				locationId: 123,
 				description: "description",
 			});
@@ -24,8 +22,6 @@ describe("validatePatchRecordRequest", () => {
 		let error = null;
 		try {
 			validatePatchRecordRequest({
-				emailFromAuthToken: "user@example.com",
-				userSubjectFromAuthToken: "5c3473b6-cf2e-4c55-a80e-8db51d1bc5fd",
 				locationId: 123,
 			});
 		} catch (err) {
@@ -38,8 +34,6 @@ describe("validatePatchRecordRequest", () => {
 		let error = null;
 		try {
 			validatePatchRecordRequest({
-				emailFromAuthToken: "user@example.com",
-				userSubjectFromAuthToken: "5c3473b6-cf2e-4c55-a80e-8db51d1bc5fd",
 				locationId: null,
 				description: null,
 			});
@@ -54,8 +48,6 @@ describe("validatePatchRecordRequest", () => {
 		let error = null;
 		try {
 			validatePatchRecordRequest({
-				emailFromAuthToken: "user@example.com",
-				userSubjectFromAuthToken: "5c3473b6-cf2e-4c55-a80e-8db51d1bc5fd",
 				locationId: true,
 			});
 		} catch (err) {
@@ -69,8 +61,6 @@ describe("validatePatchRecordRequest", () => {
 		let error = null;
 		try {
 			validatePatchRecordRequest({
-				emailFromAuthToken: "user@example.com",
-				userSubjectFromAuthToken: "5c3473b6-cf2e-4c55-a80e-8db51d1bc5fd",
 				location: {
 					name: "Jean Valjean's House",
 					city: "Paris",
@@ -91,8 +81,6 @@ describe("validatePatchRecordRequest", () => {
 		let error = null;
 		try {
 			validatePatchRecordRequest({
-				emailFromAuthToken: "user@example.com",
-				userSubjectFromAuthToken: "5c3473b6-cf2e-4c55-a80e-8db51d1bc5fd",
 				location: {},
 			});
 		} catch (err) {
@@ -106,8 +94,6 @@ describe("validatePatchRecordRequest", () => {
 		let error = null;
 		try {
 			validatePatchRecordRequest({
-				emailFromAuthToken: "user@example.com",
-				userSubjectFromAuthToken: "5c3473b6-cf2e-4c55-a80e-8db51d1bc5fd",
 				location: {
 					id: "1",
 					name: "Jean Valjean's House",
@@ -124,8 +110,6 @@ describe("validatePatchRecordRequest", () => {
 		let error = null;
 		try {
 			validatePatchRecordRequest({
-				emailFromAuthToken: "user@example.com",
-				userSubjectFromAuthToken: "5c3473b6-cf2e-4c55-a80e-8db51d1bc5fd",
 				locationId: 1,
 				location: { name: "Jean Valjean's House" },
 			});
@@ -140,8 +124,6 @@ describe("validatePatchRecordRequest", () => {
 		let error = null;
 		try {
 			validatePatchRecordRequest({
-				emailFromAuthToken: "user@example.com",
-				userSubjectFromAuthToken: "5c3473b6-cf2e-4c55-a80e-8db51d1bc5fd",
 				location: { precision: "perfect" },
 			});
 		} catch (err) {
@@ -155,8 +137,6 @@ describe("validatePatchRecordRequest", () => {
 		let error = null;
 		try {
 			validatePatchRecordRequest({
-				emailFromAuthToken: "user@example.com",
-				userSubjectFromAuthToken: "5c3473b6-cf2e-4c55-a80e-8db51d1bc5fd",
 				location: { latitude: 200 },
 			});
 		} catch (err) {
@@ -170,8 +150,6 @@ describe("validatePatchRecordRequest", () => {
 		let error = null;
 		try {
 			validatePatchRecordRequest({
-				emailFromAuthToken: "user@example.com",
-				userSubjectFromAuthToken: "5c3473b6-cf2e-4c55-a80e-8db51d1bc5fd",
 				location: {
 					streetNumber: "55",
 					streetName: "Rue Plumet",
@@ -186,6 +164,21 @@ describe("validatePatchRecordRequest", () => {
 		} finally {
 			expect(error).not.toBeNull();
 		}
+	});
+
+	test("should raise an error if no fields are provided", () => {
+		expect(() => {
+			validatePatchRecordRequest({});
+		}).toThrow('"value" must have at least 1 key');
+	});
+
+	test("should reject auth fields supplied in the body", () => {
+		expect(() => {
+			validatePatchRecordRequest({
+				emailFromAuthToken: "user@example.com",
+				description: "description",
+			});
+		}).toThrow('"emailFromAuthToken" is not allowed');
 	});
 });
 

@@ -20,6 +20,7 @@ const getRandomAlphanumericString = (length: number): string => {
 };
 
 export const issueGift = async (
+	callerEmail: string,
 	requestBody: GiftStorageRequest,
 ): Promise<GiftStorageResponse> => {
 	const recipientEmails = requestBody.recipientEmails.map((email: string) =>
@@ -69,7 +70,7 @@ export const issueGift = async (
 			.sql<{ spaceLeft: string }>(
 				"storage.queries.get_account_space_for_update",
 				{
-					email: requestBody.emailFromAuthToken,
+					email: callerEmail,
 				},
 			)
 			.catch((err: unknown) => {
@@ -95,7 +96,7 @@ export const issueGift = async (
 
 		await transactionDb
 			.sql("storage.queries.record_gift", {
-				fromEmail: requestBody.emailFromAuthToken,
+				fromEmail: callerEmail,
 				toEmails: existingAccountEmails,
 				storageAmountInBytes: requestBody.storageAmount * GB,
 				recipientCount: existingAccountEmails.length,
@@ -110,7 +111,7 @@ export const issueGift = async (
 				emails: emailsToInvite,
 				storageAmountInBytes: requestBody.storageAmount * GB,
 				tokens: inviteTokens,
-				byAccountEmail: requestBody.emailFromAuthToken,
+				byAccountEmail: callerEmail,
 				recipientCount: emailsToInvite.length,
 			})
 			.catch((err: unknown) => {
@@ -122,7 +123,7 @@ export const issueGift = async (
 	await Promise.all(
 		existingAccountEmails.map(async (email) => {
 			await sendGiftNotification(
-				requestBody.emailFromAuthToken,
+				callerEmail,
 				email,
 				requestBody.note,
 				requestBody.storageAmount,
@@ -133,7 +134,7 @@ export const issueGift = async (
 	await Promise.all(
 		emailsToInvite.map(async (email, idx) => {
 			await sendInvitationNotification({
-				fromEmail: requestBody.emailFromAuthToken,
+				fromEmail: callerEmail,
 				toEmail: email,
 				message: requestBody.note,
 				giftAmount: requestBody.storageAmount,

@@ -69,6 +69,7 @@ const determineStripeCustomerId = async (
 };
 
 export const initiateStoragePurchase = async (
+	callerEmail: string,
 	requestBody: StoragePurchaseRequest,
 ): Promise<StoragePurchaseResponse> => {
 	const accountResult = await db
@@ -77,7 +78,7 @@ export const initiateStoragePurchase = async (
 			name: string;
 			accountId: string;
 		}>("storage_purchase.queries.get_account_data", {
-			email: requestBody.emailFromAuthToken,
+			email: callerEmail,
 		})
 		.catch((err: unknown) => {
 			logger.error(err);
@@ -91,7 +92,7 @@ export const initiateStoragePurchase = async (
 	const customerId =
 		accountResult.rows[0].stripeCustomerId ??
 		(await determineStripeCustomerId(
-			requestBody.emailFromAuthToken,
+			callerEmail,
 			accountResult.rows[0].accountId,
 			accountResult.rows[0].name,
 		));

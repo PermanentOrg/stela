@@ -11,8 +11,8 @@ import {
 } from "./authentication.js";
 import { fusionAuthClient } from "../fusionauth.js";
 import {
-	validateBodyFromAuthentication,
-	fieldsFromUserOrAdminAuthentication,
+	validateUserAuthentication,
+	validateUserOrAdminAuthentication,
 } from "../validators/index.js";
 
 vi.mock("../fusionauth");
@@ -87,7 +87,7 @@ const missingEmailIntrospectionResponse = {
 };
 
 describe("verifyUserAuthentication", () => {
-	test("should add the email to the request body if the token is valid", async () => {
+	test("should add the email to the request metadata if the token is valid", async () => {
 		const request = createRequest({
 			headers: { Authorization: "Bearer test" },
 		});
@@ -96,13 +96,13 @@ describe("verifyUserAuthentication", () => {
 		);
 		await verifyUserAuthentication(request, createResponse(), vi.fn());
 
-		const {
-			body: { emailFromAuthToken },
-		} = request as { body: { emailFromAuthToken: string } };
-		expect(emailFromAuthToken).toBe(testEmail);
+		const auth = request.metadata?.auth;
+		expect(request.body).toEqual({});
+		expect(auth?.kind).toBe("user");
+		expect(auth?.email).toBe(testEmail);
 	});
 
-	test("should add the subject to the request body if the token is valid", async () => {
+	test("should add the subject to the request metadata if the token is valid", async () => {
 		const request = createRequest({
 			headers: { Authorization: "Bearer test" },
 		});
@@ -111,13 +111,13 @@ describe("verifyUserAuthentication", () => {
 		);
 		await verifyUserAuthentication(request, createResponse(), vi.fn());
 
-		const {
-			body: { userSubjectFromAuthToken },
-		} = request as { body: { userSubjectFromAuthToken: string } };
-		expect(userSubjectFromAuthToken).toBe(testSubject);
+		const auth = request.metadata?.auth;
+		expect(request.body).toEqual({});
+		expect(auth?.kind).toBe("user");
+		expect(auth?.subject).toBe(testSubject);
 	});
 
-	test("should produce a request body that passes auth-only request validation", async () => {
+	test("should produce request metadata that passes auth-only request validation", async () => {
 		const request = createRequest({
 			headers: { Authorization: "Bearer test" },
 		});
@@ -127,7 +127,7 @@ describe("verifyUserAuthentication", () => {
 		await verifyUserAuthentication(request, createResponse(), vi.fn());
 
 		expect(() => {
-			validateBodyFromAuthentication(request.body);
+			validateUserAuthentication(request.metadata?.auth);
 		}).not.toThrow();
 	});
 
@@ -263,7 +263,7 @@ describe("verifyUserAuthentication", () => {
 		);
 	});
 
-	test("should add email and subject to the request body if the SFTP token is valid", async () => {
+	test("should add email and subject to the request metadata if the SFTP token is valid", async () => {
 		const request = createRequest({
 			headers: { Authorization: "Bearer test" },
 		});
@@ -272,13 +272,11 @@ describe("verifyUserAuthentication", () => {
 			.mockImplementationOnce(async () => successfulIntrospectionResponse);
 		await verifyUserAuthentication(request, createResponse(), vi.fn());
 
-		const {
-			body: { emailFromAuthToken, userSubjectFromAuthToken },
-		} = request as {
-			body: { emailFromAuthToken: string; userSubjectFromAuthToken: string };
-		};
-		expect(emailFromAuthToken).toBe(testEmail);
-		expect(userSubjectFromAuthToken).toBe(testSubject);
+		const auth = request.metadata?.auth;
+		expect(request.body).toEqual({});
+		expect(auth?.kind).toBe("user");
+		expect(auth?.email).toBe(testEmail);
+		expect(auth?.subject).toBe(testSubject);
 	});
 
 	test("should throw unauthorized if both backend and SFTP tokens are invalid", async () => {
@@ -334,7 +332,7 @@ describe("verifyUserAuthentication", () => {
 });
 
 describe("verifyAdminAuthentication", () => {
-	test("should add the email to the request body if the token is valid", async () => {
+	test("should add the email to the request metadata if the token is valid", async () => {
 		const request = createRequest({
 			headers: { Authorization: "Bearer test" },
 		});
@@ -343,13 +341,13 @@ describe("verifyAdminAuthentication", () => {
 		);
 		await verifyAdminAuthentication(request, createResponse(), vi.fn());
 
-		const {
-			body: { emailFromAuthToken },
-		} = request as { body: { emailFromAuthToken: string } };
-		expect(emailFromAuthToken).toBe(testEmail);
+		const auth = request.metadata?.auth;
+		expect(request.body).toEqual({});
+		expect(auth?.kind).toBe("admin");
+		expect(auth?.email).toBe(testEmail);
 	});
 
-	test("should add the admin subject to the request body if the token is valid", async () => {
+	test("should add the admin subject to the request metadata if the token is valid", async () => {
 		const request = createRequest({
 			headers: { Authorization: "Bearer test" },
 		});
@@ -358,10 +356,10 @@ describe("verifyAdminAuthentication", () => {
 		);
 		await verifyAdminAuthentication(request, createResponse(), vi.fn());
 
-		const {
-			body: { adminSubjectFromAuthToken },
-		} = request as { body: { adminSubjectFromAuthToken: string } };
-		expect(adminSubjectFromAuthToken).toBe(testSubject);
+		const auth = request.metadata?.auth;
+		expect(request.body).toEqual({});
+		expect(auth?.kind).toBe("admin");
+		expect(auth?.subject).toBe(testSubject);
 	});
 
 	test("should throw unauthorized if authorization header is missing", async () => {
@@ -391,7 +389,7 @@ describe("verifyUserOrAdminAuthentication", () => {
 		vi.clearAllMocks();
 		vi.resetAllMocks();
 	});
-	test("should add subject and email to the request body if user token is valid", async () => {
+	test("should add subject and email to the request metadata if user token is valid", async () => {
 		const request = createRequest({
 			headers: { Authorization: "Bearer test" },
 		});
@@ -400,22 +398,17 @@ describe("verifyUserOrAdminAuthentication", () => {
 		);
 
 		await verifyUserOrAdminAuthentication(request, createResponse(), vi.fn());
-		const {
-			body: { userSubjectFromAuthToken, userEmailFromAuthToken },
-		} = request as {
-			body: {
-				userSubjectFromAuthToken: string;
-				userEmailFromAuthToken: string;
-			};
-		};
-		expect(userSubjectFromAuthToken).toBe(testSubject);
-		expect(userEmailFromAuthToken).toBe(testEmail);
-		expect(
-			fieldsFromUserOrAdminAuthentication.validate(request.body).error,
-		).toBeFalsy();
+		const auth = request.metadata?.auth;
+		expect(request.body).toEqual({});
+		expect(auth?.kind).toBe("user");
+		expect(auth?.subject).toBe(testSubject);
+		expect(auth?.email).toBe(testEmail);
+		expect(() => {
+			validateUserOrAdminAuthentication(request.metadata?.auth);
+		}).not.toThrow();
 	});
 
-	test("should add subject and email to the request body if admin token is valid", async () => {
+	test("should add subject and email to the request metadata if admin token is valid", async () => {
 		const request = createRequest({
 			headers: { Authorization: "Bearer test" },
 		});
@@ -428,19 +421,14 @@ describe("verifyUserOrAdminAuthentication", () => {
 		await verifyUserOrAdminAuthentication(request, createResponse(), next);
 		expect(next).toHaveBeenCalledTimes(1);
 		expect(next).toHaveBeenCalledWith();
-		const {
-			body: { adminSubjectFromAuthToken, adminEmailFromAuthToken },
-		} = request as {
-			body: {
-				adminSubjectFromAuthToken: string;
-				adminEmailFromAuthToken: string;
-			};
-		};
-		expect(adminSubjectFromAuthToken).toBe(testSubject);
-		expect(adminEmailFromAuthToken).toBe(testEmail);
-		expect(
-			fieldsFromUserOrAdminAuthentication.validate(request.body).error,
-		).toBeFalsy();
+		const auth = request.metadata?.auth;
+		expect(request.body).toEqual({});
+		expect(auth?.kind).toBe("admin");
+		expect(auth?.subject).toBe(testSubject);
+		expect(auth?.email).toBe(testEmail);
+		expect(() => {
+			validateUserOrAdminAuthentication(request.metadata?.auth);
+		}).not.toThrow();
 	});
 
 	test("should throw unauthorized if both tokens are invalid", async () => {
@@ -483,7 +471,7 @@ describe("verifyUserOrAdminAuthentication", () => {
 		expect(introspectAccessTokenSpy).toHaveBeenCalledTimes(1);
 	});
 
-	test("should add subject and email to the request body if SFTP token is valid", async () => {
+	test("should add subject and email to the request metadata if SFTP token is valid", async () => {
 		const request = createRequest({
 			headers: { Authorization: "Bearer test" },
 		});
@@ -493,19 +481,14 @@ describe("verifyUserOrAdminAuthentication", () => {
 			.mockImplementationOnce(async () => successfulIntrospectionResponse);
 
 		await verifyUserOrAdminAuthentication(request, createResponse(), vi.fn());
-		const {
-			body: { userSubjectFromAuthToken, userEmailFromAuthToken },
-		} = request as {
-			body: {
-				userSubjectFromAuthToken: string;
-				userEmailFromAuthToken: string;
-			};
-		};
-		expect(userSubjectFromAuthToken).toBe(testSubject);
-		expect(userEmailFromAuthToken).toBe(testEmail);
-		expect(
-			fieldsFromUserOrAdminAuthentication.validate(request.body).error,
-		).toBeFalsy();
+		const auth = request.metadata?.auth;
+		expect(request.body).toEqual({});
+		expect(auth?.kind).toBe("user");
+		expect(auth?.subject).toBe(testSubject);
+		expect(auth?.email).toBe(testEmail);
+		expect(() => {
+			validateUserOrAdminAuthentication(request.metadata?.auth);
+		}).not.toThrow();
 	});
 
 	test("should throw unauthorized if both tokens are expired", async () => {
@@ -556,7 +539,7 @@ describe("verifyUserOrAdminAuthentication", () => {
 });
 
 describe("extractUserEmailFromAuthToken", () => {
-	test("request body will have email if there was an auth token", async () => {
+	test("request metadata will have email if there was an auth token", async () => {
 		const request = createRequest({
 			headers: { Authorization: "Bearer test" },
 		});
@@ -564,22 +547,30 @@ describe("extractUserEmailFromAuthToken", () => {
 			async () => successfulIntrospectionResponse,
 		);
 		await extractUserEmailFromAuthToken(request, createResponse(), vi.fn());
-		const {
-			body: { emailFromAuthToken },
-		} = request as { body: { emailFromAuthToken: string } };
-		expect(emailFromAuthToken).toBe(testEmail);
+		const auth = request.metadata?.auth;
+		expect(request.body).toEqual({});
+		expect(auth?.kind).toBe("user");
+		expect(auth?.email).toBe(testEmail);
 	});
 
-	test("Request body has undefined emailFromAuthToken if there was no auth token", async () => {
+	test("Request metadata has undefined email if there was no auth token", async () => {
 		const request = createRequest({ headers: { Authorization: "" } });
 		await extractUserEmailFromAuthToken(request, createResponse(), vi.fn());
-		const {
-			body: { emailFromAuthToken },
-		} = request as { body: { emailFromAuthToken: string } };
-		expect(emailFromAuthToken).toBeUndefined();
+		const auth = request.metadata?.auth;
+		expect(request.body).toEqual({});
+		expect(auth?.email).toBeUndefined();
 	});
 
-	test("Request body has undefined emailFromAuthToken if auth token is invalid", async () => {
+	test("should ignore auth values supplied in the request body", async () => {
+		const request = createRequest({
+			headers: { Authorization: "" },
+			body: { emailFromAuthToken: testEmail },
+		});
+		await extractUserEmailFromAuthToken(request, createResponse(), vi.fn());
+		expect(request.metadata?.auth?.email).toBeUndefined();
+	});
+
+	test("Request metadata has undefined email if auth token is invalid", async () => {
 		const request = createRequest({
 			headers: { Authorization: "Bearer test" },
 		});
@@ -587,13 +578,12 @@ describe("extractUserEmailFromAuthToken", () => {
 			async () => failedIntrospectionResponse,
 		);
 		await extractUserEmailFromAuthToken(request, createResponse(), vi.fn());
-		const {
-			body: { emailFromAuthToken },
-		} = request as { body: { emailFromAuthToken: string } };
-		expect(emailFromAuthToken).toBeUndefined();
+		const auth = request.metadata?.auth;
+		expect(request.body).toEqual({});
+		expect(auth?.email).toBeUndefined();
 	});
 
-	test("Request body has undefined emailFromAuthToken if auth token is expired", async () => {
+	test("Request metadata has undefined email if auth token is expired", async () => {
 		const request = createRequest({
 			headers: { Authorization: "Bearer test" },
 		});
@@ -601,13 +591,12 @@ describe("extractUserEmailFromAuthToken", () => {
 			async () => expiredTokenIntrospectionResponse,
 		);
 		await extractUserEmailFromAuthToken(request, createResponse(), vi.fn());
-		const {
-			body: { emailFromAuthToken },
-		} = request as { body: { emailFromAuthToken: string } };
-		expect(emailFromAuthToken).toBeUndefined();
+		const auth = request.metadata?.auth;
+		expect(request.body).toEqual({});
+		expect(auth?.email).toBeUndefined();
 	});
 
-	test("Request body has undefined emailFromAuthToken if all introspect calls throw errors", async () => {
+	test("Request metadata has undefined email if all introspect calls throw errors", async () => {
 		const request = createRequest({
 			headers: { Authorization: "Bearer test" },
 		});
@@ -617,13 +606,12 @@ describe("extractUserEmailFromAuthToken", () => {
 			},
 		);
 		await extractUserEmailFromAuthToken(request, createResponse(), vi.fn());
-		const {
-			body: { emailFromAuthToken },
-		} = request as { body: { emailFromAuthToken: string } };
-		expect(emailFromAuthToken).toBeUndefined();
+		const auth = request.metadata?.auth;
+		expect(request.body).toEqual({});
+		expect(auth?.email).toBeUndefined();
 	});
 
-	test("Request body will have email if the first auth token is invalid but the second one is valid", async () => {
+	test("Request metadata will have email if the first auth token is invalid but the second one is valid", async () => {
 		const request = createRequest({
 			headers: { Authorization: "Bearer test" },
 		});
@@ -634,13 +622,13 @@ describe("extractUserEmailFromAuthToken", () => {
 			async () => successfulIntrospectionResponse,
 		);
 		await extractUserEmailFromAuthToken(request, createResponse(), vi.fn());
-		const {
-			body: { emailFromAuthToken },
-		} = request as { body: { emailFromAuthToken: string } };
-		expect(emailFromAuthToken).toBe(testEmail);
+		const auth = request.metadata?.auth;
+		expect(request.body).toEqual({});
+		expect(auth?.kind).toBe("user");
+		expect(auth?.email).toBe(testEmail);
 	});
 
-	test("Request body will have email if the first introspect call is inactive but the second one is valid", async () => {
+	test("Request metadata will have email if the first introspect call is inactive but the second one is valid", async () => {
 		const request = createRequest({
 			headers: { Authorization: "Bearer test" },
 		});
@@ -651,13 +639,13 @@ describe("extractUserEmailFromAuthToken", () => {
 			async () => successfulIntrospectionResponse,
 		);
 		await extractUserEmailFromAuthToken(request, createResponse(), vi.fn());
-		const {
-			body: { emailFromAuthToken },
-		} = request as { body: { emailFromAuthToken: string } };
-		expect(emailFromAuthToken).toBe(testEmail);
+		const auth = request.metadata?.auth;
+		expect(request.body).toEqual({});
+		expect(auth?.kind).toBe("user");
+		expect(auth?.email).toBe(testEmail);
 	});
 
-	test("Request body will have email if token is valid but one introspect call throws", async () => {
+	test("Request metadata will have email if token is valid but one introspect call throws", async () => {
 		const request = createRequest({
 			headers: { Authorization: "Bearer test" },
 		});
@@ -670,10 +658,10 @@ describe("extractUserEmailFromAuthToken", () => {
 			async () => successfulIntrospectionResponse,
 		);
 		await extractUserEmailFromAuthToken(request, createResponse(), vi.fn());
-		const {
-			body: { emailFromAuthToken },
-		} = request as { body: { emailFromAuthToken: string } };
-		expect(emailFromAuthToken).toBe(testEmail);
+		const auth = request.metadata?.auth;
+		expect(request.body).toEqual({});
+		expect(auth?.kind).toBe("user");
+		expect(auth?.email).toBe(testEmail);
 	});
 
 	test("will throw a 429 if it recieves one from an introspect call", async () => {
@@ -706,19 +694,17 @@ describe("extractUserIsAdminFromAuthToken", () => {
 			async () => successfulIntrospectionResponse,
 		);
 		await extractUserIsAdminFromAuthToken(request, createResponse(), vi.fn());
-		const {
-			body: { admin },
-		} = request as { body: { admin: boolean } };
-		expect(admin).toBe(true);
+		const auth = request.metadata?.auth;
+		expect(request.body).toEqual({});
+		expect(auth?.kind).toBe("admin");
 	});
 
 	test("is admin will be false if there is no auth token", async () => {
 		const request = createRequest({ headers: { Authorization: "" } });
 		await extractUserIsAdminFromAuthToken(request, createResponse(), vi.fn());
-		const {
-			body: { admin },
-		} = request as { body: { admin: boolean } };
-		expect(admin).toBe(false);
+		const auth = request.metadata?.auth;
+		expect(request.body).toEqual({});
+		expect(auth?.kind).not.toBe("admin");
 	});
 
 	test("is admin will be false if there is an invalid auth token", async () => {
@@ -729,24 +715,42 @@ describe("extractUserIsAdminFromAuthToken", () => {
 			async () => failedIntrospectionResponse,
 		);
 		await extractUserIsAdminFromAuthToken(request, createResponse(), vi.fn());
-		const {
-			body: { admin },
-		} = request as { body: { admin: boolean } };
-		expect(admin).toBe(false);
+		const auth = request.metadata?.auth;
+		expect(request.body).toEqual({});
+		expect(auth?.kind).not.toBe("admin");
 	});
 });
 
 describe("extractShareTokenFromHeaders", () => {
-	test("should add the share token to the request body if the token present", async () => {
+	test("should add the share token to the request metadata if the token present", async () => {
 		const testShareToken = "cfa6f6a2-7005-42d6-a6b1-1ec4645a5227";
 		const request = createRequest({
 			headers: { "X-Permanent-Share-Token": testShareToken },
 		});
 		extractShareTokenFromHeaders(request, createResponse(), vi.fn());
-		const {
-			body: { shareToken },
-		} = request as { body: { shareToken: string } };
-		expect(shareToken).toEqual(testShareToken);
+		const auth = request.metadata?.auth;
+		expect(request.body).toEqual({});
+		expect(auth?.shareToken).toEqual(testShareToken);
+	});
+
+	test("should preserve auth values set by earlier middleware", async () => {
+		const testShareToken = "cfa6f6a2-7005-42d6-a6b1-1ec4645a5227";
+		const request = createRequest({
+			headers: {
+				Authorization: "Bearer test",
+				"X-Permanent-Share-Token": testShareToken,
+			},
+		});
+		vi.spyOn(fusionAuthClient, "introspectAccessToken").mockImplementation(
+			async () => successfulIntrospectionResponse,
+		);
+		await extractUserEmailFromAuthToken(request, createResponse(), vi.fn());
+		extractShareTokenFromHeaders(request, createResponse(), vi.fn());
+		expect(request.metadata?.auth).toEqual({
+			kind: "user",
+			email: testEmail,
+			shareToken: testShareToken,
+		});
 	});
 });
 
@@ -759,7 +763,7 @@ describe("verifyUserOrAdminOrDelegatedCallAuthentication", () => {
 		delete process.env["DELEGATED_CALL_SECRET"];
 	});
 
-	test("should add user email and subject to the request body if all delegated headers are valid", async () => {
+	test("should add user email and subject to the request metadata if all delegated headers are valid", async () => {
 		const request = createRequest({
 			headers: {
 				"X-Permanent-Delegated-Call-Secret": testDelegatedCallSecret,
@@ -772,19 +776,14 @@ describe("verifyUserOrAdminOrDelegatedCallAuthentication", () => {
 			createResponse(),
 			vi.fn(),
 		);
-		const {
-			body: { userEmailFromAuthToken, userSubjectFromAuthToken },
-		} = request as {
-			body: {
-				userEmailFromAuthToken: string;
-				userSubjectFromAuthToken: string;
-			};
-		};
-		expect(userEmailFromAuthToken).toBe(testEmail);
-		expect(userSubjectFromAuthToken).toBe(testSubject);
+		const auth = request.metadata?.auth;
+		expect(request.body).toEqual({});
+		expect(auth?.kind).toBe("user");
+		expect(auth?.email).toBe(testEmail);
+		expect(auth?.subject).toBe(testSubject);
 	});
 
-	test("should produce a request body that passes user-or-admin auth validation for delegated calls", async () => {
+	test("should produce request metadata that passes user-or-admin auth validation for delegated calls", async () => {
 		const request = createRequest({
 			headers: {
 				"X-Permanent-Delegated-Call-Secret": testDelegatedCallSecret,
@@ -797,9 +796,9 @@ describe("verifyUserOrAdminOrDelegatedCallAuthentication", () => {
 			createResponse(),
 			vi.fn(),
 		);
-		expect(
-			fieldsFromUserOrAdminAuthentication.validate(request.body).error,
-		).toBeFalsy();
+		expect(() => {
+			validateUserOrAdminAuthentication(request.metadata?.auth);
+		}).not.toThrow();
 	});
 
 	test("should throw unauthorized if the delegated call secret does not match", async () => {
@@ -851,7 +850,7 @@ describe("verifyUserOrAdminOrDelegatedCallAuthentication", () => {
 		);
 	});
 
-	test("should add user subject and email to the request body if user token is valid", async () => {
+	test("should add user subject and email to the request metadata if user token is valid", async () => {
 		const request = createRequest({
 			headers: { Authorization: "Bearer test" },
 		});
@@ -864,19 +863,14 @@ describe("verifyUserOrAdminOrDelegatedCallAuthentication", () => {
 			createResponse(),
 			vi.fn(),
 		);
-		const {
-			body: { userSubjectFromAuthToken, userEmailFromAuthToken },
-		} = request as {
-			body: {
-				userSubjectFromAuthToken: string;
-				userEmailFromAuthToken: string;
-			};
-		};
-		expect(userSubjectFromAuthToken).toBe(testSubject);
-		expect(userEmailFromAuthToken).toBe(testEmail);
+		const auth = request.metadata?.auth;
+		expect(request.body).toEqual({});
+		expect(auth?.kind).toBe("user");
+		expect(auth?.subject).toBe(testSubject);
+		expect(auth?.email).toBe(testEmail);
 	});
 
-	test("should add admin subject and email to the request body if admin token is valid", async () => {
+	test("should add admin subject and email to the request metadata if admin token is valid", async () => {
 		const request = createRequest({
 			headers: { Authorization: "Bearer test" },
 		});
@@ -890,16 +884,11 @@ describe("verifyUserOrAdminOrDelegatedCallAuthentication", () => {
 			createResponse(),
 			vi.fn(),
 		);
-		const {
-			body: { adminSubjectFromAuthToken, adminEmailFromAuthToken },
-		} = request as {
-			body: {
-				adminSubjectFromAuthToken: string;
-				adminEmailFromAuthToken: string;
-			};
-		};
-		expect(adminSubjectFromAuthToken).toBe(testSubject);
-		expect(adminEmailFromAuthToken).toBe(testEmail);
+		const auth = request.metadata?.auth;
+		expect(request.body).toEqual({});
+		expect(auth?.kind).toBe("admin");
+		expect(auth?.subject).toBe(testSubject);
+		expect(auth?.email).toBe(testEmail);
 	});
 
 	test("should throw unauthorized if both tokens are invalid", async () => {

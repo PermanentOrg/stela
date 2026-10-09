@@ -1,5 +1,4 @@
 export interface CreateShareLinkRequest {
-	emailFromAuthToken: string;
 	itemId: string;
 	itemType: "folder" | "record";
 	permissionsLevel?: "contributor" | "editor" | "manager" | "owner" | "viewer";
@@ -27,7 +26,6 @@ export interface CreateShareLinkDatabaseParams {
 }
 
 export interface UpdateShareLinkRequest {
-	emailFromAuthToken: string;
 	permissionsLevel?: "contributor" | "editor" | "manager" | "owner" | "viewer";
 	accessRestrictions?: "account" | "approval" | "none";
 	maxUses?: number | null;

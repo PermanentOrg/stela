@@ -18,17 +18,15 @@ export interface ArchiveMembership {
 }
 
 export interface UpdateArchiveMembershipRequest {
-	emailFromAuthToken: string;
-	userSubjectFromAuthToken: string;
 	accessRole?: ArchiveMembershipRole | undefined;
 	status?: "ok" | undefined;
-	userAgent?: string | undefined;
-	ip?: string | undefined;
 }
 
-export interface DeleteArchiveMembershipRequest {
-	emailFromAuthToken: string;
-	userSubjectFromAuthToken: string;
-	userAgent?: string | undefined;
+export type DeleteArchiveMembershipRequest = Record<string, never>;
+
+export interface ArchiveMembershipCaller {
+	email: string;
+	subject: string;
 	ip?: string | undefined;
+	userAgent?: string | undefined;
 }

@@ -70,7 +70,7 @@ describe("POST /promo", () => {
 		await agent.post("/api/v2/promo").expect(401);
 	});
 
-	test("should respond with 400 status code if missing emailFromAuthToken", async () => {
+	test("should respond with 400 status code if missing the email from the auth token", async () => {
 		mockVerifyAdminAuthentication(
 			undefined,
 			"6b640c73-4963-47de-a096-4a05ff8dc5f5",
@@ -86,7 +86,7 @@ describe("POST /promo", () => {
 			.expect(400);
 	});
 
-	test("should respond with 400 status code if emailFromAuthToken is not an email", async () => {
+	test("should respond with 400 status code if the email from the auth token is not an email", async () => {
 		mockVerifyAdminAuthentication(
 			"not_an_email",
 			"6b640c73-4963-47de-a096-4a05ff8dc5f5",
@@ -102,7 +102,7 @@ describe("POST /promo", () => {
 			.expect(400);
 	});
 
-	test("should respond with 400 status code if missing adminSubjectFromAuthToken", async () => {
+	test("should respond with 400 status code if missing the subject from the auth token", async () => {
 		mockVerifyAdminAuthentication("test@permanent.org");
 		await agent
 			.post("/api/v2/promo")
@@ -115,7 +115,7 @@ describe("POST /promo", () => {
 			.expect(400);
 	});
 
-	test("should respond with 400 status code if adminSubjectFromAuthToken is not a uuid", async () => {
+	test("should respond with 400 status code if the subject from the auth token is not a uuid", async () => {
 		mockVerifyAdminAuthentication("test@permanent.org", "not_a_uuid");
 		await agent
 			.post("/api/v2/promo")

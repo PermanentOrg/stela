@@ -155,7 +155,6 @@ export interface GetRecordsResponse {
 }
 
 export interface PatchRecordRequest {
-	emailFromAuthToken: string;
 	locationId?: bigint | null;
 	location?: LocationInput;
 	description?: string | null;
@@ -164,10 +163,7 @@ export interface PatchRecordRequest {
 }
 
 export interface CreateRecordCopyRequest {
-	emailFromAuthToken: string;
-	userSubjectFromAuthToken: string;
 	destinationFolderId: string;
-	ip: string;
 }
 
 export enum RecordStatus {

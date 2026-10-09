@@ -1,24 +1,19 @@
 import Joi from "joi";
-import type { CreateLegacyContactRequest } from "./model.js";
-import {
-	fieldsFromUserAuthentication,
-	validateBodyFromAuthentication,
-} from "../validators/index.js";
-
-export { validateBodyFromAuthentication };
+import type {
+	CreateLegacyContactRequest,
+	UpdateLegacyContactRequest,
+} from "./model.js";
 
 export const validateCreateLegacyContactRequest: (
 	data: unknown,
+	callerEmail: string,
 ) => asserts data is CreateLegacyContactRequest = (
 	data: unknown,
+	callerEmail: string,
 ): asserts data is CreateLegacyContactRequest => {
 	const validation = Joi.object()
 		.keys({
-			...fieldsFromUserAuthentication,
-			email: Joi.string()
-				.email()
-				.invalid(Joi.ref("emailFromAuthToken"))
-				.required(),
+			email: Joi.string().email().invalid(callerEmail).required(),
 			name: Joi.string().required(),
 		})
 		.validate(data);
@@ -29,13 +24,14 @@ export const validateCreateLegacyContactRequest: (
 
 export const validateUpdateLegacyContactRequest: (
 	data: unknown,
-) => asserts data is CreateLegacyContactRequest = (
+	callerEmail: string,
+) => asserts data is UpdateLegacyContactRequest = (
 	data: unknown,
-): asserts data is CreateLegacyContactRequest => {
+	callerEmail: string,
+): asserts data is UpdateLegacyContactRequest => {
 	const validation = Joi.object()
 		.keys({
-			...fieldsFromUserAuthentication,
-			email: Joi.string().email().invalid(Joi.ref("emailFromAuthToken")),
+			email: Joi.string().email().invalid(callerEmail),
 			name: Joi.string(),
 		})
 		.validate(data);

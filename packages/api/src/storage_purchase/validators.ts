@@ -1,6 +1,5 @@
 import Joi from "joi";
 import type { StoragePurchaseRequest } from "./models.js";
-import { fieldsFromUserAuthentication } from "../validators/index.js";
 
 const MINIMUM_PURCHASE_AMOUNT_IN_USD = 1;
 
@@ -11,7 +10,6 @@ export const validateStoragePurchaseRequest: (
 ): asserts data is StoragePurchaseRequest => {
 	const validation = Joi.object()
 		.keys({
-			...fieldsFromUserAuthentication,
 			amountInUSD: Joi.number()
 				.integer()
 				.min(MINIMUM_PURCHASE_AMOUNT_IN_USD)

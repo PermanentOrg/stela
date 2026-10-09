@@ -599,7 +599,7 @@ describe("GET /share-links", () => {
 	test("should return 401 if the caller's auth token is invalid", async () => {
 		vi.mocked(extractUserEmailFromAuthToken).mockImplementation(
 			async (
-				_: Request<unknown, unknown, { emailFromAuthToken?: string }>,
+				_: Request<unknown, unknown, unknown>,
 				__: Response,
 				next: NextFunction,
 			) => {
@@ -676,6 +676,14 @@ describe("GET /share-links", () => {
 		mockExtractUserEmailFromAuthToken();
 		await agent
 			.get("/api/v2/share-links?shareLinkIds[]=1000&shareLinkIds[]=1001")
+			.expect(401);
+	});
+
+	test("should not trust a caller email supplied in the request body", async () => {
+		mockExtractUserEmailFromAuthToken();
+		await agent
+			.get("/api/v2/share-links?shareLinkIds[]=1000&shareLinkIds[]=1001")
+			.send({ emailFromAuthToken: "test@permanent.org" })
 			.expect(401);
 	});
 

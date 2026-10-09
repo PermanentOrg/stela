@@ -8,6 +8,7 @@ import {
 	validateArchiveMembershipIdParams,
 } from "./validators.js";
 import { archiveMembershipService } from "./service.js";
+import { validateUserAuthentication } from "../validators/index.js";
 
 export const archiveMembershipController = Router();
 
@@ -17,16 +18,20 @@ archiveMembershipController.patch(
 	extractIp,
 	async (req: Request, res: Response, next: NextFunction) => {
 		try {
+			const auth = req.metadata?.auth;
+			validateUserAuthentication(auth);
 			validateUpdateArchiveMembershipRequest(req.body);
 			validateArchiveMembershipIdParams(req.params);
-			const {
-				headers: { "user-agent": userAgent },
-			} = req;
-			req.body.userAgent = userAgent;
 			const updatedMembership =
 				await archiveMembershipService.updateArchiveMembership(
 					req.params.id,
 					req.body,
+					{
+						email: auth.email,
+						subject: auth.subject,
+						ip: req.metadata?.clientIp,
+						userAgent: req.headers["user-agent"],
+					},
 				);
 			res.status(HTTP_STATUS.SUCCESSFUL.OK).json({ data: updatedMembership });
 		} catch (err) {
@@ -41,16 +46,16 @@ archiveMembershipController.delete(
 	extractIp,
 	async (req: Request, res: Response, next: NextFunction) => {
 		try {
+			const auth = req.metadata?.auth;
+			validateUserAuthentication(auth);
 			validateDeleteArchiveMembershipRequest(req.body);
 			validateArchiveMembershipIdParams(req.params);
-			const {
-				headers: { "user-agent": userAgent },
-			} = req;
-			req.body.userAgent = userAgent;
-			await archiveMembershipService.deleteArchiveMembership(
-				req.params.id,
-				req.body,
-			);
+			await archiveMembershipService.deleteArchiveMembership(req.params.id, {
+				email: auth.email,
+				subject: auth.subject,
+				ip: req.metadata?.clientIp,
+				userAgent: req.headers["user-agent"],
+			});
 			res.status(HTTP_STATUS.SUCCESSFUL.NO_CONTENT).send();
 		} catch (err) {
 			next(err);

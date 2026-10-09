@@ -5,7 +5,7 @@ import {
 	type NextFunction,
 } from "express";
 import { verifyUserAuthentication } from "../middleware/index.js";
-import { validateBodyFromAuthentication } from "../validators/index.js";
+import { validateUserAuthentication } from "../validators/index.js";
 import {
 	validateSendEnableCodeRequest,
 	validateSendDisableCodeRequest,
@@ -28,8 +28,9 @@ idpUserController.get(
 	verifyUserAuthentication,
 	async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			validateBodyFromAuthentication(req.body);
-			const response = await getTwoFactorMethods(req.body.emailFromAuthToken);
+			const auth = req.metadata?.auth;
+			validateUserAuthentication(auth);
+			const response = await getTwoFactorMethods(auth.email);
 
 			res.send(response);
 		} catch (err) {
@@ -43,8 +44,10 @@ idpUserController.post(
 	verifyUserAuthentication,
 	async (req: Request, res: Response, next: NextFunction) => {
 		try {
+			const auth = req.metadata?.auth;
+			validateUserAuthentication(auth);
 			validateSendEnableCodeRequest(req.body);
-			await sendEnableCode(req.body);
+			await sendEnableCode(auth.email, req.body);
 			res.send(HTTP_STATUS.SUCCESSFUL.OK);
 		} catch (err) {
 			next(err);
@@ -57,8 +60,10 @@ idpUserController.post(
 	verifyUserAuthentication,
 	async (req: Request, res: Response, next: NextFunction) => {
 		try {
+			const auth = req.metadata?.auth;
+			validateUserAuthentication(auth);
 			validateCreateTwoFactorMethodRequest(req.body);
-			await addTwoFactorMethod(req.body);
+			await addTwoFactorMethod(auth.email, req.body);
 			res.status(HTTP_STATUS.SUCCESSFUL.OK).send();
 		} catch (err) {
 			next(err);
@@ -71,8 +76,10 @@ idpUserController.post(
 	verifyUserAuthentication,
 	async (req: Request, res: Response, next: NextFunction) => {
 		try {
+			const auth = req.metadata?.auth;
+			validateUserAuthentication(auth);
 			validateSendDisableCodeRequest(req.body);
-			await sendDisableCode(req.body);
+			await sendDisableCode(auth.email, req.body);
 			res.send(HTTP_STATUS.SUCCESSFUL.OK);
 		} catch (err) {
 			next(err);
@@ -85,8 +92,10 @@ idpUserController.post(
 	verifyUserAuthentication,
 	async (req: Request, res: Response, next: NextFunction) => {
 		try {
+			const auth = req.metadata?.auth;
+			validateUserAuthentication(auth);
 			validateDisableTwoFactorRequest(req.body);
-			await removeTwoFactorMethod(req.body);
+			await removeTwoFactorMethod(auth.email, req.body);
 			res.send(HTTP_STATUS.SUCCESSFUL.OK);
 		} catch (err) {
 			next(err);

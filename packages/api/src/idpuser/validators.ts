@@ -5,7 +5,6 @@ import type {
 	CreateTwoFactorMethodRequest,
 	DisableTwoFactorRequest,
 } from "./models.js";
-import { fieldsFromUserAuthentication } from "../validators/index.js";
 
 export const validateSendEnableCodeRequest: (
 	data: unknown,
@@ -14,7 +13,6 @@ export const validateSendEnableCodeRequest: (
 ): asserts data is SendEnableCodeRequest => {
 	const validation = Joi.object()
 		.keys({
-			...fieldsFromUserAuthentication,
 			method: Joi.string().valid("email", "sms").required(),
 			value: Joi.string().required().when("method", {
 				is: "email",
@@ -34,7 +32,6 @@ export const validateCreateTwoFactorMethodRequest: (
 ): asserts data is CreateTwoFactorMethodRequest => {
 	const validation = Joi.object()
 		.keys({
-			...fieldsFromUserAuthentication,
 			code: Joi.string().required(),
 			method: Joi.string().valid("email", "sms").required(),
 			value: Joi.string().required().when("method", {
@@ -55,7 +52,6 @@ export const validateSendDisableCodeRequest: (
 ): asserts data is SendDisableCodeRequest => {
 	const validation = Joi.object()
 		.keys({
-			...fieldsFromUserAuthentication,
 			methodId: Joi.string().required(),
 		})
 		.validate(data);
@@ -71,7 +67,6 @@ export const validateDisableTwoFactorRequest: (
 ): asserts data is DisableTwoFactorRequest => {
 	const validation = Joi.object()
 		.keys({
-			...fieldsFromUserAuthentication,
 			methodId: Joi.string().required(),
 			code: Joi.string().required(),
 		})

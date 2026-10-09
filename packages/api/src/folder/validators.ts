@@ -1,7 +1,6 @@
 import Joi from "joi";
 import { parse as parseEDTF } from "@edtf-ts/core";
 import type { PatchFolderRequest } from "./models.js";
-import { fieldsFromUserAuthentication } from "../validators/index.js";
 import { paginationFields } from "../validators/shared.js";
 import { locationInputSchema } from "../location/validators.js";
 import { EDTF_LEVEL_2 } from "../constants.js";
@@ -28,7 +27,6 @@ export const validatePatchFolderRequest: (
 ): asserts data is PatchFolderRequest => {
 	const validation = Joi.object()
 		.keys({
-			...fieldsFromUserAuthentication,
 			displayDate: Joi.string().optional().allow(null),
 			displayEndDate: Joi.string().optional().allow(null),
 			displayTime: Joi.string()
@@ -44,7 +42,7 @@ export const validatePatchFolderRequest: (
 				.allow(null),
 			location: locationInputSchema.optional(),
 		})
-		.or("displayDate", "displayEndDate", "displayTime", "location")
+		.min(1)
 		.validate(data);
 
 	if (validation.error !== undefined) {

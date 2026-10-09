@@ -10,15 +10,18 @@ import {
 } from "../../middleware/index.js";
 import {
 	validateArchiveIdFromParams,
-	validateBodyFromAuthentication,
 	validateSearchQuery,
 	validatePatchArchiveBody,
 	validateGetSharedFoldersQuery,
 	validateCreateArchiveRequest,
 } from "../validators.js";
 import { archiveService } from "../service/index.js";
-import { validatePaginationParameters } from "../../validators/shared.js";
+import {
+	validateClientIp,
+	validatePaginationParameters,
+} from "../../validators/shared.js";
 import { ArchiveType } from "../models.js";
+import { validateUserAuthentication } from "../../validators/index.js";
 
 export const archiveController = Router();
 
@@ -28,15 +31,22 @@ archiveController.post(
 	extractIp,
 	async (req: Request, res: Response, next: NextFunction) => {
 		try {
+			const auth = req.metadata?.auth;
+			validateUserAuthentication(auth);
+			validateClientIp(req.metadata?.clientIp);
 			validateCreateArchiveRequest(req.body);
-			const archive = await archiveService.createArchive({
-				emailFromAuthToken: req.body.emailFromAuthToken,
-				userSubjectFromAuthToken: req.body.userSubjectFromAuthToken,
-				ip: req.body.ip,
-				userAgent: req.get("User-Agent"),
-				name: req.body.name,
-				type: req.body.type ?? ArchiveType.Person,
-			});
+			const archive = await archiveService.createArchive(
+				{
+					...req.body,
+					type: req.body.type ?? ArchiveType.Person,
+				},
+				{
+					email: auth.email,
+					subject: auth.subject,
+					ip: req.metadata.clientIp,
+					userAgent: req.get("User-Agent"),
+				},
+			);
 			res.status(HTTP_STATUS.SUCCESSFUL.CREATED).json({ data: archive });
 		} catch (err) {
 			next(err);
@@ -48,20 +58,15 @@ archiveController.get(
 	"/",
 	extractUserIsAdminFromAuthToken,
 	extractUserEmailFromAuthToken,
-	async (
-		req: Request<
-			unknown,
-			unknown,
-			{ admin?: boolean; emailFromAuthToken?: string }
-		>,
-		res: Response,
-		next: NextFunction,
-	) => {
+	async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			validateSearchQuery(req.query);
+			const auth = req.metadata?.auth;
+			const isAdmin = auth?.kind === "admin";
+			const callerEmail = auth?.kind === "user" ? auth.email : undefined;
 			if (
 				req.query.callerMembershipRole !== undefined &&
-				req.body.emailFromAuthToken === undefined
+				callerEmail === undefined
 			) {
 				res.status(HTTP_STATUS.CLIENT_ERROR.UNAUTHORIZED).json({
 					error: "Authentication required for callerMembershipRole filter",
@@ -77,8 +82,8 @@ archiveController.get(
 					pageSize: req.query.pageSize,
 					cursor: req.query.cursor,
 				},
-				req.body.admin ?? false,
-				req.body.emailFromAuthToken,
+				isAdmin,
+				callerEmail,
 			);
 			res.json(response);
 		} catch (err) {
@@ -92,12 +97,14 @@ archiveController.patch(
 	verifyUserAuthentication,
 	async (req: Request, res: Response, next: NextFunction) => {
 		try {
+			const auth = req.metadata?.auth;
+			validateUserAuthentication(auth);
 			validateArchiveIdFromParams(req.params);
 			validatePatchArchiveBody(req.body);
 			const archive = await archiveService.updateArchive(
 				req.params.archiveId,
 				req.body.milestoneSortOrder,
-				req.body.emailFromAuthToken,
+				auth.email,
 			);
 			res.json({ data: archive });
 		} catch (err) {
@@ -124,11 +131,12 @@ archiveController.get(
 	verifyUserAuthentication,
 	async (req: Request, res: Response, next: NextFunction) => {
 		try {
+			const auth = req.metadata?.auth;
+			validateUserAuthentication(auth);
 			validateArchiveIdFromParams(req.params);
-			validateBodyFromAuthentication(req.body);
 			const accountStorage = await archiveService.getPayerAccountStorage(
 				req.params.archiveId,
-				req.body.emailFromAuthToken,
+				auth.email,
 			);
 			res.json(accountStorage);
 		} catch (err) {
@@ -182,11 +190,12 @@ archiveController.get(
 	verifyUserAuthentication,
 	async (req: Request, res: Response, next: NextFunction) => {
 		try {
+			const auth = req.metadata?.auth;
+			validateUserAuthentication(auth);
 			validateArchiveIdFromParams(req.params);
-			validateBodyFromAuthentication(req.body);
 			const archive = await archiveService.getArchive(
 				req.params.archiveId,
-				req.body.emailFromAuthToken,
+				auth.email,
 			);
 			res.json({ data: archive });
 		} catch (err) {
@@ -214,12 +223,13 @@ archiveController.get(
 	verifyUserAuthentication,
 	async (req: Request, res: Response, next: NextFunction) => {
 		try {
+			const auth = req.metadata?.auth;
+			validateUserAuthentication(auth);
 			validateArchiveIdFromParams(req.params);
-			validateBodyFromAuthentication(req.body);
 			validateGetSharedFoldersQuery(req.query);
 			const response = await archiveService.getSharedFolders(
 				req.params.archiveId,
-				req.body.emailFromAuthToken,
+				auth.email,
 				{
 					pageSize: req.query.pageSize,
 					cursor: req.query.cursor,
@@ -237,12 +247,13 @@ archiveController.get(
 	verifyUserAuthentication,
 	async (req: Request, res: Response, next: NextFunction) => {
 		try {
+			const auth = req.metadata?.auth;
+			validateUserAuthentication(auth);
 			validateArchiveIdFromParams(req.params);
-			validateBodyFromAuthentication(req.body);
 			validatePaginationParameters(req.query);
 			const response = await archiveService.getReceivedShares(
 				req.params.archiveId,
-				req.body.emailFromAuthToken,
+				auth.email,
 				{
 					pageSize: req.query.pageSize,
 					cursor: req.query.cursor,

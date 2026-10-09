@@ -13,6 +13,7 @@ import type {
 } from "./models.js";
 
 export const claimPromo = async (
+	callerEmail: string,
 	data: ClaimPromoRequest,
 ): Promise<ClaimPromoResponse> =>
 	await db.transaction(async (transactionDb) => {
@@ -40,7 +41,7 @@ export const claimPromo = async (
 
 		const accountCheckResult = await transactionDb
 			.sql<AccountPromoCheckRow>("promo.queries.check_account_promo", {
-				email: data.emailFromAuthToken.toLowerCase(),
+				email: callerEmail.toLowerCase(),
 				promoId: promo.id,
 			})
 			.catch((err: unknown) => {

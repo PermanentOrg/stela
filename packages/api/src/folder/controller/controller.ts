@@ -16,11 +16,11 @@ import {
 	validateGetFoldersQuery,
 	validateGetFoldersPageQuery,
 } from "../validators.js";
+import { validatePaginationParameters } from "../../validators/shared.js";
 import {
-	validateOptionalAuthenticationValues,
-	validatePaginationParameters,
-	validateBodyFromAuthentication,
-} from "../../validators/shared.js";
+	validateOptionalAuthentication,
+	validateUserAuthentication,
+} from "../../validators/index.js";
 import { HTTP_STATUS } from "@pdc/http-status-codes";
 
 export const folderController = Router();
@@ -30,16 +30,16 @@ folderController.patch(
 	verifyUserAuthentication,
 	async (req: Request, res: Response, next: NextFunction) => {
 		try {
+			const auth = req.metadata?.auth;
+			validateUserAuthentication(auth);
 			validateFolderRequest(req.params);
 			validatePatchFolderRequest(req.body);
 			const folderId = await folderService.patchFolder(
 				req.params.folderId,
+				auth.email,
 				req.body,
 			);
-			const [folder] = await folderService.getFolders(
-				[folderId],
-				req.body.emailFromAuthToken,
-			);
+			const [folder] = await folderService.getFolders([folderId], auth.email);
 			if (folder === undefined) {
 				res
 					.status(HTTP_STATUS.CLIENT_ERROR.NOT_FOUND)
@@ -60,12 +60,13 @@ folderController.get(
 	extractShareTokenFromHeaders,
 	async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			validateOptionalAuthenticationValues(req.body);
+			const auth = req.metadata?.auth ?? {};
+			validateOptionalAuthentication(auth);
 			validateGetFoldersQuery(req.query);
 			const folders = await folderService.getFolders(
 				req.query.folderIds,
-				req.body.emailFromAuthToken,
-				req.body.shareToken,
+				auth.email,
+				auth.shareToken,
 			);
 			res.status(HTTP_STATUS.SUCCESSFUL.OK).send({ items: folders });
 		} catch (err) {
@@ -80,14 +81,15 @@ folderController.get(
 	extractShareTokenFromHeaders,
 	async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			validateOptionalAuthenticationValues(req.body);
+			const auth = req.metadata?.auth ?? {};
+			validateOptionalAuthentication(auth);
 			validatePaginationParameters(req.query);
 			validateFolderRequest(req.params);
 			const response = await folderService.getFolderChildren(
 				req.params.folderId,
 				{ pageSize: req.query.pageSize, cursor: req.query.cursor },
-				req.body.emailFromAuthToken,
-				req.body.shareToken,
+				auth.email,
+				auth.shareToken,
 			);
 			res.status(HTTP_STATUS.SUCCESSFUL.OK).send(response);
 		} catch (err) {
@@ -101,10 +103,11 @@ folderController.get(
 	verifyUserAuthentication,
 	async (req: Request, res: Response, next: NextFunction) => {
 		try {
+			const auth = req.metadata?.auth;
+			validateUserAuthentication(auth);
 			validateFolderRequest(req.params);
-			validateBodyFromAuthentication(req.body);
 			const shareLinks = await folderService.getFolderShareLinks(
-				req.body.emailFromAuthToken,
+				auth.email,
 				req.params.folderId,
 			);
 			res.status(HTTP_STATUS.SUCCESSFUL.OK).send({ items: shareLinks });
@@ -122,12 +125,13 @@ foldersController.get(
 	extractShareTokenFromHeaders,
 	async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			validateOptionalAuthenticationValues(req.body);
+			const auth = req.metadata?.auth ?? {};
+			validateOptionalAuthentication(auth);
 			validateGetFoldersPageQuery(req.query);
 			const response = await folderService.getFoldersPage({
 				folderIds: req.query.folderIds,
-				email: req.body.emailFromAuthToken,
-				shareToken: req.body.shareToken,
+				email: auth.email,
+				shareToken: auth.shareToken,
 				pageSize: req.query.pageSize,
 				cursor: req.query.cursor,
 			});
