@@ -1,6 +1,6 @@
 # Monorepo Dockerfile - must be built from repository root:
 #   docker build -f packages/event_send/Dockerfile.dev .
-FROM node:24-alpine
+FROM node:26-alpine
 WORKDIR /usr/local/apps/stela
 
 COPY package.json ./

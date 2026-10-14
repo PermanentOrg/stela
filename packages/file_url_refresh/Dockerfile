@@ -1,6 +1,6 @@
 # Monorepo Dockerfile - must be built from repository root:
 #   docker build -f packages/file_url_refresh/Dockerfile .
-FROM node:24-alpine AS builder
+FROM node:26-alpine AS builder
 WORKDIR /usr/local/apps/stela/
 
 COPY package.json ./
@@ -15,7 +15,7 @@ RUN npm install
 RUN npm install -ws
 RUN npm run build -ws
 
-FROM node:24-alpine AS final
+FROM node:26-alpine AS final
 
 ARG AWS_RDS_CERT_BUNDLE
 

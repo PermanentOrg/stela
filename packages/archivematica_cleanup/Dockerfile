@@ -1,6 +1,6 @@
 # Monorepo Dockerfile - must be built from repository root:
 #   docker build -f packages/archivematica_cleanup/Dockerfile .
-FROM node:24-alpine AS builder
+FROM node:26-alpine AS builder
 WORKDIR /usr/local/apps/stela/
 
 COPY package.json ./
@@ -15,7 +15,7 @@ RUN npm install
 RUN npm install -ws
 RUN npm run build -ws
 
-FROM node:24-alpine AS final
+FROM node:26-alpine AS final
 WORKDIR /usr/local/apps/stela/
 
 COPY --from=builder /usr/local/apps/stela/packages/archivematica_cleanup/dist ./packages/archivematica_cleanup/dist
