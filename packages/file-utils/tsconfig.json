@@ -2,6 +2,7 @@
 	"exclude": ["node_modules", "packages/*/dist"],
 	"extends": "../../tsconfig.build.json",
 	"compilerOptions": {
+		"rootDir": "./src/",
 		"outDir": "./dist/",
 		"typeRoots": ["../../node_modules/@types", "src/types"]
 	},
