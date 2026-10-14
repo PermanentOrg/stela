@@ -5,7 +5,7 @@ import {
 	accessRoleToArchiveMembershipRole,
 } from "../access/models.js";
 
-const defaultFromEmail = "support@permanent.org";
+const defaultFromEmail = "no-reply@permanent.org";
 const defaultMessage = {
 	from_email: defaultFromEmail,
 	headers: { "Reply-To": defaultFromEmail },
