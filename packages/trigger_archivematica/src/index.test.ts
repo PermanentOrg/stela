@@ -138,7 +138,7 @@ describe("extractRecordIdFromRecordCreateMessage", () => {
 		};
 
 		expect(() => extractRecordIdFromNewRecordMessage(message)).toThrow(
-			"record field missing in body of record.create",
+			"record field missing in body of event",
 		);
 	});
 

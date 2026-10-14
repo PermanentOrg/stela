@@ -30,14 +30,12 @@ export const extractRecordIdFromNewRecordMessage = (
 	}
 	const { action } = parsedMessage;
 
-	if (action === "create") {
+	if (action === "create" || action === "request_reprocess") {
 		if (parsedMessage.body.record === undefined) {
 			logger.error(
-				`record.create event missing record: ${JSON.stringify(
-					parsedMessage.body,
-				)}`,
+				`event missing record: ${JSON.stringify(parsedMessage.body)}`,
 			);
-			throw new Error("record field missing in body of record.create");
+			throw new Error("record field missing in body of event");
 		}
 		return parsedMessage.body.record.recordId;
 	} else if (action === "copy") {
