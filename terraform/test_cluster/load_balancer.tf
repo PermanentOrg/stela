@@ -4,6 +4,7 @@ module "lb_role" {
 
   name                                   = "dev_eks_lb"
   use_name_prefix                        = false
+  policy_name                            = "dev_eks_lb_controller"
   attach_load_balancer_controller_policy = true
 
   oidc_providers = {
