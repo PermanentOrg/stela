@@ -1,15 +1,21 @@
 SELECT
-	id,
-	entity,
-	action,
-	version,
-	actor_type AS "actorType",
-	actor_id AS "actorId",
-	entity_id AS "entityId",
-	ip,
-	user_agent AS "userAgent",
-	body
+  id,
+  entity,
+  action,
+  version,
+  actor_type AS "actorType",
+  actor_id AS "actorId",
+  entity_id AS "entityId",
+  ip,
+  user_agent AS "userAgent",
+  body
 FROM
-	event
+  event
 WHERE
-	is_sent = FALSE;
+  is_sent = FALSE
+  AND id != ALL(:excludedEventIds::uuid[])
+ORDER BY
+  created_at ASC,
+  id ASC
+LIMIT
+  :batchSize;

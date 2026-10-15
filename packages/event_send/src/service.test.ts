@@ -1,6 +1,6 @@
 import { logger } from "@stela/logger";
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
-import { publisherClient } from "@stela/publisher-utils";
+import { publisherClient, type Message } from "@stela/publisher-utils";
 import { mixpanelClient } from "./mixpanel.js";
 import { sendEvents } from "./service.js";
 import { db } from "./database.js";
@@ -28,6 +28,8 @@ const getEventSentStatus = async (entityId: string): Promise<boolean> => {
 	}
 	return result.rows[0].isSent;
 };
+
+const getMessageId = (message: Message): string => message.id;
 
 describe("sendEvents", () => {
 	beforeEach(async () => {
@@ -100,6 +102,50 @@ describe("sendEvents", () => {
 
 		expect(await getEventSentStatus("1")).toBe(false);
 		expect(await getEventSentStatus("2")).toBe(true);
+		expect(logger.warn).toHaveBeenCalledWith(
+			expect.stringContaining(archiveEventId),
+		);
+	});
+
+	test("should send events in batches of the given size", async () => {
+		await sendEvents(2);
+
+		expect(publisherClient.batchPublishMessages).toHaveBeenCalledTimes(2);
+		const {
+			mock: { calls },
+		} = vi.mocked(publisherClient.batchPublishMessages);
+		expect(calls.map((call) => call[1].length)).toEqual([2, 1]);
+		expect(await getEventSentStatus("1")).toBe(true);
+		expect(await getEventSentStatus("2")).toBe(true);
+		expect(await getEventSentStatus("4")).toBe(true);
+	});
+
+	test("should not resend an event that failed to publish in an earlier batch", async () => {
+		const result = await db.query<{ id: string }>(
+			"SELECT id FROM event WHERE entity_id = '1'",
+		);
+		const archiveEventId = result.rows[0]?.id ?? "";
+
+		vi.spyOn(publisherClient, "batchPublishMessages").mockImplementation(
+			async (_, messages) => {
+				const ids = messages.map(getMessageId);
+				return await Promise.resolve({
+					messagesSent: ids.length,
+					failedMessages: ids.includes(archiveEventId) ? [archiveEventId] : [],
+				});
+			},
+		);
+
+		await sendEvents(1);
+
+		const sentIds = vi
+			.mocked(publisherClient.batchPublishMessages)
+			.mock.calls.flatMap((call) => call[1].map(getMessageId));
+		expect(sentIds.filter((id) => id === archiveEventId)).toHaveLength(1);
+		expect(sentIds).toHaveLength(3);
+		expect(await getEventSentStatus("1")).toBe(false);
+		expect(await getEventSentStatus("2")).toBe(true);
+		expect(await getEventSentStatus("4")).toBe(true);
 	});
 
 	test("should do nothing when there are no unsent events", async () => {

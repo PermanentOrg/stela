@@ -4,6 +4,8 @@ import { publisherClient } from "@stela/publisher-utils";
 import { mixpanelClient } from "./mixpanel.js";
 import { db } from "./database.js";
 
+const EVENT_BATCH_SIZE = 100;
+
 interface Analytics {
 	event: string;
 	distinctId: string;
@@ -51,16 +53,22 @@ const trackMixpanelEvent = (event: EventRow): void => {
 	}
 };
 
-export const sendEvents = async (): Promise<void> => {
+const sendEventBatch = async (
+	batchSize: number,
+	excludedEventIds: string[],
+): Promise<{ fetchedCount: number; failedEventIds: string[] }> => {
 	const events = await db
-		.sql<EventRow>("queries.get_unsent_events")
+		.sql<EventRow>("queries.get_unsent_events", {
+			batchSize,
+			excludedEventIds,
+		})
 		.catch((err: unknown) => {
 			logger.error(err);
 			throw err;
 		});
 
 	if (events.rows.length === 0) {
-		return;
+		return { fetchedCount: 0, failedEventIds: [] };
 	}
 
 	const messages = events.rows.map((event) => ({
@@ -91,18 +99,42 @@ export const sendEvents = async (): Promise<void> => {
 			throw err;
 		});
 
+	if (failedMessages.length > 0) {
+		logger.warn(`Failed to publish events: ${failedMessages.join(", ")}`);
+	}
+
 	const sentEventIds = events.rows
 		.map((event) => event.id)
 		.filter((id) => !failedMessages.includes(id));
 
-	if (sentEventIds.length === 0) {
-		return;
+	if (sentEventIds.length > 0) {
+		await db
+			.sql("queries.mark_events_sent", { eventIds: sentEventIds })
+			.catch((err: unknown) => {
+				logger.error(err);
+				throw err;
+			});
 	}
 
-	await db
-		.sql("queries.mark_events_sent", { eventIds: sentEventIds })
-		.catch((err: unknown) => {
-			logger.error(err);
-			throw err;
-		});
+	return { fetchedCount: events.rows.length, failedEventIds: failedMessages };
+};
+
+const sendRemainingEvents = async (
+	batchSize: number,
+	failedEventIds: string[],
+): Promise<void> => {
+	const result = await sendEventBatch(batchSize, failedEventIds);
+	if (result.fetchedCount < batchSize) {
+		return;
+	}
+	await sendRemainingEvents(batchSize, [
+		...failedEventIds,
+		...result.failedEventIds,
+	]);
+};
+
+export const sendEvents = async (
+	batchSize: number = EVENT_BATCH_SIZE,
+): Promise<void> => {
+	await sendRemainingEvents(batchSize, []);
 };
