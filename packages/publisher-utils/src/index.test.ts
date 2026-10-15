@@ -162,6 +162,89 @@ describe("batchPublishMessages", () => {
 		expect(result.messagesSent).toBe(9);
 	});
 
+	test("should report all messages in a rejected batch as failed", async () => {
+		mockSend
+			.mockResolvedValueOnce({ Failed: [] })
+			.mockRejectedValueOnce(new Error("Rate exceeded"));
+
+		const messages = Array.from({ length: 12 }, (_, index) => ({
+			id: `${index + 1}`,
+			body: `message ${index + 1}`,
+		}));
+
+		const result = await publisherClient.batchPublishMessages(
+			"topic",
+			messages,
+		);
+
+		expect(mockSend).toHaveBeenCalledTimes(2);
+		expect(result.failedMessages).toEqual(["11", "12"]);
+		expect(result.messagesSent).toBe(10);
+	});
+
+	test("should split batches that would exceed the SNS size limit", async () => {
+		mockSend.mockResolvedValue({ Failed: [] });
+		const largeBody = "a".repeat(100_000);
+		const messages = [
+			{ id: "1", body: largeBody },
+			{ id: "2", body: largeBody },
+			{ id: "3", body: largeBody },
+		];
+
+		const result = await publisherClient.batchPublishMessages(
+			"topic",
+			messages,
+		);
+
+		expect(mockSend).toHaveBeenCalledTimes(2);
+		expect(vi.mocked(PublishBatchCommand)).toHaveBeenNthCalledWith(1, {
+			TopicArn: "topic",
+			PublishBatchRequestEntries: [
+				{ Id: "1", Message: largeBody },
+				{ Id: "2", Message: largeBody },
+			],
+		});
+		expect(vi.mocked(PublishBatchCommand)).toHaveBeenNthCalledWith(2, {
+			TopicArn: "topic",
+			PublishBatchRequestEntries: [{ Id: "3", Message: largeBody }],
+		});
+		expect(result.messagesSent).toBe(3);
+	});
+
+	test("should count message attributes towards the SNS size limit", async () => {
+		mockSend.mockResolvedValue({ Failed: [] });
+		const body = "a".repeat(131_050);
+		const messages = [
+			{ id: "1", body, attributes: { Entity: "a".repeat(100) } },
+			{ id: "2", body },
+		];
+
+		await publisherClient.batchPublishMessages("topic", messages);
+
+		expect(mockSend).toHaveBeenCalledTimes(2);
+	});
+
+	test("should report messages too large for SNS as failed without sending them", async () => {
+		mockSend.mockResolvedValue({ Failed: [] });
+		const messages = [
+			{ id: "1", body: "a".repeat(262_145) },
+			{ id: "2", body: "message 2" },
+		];
+
+		const result = await publisherClient.batchPublishMessages(
+			"topic",
+			messages,
+		);
+
+		expect(mockSend).toHaveBeenCalledTimes(1);
+		expect(vi.mocked(PublishBatchCommand)).toHaveBeenCalledWith({
+			TopicArn: "topic",
+			PublishBatchRequestEntries: [{ Id: "2", Message: "message 2" }],
+		});
+		expect(result.failedMessages).toEqual(["1"]);
+		expect(result.messagesSent).toBe(1);
+	});
+
 	test("should construct SNS Client with endpoint when AWS_ENDPOINT_URL is set", async () => {
 		const {
 			env: { AWS_ENDPOINT_URL: originalEndpoint },
