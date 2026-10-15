@@ -15,6 +15,9 @@
 		"skipLibCheck": true,
 		"forceConsistentCasingInFileNames": true,
 		"declaration": true,
+		"types": [
+			"node"
+		],
 		"lib": [
 			"es2024",
 			"DOM"
