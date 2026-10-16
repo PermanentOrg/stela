@@ -264,12 +264,12 @@ describe("idpuser/send-enable-code", () => {
 		await agent.post("/api/v2/idpuser/send-enable-code").expect(401);
 	});
 
-	test("should return a 400 status if emailFromAuthToken is missing", async () => {
+	test("should return a 400 status if the email from the auth token is missing", async () => {
 		mockVerifyUserAuthentication();
 		await agent.post("/api/v2/idpuser/send-enable-code").expect(400);
 	});
 
-	test("should return a 400 status if emailFromAuthToken is not an email", async () => {
+	test("should return a 400 status if the email from the auth token is not an email", async () => {
 		mockVerifyUserAuthentication("not_an_email");
 		await agent.post("/api/v2/idpuser/send-enable-code").expect(400);
 	});
@@ -540,7 +540,7 @@ describe("idpuser/send-disable-code", () => {
 			.expect(401);
 	});
 
-	test("should return a 400 status if emailFromAuthToken is missing", async () => {
+	test("should return a 400 status if the email from the auth token is missing", async () => {
 		mockVerifyUserAuthentication();
 		await agent
 			.post("/api/v2/idpuser/send-disable-code")
@@ -548,7 +548,7 @@ describe("idpuser/send-disable-code", () => {
 			.expect(400);
 	});
 
-	test("should return a 400 status if emailFromAuthToken is not an email", async () => {
+	test("should return a 400 status if the email from the auth token is not an email", async () => {
 		mockVerifyUserAuthentication("not_an_email");
 		await agent
 			.post("/api/v2/idpuser/send-disable-code")
@@ -652,7 +652,7 @@ describe("/idpuser/disable-two-factor", () => {
 			.expect(401);
 	});
 
-	test("should return 400 status if emailFromAuthToken is missing", async () => {
+	test("should return 400 status if the email from the auth token is missing", async () => {
 		mockVerifyUserAuthentication();
 		await agent
 			.post("/api/v2/idpuser/disable-two-factor")
@@ -660,7 +660,7 @@ describe("/idpuser/disable-two-factor", () => {
 			.expect(400);
 	});
 
-	test("should return 400 status if emailFromAuthToken is not an email", async () => {
+	test("should return 400 status if the email from the auth token is not an email", async () => {
 		mockVerifyUserAuthentication("not_an_email");
 		await agent
 			.post("/api/v2/idpuser/disable-two-factor")

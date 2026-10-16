@@ -3,6 +3,7 @@ import createError from "http-errors";
 import { fusionAuthClient } from "../fusionauth.js";
 import { isObjectWithStatusCode } from "./handleError.js";
 import { HTTP_STATUS } from "@pdc/http-status-codes";
+import type { RequestAuth } from "./models.js";
 
 const emailKey = "email";
 
@@ -134,15 +135,18 @@ const getSubjectAndEmailFromAdminAuthToken = async (
 	return { subject, email };
 };
 
+export const setAuth = (
+	req: Request<unknown, unknown, unknown>,
+	auth: RequestAuth,
+): void => {
+	req.metadata = {
+		...req.metadata,
+		auth: { ...req.metadata?.auth, ...auth },
+	};
+};
+
 const verifyUserAuthentication = async (
-	req: Request<
-		unknown,
-		unknown,
-		{
-			emailFromAuthToken?: string | undefined;
-			userSubjectFromAuthToken?: string | undefined;
-		}
-	>,
+	req: Request<unknown, unknown, unknown>,
 	_: Response,
 	next: NextFunction,
 ): Promise<void> => {
@@ -153,8 +157,7 @@ const verifyUserAuthentication = async (
 		}
 		const { subject, email } =
 			await getSubjectAndEmailFromUserAuthToken(authenticationToken);
-		req.body.emailFromAuthToken = email;
-		req.body.userSubjectFromAuthToken = subject;
+		setAuth(req, { kind: "user", email, subject });
 		next();
 	} catch (err) {
 		next(err);
@@ -162,11 +165,7 @@ const verifyUserAuthentication = async (
 };
 
 const verifyAdminAuthentication = async (
-	req: Request<
-		unknown,
-		unknown,
-		{ emailFromAuthToken?: string; adminSubjectFromAuthToken?: string }
-	>,
+	req: Request<unknown, unknown, unknown>,
 	_: Response,
 	next: NextFunction,
 ): Promise<void> => {
@@ -179,8 +178,7 @@ const verifyAdminAuthentication = async (
 			authenticationToken,
 			process.env["FUSIONAUTH_ADMIN_APPLICATION_ID"] ?? "",
 		);
-		req.body.emailFromAuthToken = email;
-		req.body.adminSubjectFromAuthToken = subject;
+		setAuth(req, { kind: "admin", email, subject });
 		next();
 	} catch (err) {
 		next(err);
@@ -188,16 +186,7 @@ const verifyAdminAuthentication = async (
 };
 
 const verifyUserOrAdminAuthentication = async (
-	req: Request<
-		unknown,
-		unknown,
-		{
-			userSubjectFromAuthToken?: string | undefined;
-			adminSubjectFromAuthToken?: string | undefined;
-			userEmailFromAuthToken?: string | undefined;
-			adminEmailFromAuthToken?: string | undefined;
-		}
-	>,
+	req: Request<unknown, unknown, unknown>,
 	_: Response,
 	next: NextFunction,
 ): Promise<void> => {
@@ -209,8 +198,7 @@ const verifyUserOrAdminAuthentication = async (
 		try {
 			const { subject, email } =
 				await getSubjectAndEmailFromUserAuthToken(authenticationToken);
-			req.body.userSubjectFromAuthToken = subject;
-			req.body.userEmailFromAuthToken = email;
+			setAuth(req, { kind: "user", email, subject });
 			next();
 		} catch (err) {
 			if (
@@ -219,8 +207,7 @@ const verifyUserOrAdminAuthentication = async (
 			) {
 				const { subject, email } =
 					await getSubjectAndEmailFromAdminAuthToken(authenticationToken);
-				req.body.adminSubjectFromAuthToken = subject;
-				req.body.adminEmailFromAuthToken = email;
+				setAuth(req, { kind: "admin", email, subject });
 				next();
 			} else {
 				next(err);
@@ -232,7 +219,7 @@ const verifyUserOrAdminAuthentication = async (
 };
 
 const extractUserEmailFromAuthToken = async (
-	req: Request<unknown, unknown, { emailFromAuthToken?: string }>,
+	req: Request<unknown, unknown, unknown>,
 	_: Response,
 	next: NextFunction,
 ): Promise<void> => {
@@ -248,7 +235,7 @@ const extractUserEmailFromAuthToken = async (
 				],
 			);
 			if (email !== "") {
-				req.body.emailFromAuthToken = email;
+				setAuth(req, { kind: "user", email });
 			}
 		}
 		next();
@@ -258,21 +245,22 @@ const extractUserEmailFromAuthToken = async (
 };
 
 const extractUserIsAdminFromAuthToken = async (
-	req: Request<unknown, unknown, { admin?: boolean }>,
+	req: Request<unknown, unknown, unknown>,
 	_: Response,
 	next: NextFunction,
 ): Promise<void> => {
 	try {
-		let email = "";
 		const authenticationToken = getAuthTokenFromRequest(req);
 		if (authenticationToken !== "") {
-			email = await getOptionalValueFromAuthToken(
+			const email = await getOptionalValueFromAuthToken(
 				authenticationToken,
 				emailKey,
 				[process.env["FUSIONAUTH_ADMIN_APPLICATION_ID"] ?? ""],
 			);
+			if (email !== "") {
+				setAuth(req, { kind: "admin", email });
+			}
 		}
-		req.body.admin = email !== "";
 		next();
 	} catch (err) {
 		next(err);
@@ -280,29 +268,16 @@ const extractUserIsAdminFromAuthToken = async (
 };
 
 const extractShareTokenFromHeaders = (
-	req: Request<
-		unknown,
-		unknown,
-		{ emailFromAuthToken?: string; shareToken: string | undefined }
-	>,
+	req: Request<unknown, unknown, unknown>,
 	__: Response,
 	next: NextFunction,
 ): void => {
-	req.body.shareToken = req.get("X-Permanent-Share-Token");
+	setAuth(req, { shareToken: req.get("X-Permanent-Share-Token") });
 	next();
 };
 
 const verifyUserOrAdminOrDelegatedCallAuthentication = async (
-	req: Request<
-		unknown,
-		unknown,
-		{
-			userEmailFromAuthToken?: string | undefined;
-			userSubjectFromAuthToken?: string | undefined;
-			adminEmailFromAuthToken?: string | undefined;
-			adminSubjectFromAuthToken?: string | undefined;
-		}
-	>,
+	req: Request<unknown, unknown, unknown>,
 	res: Response,
 	next: NextFunction,
 ): Promise<void> => {
@@ -313,10 +288,11 @@ const verifyUserOrAdminOrDelegatedCallAuthentication = async (
 			if (expectedSecret === "" || secret !== expectedSecret) {
 				throw new createError.Unauthorized("Invalid delegated call secret");
 			}
-			const email = req.get("X-Permanent-Delegated-Call-User-Email");
-			const subject = req.get("X-Permanent-Delegated-Call-User-Subject");
-			req.body.userEmailFromAuthToken = email;
-			req.body.userSubjectFromAuthToken = subject;
+			setAuth(req, {
+				kind: "user",
+				email: req.get("X-Permanent-Delegated-Call-User-Email"),
+				subject: req.get("X-Permanent-Delegated-Call-User-Subject"),
+			});
 			next();
 		} else {
 			await verifyUserOrAdminAuthentication(req, res, next);

@@ -85,7 +85,10 @@ export const getAccounts = async (
 	};
 };
 
-const updateTags = async (requestBody: UpdateTagsRequest): Promise<void> => {
+const updateTags = async (
+	callerEmail: string,
+	requestBody: UpdateTagsRequest,
+): Promise<void> => {
 	const tags = (requestBody.addTags ?? [])
 		.map((tag): { name: string; status: "active" | "inactive" } => ({
 			name: tag,
@@ -103,7 +106,7 @@ const updateTags = async (requestBody: UpdateTagsRequest): Promise<void> => {
 	try {
 		await MailchimpMarketing.lists.updateListMemberTags(
 			process.env["MAILCHIMP_COMMUNITY_LIST_ID"] ?? "",
-			Md5.hashStr(requestBody.emailFromAuthToken),
+			Md5.hashStr(callerEmail),
 			{ tags },
 		);
 	} catch (err) {
@@ -117,9 +120,10 @@ const updateTags = async (requestBody: UpdateTagsRequest): Promise<void> => {
 };
 
 const postMarketingTags = async (
+	callerEmail: string,
 	requestBody: PostMarketingTagsRequest,
 ): Promise<{ items: string[] }> => {
-	const subscriberHash = Md5.hashStr(requestBody.emailFromAuthToken);
+	const subscriberHash = Md5.hashStr(callerEmail);
 	const listId = process.env["MAILCHIMP_COMMUNITY_LIST_ID"] ?? "";
 
 	try {
@@ -147,14 +151,13 @@ const postMarketingTags = async (
 	}
 };
 
-const getMarketingTags = async (requestBody: {
-	emailFromAuthToken: string;
-	userSubjectFromAuthToken: string;
-}): Promise<GetMarketingTagsResponse> => {
+const getMarketingTags = async (
+	callerEmail: string,
+): Promise<GetMarketingTagsResponse> => {
 	try {
 		const response = await MailchimpMarketing.lists.getListMemberTags(
 			process.env["MAILCHIMP_COMMUNITY_LIST_ID"] ?? "",
-			Md5.hashStr(requestBody.emailFromAuthToken),
+			Md5.hashStr(callerEmail),
 		);
 		return { items: response.tags.map((tag) => tag.name) };
 	} catch (err) {

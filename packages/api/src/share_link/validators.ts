@@ -3,7 +3,6 @@ import type {
 	CreateShareLinkRequest,
 	UpdateShareLinkRequest,
 } from "./models.js";
-import { fieldsFromUserAuthentication } from "../validators/index.js";
 
 const MINIMUM_MAX_USES = 1;
 const MINIMUM_PAGE_SIZE = 1;
@@ -15,7 +14,6 @@ export const validateCreateShareLinkRequest: (
 ): asserts data is CreateShareLinkRequest => {
 	const validation = Joi.object()
 		.keys({
-			...fieldsFromUserAuthentication,
 			itemId: Joi.string().required(),
 			itemType: Joi.string().required().valid("record", "folder"),
 			permissionsLevel: Joi.string()
@@ -65,7 +63,6 @@ export const validateUpdateShareLinkRequest: (
 ): asserts data is UpdateShareLinkRequest => {
 	const validation = Joi.object()
 		.keys({
-			...fieldsFromUserAuthentication,
 			permissionsLevel: Joi.string()
 				.when("accessRestrictions", {
 					is: "none",
@@ -90,12 +87,7 @@ export const validateUpdateShareLinkRequest: (
 				.when("accessRestrictions", { is: "none", then: Joi.valid(null) })
 				.optional(),
 		})
-		.or(
-			"permissionsLevel",
-			"accessRestrictions",
-			"expirationTimestamp",
-			"maxUses",
-		)
+		.min(1)
 		.validate(data);
 	if (validation.error !== undefined) {
 		throw validation.error;

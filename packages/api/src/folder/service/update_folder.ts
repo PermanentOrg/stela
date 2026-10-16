@@ -47,9 +47,10 @@ const getFolderLocationId = async (
 
 export const patchFolder = async (
 	folderId: string,
+	callerEmail: string,
 	folderData: PatchFolderRequest,
 ): Promise<string> => {
-	await validateCanPatchFolder(folderId, folderData.emailFromAuthToken);
+	await validateCanPatchFolder(folderId, callerEmail);
 
 	return await db.transaction(async (transactionDb) => {
 		let locationId: string | null = null;

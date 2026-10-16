@@ -6,6 +6,7 @@ export {
 	extractUserEmailFromAuthToken,
 	extractUserIsAdminFromAuthToken,
 	extractShareTokenFromHeaders,
+	setAuth,
 } from "./authentication.js";
 export { extractIp } from "./extract_ip.js";
 export { handleValidationError } from "./handleValidationError.js";

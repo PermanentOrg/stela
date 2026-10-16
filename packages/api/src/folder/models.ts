@@ -150,7 +150,6 @@ export interface FolderLink {
 }
 
 export interface PatchFolderRequest {
-	emailFromAuthToken: string;
 	displayDate?: string | null;
 	displayEndDate?: string | null;
 	displayTime?: string | null;

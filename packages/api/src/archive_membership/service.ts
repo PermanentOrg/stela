@@ -12,7 +12,7 @@ import {
 import type {
 	ArchiveMembership,
 	UpdateArchiveMembershipRequest,
-	DeleteArchiveMembershipRequest,
+	ArchiveMembershipCaller,
 } from "./models.js";
 import { createEventInTransaction } from "../event/service.js";
 
@@ -37,6 +37,7 @@ interface DeletedArchiveMembershipRow {
 const validateUpdateArchiveMembershipPermissions = async (
 	archiveMembershipId: string,
 	requestData: UpdateArchiveMembershipRequest,
+	callerEmail: string,
 ): Promise<void> => {
 	const permissionsResult = await db
 		.sql<PermissionsDataRow>(
@@ -57,10 +58,7 @@ const validateUpdateArchiveMembershipPermissions = async (
 	} = permissionsResult;
 
 	if (requestData.accessRole !== undefined) {
-		const callerRole = await getArchiveAccessRole(
-			archiveId,
-			requestData.emailFromAuthToken,
-		);
+		const callerRole = await getArchiveAccessRole(archiveId, callerEmail);
 		if (
 			accessRoleLessThan(callerRole, AccessRole.Manager) ||
 			archiveMembershipIsOwnerLevel
@@ -71,10 +69,7 @@ const validateUpdateArchiveMembershipPermissions = async (
 		}
 	}
 
-	if (
-		requestData.status !== undefined &&
-		requestData.emailFromAuthToken !== accountEmail
-	) {
+	if (requestData.status !== undefined && callerEmail !== accountEmail) {
 		throw new createError.Forbidden(
 			"Only the account in the membership can accept a membership",
 		);
@@ -84,8 +79,13 @@ const validateUpdateArchiveMembershipPermissions = async (
 const updateArchiveMembership = async (
 	id: string,
 	requestData: UpdateArchiveMembershipRequest,
+	caller: ArchiveMembershipCaller,
 ): Promise<ArchiveMembership> => {
-	await validateUpdateArchiveMembershipPermissions(id, requestData);
+	await validateUpdateArchiveMembershipPermissions(
+		id,
+		requestData,
+		caller.email,
+	);
 
 	const dbAccessRole =
 		requestData.accessRole === undefined
@@ -114,14 +114,14 @@ const updateArchiveMembership = async (
 
 		await createEventInTransaction(
 			{
-				userSubjectFromAuthToken: requestData.userSubjectFromAuthToken,
-				userEmailFromAuthToken: requestData.emailFromAuthToken,
+				userSubjectFromAuthToken: caller.subject,
+				userEmailFromAuthToken: caller.email,
 				entity: "archive_membership",
 				action: "update",
 				version: 1,
 				entityId: id,
-				ip: requestData.ip ?? "",
-				userAgent: requestData.userAgent,
+				ip: caller.ip ?? "",
+				userAgent: caller.userAgent,
 				body: {
 					newAccessRole: requestData.accessRole,
 					newStatus: requestData.status,
@@ -160,7 +160,7 @@ const updateArchiveMembership = async (
 
 const validateDeleteArchiveMembershipPermissions = async (
 	archiveMembershipId: string,
-	requestData: DeleteArchiveMembershipRequest,
+	callerEmail: string,
 ): Promise<void> => {
 	const permissionsResult = await db
 		.sql<PermissionsDataRow>(
@@ -186,14 +186,11 @@ const validateDeleteArchiveMembershipPermissions = async (
 		);
 	}
 
-	if (requestData.emailFromAuthToken === accountEmail) {
+	if (callerEmail === accountEmail) {
 		return;
 	}
 
-	const callerRole = await getArchiveAccessRole(
-		archiveId,
-		requestData.emailFromAuthToken,
-	);
+	const callerRole = await getArchiveAccessRole(archiveId, callerEmail);
 	if (accessRoleLessThan(callerRole, AccessRole.Manager)) {
 		throw new createError.Forbidden(
 			"Caller does not have sufficient permissions to delete this archive membership",
@@ -203,9 +200,9 @@ const validateDeleteArchiveMembershipPermissions = async (
 
 const deleteArchiveMembership = async (
 	id: string,
-	requestData: DeleteArchiveMembershipRequest,
+	caller: ArchiveMembershipCaller,
 ): Promise<void> => {
-	await validateDeleteArchiveMembershipPermissions(id, requestData);
+	await validateDeleteArchiveMembershipPermissions(id, caller.email);
 
 	await db.transaction(async (transactionDb) => {
 		const deleteResult = await transactionDb
@@ -230,14 +227,14 @@ const deleteArchiveMembership = async (
 
 		await createEventInTransaction(
 			{
-				userSubjectFromAuthToken: requestData.userSubjectFromAuthToken,
-				userEmailFromAuthToken: requestData.emailFromAuthToken,
+				userSubjectFromAuthToken: caller.subject,
+				userEmailFromAuthToken: caller.email,
 				entity: "archive_membership",
 				action: "delete",
 				version: 1,
 				entityId: id,
-				ip: requestData.ip ?? "",
-				userAgent: requestData.userAgent,
+				ip: caller.ip ?? "",
+				userAgent: caller.userAgent,
 				body: {
 					deletedArchiveMembership,
 				},

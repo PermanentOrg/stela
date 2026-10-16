@@ -4,9 +4,9 @@ import { verifyUserAuthentication } from "../middleware/index.js";
 import {
 	validateCreateLegacyContactRequest,
 	validateUpdateLegacyContactRequest,
-	validateBodyFromAuthentication,
 	validateUpdateLegacyContactParams,
 } from "./validators.js";
+import { validateUserAuthentication } from "../validators/index.js";
 import { legacyContactService } from "./service/index.js";
 
 export const legacyContactController = Router();
@@ -15,8 +15,11 @@ legacyContactController.post(
 	verifyUserAuthentication,
 	async (req: Request, res: Response, next: NextFunction): Promise<void> => {
 		try {
-			validateCreateLegacyContactRequest(req.body);
+			const auth = req.metadata?.auth;
+			validateUserAuthentication(auth);
+			validateCreateLegacyContactRequest(req.body, auth.email);
 			const legacyContact = await legacyContactService.createLegacyContact(
+				auth.email,
 				req.body,
 			);
 			res.json(legacyContact);
@@ -31,11 +34,10 @@ legacyContactController.get(
 	verifyUserAuthentication,
 	async (req: Request, res: Response, next: NextFunction): Promise<void> => {
 		try {
-			validateBodyFromAuthentication(req.body);
+			const auth = req.metadata?.auth;
+			validateUserAuthentication(auth);
 			const legacyContacts =
-				await legacyContactService.getLegacyContactsByAccountId(
-					req.body.emailFromAuthToken,
-				);
+				await legacyContactService.getLegacyContactsByAccountId(auth.email);
 			res.json(legacyContacts);
 		} catch (err) {
 			next(err);
@@ -48,10 +50,13 @@ legacyContactController.put(
 	verifyUserAuthentication,
 	async (req: Request, res: Response, next: NextFunction): Promise<void> => {
 		try {
-			validateUpdateLegacyContactRequest(req.body);
+			const auth = req.metadata?.auth;
+			validateUserAuthentication(auth);
+			validateUpdateLegacyContactRequest(req.body, auth.email);
 			validateUpdateLegacyContactParams(req.params);
 			const legacyContact = await legacyContactService.updateLegacyContact(
 				req.params.legacyContactId,
+				auth.email,
 				req.body,
 			);
 			res.json(legacyContact);

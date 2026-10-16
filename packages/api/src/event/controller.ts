@@ -6,7 +6,11 @@ import {
 	extractIp,
 } from "../middleware/index.js";
 import { validateCreateEventRequest } from "./validators.js";
-import { validateBodyFromAuthentication } from "../validators/shared.js";
+import {
+	validateClientIp,
+	validateUserAuthentication,
+	validateUserOrAdminAuthentication,
+} from "../validators/index.js";
 import { createEvent, getChecklistEvents } from "./service.js";
 import { HTTP_STATUS } from "@pdc/http-status-codes";
 
@@ -18,12 +22,25 @@ eventController.post(
 	extractIp,
 	async (req: Request, res: Response, next: NextFunction) => {
 		try {
+			const auth = req.metadata?.auth;
+			validateUserOrAdminAuthentication(auth);
+			const clientIp = req.metadata?.clientIp;
+			validateClientIp(clientIp);
 			validateCreateEventRequest(req.body);
-			const userAgent = req.body.userAgent ?? req.headers["user-agent"];
-			if (userAgent !== undefined) {
-				req.body.userAgent = userAgent;
-			}
-			await createEvent(req.body);
+			await createEvent({
+				...req.body,
+				...(auth.kind === "user"
+					? {
+							userSubjectFromAuthToken: auth.subject,
+							userEmailFromAuthToken: auth.email,
+						}
+					: {
+							adminSubjectFromAuthToken: auth.subject,
+							adminEmailFromAuthToken: auth.email,
+						}),
+				ip: clientIp,
+				userAgent: req.body.userAgent ?? req.headers["user-agent"],
+			});
 			res.status(HTTP_STATUS.SUCCESSFUL.OK).json({});
 		} catch (err) {
 			next(err);
@@ -36,8 +53,9 @@ eventController.get(
 	verifyUserAuthentication,
 	async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			validateBodyFromAuthentication(req.body);
-			const response = await getChecklistEvents(req.body.emailFromAuthToken);
+			const auth = req.metadata?.auth;
+			validateUserAuthentication(auth);
+			const response = await getChecklistEvents(auth.email);
 			res.status(HTTP_STATUS.SUCCESSFUL.OK).json({ checklistItems: response });
 		} catch (err) {
 			next(err);

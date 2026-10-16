@@ -263,6 +263,15 @@ describe("GET /record (deprecated alias, no pagination)", () => {
 		const { body: records } = response as { body: ArchiveRecord[] };
 		expect(records.length).toEqual(0);
 	});
+	test("expect not to trust an email supplied in the request body", async () => {
+		mockExtractUserEmailFromAuthToken();
+		const response = await agent
+			.get("/api/v2/record?recordIds[]=10002")
+			.send({ emailFromAuthToken: "test@permanent.org" })
+			.expect(200);
+		const { body: records } = response as { body: ArchiveRecord[] };
+		expect(records.length).toEqual(0);
+	});
 	test("expect to return a private record shared with the logged in account", async () => {
 		// Note: Records shared directly or that are descended from a shared folder
 		// will all have equivalent entries in the access table. So we don't need to

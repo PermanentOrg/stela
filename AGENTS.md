@@ -139,8 +139,10 @@ exampleController.get(
   verifyUserAuthentication,  // middleware
   async (req: Request, res: Response, next: NextFunction) => {
     try {
+      const auth = req.metadata?.auth;
+      validateUserAuthentication(auth);  // narrows to { kind: "user", email, subject }
       validateRequestParams(req.params);  // Joi assertion
-      const result = await serviceFunction(req.body.emailFromAuthToken, ...);
+      const result = await serviceFunction(auth.email, ...);
       res.status(HTTP_STATUS.SUCCESSFUL.OK).send(result);
     } catch (error) {
       if (isValidationError(error)) {
@@ -155,7 +157,11 @@ exampleController.get(
 
 Key conventions:
 
-- Authentication middleware injects `emailFromAuthToken` and `userSubjectFromAuthToken` into `req.body`
+- Middleware writes the values it derives from the request to `req.metadata` (typed in `packages/api/src/types/express.d.ts`, shapes in `packages/api/src/middleware/models.ts`), never to `req.body`, so callers cannot supply them:
+  - `req.metadata.auth` — `{ kind: "user" | "admin", email, subject, shareToken }` (fields present depend on which middleware ran)
+  - `req.metadata.clientIp` — the caller's IP, set by `extractIp`
+- Body validators describe only client-supplied fields; Joi's default of rejecting unknown keys means a body that tries to send auth values is a 400
+- Services receive the caller's identity (and IP, where needed) as separate arguments rather than as part of the request body
 - Validation uses Joi with TypeScript `asserts` type guards
 - Validation errors produce 400 responses; other errors are passed to `next()`
 - HTTP status codes come from `@pdc/http-status-codes`
@@ -203,10 +209,13 @@ export const validateSomething: (data: unknown) => asserts data is SomeType = (
 };
 ```
 
-Shared authentication validation fields are in `packages/api/src/validators/shared.ts`:
+Shared validators for `req.metadata` are in `packages/api/src/validators/shared.ts` (re-exported from `packages/api/src/validators/index.ts`):
 
-- `fieldsFromUserAuthentication` — requires `emailFromAuthToken` + `userSubjectFromAuthToken`
-- `fieldsFromAdminAuthentication` — requires `emailFromAuthToken` + `adminSubjectFromAuthToken`
+- `validateUserAuthentication` — requires `kind: "user"`, `email` and `subject`
+- `validateAdminAuthentication` — requires `kind: "admin"`, `email` and `subject`
+- `validateUserOrAdminAuthentication` — either of the above
+- `validateOptionalAuthentication` — optional `email` and `shareToken`, for routes that also serve unauthenticated callers (pass `req.metadata?.auth ?? {}`)
+- `validateClientIp` — requires a valid IP address (pass `req.metadata?.clientIp`)
 
 ## Database
 
@@ -317,10 +326,15 @@ Key patterns:
 
 ### Middleware
 
-- `verifyUserAuthentication` — validates auth token, injects `emailFromAuthToken` and `userSubjectFromAuthToken` into `req.body`
-- `verifyAdminAuthentication` — validates admin auth token
-- `extractUserEmailFromAuthToken` — optional auth extraction (doesn't reject if missing)
-- `extractShareTokenFromHeaders` — extracts share token from `X-Permanent-Share-Token` header
+- `verifyUserAuthentication` — validates auth token, sets `req.metadata.auth` to `{ kind: "user", email, subject }`
+- `verifyAdminAuthentication` — validates admin auth token, sets `req.metadata.auth` to `{ kind: "admin", email, subject }`
+- `verifyUserOrAdminAuthentication` / `verifyUserOrAdminOrDelegatedCallAuthentication` — accept either kind of token (or a delegated call secret)
+- `extractUserEmailFromAuthToken` — optional auth extraction (doesn't reject if missing); sets `req.metadata.auth.email` when a valid token is present
+- `extractUserIsAdminFromAuthToken` — sets `req.metadata.auth.kind` to `"admin"` when a valid admin token is present
+- `extractShareTokenFromHeaders` — sets `req.metadata.auth.shareToken` from the `X-Permanent-Share-Token` header
+- `extractIp` — sets `req.metadata.clientIp`
+
+Middleware merges into `req.metadata` rather than replacing it, so they can be chained (e.g. `extractUserEmailFromAuthToken` then `extractShareTokenFromHeaders`). Test mocks for all of these are in `packages/api/test/middleware_mocks.ts`.
 
 ### Access Roles
 
@@ -400,7 +414,7 @@ export const handler: SQSHandler = async (event: SQSEvent) => {
 ## Key Architectural Notes
 
 - The database singleton is in `packages/api/src/database.ts` — a single `TinyPg` instance with `root_dir` pointing to `src/` so all SQL files are discoverable via dot-notation
-- Authentication middleware mutates `req.body` to inject auth values — this is a known pattern the team wants to move away from (noted in eslint config re: `no-param-reassign`)
+- Middleware-derived values live on `req.metadata`, not `req.body`; never read auth or IP values from the body
 - The codebase uses `http-errors` for creating typed HTTP errors that the global error handler catches
 - `@stela/logger` wraps Winston and is used across all packages
 - Infrastructure is managed with Terraform in `/terraform/` (separate configs for test and prod clusters)
