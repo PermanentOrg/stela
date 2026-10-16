@@ -5,6 +5,7 @@ import { mixpanelClient } from "./mixpanel.js";
 import { db } from "./database.js";
 
 const EVENT_BATCH_SIZE = 100;
+const MAX_SEND_ATTEMPTS = 3;
 
 interface Analytics {
 	event: string;
@@ -53,6 +54,21 @@ const trackMixpanelEvent = (event: EventRow): void => {
 	}
 };
 
+const recordSendAttempts = async (
+	allEventIds: string[],
+	sentEventIds: string[],
+): Promise<void> => {
+	await db
+		.sql("queries.record_send_attempts", {
+			eventIds: allEventIds,
+			sentEventIds,
+		})
+		.catch((err: unknown) => {
+			logger.error(err);
+			throw err;
+		});
+};
+
 const sendEventBatch = async (
 	batchSize: number,
 	excludedEventIds: string[],
@@ -61,6 +77,7 @@ const sendEventBatch = async (
 		.sql<EventRow>("queries.get_unsent_events", {
 			batchSize,
 			excludedEventIds,
+			maxSendAttempts: MAX_SEND_ATTEMPTS,
 		})
 		.catch((err: unknown) => {
 			logger.error(err);
@@ -92,10 +109,13 @@ const sendEventBatch = async (
 		trackMixpanelEvent(event);
 	}
 
+	const eventIds = events.rows.map((event) => event.id);
+
 	const { failedMessages } = await publisherClient
 		.batchPublishMessages(process.env["EVENT_TOPIC_ARN"] ?? "", messages)
-		.catch((err: unknown) => {
+		.catch(async (err: unknown) => {
 			logger.error(err);
+			await recordSendAttempts(eventIds, []);
 			throw err;
 		});
 
@@ -103,18 +123,10 @@ const sendEventBatch = async (
 		logger.warn(`Failed to publish events: ${failedMessages.join(", ")}`);
 	}
 
-	const sentEventIds = events.rows
-		.map((event) => event.id)
-		.filter((id) => !failedMessages.includes(id));
-
-	if (sentEventIds.length > 0) {
-		await db
-			.sql("queries.mark_events_sent", { eventIds: sentEventIds })
-			.catch((err: unknown) => {
-				logger.error(err);
-				throw err;
-			});
-	}
+	await recordSendAttempts(
+		eventIds,
+		eventIds.filter((id) => !failedMessages.includes(id)),
+	);
 
 	return { fetchedCount: events.rows.length, failedEventIds: failedMessages };
 };
