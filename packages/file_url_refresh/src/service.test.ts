@@ -106,9 +106,10 @@ describe("refreshThumbnails", () => {
 			"originals/1/1",
 			expect.anything(),
 		);
+		// The record's downloadname, not its uploadfilename.
 		expect(constructSignedCdnUrl).toHaveBeenCalledWith(
 			"originals/1/1",
-			"public_file.png",
+			"Renamed File.png",
 		);
 
 		expect(initialUrls.accessUrl).not.toEqual(postRefreshUrls.accessUrl);
@@ -139,7 +140,7 @@ describe("refreshThumbnails", () => {
 
 		expect(constructSignedCdnUrl).toHaveBeenCalledWith(
 			"originals/1/1",
-			"public_file.jpg",
+			"Renamed File.jpg",
 		);
 	});
 
@@ -201,7 +202,7 @@ describe("refreshThumbnails", () => {
 						{
 							id: "1",
 							cloudPath: "originals/1/1",
-							uploadName: "public_file.jpg",
+							recordDownloadName: "public_file.jpg",
 							type: "type.file.image.jpg",
 							format: "file.format.original",
 						},

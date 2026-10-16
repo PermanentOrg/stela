@@ -1,6 +1,7 @@
 import { getSignedUrl } from "aws-cloudfront-sign";
 import { describe, expect, test, vi } from "vitest";
 import {
+	buildContentDisposition,
 	constructSignedCdnUrl,
 	getS3ObjectFromS3Message,
 	getS3BucketFromS3Message,
@@ -28,10 +29,64 @@ describe("constructSignedCDNURL", () => {
 		const testFileName = "test-file.txt";
 		constructSignedCdnUrl(testKey, testFileName);
 
+		// The disposition must reach S3 as a full RFC 6266 header value, not a
+		// bare filename — without a `filename` parameter browsers fall back to
+		// the last path segment of the URL, which is the file ID.
+		const expectedUrl = new URL(`${mockCloudfrontUrl}${testKey}`);
+		expectedUrl.searchParams.append(
+			"response-content-disposition",
+			`attachment; filename="${testFileName}"`,
+		);
+
 		expect(getSignedUrl).toHaveBeenCalledWith(
-			`${mockCloudfrontUrl}${testKey}?response-content-disposition=${testFileName}`,
+			expectedUrl.toString(),
 			expect.anything(),
 		);
+	});
+});
+
+describe("buildContentDisposition", () => {
+	test("wraps a plain ASCII name in a simple disposition", () => {
+		expect(buildContentDisposition("report.pdf")).toBe(
+			'attachment; filename="report.pdf"',
+		);
+	});
+
+	test("leaves a name containing spaces unchanged", () => {
+		expect(buildContentDisposition("my report.pdf")).toBe(
+			'attachment; filename="my report.pdf"',
+		);
+	});
+
+	test("uses the extended parameter for a non-Latin name", () => {
+		const fileName = "Контракт.pdf";
+		const disposition = buildContentDisposition(fileName);
+
+		// Each non-ASCII code point becomes one underscore, preserving the
+		// extension.
+		expect(disposition).toContain('filename="________.pdf"');
+		expect(disposition).toContain(
+			"filename*=UTF-8''%D0%9A%D0%BE%D0%BD%D1%82%D1%80%D0%B0%D0%BA%D1%82.pdf",
+		);
+		// The whole value must be representable in ISO-8859-1, i.e. carry no
+		// raw multibyte characters, or S3 rejects the override.
+		expect(disposition).toMatch(/^[\x20-\x7e]*$/v);
+	});
+
+	test("neutralises quotes and backslashes", () => {
+		// Either would otherwise terminate or escape the quoted-string and
+		// corrupt the header.
+		expect(buildContentDisposition('a"b\\c.txt')).toContain(
+			'filename="a_b_c.txt"',
+		);
+	});
+
+	test("percent-encodes characters outside the RFC 5987 attr-char set", () => {
+		const disposition = buildContentDisposition("(«quoted»).txt");
+
+		expect(disposition).toContain("%28");
+		expect(disposition).toContain("%29");
+		expect(disposition).not.toMatch(/filename\*=UTF-8''[^;]*[\(\)]/v);
 	});
 });
 
