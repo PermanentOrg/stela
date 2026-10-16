@@ -13,6 +13,7 @@ FROM
   event
 WHERE
   is_sent = FALSE
+  AND send_attempts < :maxSendAttempts
   AND id != ALL(:excludedEventIds::uuid[])
 ORDER BY
   created_at ASC,
