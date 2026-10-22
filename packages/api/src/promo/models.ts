@@ -1,6 +1,4 @@
 export interface ClaimPromoRequest {
-	emailFromAuthToken: string;
-	userSubjectFromAuthToken: string;
 	promoCode: string;
 }
 
@@ -22,8 +20,6 @@ export interface AccountPromoCheckRow {
 }
 
 export interface CreatePromoRequest {
-	emailFromAuthToken: string;
-	adminSubjectFromAuthToken: string;
 	code: string;
 	storageInMB: number;
 	expirationTimestamp: string;

@@ -1,13 +1,8 @@
-export interface CreateEventRequest {
-	userSubjectFromAuthToken?: string | undefined;
-	userEmailFromAuthToken?: string | undefined;
-	adminSubjectFromAuthToken?: string | undefined;
-	adminEmailFromAuthToken?: string | undefined;
+export interface CreateEventRequestBody {
 	entity: string;
 	action: string;
 	version: number;
 	entityId: string;
-	ip: string;
 	userAgent?: string | undefined;
 	body: {
 		[key: string]: unknown;
@@ -17,6 +12,14 @@ export interface CreateEventRequest {
 			data: Record<string, unknown>;
 		};
 	};
+}
+
+export interface CreateEventRequest extends CreateEventRequestBody {
+	userSubjectFromAuthToken?: string | undefined;
+	userEmailFromAuthToken?: string | undefined;
+	adminSubjectFromAuthToken?: string | undefined;
+	adminEmailFromAuthToken?: string | undefined;
+	ip: string;
 }
 
 export interface ChecklistItem {

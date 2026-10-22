@@ -15,12 +15,10 @@ import { sendArchiveStewardNotification } from "../../email/index.js";
 import { confirmArchiveOwnership } from "./utils.js";
 
 export const createDirective = async (
+	callerEmail: string,
 	requestBody: CreateDirectiveRequest,
 ): Promise<Directive> => {
-	await confirmArchiveOwnership(
-		requestBody.archiveId,
-		requestBody.emailFromAuthToken,
-	);
+	await confirmArchiveOwnership(requestBody.archiveId, callerEmail);
 
 	const directiveToReturn = await db.transaction(async (transactionDb) => {
 		const directive = await (async (): Promise<Directive> => {

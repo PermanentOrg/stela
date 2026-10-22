@@ -142,11 +142,11 @@ describe("searchArchives", () => {
 
 	test("should not return callers private archives if caller is authenticated admin", async () => {
 		mockExtractUserIsAdminFromAuthToken(true);
-		mockExtractUserEmailFromAuthToken("test@permanent.org");
+		mockExtractUserEmailFromAuthToken(undefined);
 
 		const result = await agent
 			.get("/api/v2/archive?searchQuery=Rando&pageSize=10")
-			.set("Authorization", "Bearer user-token")
+			.set("Authorization", "Bearer admin-token")
 			.expect(200);
 
 		const {

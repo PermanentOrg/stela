@@ -2,6 +2,7 @@ import { Router } from "express";
 import type { Request, Response, NextFunction } from "express";
 import { verifyAdminAuthentication } from "../middleware/authentication.js";
 import { validateCreatePromoRequest } from "./validators.js";
+import { validateAdminAuthentication } from "../validators/index.js";
 import { createPromo, getPromos } from "./service.js";
 import { HTTP_STATUS } from "@pdc/http-status-codes";
 
@@ -12,6 +13,7 @@ promoController.post(
 	verifyAdminAuthentication,
 	async (req: Request, res: Response, next: NextFunction) => {
 		try {
+			validateAdminAuthentication(req.metadata?.auth);
 			validateCreatePromoRequest(req.body);
 			await createPromo(req.body);
 			res.status(HTTP_STATUS.SUCCESSFUL.OK).send({});

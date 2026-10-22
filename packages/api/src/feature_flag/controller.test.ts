@@ -73,14 +73,18 @@ describe("GET /feature-flags", () => {
 		expect(logger.error).toHaveBeenCalled();
 	});
 
-	test("should return 400 if the request is invalid", async () => {
+	test("should not treat the caller as an admin based on the request body", async () => {
 		vi.mocked(extractUserIsAdminFromAuthToken).mockImplementation(
 			async (_, __, next: NextFunction) => {
 				next();
 			},
 		);
 
-		await agent.get("/api/v2/feature-flags").expect(400);
+		const response = await agent
+			.get("/api/v2/feature-flags")
+			.send({ admin: true })
+			.expect(200);
+		expect(response.body).toEqual({ items: [{ name: "feature_1" }] });
 	});
 
 	test("should return list of globally enabled feature flags if user is not logged in", async () => {

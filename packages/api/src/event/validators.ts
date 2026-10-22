@@ -1,19 +1,17 @@
 import Joi from "joi";
-import type { CreateEventRequest } from "./models.js";
-import { fieldsFromUserOrAdminAuthentication } from "../validators/index.js";
+import type { CreateEventRequestBody } from "./models.js";
 
 export const validateCreateEventRequest: (
 	data: unknown,
-) => asserts data is CreateEventRequest = (
+) => asserts data is CreateEventRequestBody = (
 	data: unknown,
-): asserts data is CreateEventRequest => {
-	const validation = fieldsFromUserOrAdminAuthentication
-		.append({
+): asserts data is CreateEventRequestBody => {
+	const validation = Joi.object()
+		.keys({
 			entity: Joi.string().required(),
 			action: Joi.string().required(),
 			version: Joi.number().required(),
 			entityId: Joi.string().required(),
-			ip: Joi.string().ip().required(),
 			userAgent: Joi.string().empty(""),
 			body: Joi.object()
 				.keys({

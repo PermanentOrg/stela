@@ -3,28 +3,20 @@ import type {
 	CreateDirectiveRequest,
 	UpdateDirectiveRequest,
 } from "./model.js";
-import {
-	validateBodyFromAuthentication,
-	fieldsFromUserAuthentication,
-} from "../validators/index.js";
-
-export { validateBodyFromAuthentication };
 
 export const validateCreateDirectiveRequest: (
 	data: unknown,
+	callerEmail: string,
 ) => asserts data is CreateDirectiveRequest = (
 	data: unknown,
+	callerEmail: string,
 ): asserts data is CreateDirectiveRequest => {
 	const validation = Joi.object()
 		.keys({
-			...fieldsFromUserAuthentication,
 			archiveId: Joi.string().required(),
 			stewardEmail: Joi.when("type", {
 				is: Joi.string().valid("transfer"),
-				then: Joi.string()
-					.email()
-					.invalid(Joi.ref("emailFromAuthToken"))
-					.required(),
+				then: Joi.string().email().invalid(callerEmail).required(),
 				otherwise: Joi.valid(null),
 			}),
 			type: Joi.string().required(),
@@ -58,15 +50,16 @@ export const validateUpdateDirectiveParams: (
 
 export const validateUpdateDirectiveRequest: (
 	data: unknown,
+	callerEmail: string,
 ) => asserts data is UpdateDirectiveRequest = (
 	data: unknown,
+	callerEmail: string,
 ): asserts data is UpdateDirectiveRequest => {
 	const validation = Joi.object()
 		.keys({
-			...fieldsFromUserAuthentication,
 			stewardEmail: Joi.when("type", {
 				is: Joi.string().valid("transfer"),
-				then: Joi.string().invalid(Joi.ref("emailFromAuthToken")).email(),
+				then: Joi.string().invalid(callerEmail).email(),
 				otherwise: Joi.valid(null),
 			}),
 			type: Joi.string(),

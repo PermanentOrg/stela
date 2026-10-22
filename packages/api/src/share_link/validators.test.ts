@@ -11,8 +11,6 @@ describe("validateCreateShareLinkRequest", () => {
 		let error = null;
 		try {
 			validateCreateShareLinkRequest({
-				emailFromAuthToken: "test@permanent.org",
-				userSubjectFromAuthToken: "1129f5a8-7b9c-4211-ae59-dd83faad2455",
 				itemId: "315aedc2-67d5-4144-9f0d-ee547d98af9c",
 				itemType: "record",
 				permissionsLevel: "viewer",
@@ -29,54 +27,10 @@ describe("validateCreateShareLinkRequest", () => {
 		}
 	});
 
-	test("should throw an error if emailFromAuthToken is missing", () => {
-		let error = null;
-		try {
-			validateCreateShareLinkRequest({
-				userSubjectFromAuthToken: "1129f5a8-7b9c-4211-ae59-dd83faad2455",
-				itemId: "315aedc2-67d5-4144-9f0d-ee547d98af9c",
-				itemType: "record",
-				permissionsLevel: "viewer",
-				accessRestrictions: "account",
-				maxUses: 100,
-				expirationTimestamp: new Date(
-					new Date().getTime() + 30 * 24 * 60 * 60 * 1000,
-				).toISOString(),
-			});
-		} catch (err) {
-			error = err;
-		} finally {
-			expect(error).not.toBeNull();
-		}
-	});
-
-	test("should throw an error if userSubjectFromAuthToken is missing", () => {
-		let error = null;
-		try {
-			validateCreateShareLinkRequest({
-				emailFromAuthToken: "test@permanent.org",
-				itemId: "315aedc2-67d5-4144-9f0d-ee547d98af9c",
-				itemType: "record",
-				permissionsLevel: "viewer",
-				accessRestrictions: "account",
-				maxUses: 100,
-				expirationTimestamp: new Date(
-					new Date().getTime() + 30 * 24 * 60 * 60 * 1000,
-				).toISOString(),
-			});
-		} catch (err) {
-			error = err;
-		} finally {
-			expect(error).not.toBeNull();
-		}
-	});
-
 	test("should throw an error if itemId is missing", () => {
 		let error = null;
 		try {
 			validateCreateShareLinkRequest({
-				emailFromAuthToken: "test@permanent.org",
-				userSubjectFromAuthToken: "1129f5a8-7b9c-4211-ae59-dd83faad2455",
 				itemType: "record",
 				permissionsLevel: "viewer",
 				accessRestrictions: "account",
@@ -96,8 +50,6 @@ describe("validateCreateShareLinkRequest", () => {
 		let error = null;
 		try {
 			validateCreateShareLinkRequest({
-				emailFromAuthToken: "test@permanent.org",
-				userSubjectFromAuthToken: "1129f5a8-7b9c-4211-ae59-dd83faad2455",
 				itemId: 1,
 				itemType: "record",
 				permissionsLevel: "viewer",
@@ -118,8 +70,6 @@ describe("validateCreateShareLinkRequest", () => {
 		let error = null;
 		try {
 			validateCreateShareLinkRequest({
-				emailFromAuthToken: "test@permanent.org",
-				userSubjectFromAuthToken: "1129f5a8-7b9c-4211-ae59-dd83faad2455",
 				itemId: "315aedc2-67d5-4144-9f0d-ee547d98af9c",
 				permissionsLevel: "viewer",
 				accessRestrictions: "account",
@@ -139,8 +89,6 @@ describe("validateCreateShareLinkRequest", () => {
 		let error = null;
 		try {
 			validateCreateShareLinkRequest({
-				emailFromAuthToken: "test@permanent.org",
-				userSubjectFromAuthToken: "1129f5a8-7b9c-4211-ae59-dd83faad2455",
 				itemId: "315aedc2-67d5-4144-9f0d-ee547d98af9c",
 				itemType: 1,
 				permissionsLevel: "viewer",
@@ -161,8 +109,6 @@ describe("validateCreateShareLinkRequest", () => {
 		let error = null;
 		try {
 			validateCreateShareLinkRequest({
-				emailFromAuthToken: "test@permanent.org",
-				userSubjectFromAuthToken: "1129f5a8-7b9c-4211-ae59-dd83faad2455",
 				itemId: "315aedc2-67d5-4144-9f0d-ee547d98af9c",
 				itemType: "collection",
 				permissionsLevel: "viewer",
@@ -183,8 +129,6 @@ describe("validateCreateShareLinkRequest", () => {
 		let error = null;
 		try {
 			validateCreateShareLinkRequest({
-				emailFromAuthToken: "test@permanent.org",
-				userSubjectFromAuthToken: "1129f5a8-7b9c-4211-ae59-dd83faad2455",
 				itemId: "315aedc2-67d5-4144-9f0d-ee547d98af9c",
 				itemType: "record",
 				accessRestrictions: "account",
@@ -204,8 +148,6 @@ describe("validateCreateShareLinkRequest", () => {
 		let error = null;
 		try {
 			validateCreateShareLinkRequest({
-				emailFromAuthToken: "test@permanent.org",
-				userSubjectFromAuthToken: "1129f5a8-7b9c-4211-ae59-dd83faad2455",
 				itemId: "315aedc2-67d5-4144-9f0d-ee547d98af9c",
 				itemType: "record",
 				permissionsLevel: 1,
@@ -226,8 +168,6 @@ describe("validateCreateShareLinkRequest", () => {
 		let error = null;
 		try {
 			validateCreateShareLinkRequest({
-				emailFromAuthToken: "test@permanent.org",
-				userSubjectFromAuthToken: "1129f5a8-7b9c-4211-ae59-dd83faad2455",
 				itemId: "315aedc2-67d5-4144-9f0d-ee547d98af9c",
 				itemType: "record",
 				permissionsLevel: "admin",
@@ -248,8 +188,6 @@ describe("validateCreateShareLinkRequest", () => {
 		let error = null;
 		try {
 			validateCreateShareLinkRequest({
-				emailFromAuthToken: "test@permanent.org",
-				userSubjectFromAuthToken: "1129f5a8-7b9c-4211-ae59-dd83faad2455",
 				itemId: "315aedc2-67d5-4144-9f0d-ee547d98af9c",
 				itemType: "record",
 				permissionsLevel: "viewer",
@@ -268,8 +206,6 @@ describe("validateCreateShareLinkRequest", () => {
 		let error = null;
 		try {
 			validateCreateShareLinkRequest({
-				emailFromAuthToken: "test@permanent.org",
-				userSubjectFromAuthToken: "1129f5a8-7b9c-4211-ae59-dd83faad2455",
 				itemId: "315aedc2-67d5-4144-9f0d-ee547d98af9c",
 				itemType: "record",
 				permissionsLevel: "viewer",
@@ -290,8 +226,6 @@ describe("validateCreateShareLinkRequest", () => {
 		let error = null;
 		try {
 			validateCreateShareLinkRequest({
-				emailFromAuthToken: "test@permanent.org",
-				userSubjectFromAuthToken: "1129f5a8-7b9c-4211-ae59-dd83faad2455",
 				itemId: "315aedc2-67d5-4144-9f0d-ee547d98af9c",
 				itemType: "record",
 				permissionsLevel: "viewer",
@@ -312,8 +246,6 @@ describe("validateCreateShareLinkRequest", () => {
 		let error = null;
 		try {
 			validateCreateShareLinkRequest({
-				emailFromAuthToken: "test@permanent.org",
-				userSubjectFromAuthToken: "1129f5a8-7b9c-4211-ae59-dd83faad2455",
 				itemId: "315aedc2-67d5-4144-9f0d-ee547d98af9c",
 				itemType: "record",
 				permissionsLevel: "viewer",
@@ -333,8 +265,6 @@ describe("validateCreateShareLinkRequest", () => {
 		let error = null;
 		try {
 			validateCreateShareLinkRequest({
-				emailFromAuthToken: "test@permanent.org",
-				userSubjectFromAuthToken: "1129f5a8-7b9c-4211-ae59-dd83faad2455",
 				itemId: "315aedc2-67d5-4144-9f0d-ee547d98af9c",
 				itemType: "record",
 				permissionsLevel: "viewer",
@@ -355,8 +285,6 @@ describe("validateCreateShareLinkRequest", () => {
 		let error = null;
 		try {
 			validateCreateShareLinkRequest({
-				emailFromAuthToken: "test@permanent.org",
-				userSubjectFromAuthToken: "1129f5a8-7b9c-4211-ae59-dd83faad2455",
 				itemId: "315aedc2-67d5-4144-9f0d-ee547d98af9c",
 				itemType: "record",
 				permissionsLevel: "viewer",
@@ -377,8 +305,6 @@ describe("validateCreateShareLinkRequest", () => {
 		let error = null;
 		try {
 			validateCreateShareLinkRequest({
-				emailFromAuthToken: "test@permanent.org",
-				userSubjectFromAuthToken: "1129f5a8-7b9c-4211-ae59-dd83faad2455",
 				itemId: "315aedc2-67d5-4144-9f0d-ee547d98af9c",
 				itemType: "record",
 				permissionsLevel: "viewer",
@@ -399,8 +325,6 @@ describe("validateCreateShareLinkRequest", () => {
 		let error = null;
 		try {
 			validateCreateShareLinkRequest({
-				emailFromAuthToken: "test@permanent.org",
-				userSubjectFromAuthToken: "1129f5a8-7b9c-4211-ae59-dd83faad2455",
 				itemId: "315aedc2-67d5-4144-9f0d-ee547d98af9c",
 				itemType: "record",
 				permissionsLevel: "viewer",
@@ -418,8 +342,6 @@ describe("validateCreateShareLinkRequest", () => {
 		let error = null;
 		try {
 			validateCreateShareLinkRequest({
-				emailFromAuthToken: "test@permanent.org",
-				userSubjectFromAuthToken: "1129f5a8-7b9c-4211-ae59-dd83faad2455",
 				itemId: "315aedc2-67d5-4144-9f0d-ee547d98af9c",
 				itemType: "record",
 				permissionsLevel: "viewer",
@@ -438,8 +360,6 @@ describe("validateCreateShareLinkRequest", () => {
 		let error = null;
 		try {
 			validateCreateShareLinkRequest({
-				emailFromAuthToken: "test@permanent.org",
-				userSubjectFromAuthToken: "1129f5a8-7b9c-4211-ae59-dd83faad2455",
 				itemId: "315aedc2-67d5-4144-9f0d-ee547d98af9c",
 				itemType: "record",
 				permissionsLevel: "viewer",
@@ -458,8 +378,6 @@ describe("validateCreateShareLinkRequest", () => {
 		let error = null;
 		try {
 			validateCreateShareLinkRequest({
-				emailFromAuthToken: "test@permanent.org",
-				userSubjectFromAuthToken: "1129f5a8-7b9c-4211-ae59-dd83faad2455",
 				itemId: "315aedc2-67d5-4144-9f0d-ee547d98af9c",
 				itemType: "record",
 				permissionsLevel: "viewer",
@@ -477,8 +395,6 @@ describe("validateCreateShareLinkRequest", () => {
 		let error = null;
 		try {
 			validateCreateShareLinkRequest({
-				emailFromAuthToken: "test@permanent.org",
-				userSubjectFromAuthToken: "1129f5a8-7b9c-4211-ae59-dd83faad2455",
 				itemId: "315aedc2-67d5-4144-9f0d-ee547d98af9c",
 				itemType: "record",
 				permissionsLevel: "viewer",
@@ -495,8 +411,6 @@ describe("validateCreateShareLinkRequest", () => {
 		let error = null;
 		try {
 			validateCreateShareLinkRequest({
-				emailFromAuthToken: "test@permanent.org",
-				userSubjectFromAuthToken: "1129f5a8-7b9c-4211-ae59-dd83faad2455",
 				itemId: "315aedc2-67d5-4144-9f0d-ee547d98af9c",
 				itemType: "record",
 				accessRestrictions: "none",
@@ -513,8 +427,6 @@ describe("validateCreateShareLinkRequest", () => {
 		let error = null;
 		try {
 			validateCreateShareLinkRequest({
-				emailFromAuthToken: "test@permanent.org",
-				userSubjectFromAuthToken: "1129f5a8-7b9c-4211-ae59-dd83faad2455",
 				itemId: "315aedc2-67d5-4144-9f0d-ee547d98af9c",
 				itemType: "record",
 				permissionsLevel: "owner",
@@ -532,8 +444,6 @@ describe("validateUpdateShareLinkRequest", () => {
 		let error = null;
 		try {
 			validateUpdateShareLinkRequest({
-				emailFromAuthToken: "test@permanent.org",
-				userSubjectFromAuthToken: "1129f5a8-7b9c-4211-ae59-dd83faad2455",
 				permissionsLevel: "viewer",
 				accessRestrictions: "account",
 				expirationTimestamp: "2030-12-31",
@@ -545,45 +455,10 @@ describe("validateUpdateShareLinkRequest", () => {
 			expect(error).toBeNull();
 		}
 	});
-	test("should error if emailFromAuthToken is missing", () => {
-		let error = null;
-		try {
-			validateUpdateShareLinkRequest({
-				userSubjectFromAuthToken: "1129f5a8-7b9c-4211-ae59-dd83faad2455",
-				permissionsLevel: "viewer",
-				accessRestrictions: "account",
-				expirationTimestamp: "2030-12-31",
-				maxUses: 100,
-			});
-		} catch (err) {
-			error = err;
-		} finally {
-			expect(error).not.toBeNull();
-		}
-	});
-	test("should error if userSubjectFromAuthToken is missing", () => {
-		let error = null;
-		try {
-			validateUpdateShareLinkRequest({
-				emailFromAuthToken: "test@permanent.org",
-				permissionsLevel: "viewer",
-				accessRestrictions: "account",
-				expirationTimestamp: "2030-12-31",
-				maxUses: 100,
-			});
-		} catch (err) {
-			error = err;
-		} finally {
-			expect(error).not.toBeNull();
-		}
-	});
 	test("should error if all fields are missing", () => {
 		let error = null;
 		try {
-			validateUpdateShareLinkRequest({
-				emailFromAuthToken: "test@permanent.org",
-				userSubjectFromAuthToken: "1129f5a8-7b9c-4211-ae59-dd83faad2455",
-			});
+			validateUpdateShareLinkRequest({});
 		} catch (err) {
 			error = err;
 		} finally {
@@ -594,8 +469,6 @@ describe("validateUpdateShareLinkRequest", () => {
 		let error = null;
 		try {
 			validateUpdateShareLinkRequest({
-				emailFromAuthToken: "test@permanent.org",
-				userSubjectFromAuthToken: "1129f5a8-7b9c-4211-ae59-dd83faad2455",
 				permissionsLevel: 1,
 			});
 		} catch (err) {
@@ -608,8 +481,6 @@ describe("validateUpdateShareLinkRequest", () => {
 		let error = null;
 		try {
 			validateUpdateShareLinkRequest({
-				emailFromAuthToken: "test@permanent.org",
-				userSubjectFromAuthToken: "1129f5a8-7b9c-4211-ae59-dd83faad2455",
 				permissionsLevel: "admin",
 			});
 		} catch (err) {
@@ -622,8 +493,6 @@ describe("validateUpdateShareLinkRequest", () => {
 		let error = null;
 		try {
 			validateUpdateShareLinkRequest({
-				emailFromAuthToken: "test@permanent.org",
-				userSubjectFromAuthToken: "1129f5a8-7b9c-4211-ae59-dd83faad2455",
 				permissionsLevel: null,
 			});
 		} catch (err) {
@@ -636,8 +505,6 @@ describe("validateUpdateShareLinkRequest", () => {
 		let error = null;
 		try {
 			validateUpdateShareLinkRequest({
-				emailFromAuthToken: "test@permanent.org",
-				userSubjectFromAuthToken: "1129f5a8-7b9c-4211-ae59-dd83faad2455",
 				maxUses: null,
 			});
 		} catch (err) {
@@ -650,8 +517,6 @@ describe("validateUpdateShareLinkRequest", () => {
 		let error = null;
 		try {
 			validateUpdateShareLinkRequest({
-				emailFromAuthToken: "test@permanent.org",
-				userSubjectFromAuthToken: "1129f5a8-7b9c-4211-ae59-dd83faad2455",
 				accessRestrictions: 1,
 			});
 		} catch (err) {
@@ -664,8 +529,6 @@ describe("validateUpdateShareLinkRequest", () => {
 		let error = null;
 		try {
 			validateUpdateShareLinkRequest({
-				emailFromAuthToken: "test@permanent.org",
-				userSubjectFromAuthToken: "1129f5a8-7b9c-4211-ae59-dd83faad2455",
 				accessRestrictions: "all",
 			});
 		} catch (err) {
@@ -678,8 +541,6 @@ describe("validateUpdateShareLinkRequest", () => {
 		let error = null;
 		try {
 			validateUpdateShareLinkRequest({
-				emailFromAuthToken: "test@permanent.org",
-				userSubjectFromAuthToken: "1129f5a8-7b9c-4211-ae59-dd83faad2455",
 				accessRestrictions: null,
 			});
 		} catch (err) {
@@ -692,8 +553,6 @@ describe("validateUpdateShareLinkRequest", () => {
 		let error = null;
 		try {
 			validateUpdateShareLinkRequest({
-				emailFromAuthToken: "test@permanent.org",
-				userSubjectFromAuthToken: "1129f5a8-7b9c-4211-ae59-dd83faad2455",
 				maxUses: null,
 			});
 		} catch (err) {
@@ -706,8 +565,6 @@ describe("validateUpdateShareLinkRequest", () => {
 		let error = null;
 		try {
 			validateUpdateShareLinkRequest({
-				emailFromAuthToken: "test@permanent.org",
-				userSubjectFromAuthToken: "1129f5a8-7b9c-4211-ae59-dd83faad2455",
 				expirationTimestamp: 1,
 			});
 		} catch (err) {
@@ -720,8 +577,6 @@ describe("validateUpdateShareLinkRequest", () => {
 		let error = null;
 		try {
 			validateUpdateShareLinkRequest({
-				emailFromAuthToken: "test@permanent.org",
-				userSubjectFromAuthToken: "1129f5a8-7b9c-4211-ae59-dd83faad2455",
 				expirationTimestamp: "not_a_date",
 			});
 		} catch (err) {
@@ -734,8 +589,6 @@ describe("validateUpdateShareLinkRequest", () => {
 		let error = null;
 		try {
 			validateUpdateShareLinkRequest({
-				emailFromAuthToken: "test@permanent.org",
-				userSubjectFromAuthToken: "1129f5a8-7b9c-4211-ae59-dd83faad2455",
 				expirationTimestamp: null,
 			});
 		} catch (err) {
@@ -748,8 +601,6 @@ describe("validateUpdateShareLinkRequest", () => {
 		let error = null;
 		try {
 			validateUpdateShareLinkRequest({
-				emailFromAuthToken: "test@permanent.org",
-				userSubjectFromAuthToken: "1129f5a8-7b9c-4211-ae59-dd83faad2455",
 				maxUses: null,
 			});
 		} catch (err) {
@@ -762,8 +613,6 @@ describe("validateUpdateShareLinkRequest", () => {
 		let error = null;
 		try {
 			validateUpdateShareLinkRequest({
-				emailFromAuthToken: "test@permanent.org",
-				userSubjectFromAuthToken: "1129f5a8-7b9c-4211-ae59-dd83faad2455",
 				maxUses: "one",
 			});
 		} catch (err) {
@@ -776,8 +625,6 @@ describe("validateUpdateShareLinkRequest", () => {
 		let error = null;
 		try {
 			validateUpdateShareLinkRequest({
-				emailFromAuthToken: "test@permanent.org",
-				userSubjectFromAuthToken: "1129f5a8-7b9c-4211-ae59-dd83faad2455",
 				maxUses: 2.5,
 			});
 		} catch (err) {
@@ -790,8 +637,6 @@ describe("validateUpdateShareLinkRequest", () => {
 		let error = null;
 		try {
 			validateUpdateShareLinkRequest({
-				emailFromAuthToken: "test@permanent.org",
-				userSubjectFromAuthToken: "1129f5a8-7b9c-4211-ae59-dd83faad2455",
 				maxUses: 0,
 			});
 		} catch (err) {
@@ -804,8 +649,6 @@ describe("validateUpdateShareLinkRequest", () => {
 		let error = null;
 		try {
 			validateUpdateShareLinkRequest({
-				emailFromAuthToken: "test@permanent.org",
-				userSubjectFromAuthToken: "1129f5a8-7b9c-4211-ae59-dd83faad2455",
 				maxUses: null,
 			});
 		} catch (err) {
@@ -818,8 +661,6 @@ describe("validateUpdateShareLinkRequest", () => {
 		let error = null;
 		try {
 			validateUpdateShareLinkRequest({
-				emailFromAuthToken: "test@permanent.org",
-				userSubjectFromAuthToken: "1129f5a8-7b9c-4211-ae59-dd83faad2455",
 				expirationTimestamp: null,
 			});
 		} catch (err) {
@@ -832,8 +673,6 @@ describe("validateUpdateShareLinkRequest", () => {
 		let error = null;
 		try {
 			validateUpdateShareLinkRequest({
-				emailFromAuthToken: "test@permanent.org",
-				userSubjectFromAuthToken: "1129f5a8-7b9c-4211-ae59-dd83faad2455",
 				accessRestrictions: "none",
 				maxUses: 100,
 			});
@@ -847,8 +686,6 @@ describe("validateUpdateShareLinkRequest", () => {
 		let error = null;
 		try {
 			validateUpdateShareLinkRequest({
-				emailFromAuthToken: "test@permanent.org",
-				userSubjectFromAuthToken: "1129f5a8-7b9c-4211-ae59-dd83faad2455",
 				accessRestrictions: "none",
 				permissionsLevel: "owner",
 			});

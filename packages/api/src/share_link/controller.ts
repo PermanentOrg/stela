@@ -12,8 +12,10 @@ import {
 	validateShareLinkParameters,
 } from "./validators.js";
 import { shareLinkService } from "./service.js";
-import { validateBodyFromAuthentication } from "../validators/index.js";
-import { validateOptionalAuthenticationValues } from "../validators/shared.js";
+import {
+	validateOptionalAuthentication,
+	validateUserAuthentication,
+} from "../validators/index.js";
 import { HTTP_STATUS } from "@pdc/http-status-codes";
 
 export const shareLinkController = Router();
@@ -23,8 +25,13 @@ shareLinkController.post(
 	verifyUserAuthentication,
 	async (req: Request, res: Response, next: NextFunction) => {
 		try {
+			const auth = req.metadata?.auth;
+			validateUserAuthentication(auth);
 			validateCreateShareLinkRequest(req.body);
-			const response = await shareLinkService.createShareLink(req.body);
+			const response = await shareLinkService.createShareLink(
+				auth.email,
+				req.body,
+			);
 			res.status(HTTP_STATUS.SUCCESSFUL.CREATED).json({ data: response });
 		} catch (err) {
 			next(err);
@@ -37,10 +44,13 @@ shareLinkController.patch(
 	verifyUserAuthentication,
 	async (req: Request, res: Response, next: NextFunction) => {
 		try {
+			const auth = req.metadata?.auth;
+			validateUserAuthentication(auth);
 			validateUpdateShareLinkRequest(req.body);
 			validateShareLinkParameters(req.params);
 			const updatedShareLink = await shareLinkService.updateShareLink(
 				req.params.shareLinkId,
+				auth.email,
 				req.body,
 			);
 			res.status(HTTP_STATUS.SUCCESSFUL.OK).json({ data: updatedShareLink });
@@ -55,18 +65,16 @@ shareLinkController.get(
 	extractUserEmailFromAuthToken,
 	async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			validateOptionalAuthenticationValues(req.body);
+			const auth = req.metadata?.auth ?? {};
+			validateOptionalAuthentication(auth);
 			validateGetShareLinksParameters(req.query);
-			if (
-				req.query.shareLinkIds !== undefined &&
-				req.body.emailFromAuthToken === undefined
-			) {
+			if (req.query.shareLinkIds !== undefined && auth.email === undefined) {
 				throw createError.Unauthorized(
 					"Accessing share links by ID requires authentication",
 				);
 			}
 			const response = await shareLinkService.getShareLinks(
-				req.body.emailFromAuthToken,
+				auth.email,
 				req.query.shareTokens,
 				req.query.shareLinkIds,
 				{
@@ -86,10 +94,11 @@ shareLinkController.delete(
 	verifyUserAuthentication,
 	async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			validateBodyFromAuthentication(req.body);
+			const auth = req.metadata?.auth;
+			validateUserAuthentication(auth);
 			validateShareLinkParameters(req.params);
 			await shareLinkService.deleteShareLink(
-				req.body.emailFromAuthToken,
+				auth.email,
 				req.params.shareLinkId,
 			);
 			res.sendStatus(HTTP_STATUS.SUCCESSFUL.NO_CONTENT);

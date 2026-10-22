@@ -1,9 +1,5 @@
 import Joi from "joi";
 import type { ClaimPromoRequest, CreatePromoRequest } from "./models.js";
-import {
-	fieldsFromAdminAuthentication,
-	fieldsFromUserAuthentication,
-} from "../validators/index.js";
 
 export const validateClaimPromoRequest: (
 	data: unknown,
@@ -12,7 +8,6 @@ export const validateClaimPromoRequest: (
 ): asserts data is ClaimPromoRequest => {
 	const validation = Joi.object()
 		.keys({
-			...fieldsFromUserAuthentication,
 			promoCode: Joi.string().required(),
 		})
 		.validate(data);
@@ -32,7 +27,6 @@ export const validateCreatePromoRequest: (
 ): asserts data is CreatePromoRequest => {
 	const validation = Joi.object()
 		.keys({
-			...fieldsFromAdminAuthentication,
 			code: Joi.string().required(),
 			storageInMB: Joi.number().integer().min(MINIMUM_STORAGE_AWARD).required(),
 			expirationTimestamp: Joi.date().iso().greater("now").required(),

@@ -11,10 +11,10 @@ import {
 import { db } from "../database.js";
 
 export const getTwoFactorMethods = async (
-	emailFromAuthToken: string,
+	callerEmail: string,
 ): Promise<TwoFactorRequestResponse[]> => {
 	const clientResponse =
-		await fusionAuthClient.retrieveUserByEmail(emailFromAuthToken);
+		await fusionAuthClient.retrieveUserByEmail(callerEmail);
 
 	if (!clientResponse.wasSuccessful()) {
 		throw createError(
@@ -39,12 +39,13 @@ export const getTwoFactorMethods = async (
 };
 
 export const sendEnableCode = async (
+	callerEmail: string,
 	requestBody: SendEnableCodeRequest,
 ): Promise<void> => {
 	const fusionAuthUserIdResponse = await db.sql<{ subject: string }>(
 		"idpuser.queries.get_subject_by_email",
 		{
-			email: requestBody.emailFromAuthToken,
+			email: callerEmail,
 		},
 	);
 
@@ -82,12 +83,13 @@ export const sendEnableCode = async (
 };
 
 export const addTwoFactorMethod = async (
+	callerEmail: string,
 	requestBody: CreateTwoFactorMethodRequest,
 ): Promise<void> => {
 	const fusionAuthUserIdResponse = await db.sql<{ subject: string }>(
 		"idpuser.queries.get_subject_by_email",
 		{
-			email: requestBody.emailFromAuthToken,
+			email: callerEmail,
 		},
 	);
 	if (fusionAuthUserIdResponse.rows[0] === undefined) {
@@ -120,12 +122,13 @@ export const addTwoFactorMethod = async (
 };
 
 export const sendDisableCode = async (
+	callerEmail: string,
 	requestBody: SendDisableCodeRequest,
 ): Promise<void> => {
 	const fusionAuthUserIdResponse = await db.sql<{ subject: string }>(
 		"idpuser.queries.get_subject_by_email",
 		{
-			email: requestBody.emailFromAuthToken,
+			email: callerEmail,
 		},
 	);
 
@@ -148,12 +151,13 @@ export const sendDisableCode = async (
 };
 
 export const removeTwoFactorMethod = async (
+	callerEmail: string,
 	requestBody: DisableTwoFactorRequest,
 ): Promise<void> => {
 	const fusionAuthUserIdResponse = await db.sql<{ subject: string }>(
 		"idpuser.queries.get_subject_by_email",
 		{
-			email: requestBody.emailFromAuthToken,
+			email: callerEmail,
 		},
 	);
 	if (fusionAuthUserIdResponse.rows[0] === undefined) {

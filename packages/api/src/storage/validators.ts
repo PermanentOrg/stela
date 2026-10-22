@@ -1,6 +1,5 @@
 import Joi from "joi";
 import type { GiftStorageRequest } from "./models.js";
-import { fieldsFromUserAuthentication } from "../validators/index.js";
 
 const MINIMUM_GIFT_AMOUNT = 1;
 const MINIMUM_GIFT_RECIPIENTS = 1;
@@ -12,7 +11,6 @@ export const validateGiftStorageRequest: (
 ): asserts data is GiftStorageRequest => {
 	const validation = Joi.object()
 		.keys({
-			...fieldsFromUserAuthentication,
 			storageAmount: Joi.number().integer().min(MINIMUM_GIFT_AMOUNT).required(),
 			recipientEmails: Joi.array()
 				.min(MINIMUM_GIFT_RECIPIENTS)

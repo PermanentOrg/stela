@@ -3,7 +3,6 @@ import type {
 	CreateFeatureFlagRequest,
 	UpdateFeatureFlagRequest,
 } from "./models.js";
-import { fieldsFromAdminAuthentication } from "../validators/index.js";
 
 export const validateCreateFeatureFlagRequest: (
 	data: unknown,
@@ -12,7 +11,6 @@ export const validateCreateFeatureFlagRequest: (
 ): asserts data is CreateFeatureFlagRequest => {
 	const validation = Joi.object()
 		.keys({
-			...fieldsFromAdminAuthentication,
 			name: Joi.string().required(),
 			description: Joi.string().allow(null),
 		})
@@ -30,7 +28,6 @@ export const validateUpdateFeatureFlagRequest: (
 ): asserts data is UpdateFeatureFlagRequest => {
 	const validation = Joi.object()
 		.keys({
-			...fieldsFromAdminAuthentication,
 			description: Joi.string().allow(null),
 			globallyEnabled: Joi.boolean().required(),
 		})

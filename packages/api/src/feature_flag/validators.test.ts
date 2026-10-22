@@ -10,8 +10,6 @@ describe("validateCreateFeatureFlagRequest", () => {
 		let error = null;
 		try {
 			validateCreateFeatureFlagRequest({
-				emailFromAuthToken: "user@example.com",
-				adminSubjectFromAuthToken: "5c3473b6-cf2e-4c55-a80e-8db51d1bc5fd",
 				name: "test-feature-flag",
 				description: "feature flag description",
 			});
@@ -25,8 +23,6 @@ describe("validateCreateFeatureFlagRequest", () => {
 		let error = null;
 		try {
 			validateCreateFeatureFlagRequest({
-				emailFromAuthToken: "user@example.com",
-				adminSubjectFromAuthToken: "5c3473b6-cf2e-4c55-a80e-8db51d1bc5fd",
 				name: "test-feature-flag",
 			});
 		} catch (err) {
@@ -39,8 +35,6 @@ describe("validateCreateFeatureFlagRequest", () => {
 		let error = null;
 		try {
 			validateCreateFeatureFlagRequest({
-				emailFromAuthToken: "user@example.com",
-				adminSubjectFromAuthToken: "5c3473b6-cf2e-4c55-a80e-8db51d1bc5fd",
 				name: "test-feature-flag",
 				description: null,
 			});
@@ -54,8 +48,6 @@ describe("validateCreateFeatureFlagRequest", () => {
 		let error = null;
 		try {
 			validateCreateFeatureFlagRequest({
-				emailFromAuthToken: "user@example.com",
-				adminSubjectFromAuthToken: "5c3473b6-cf2e-4c55-a80e-8db51d1bc5fd",
 				description: "feature flag description",
 			});
 		} catch (err) {
@@ -68,8 +60,6 @@ describe("validateCreateFeatureFlagRequest", () => {
 		let error = null;
 		try {
 			validateCreateFeatureFlagRequest({
-				emailFromAuthToken: "user@example.com",
-				adminSubjectFromAuthToken: "5c3473b6-cf2e-4c55-a80e-8db51d1bc5fd",
 				name: 1,
 				description: "feature flag description",
 			});
@@ -84,8 +74,6 @@ describe("validateCreateFeatureFlagRequest", () => {
 		let error = null;
 		try {
 			validateCreateFeatureFlagRequest({
-				emailFromAuthToken: "user@example.com",
-				adminSubjectFromAuthToken: "5c3473b6-cf2e-4c55-a80e-8db51d1bc5fd",
 				name: "name",
 				description: 123,
 			});
@@ -102,8 +90,6 @@ describe("validateUpdateFeatureFlagRequest", () => {
 		let error = null;
 		try {
 			validateUpdateFeatureFlagRequest({
-				emailFromAuthToken: "user@example.com",
-				adminSubjectFromAuthToken: "5c3473b6-cf2e-4c55-a80e-8db51d1bc5fd",
 				description: "feature flag description",
 				globallyEnabled: false,
 			});
@@ -117,8 +103,6 @@ describe("validateUpdateFeatureFlagRequest", () => {
 		let error = null;
 		try {
 			validateUpdateFeatureFlagRequest({
-				emailFromAuthToken: "user@example.com",
-				adminSubjectFromAuthToken: "5c3473b6-cf2e-4c55-a80e-8db51d1bc5fd",
 				globallyEnabled: false,
 				description: "feature flag description",
 			});
@@ -132,8 +116,6 @@ describe("validateUpdateFeatureFlagRequest", () => {
 		let error = null;
 		try {
 			validateUpdateFeatureFlagRequest({
-				emailFromAuthToken: "user@example.com",
-				adminSubjectFromAuthToken: "5c3473b6-cf2e-4c55-a80e-8db51d1bc5fd",
 				globallyEnabled: false,
 				description: null,
 			});
@@ -147,8 +129,6 @@ describe("validateUpdateFeatureFlagRequest", () => {
 		let error = null;
 		try {
 			validateUpdateFeatureFlagRequest({
-				emailFromAuthToken: "user@example.com",
-				adminSubjectFromAuthToken: "5c3473b6-cf2e-4c55-a80e-8db51d1bc5fd",
 				description: "feature flag description",
 			});
 		} catch (err) {
@@ -161,8 +141,6 @@ describe("validateUpdateFeatureFlagRequest", () => {
 		let error = null;
 		try {
 			validateUpdateFeatureFlagRequest({
-				emailFromAuthToken: "user@example.com",
-				adminSubjectFromAuthToken: "5c3473b6-cf2e-4c55-a80e-8db51d1bc5fd",
 				name: 1,
 				description: "feature flag description",
 				globallyEnabled: "test",
@@ -178,8 +156,6 @@ describe("validateUpdateFeatureFlagRequest", () => {
 		let error = null;
 		try {
 			validateUpdateFeatureFlagRequest({
-				emailFromAuthToken: "user@example.com",
-				adminSubjectFromAuthToken: "5c3473b6-cf2e-4c55-a80e-8db51d1bc5fd",
 				description: 123,
 				globallyEnabled: false,
 			});

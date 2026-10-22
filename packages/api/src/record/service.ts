@@ -25,6 +25,7 @@ import { getFolders } from "../folder/service/get_folder.js";
 import { type Folder, PrettyFolderType } from "../folder/models.js";
 import { insertLocation, updateLocation } from "../location/service.js";
 import { ShareStatus } from "../share/models.js";
+import type { Caller } from "../models.js";
 
 const mapRecordRow = (row: ArchiveRecordRow): ArchiveRecord => {
 	const {
@@ -199,9 +200,10 @@ const getRecordLocationId = async (
 
 export const patchRecord = async (
 	recordId: string,
+	callerEmail: string,
 	recordData: PatchRecordRequest,
 ): Promise<string> => {
-	await validateCanPatchRecord(recordId, recordData.emailFromAuthToken);
+	await validateCanPatchRecord(recordId, callerEmail);
 
 	return await db.transaction(async (transactionDb) => {
 		let { locationId } = recordData;
@@ -295,11 +297,11 @@ const validateHasPermissionToCopyRecord = async (
 export const createRecordCopy = async (
 	recordId: string,
 	requestBody: CreateRecordCopyRequest,
-	userAgent?: string,
+	caller: Caller,
 ): Promise<ArchiveRecord> => {
 	const [record] = await getRecords({
 		recordIds: [recordId],
-		accountEmail: requestBody.emailFromAuthToken,
+		accountEmail: caller.email,
 	});
 	if (record === undefined) {
 		throw new createError.NotFound("Record not found");
@@ -307,7 +309,7 @@ export const createRecordCopy = async (
 
 	const [destinationFolder] = await getFolders(
 		[requestBody.destinationFolderId],
-		requestBody.emailFromAuthToken,
+		caller.email,
 	);
 	if (destinationFolder === undefined) {
 		throw new createError.NotFound("Destination folder not found");
@@ -318,7 +320,7 @@ export const createRecordCopy = async (
 	await validateHasPermissionToCopyRecord(
 		record,
 		destinationFolder,
-		requestBody.emailFromAuthToken,
+		caller.email,
 	);
 
 	const copiedRecordId = await db.transaction(async (transactionDb) => {
@@ -326,7 +328,7 @@ export const createRecordCopy = async (
 			.sql<{ spaceLeft: string }>(
 				"storage.queries.get_account_space_for_update",
 				{
-					email: requestBody.emailFromAuthToken,
+					email: caller.email,
 				},
 			)
 			.catch((err: unknown) => {
@@ -351,13 +353,13 @@ export const createRecordCopy = async (
 				destinationArchiveId: destinationFolder.archive.id,
 				destinationFolderId: destinationFolder.folderId,
 				originalRecordId: record.recordId,
-				callerEmail: requestBody.emailFromAuthToken,
+				callerEmail: caller.email,
 				destinationIsPublic: [
 					PrettyFolderType.PublicRoot,
 					PrettyFolderType.Public,
 				].includes(destinationFolder.type),
-				callerIp: requestBody.ip,
-				callerUserAgent: userAgent,
+				callerIp: caller.ip,
+				callerUserAgent: caller.userAgent,
 			})
 			.catch((err: unknown) => {
 				logger.error(err);
@@ -372,7 +374,7 @@ export const createRecordCopy = async (
 
 	const copy = await getRecords({
 		recordIds: [copiedRecordId],
-		accountEmail: requestBody.emailFromAuthToken,
+		accountEmail: caller.email,
 	});
 	if (copy[0] === undefined) {
 		logger.error(

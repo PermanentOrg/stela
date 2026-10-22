@@ -5,11 +5,12 @@ import { db } from "../../database.js";
 import { sendLegacyContactNotification } from "../../email/index.js";
 
 export const createLegacyContact = async (
+	callerEmail: string,
 	requestBody: CreateLegacyContactRequest,
 ): Promise<LegacyContact> => {
 	const legacyContactResult = await db
 		.sql<LegacyContact>("legacy_contact.queries.create_legacy_contact", {
-			accountEmail: requestBody.emailFromAuthToken,
+			accountEmail: callerEmail,
 			name: requestBody.name,
 			email: requestBody.email,
 		})

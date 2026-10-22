@@ -27,8 +27,9 @@ app.use(
 );
 app.use(express.json());
 
-// This is a temporary measure; it should be removed when the rest of
-// our middleware is updated not to add request metadata to the request body
+// Express 5 leaves req.body undefined when there is no parsable body. Many
+// handlers validate req.body with Joi schemas that accept undefined and then
+// read properties from it, so default it to an empty object.
 app.use((req, _res, next) => {
 	if (req.body === undefined) {
 		req.body = {};

@@ -3,6 +3,7 @@ import type { Request, Response, NextFunction } from "express";
 import { HTTP_STATUS } from "@pdc/http-status-codes";
 import { adminService } from "./service.js";
 import { verifyAdminAuthentication } from "../middleware/index.js";
+import { validateAdminAuthentication } from "../validators/index.js";
 import {
 	validateRecalculateFolderThumbnailsRequest,
 	validateRecalculateRecordThumbnailRequest,
@@ -15,6 +16,7 @@ adminController.post(
 	verifyAdminAuthentication,
 	async (req: Request, res: Response, next: NextFunction): Promise<void> => {
 		try {
+			validateAdminAuthentication(req.metadata?.auth);
 			validateRecalculateFolderThumbnailsRequest(req.body);
 			const results = await adminService.recalculateFolderThumbnails(
 				req.body.beginTimestamp,
@@ -38,6 +40,7 @@ adminController.post(
 	verifyAdminAuthentication,
 	async (req: Request, res: Response, next: NextFunction): Promise<void> => {
 		try {
+			validateAdminAuthentication(req.metadata?.auth);
 			validateAccountSetNullSubjectsRequest(req.body);
 			const response = await adminService.setNullAccountSubjects(
 				req.body.accounts,
