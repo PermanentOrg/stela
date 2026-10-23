@@ -29,6 +29,26 @@ const getEventSentStatus = async (entityId: string): Promise<boolean> => {
 	return result.rows[0].isSent;
 };
 
+const getEventSendAttempts = async (entityId: string): Promise<number> => {
+	const result = await db.query<{ sendAttempts: string }>(
+		`SELECT send_attempts AS "sendAttempts" FROM event WHERE entity_id = :entityId`,
+		{ entityId },
+	);
+	if (result.rows[0] === undefined) {
+		expect(false).toBe(true);
+		return 0;
+	}
+	return Number(result.rows[0].sendAttempts);
+};
+
+const getEventId = async (entityId: string): Promise<string> => {
+	const result = await db.query<{ id: string }>(
+		"SELECT id FROM event WHERE entity_id = :entityId",
+		{ entityId },
+	);
+	return result.rows[0]?.id ?? "";
+};
+
 const getMessageId = (message: Message): string => message.id;
 
 describe("sendEvents", () => {
@@ -148,6 +168,69 @@ describe("sendEvents", () => {
 		expect(await getEventSentStatus("4")).toBe(true);
 	});
 
+	test("should increment send attempts for both sent and failed events", async () => {
+		const archiveEventId = await getEventId("1");
+		vi.spyOn(publisherClient, "batchPublishMessages").mockResolvedValue({
+			messagesSent: 2,
+			failedMessages: [archiveEventId],
+		});
+
+		await sendEvents();
+
+		expect(await getEventSendAttempts("1")).toBe(1);
+		expect(await getEventSendAttempts("2")).toBe(1);
+		expect(await getEventSendAttempts("4")).toBe(1);
+	});
+
+	test("should not increment send attempts for already-sent events", async () => {
+		await sendEvents();
+
+		expect(await getEventSendAttempts("3")).toBe(0);
+	});
+
+	test("should not send events that have reached the maximum number of send attempts", async () => {
+		const archiveEventId = await getEventId("1");
+		await db.query(
+			"UPDATE event SET send_attempts = 3 WHERE entity_id = :entityId",
+			{ entityId: "1" },
+		);
+
+		await sendEvents();
+
+		const sentIds = vi
+			.mocked(publisherClient.batchPublishMessages)
+			.mock.calls.flatMap((call) => call[1].map(getMessageId));
+		expect(sentIds).not.toContain(archiveEventId);
+		expect(sentIds).toHaveLength(2);
+		expect(await getEventSentStatus("1")).toBe(false);
+		expect(await getEventSendAttempts("1")).toBe(3);
+	});
+
+	test("should stop retrying an event after three failed attempts", async () => {
+		const archiveEventId = await getEventId("1");
+		vi.spyOn(publisherClient, "batchPublishMessages").mockImplementation(
+			async (_, messages) => {
+				const ids = messages.map(getMessageId);
+				return await Promise.resolve({
+					messagesSent: ids.length,
+					failedMessages: ids.includes(archiveEventId) ? [archiveEventId] : [],
+				});
+			},
+		);
+
+		await sendEvents();
+		await sendEvents();
+		await sendEvents();
+		await sendEvents();
+
+		const sentIds = vi
+			.mocked(publisherClient.batchPublishMessages)
+			.mock.calls.flatMap((call) => call[1].map(getMessageId));
+		expect(sentIds.filter((id) => id === archiveEventId)).toHaveLength(3);
+		expect(await getEventSentStatus("1")).toBe(false);
+		expect(await getEventSendAttempts("1")).toBe(3);
+	});
+
 	test("should do nothing when there are no unsent events", async () => {
 		await db.query("UPDATE event SET is_sent = TRUE");
 
@@ -208,6 +291,35 @@ describe("sendEvents", () => {
 		});
 
 		expect(logger.error).toHaveBeenCalled();
+	});
+
+	test("should count a thrown SNS publish error as a failed send attempt", async () => {
+		vi.spyOn(publisherClient, "batchPublishMessages").mockRejectedValue(
+			new Error("SNS publish failed"),
+		);
+
+		await sendEvents().catch(() => undefined);
+
+		expect(await getEventSendAttempts("1")).toBe(1);
+		expect(await getEventSendAttempts("2")).toBe(1);
+		expect(await getEventSendAttempts("4")).toBe(1);
+		expect(await getEventSentStatus("1")).toBe(false);
+		expect(await getEventSentStatus("2")).toBe(false);
+		expect(await getEventSentStatus("4")).toBe(false);
+	});
+
+	test("should stop retrying events after three thrown SNS publish errors", async () => {
+		vi.spyOn(publisherClient, "batchPublishMessages").mockRejectedValue(
+			new Error("SNS publish failed"),
+		);
+
+		await sendEvents().catch(() => undefined);
+		await sendEvents().catch(() => undefined);
+		await sendEvents().catch(() => undefined);
+		await sendEvents();
+
+		expect(publisherClient.batchPublishMessages).toHaveBeenCalledTimes(3);
+		expect(await getEventSendAttempts("1")).toBe(3);
 	});
 
 	test("should log and rethrow an error if database update fails", async () => {
