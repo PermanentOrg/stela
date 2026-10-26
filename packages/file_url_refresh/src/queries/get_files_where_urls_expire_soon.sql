@@ -3,7 +3,7 @@ SELECT
 	file.cloudpath AS "cloudPath",
 	file.type AS "type",
 	file.format AS "format",
-	record.uploadfilename AS "uploadName"
+	record.downloadname AS "recordDownloadName"
 FROM
 	file
 JOIN
