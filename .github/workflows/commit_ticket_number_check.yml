@@ -1,0 +1,36 @@
+# Other PermanentOrg repos call this workflow via workflow_call, so renaming
+# or moving this file will break their PR checks.
+name: Commit ticket number check
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  workflow_call:
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  jira-key:
+    name: Verifies that commits reference a Jira ticket
+    runs-on: ubuntu-latest
+    # Dependabot commits don't have tickets, so we skip those
+    if: github.event.pull_request.user.login != 'dependabot[bot]'
+    steps:
+      - name: Check every commit message for a Jira key
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          PR: ${{ github.event.pull_request.number }}
+        run: |
+          fails_check=$(gh api --paginate "repos/$REPO/pulls/$PR/commits" --jq '
+            .[]
+            | select(.parents | length < 2)
+            | select(.commit.message | test("\\bPER-[0-9]+\\b") | not)
+            | "\(.sha[0:7])  \(.commit.message | split("\n")[0])"')
+          if [ -n "$fails_check" ]; then
+            echo "::error::Every commit message must include a Jira key (e.g. PER-1234). These commits do not:"
+            echo "$fails_check"
+            exit 1
+          fi
+          echo "All commits reference a Jira key."
