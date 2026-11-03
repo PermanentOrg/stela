@@ -40,7 +40,7 @@ const deriveLegacyColumnValues = (
 	let streetNumber: string | null = null;
 	let streetName: string | null = null;
 	const { sublocation } = location;
-	if (sublocation !== undefined) {
+	if (typeof sublocation === "string") {
 		const match = /^(?<number>\d+)\s+(?<rest>.+)$/v.exec(sublocation);
 		if (match === null) {
 			streetName = sublocation;
@@ -54,6 +54,30 @@ const deriveLegacyColumnValues = (
 	const locality = location.city ?? null;
 
 	return { streetNumber, streetName, locality };
+};
+
+const clearedColumnFlags = (
+	location: LocationInput,
+	legacyColumnValues: LegacyColumnValues,
+): Record<string, boolean> => {
+	const sublocationProvided = location.sublocation !== undefined;
+	return {
+		setNameToNull: location.name === null,
+		setSublocationToNull: location.sublocation === null,
+		setCityToNull: location.city === null,
+		setStateToNull: location.state === null,
+		setPostalCodeToNull: location.postalCode === null,
+		setCountryToNull: location.country === null,
+		setLatitudeToNull: location.latitude === null,
+		setLongitudeToNull: location.longitude === null,
+		setAltitudeMetersToNull: location.altitudeMeters === null,
+		setPrecisionToNull: location.precision === null,
+		setStreetNumberToNull:
+			sublocationProvided && legacyColumnValues.streetNumber === null,
+		setStreetNameToNull:
+			sublocationProvided && legacyColumnValues.streetName === null,
+		setLocalityToNull: location.city === null,
+	};
 };
 
 export const insertLocation = async (
@@ -84,11 +108,13 @@ export const updateLocation = async (
 	location: LocationInput,
 	client: TinyPg = db,
 ): Promise<void> => {
+	const legacyColumnValues = deriveLegacyColumnValues(location);
 	const result = await client
 		.sql<{ locationId: string }>("location.queries.update_location", {
 			locationId,
 			...modernColumnValues(location),
-			...deriveLegacyColumnValues(location),
+			...legacyColumnValues,
+			...clearedColumnFlags(location, legacyColumnValues),
 		})
 		.catch((err: unknown) => {
 			logger.error(err);
