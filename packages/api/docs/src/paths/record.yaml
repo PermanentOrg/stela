@@ -123,6 +123,9 @@ records/{id}:
                 description: |
                   Deprecated. Prefer `location` instead, which lets clients send
                   nested location data without managing location IDs directly.
+                  A non-null value must be a location already used by a record or
+                  folder in this record's archive; otherwise the request fails
+                  with 400.
               location:
                 $ref: "../models/location.yaml#/locationInput"
               description:
