@@ -17,7 +17,10 @@ SET
     WHEN :setTimezoneToNull THEN NULL
     ELSE COALESCE(:timezone, timezone)
   END,
-  locnid = COALESCE(:locationId::bigint, locnid),
+  locnid = CASE
+    WHEN :setLocationIdToNull THEN NULL
+    ELSE COALESCE(:locationId::bigint, locnid)
+  END,
   updateddt = CURRENT_TIMESTAMP
 WHERE
   folderid = :folderId

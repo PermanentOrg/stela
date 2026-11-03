@@ -153,7 +153,7 @@ export interface PatchFolderRequest {
 	displayDate?: string | null;
 	displayEndDate?: string | null;
 	displayTime?: string | null;
-	location?: LocationInput;
+	location?: LocationInput | null;
 }
 
 export enum FolderStatus {
