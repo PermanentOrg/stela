@@ -50,35 +50,47 @@ locationInput:
   description: |
     Geographic location data for an item (folder or record). Sent without an id;
     the server creates a new location row if the item has none, or updates the
-    existing one if it does. At least one field must be provided.
+    existing one if it does. Fields left out keep their current values; a field
+    sent as null is cleared. At least one field must be provided.
   type: object
   minProperties: 1
   additionalProperties: false
   properties:
     name:
       type: string
+      nullable: true
     sublocation:
       type: string
+      nullable: true
     city:
       type: string
+      nullable: true
     state:
       type: string
+      nullable: true
     postalCode:
       type: string
+      nullable: true
     country:
       type: string
+      nullable: true
     latitude:
       type: number
+      nullable: true
       minimum: -90
       maximum: 90
     longitude:
       type: number
+      nullable: true
       minimum: -180
       maximum: 180
     altitudeMeters:
       type: number
+      nullable: true
     precision:
       type: string
-      enum: [approximate, uncertain, unknown]
+      nullable: true
+      enum: [approximate, uncertain, unknown, null]
     timezone:
       type: string
+      nullable: true

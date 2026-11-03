@@ -498,6 +498,70 @@ describe("PATCH /records", () => {
 		});
 	});
 
+	test("expect a nested location field set to null to clear only that field", async () => {
+		await agent
+			.patch("/api/v2/records/10008")
+			.send({ location: { city: null } })
+			.expect(200);
+
+		const locationResult = await db.query(
+			"SELECT name, city, locality, country FROM locn WHERE locnid = 1",
+		);
+		expect(locationResult.rows[0]).toEqual({
+			name: "Jean Valjean's House",
+			city: null,
+			locality: null,
+			country: "France",
+		});
+	});
+
+	test("expect clearing a nested location sublocation to clear the derived street columns", async () => {
+		await agent
+			.patch("/api/v2/records/10008")
+			.send({ location: { sublocation: null } })
+			.expect(200);
+
+		const locationResult = await db.query(
+			"SELECT sublocation, streetnumber, streetname FROM locn WHERE locnid = 1",
+		);
+		expect(locationResult.rows[0]).toEqual({
+			sublocation: null,
+			streetnumber: null,
+			streetname: null,
+		});
+	});
+
+	test("expect a nested location sublocation without a number to clear the old street number", async () => {
+		await agent
+			.patch("/api/v2/records/10008")
+			.send({ location: { sublocation: "Rue Plumet" } })
+			.expect(200);
+
+		const locationResult = await db.query(
+			"SELECT streetnumber, streetname FROM locn WHERE locnid = 1",
+		);
+		expect(locationResult.rows[0]).toEqual({
+			streetnumber: null,
+			streetname: "Rue Plumet",
+		});
+	});
+
+	test("expect nested location coordinates set to null to be cleared", async () => {
+		await agent
+			.patch("/api/v2/records/10008")
+			.send({ location: { latitude: null, longitude: null } })
+			.expect(200);
+
+		const locationResult = await db.query(
+			"SELECT latitude, longitude, city FROM locn WHERE locnid = 1",
+		);
+		expect(locationResult.rows[0]).toEqual({
+			latitude: null,
+			longitude: null,
+			city: "Paris",
+		});
+	});
+
 	test("expect a nested location to create a new location when record has none", async () => {
 		const response = await agent
 			.patch("/api/v2/records/10001")

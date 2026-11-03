@@ -56,6 +56,32 @@ describe("insertLocation", () => {
 	});
 });
 
+describe("insertLocation with cleared fields", () => {
+	afterEach(() => {
+		vi.restoreAllMocks();
+		vi.clearAllMocks();
+	});
+
+	test("expect a null sublocation to leave the street columns empty", async () => {
+		const sqlSpy = vi
+			.spyOn(db, "sql")
+			.mockImplementation(
+				vi.fn().mockResolvedValue({ rows: [{ locationId: "1" }] }),
+			);
+
+		await insertLocation({ name: "Test", sublocation: null });
+
+		expect(sqlSpy).toHaveBeenCalledWith(
+			"location.queries.insert_location",
+			expect.objectContaining({
+				sublocation: null,
+				streetNumber: null,
+				streetName: null,
+			}),
+		);
+	});
+});
+
 describe("updateLocation", () => {
 	afterEach(() => {
 		vi.restoreAllMocks();

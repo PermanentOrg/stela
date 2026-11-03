@@ -7,18 +7,27 @@ const LONGITUDE_MAX = 180;
 
 export const locationInputSchema = Joi.object()
 	.keys({
-		name: Joi.string().optional(),
-		sublocation: Joi.string().optional(),
-		city: Joi.string().optional(),
-		state: Joi.string().optional(),
-		postalCode: Joi.string().optional(),
-		country: Joi.string().optional(),
-		latitude: Joi.number().min(LATITUDE_MIN).max(LATITUDE_MAX).optional(),
-		longitude: Joi.number().min(LONGITUDE_MIN).max(LONGITUDE_MAX).optional(),
-		altitudeMeters: Joi.number().optional(),
+		name: Joi.string().optional().allow(null),
+		sublocation: Joi.string().optional().allow(null),
+		city: Joi.string().optional().allow(null),
+		state: Joi.string().optional().allow(null),
+		postalCode: Joi.string().optional().allow(null),
+		country: Joi.string().optional().allow(null),
+		latitude: Joi.number()
+			.min(LATITUDE_MIN)
+			.max(LATITUDE_MAX)
+			.optional()
+			.allow(null),
+		longitude: Joi.number()
+			.min(LONGITUDE_MIN)
+			.max(LONGITUDE_MAX)
+			.optional()
+			.allow(null),
+		altitudeMeters: Joi.number().optional().allow(null),
 		precision: Joi.string()
 			.valid("approximate", "uncertain", "unknown")
-			.optional(),
+			.optional()
+			.allow(null),
 		timezone: Joi.string().optional().allow(null),
 	})
 	.min(1);
