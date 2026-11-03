@@ -156,7 +156,7 @@ export interface GetRecordsResponse {
 
 export interface PatchRecordRequest {
 	locationId?: bigint | null;
-	location?: LocationInput;
+	location?: LocationInput | null;
 	description?: string | null;
 	displayName?: string;
 	displayTime?: string | null;

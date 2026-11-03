@@ -498,6 +498,19 @@ describe("PATCH /records", () => {
 		});
 	});
 
+	test("expect a null location to remove the record's location and timezone", async () => {
+		await agent
+			.patch("/api/v2/records/10008")
+			.send({ location: null })
+			.expect(200);
+
+		const recordResult = await db.query(
+			`SELECT locnid AS "locationId", timezone FROM record WHERE recordid = :recordId`,
+			{ recordId: 10008 },
+		);
+		expect(recordResult.rows[0]).toEqual({ locationId: null, timezone: null });
+	});
+
 	test("expect a nested location to create a new location when record has none", async () => {
 		const response = await agent
 			.patch("/api/v2/records/10001")

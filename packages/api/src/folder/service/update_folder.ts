@@ -54,7 +54,7 @@ export const patchFolder = async (
 
 	return await db.transaction(async (transactionDb) => {
 		let locationId: string | null = null;
-		if (folderData.location !== undefined) {
+		if (folderData.location !== undefined && folderData.location !== null) {
 			const currentLocationId = await getFolderLocationId(
 				folderId,
 				transactionDb,
@@ -81,8 +81,11 @@ export const patchFolder = async (
 				displayTime: folderData.displayTime,
 				setDisplayTimeToNull: folderData.displayTime === null,
 				timezone: folderData.location?.timezone,
-				setTimezoneToNull: folderData.location?.timezone === null,
+				setTimezoneToNull:
+					folderData.location === null ||
+					folderData.location?.timezone === null,
 				locationId,
+				setLocationIdToNull: folderData.location === null,
 			})
 			.catch((err: unknown) => {
 				logger.error(err);

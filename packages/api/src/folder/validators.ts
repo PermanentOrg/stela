@@ -40,7 +40,7 @@ export const validatePatchFolderRequest: (
 				})
 				.optional()
 				.allow(null),
-			location: locationInputSchema.optional(),
+			location: locationInputSchema.optional().allow(null),
 		})
 		.min(1)
 		.validate(data);
