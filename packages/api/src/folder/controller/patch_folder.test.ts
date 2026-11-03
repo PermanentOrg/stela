@@ -386,6 +386,37 @@ describe("patch folder", () => {
 			});
 		});
 
+		test("expect a nested location update to a shared location row to leave other items unchanged", async () => {
+			await db.query("UPDATE folder SET locnid = 1 WHERE folderid = 1");
+
+			await agent
+				.patch("/api/v2/folders/2")
+				.send({ location: { city: "Lyon" } })
+				.expect(200);
+
+			const folderResult = await db.query<{ locationId: string }>(
+				`SELECT locnid::text AS "locationId" FROM folder WHERE folderid = :folderId`,
+				{ folderId: 2 },
+			);
+			const newLocationId = folderResult.rows[0]?.locationId;
+			expect(newLocationId).toBeDefined();
+			expect(newLocationId).not.toEqual("1");
+
+			const newLocation = await db.query(
+				"SELECT name, city FROM locn WHERE locnid = :locationId",
+				{ locationId: newLocationId },
+			);
+			expect(newLocation.rows[0]).toEqual({
+				name: "Jean Valjean's House",
+				city: "Lyon",
+			});
+
+			const sharedLocation = await db.query(
+				"SELECT city FROM locn WHERE locnid = 1",
+			);
+			expect(sharedLocation.rows[0]).toEqual({ city: "Paris" });
+		});
+
 		test("expect a nested location to create a new location when folder has none", async () => {
 			const response = await agent
 				.patch("/api/v2/folders/1")

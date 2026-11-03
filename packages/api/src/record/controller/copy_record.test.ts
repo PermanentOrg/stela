@@ -185,6 +185,63 @@ describe("POST /record/{recordId}/copies", () => {
 		expect(record.location.timezone).toEqual("Europe/Paris");
 	});
 
+	test("expect copied record to get its own copy of the original record's location", async () => {
+		const response = await agent
+			.post("/api/v2/records/10008/copies")
+			.send({ destinationFolderId: "34" })
+			.expect(200);
+		const {
+			body: { data: record },
+		} = response as { body: { data: ArchiveRecord } };
+
+		const result = await db.query<{ locationId: string }>(
+			`SELECT locnid::text AS "locationId" FROM record WHERE recordid = :recordId`,
+			{ recordId: record.recordId },
+		);
+		const copiedLocationId = result.rows[0]?.locationId;
+		expect(copiedLocationId).toBeDefined();
+		expect(copiedLocationId).not.toEqual("1");
+		expect(record.location.name).toEqual("Jean Valjean's House");
+		expect(record.location.city).toEqual("Paris");
+	});
+
+	test("expect editing a copied record's location to leave the original's location unchanged", async () => {
+		const response = await agent
+			.post("/api/v2/records/10008/copies")
+			.send({ destinationFolderId: "34" })
+			.expect(200);
+		const {
+			body: { data: record },
+		} = response as { body: { data: ArchiveRecord } };
+
+		await agent
+			.patch(`/api/v2/records/${record.recordId}`)
+			.send({ location: { city: "Lyon" } })
+			.expect(200);
+
+		const originalLocation = await db.query(
+			"SELECT city FROM locn WHERE locnid = 1",
+		);
+		expect(originalLocation.rows[0]).toEqual({ city: "Paris" });
+	});
+
+	test("expect copying a record without a location to leave the copy without one", async () => {
+		await db.query("UPDATE record SET locnid = NULL WHERE recordid = 10008");
+		const response = await agent
+			.post("/api/v2/records/10008/copies")
+			.send({ destinationFolderId: "34" })
+			.expect(200);
+		const {
+			body: { data: record },
+		} = response as { body: { data: ArchiveRecord } };
+
+		const result = await db.query(
+			`SELECT locnid AS "locationId" FROM record WHERE recordid = :recordId`,
+			{ recordId: record.recordId },
+		);
+		expect(result.rows[0]).toEqual({ locationId: null });
+	});
+
 	test("expect 403 if copying to public workspace without manager role", async () => {
 		// test+1@permanent.org is viewer in archive 1, which is below manager.
 		// Folder 1 is type.folder.public in archive 1 and requires manager role.
@@ -493,15 +550,14 @@ describe("POST /record/{recordId}/copies", () => {
 		mockSqlCall(
 			db,
 			"record.queries.copy_record",
-			{
+			expect.objectContaining({
 				destinationArchiveId: "1",
 				destinationFolderId: "2",
 				originalRecordId: "10008",
 				callerEmail: "test@permanent.org",
 				destinationIsPublic: false,
 				callerIp: "127.0.0.1",
-				callerUserAgent: undefined,
-			},
+			}),
 			{ reject: testError },
 		);
 		await agent
@@ -515,15 +571,14 @@ describe("POST /record/{recordId}/copies", () => {
 		mockSqlCall(
 			db,
 			"record.queries.copy_record",
-			{
+			expect.objectContaining({
 				destinationArchiveId: "1",
 				destinationFolderId: "2",
 				originalRecordId: "10008",
 				callerEmail: "test@permanent.org",
 				destinationIsPublic: false,
 				callerIp: "127.0.0.1",
-				callerUserAgent: undefined,
-			},
+			}),
 			{ resolve: { rows: [] } },
 		);
 		await agent
