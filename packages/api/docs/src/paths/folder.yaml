@@ -81,7 +81,13 @@ folder-id:
                 type: string
                 format: edtf
               location:
-                $ref: "../models/location.yaml#/locationInput"
+                type: object
+                nullable: true
+                allOf:
+                  - $ref: "../models/location.yaml#/locationInput"
+                description: |
+                  Location data for the folder. Send null to remove the folder's
+                  location.
     responses:
       "200":
         description: The updated folder

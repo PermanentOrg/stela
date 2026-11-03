@@ -207,7 +207,9 @@ export const patchRecord = async (
 
 	return await db.transaction(async (transactionDb) => {
 		let { locationId } = recordData;
-		if (recordData.location !== undefined) {
+		if (recordData.location === null) {
+			locationId = null;
+		} else if (recordData.location !== undefined) {
 			const currentLocationId = await getRecordLocationId(
 				recordId,
 				transactionDb,
@@ -237,7 +239,8 @@ export const patchRecord = async (
 				displayTime: recordData.displayTime,
 				setDisplayTimeToNull: recordData.displayTime === null,
 				timezone: recordData.location?.timezone,
-				setTimezoneToNull: recordData.location?.timezone === null,
+				setTimezoneToNull:
+					locationId === null || recordData.location?.timezone === null,
 			})
 			.catch((err: unknown) => {
 				logger.error(err);

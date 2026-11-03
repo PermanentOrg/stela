@@ -77,6 +77,28 @@ describe("validatePatchRecordRequest", () => {
 		}
 	});
 
+	test("should accept a null location", () => {
+		let error = null;
+		try {
+			validatePatchRecordRequest({ location: null });
+		} catch (err) {
+			error = err;
+		} finally {
+			expect(error).toBeNull();
+		}
+	});
+
+	test("should reject a null location alongside a locationId", () => {
+		let error = null;
+		try {
+			validatePatchRecordRequest({ location: null, locationId: 1 });
+		} catch (err) {
+			error = err;
+		} finally {
+			expect(error).not.toBeNull();
+		}
+	});
+
 	test("should reject an empty location object", () => {
 		let error = null;
 		try {
