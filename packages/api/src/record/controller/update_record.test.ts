@@ -498,6 +498,37 @@ describe("PATCH /records", () => {
 		});
 	});
 
+	test("expect a nested location update to a shared location row to leave other items unchanged", async () => {
+		await db.query("UPDATE record SET locnid = 1 WHERE recordid = 10001");
+
+		await agent
+			.patch("/api/v2/records/10008")
+			.send({ location: { city: "Lyon" } })
+			.expect(200);
+
+		const recordResult = await db.query<{ locationId: string }>(
+			`SELECT locnid::text AS "locationId" FROM record WHERE recordid = :recordId`,
+			{ recordId: 10008 },
+		);
+		const newLocationId = recordResult.rows[0]?.locationId;
+		expect(newLocationId).toBeDefined();
+		expect(newLocationId).not.toEqual("1");
+
+		const newLocation = await db.query(
+			"SELECT name, city FROM locn WHERE locnid = :locationId",
+			{ locationId: newLocationId },
+		);
+		expect(newLocation.rows[0]).toEqual({
+			name: "Jean Valjean's House",
+			city: "Lyon",
+		});
+
+		const sharedLocation = await db.query(
+			"SELECT city FROM locn WHERE locnid = 1",
+		);
+		expect(sharedLocation.rows[0]).toEqual({ city: "Paris" });
+	});
+
 	test("expect a nested location to create a new location when record has none", async () => {
 		const response = await agent
 			.patch("/api/v2/records/10001")

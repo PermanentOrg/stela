@@ -8,7 +8,7 @@ import {
 	accessRoleLessThan,
 } from "../../access/permission.js";
 import { AccessRole } from "../../access/models.js";
-import { insertLocation, updateLocation } from "../../location/service.js";
+import { saveItemLocation } from "../../location/service.js";
 
 const validateCanPatchFolder = async (
 	folderId: string,
@@ -59,16 +59,11 @@ export const patchFolder = async (
 				folderId,
 				transactionDb,
 			);
-			if (currentLocationId === null) {
-				locationId = await insertLocation(folderData.location, transactionDb);
-			} else {
-				await updateLocation(
-					currentLocationId,
-					folderData.location,
-					transactionDb,
-				);
-				locationId = currentLocationId;
-			}
+			locationId = await saveItemLocation(
+				currentLocationId,
+				folderData.location,
+				transactionDb,
+			);
 		}
 
 		const result = await transactionDb

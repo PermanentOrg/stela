@@ -205,7 +205,7 @@ new_record AS (
     derivedenddt,
     derivedcreateddt,
     timezoneid,
-    locnid,
+    :locationId::BIGINT AS locnid,
     view,
     viewproperty,
     imageratio,
