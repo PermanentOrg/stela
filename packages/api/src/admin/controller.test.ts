@@ -17,11 +17,19 @@ import { lowPriorityTopicArn, publisherClient } from "@stela/publisher-utils";
 import { verifyAdminAuthentication } from "../middleware/index.js";
 import { mockVerifyAdminAuthentication } from "../../test/middleware_mocks.js";
 import { runFixtures } from "../../test/run_fixtures.js";
+import { mockSqlCall } from "../../test/mock_sql.js";
+import { s3Service } from "../s3.js";
 
 vi.mock("../database");
 vi.mock("@stela/logger");
 vi.mock("../middleware");
 vi.mock("@stela/publisher-utils");
+vi.mock("@stela/s3-utils", () => ({
+	constructSignedCdnUrl: (key: string, fileName?: string): string =>
+		fileName === undefined
+			? `https://cdn.permanent.org/${key}?signed`
+			: `https://cdn.permanent.org/${key}?signed&filename=${fileName}`,
+}));
 
 describe("recalculateFolderThumbnails", () => {
 	const loadFixtures = async (): Promise<void> => {
@@ -575,5 +583,309 @@ describe("/folder/delete-orphaned-folders", () => {
 			.post("/api/v2/admin/folder/delete-orphaned-folders")
 			.expect(500);
 		expect(logger.error).toHaveBeenCalledWith(testError);
+	});
+});
+
+describe("/file/modernize_cloudpaths", () => {
+	const agent = request(app);
+	const endpoint = "/api/v2/admin/file/modernize_cloudpaths";
+
+	const loadFixtures = async (): Promise<void> => {
+		await runFixtures(db, [
+			"admin.fixtures.create_test_accounts",
+			"admin.fixtures.create_test_archives",
+			"admin.fixtures.create_test_records",
+			"admin.fixtures.create_test_files",
+			"admin.fixtures.create_test_record_files",
+		]);
+	};
+
+	const clearDatabase = async (): Promise<void> => {
+		await db.query(
+			"TRUNCATE account, archive, record, file, record_file CASCADE",
+		);
+	};
+
+	const getFile = async (
+		fileId: string,
+	): Promise<
+		| {
+				cloudPath: string | null;
+				fileUrl: string | null;
+				downloadUrl: string | null;
+				urlDt: Date | null;
+		  }
+		| undefined
+	> => {
+		const result = await db.query<{
+			cloudPath: string | null;
+			fileUrl: string | null;
+			downloadUrl: string | null;
+			urlDt: Date | null;
+		}>(
+			`SELECT
+				cloudpath AS "cloudPath",
+				fileurl AS "fileUrl",
+				downloadurl AS "downloadUrl",
+				urldt AS "urlDt"
+			FROM file WHERE fileid = :fileId`,
+			{ fileId },
+		);
+		return result.rows[0];
+	};
+
+	beforeEach(async () => {
+		mockVerifyAdminAuthentication(
+			"test@permanent.org",
+			"5c3473b6-cf2e-4c55-a80e-8db51d1bc5fd",
+		);
+		vi.spyOn(s3Service, "copyObject").mockResolvedValue();
+		vi.spyOn(s3Service, "deleteObject").mockResolvedValue();
+		await clearDatabase();
+		await loadFixtures();
+	});
+
+	afterEach(async () => {
+		await clearDatabase();
+		vi.restoreAllMocks();
+		vi.clearAllMocks();
+	});
+
+	test("should respond with 401 if not authenticated as an admin", async () => {
+		vi.mocked(verifyAdminAuthentication).mockImplementation(
+			async (_, __, next: NextFunction) => {
+				next(new createError.Unauthorized("Invalid token"));
+			},
+		);
+		await agent
+			.post(endpoint)
+			.send({ fileIds: ["1"] })
+			.expect(401);
+	});
+
+	test("should respond with 400 if fileIds is missing", async () => {
+		await agent.post(endpoint).send({}).expect(400);
+	});
+
+	test("should respond with 400 if fileIds is empty", async () => {
+		await agent.post(endpoint).send({ fileIds: [] }).expect(400);
+	});
+
+	test("should respond with 400 if a fileId is not numeric", async () => {
+		await agent
+			.post(endpoint)
+			.send({ fileIds: ["abc"] })
+			.expect(400);
+	});
+
+	test("should respond with 400 if fileIds contains duplicates", async () => {
+		await agent
+			.post(endpoint)
+			.send({ fileIds: ["1", "1"] })
+			.expect(400);
+	});
+
+	test("should move a legacy original file and update its record", async () => {
+		const response = await agent
+			.post(endpoint)
+			.send({ fileIds: ["1"] })
+			.expect(200);
+
+		expect(response.body).toEqual({
+			updatedFileIds: ["1"],
+			skippedFiles: [],
+			fileIdsWithErrors: [],
+			fileIdsWithUndeletedOldObjects: [],
+		});
+		expect(s3Service.copyObject).toHaveBeenCalledWith("1", "originals/1/1");
+		expect(s3Service.deleteObject).toHaveBeenCalledWith("1");
+
+		const file = await getFile("1");
+		expect(file?.cloudPath).toBe("originals/1/1");
+		expect(file?.fileUrl).toBe(
+			"https://cdn.permanent.org/originals/1/1?signed",
+		);
+		expect(file?.downloadUrl).toBe(
+			"https://cdn.permanent.org/originals/1/1?signed&filename=Renamed File.jpg",
+		);
+		expect(file?.urlDt?.getTime()).toBeGreaterThan(Date.now());
+	});
+
+	test("should preserve a local developer prefix", async () => {
+		await agent
+			.post(endpoint)
+			.send({ fileIds: ["2"] })
+			.expect(200);
+
+		expect(s3Service.copyObject).toHaveBeenCalledWith(
+			"_Liam/2",
+			"_Liam/originals/2/2",
+		);
+		expect(s3Service.deleteObject).toHaveBeenCalledWith("_Liam/2");
+		const file = await getFile("2");
+		expect(file?.cloudPath).toBe("_Liam/originals/2/2");
+	});
+
+	test("should sign a download URL without a file name if the file has no record", async () => {
+		await agent
+			.post(endpoint)
+			.send({ fileIds: ["7"] })
+			.expect(200);
+
+		const file = await getFile("7");
+		expect(file?.downloadUrl).toBe(
+			"https://cdn.permanent.org/originals/7/7?signed",
+		);
+	});
+
+	test("should skip files that can't or don't need to be modernized", async () => {
+		const response = await agent
+			.post(endpoint)
+			.send({ fileIds: ["3", "4", "5", "6", "999"] })
+			.expect(200);
+
+		expect(response.body).toEqual({
+			updatedFileIds: [],
+			skippedFiles: [
+				{ fileId: "3", reason: "Cloudpath is not in the legacy format" },
+				{ fileId: "4", reason: "File is not an original" },
+				{ fileId: "5", reason: "File has no cloudpath" },
+				{ fileId: "6", reason: "Cloudpath is not in the legacy format" },
+				{ fileId: "999", reason: "File not found" },
+			],
+			fileIdsWithErrors: [],
+			fileIdsWithUndeletedOldObjects: [],
+		});
+		expect(s3Service.copyObject).not.toHaveBeenCalled();
+		expect(s3Service.deleteObject).not.toHaveBeenCalled();
+		expect((await getFile("3"))?.cloudPath).toBe("originals/3/3");
+		expect((await getFile("4"))?.cloudPath).toBe("4");
+		expect((await getFile("6"))?.cloudPath).toBe("unexpected/path");
+	});
+
+	test("should roll back the database update if the S3 copy fails", async () => {
+		const testError = new Error("S3 is down");
+		vi.mocked(s3Service.copyObject).mockRejectedValue(testError);
+
+		const response = await agent
+			.post(endpoint)
+			.send({ fileIds: ["1"] })
+			.expect(500);
+
+		expect(response.body).toEqual({
+			updatedFileIds: [],
+			skippedFiles: [],
+			fileIdsWithErrors: ["1"],
+			fileIdsWithUndeletedOldObjects: [],
+		});
+		expect(logger.error).toHaveBeenCalledWith(testError);
+		expect(s3Service.deleteObject).not.toHaveBeenCalled();
+		const file = await getFile("1");
+		expect(file?.cloudPath).toBe("1");
+		expect(file?.fileUrl).toBe("https://cdn.permanent.org/old-file-url");
+		expect(file?.downloadUrl).toBe(
+			"https://cdn.permanent.org/old-download-url",
+		);
+	});
+
+	test("should keep processing other files after one fails", async () => {
+		vi.mocked(s3Service.copyObject).mockRejectedValueOnce(
+			new Error("S3 is down"),
+		);
+
+		const response = await agent
+			.post(endpoint)
+			.send({ fileIds: ["1", "2"] })
+			.expect(500);
+
+		expect(response.body).toEqual({
+			updatedFileIds: ["2"],
+			skippedFiles: [],
+			fileIdsWithErrors: ["1"],
+			fileIdsWithUndeletedOldObjects: [],
+		});
+		expect((await getFile("1"))?.cloudPath).toBe("1");
+		expect((await getFile("2"))?.cloudPath).toBe("_Liam/originals/2/2");
+	});
+
+	test("should keep the database update and report it if deleting the old object fails", async () => {
+		const testError = new Error("S3 is down");
+		vi.mocked(s3Service.deleteObject).mockRejectedValue(testError);
+
+		const response = await agent
+			.post(endpoint)
+			.send({ fileIds: ["1"] })
+			.expect(500);
+
+		expect(response.body).toEqual({
+			updatedFileIds: ["1"],
+			skippedFiles: [],
+			fileIdsWithErrors: [],
+			fileIdsWithUndeletedOldObjects: ["1"],
+		});
+		expect(logger.error).toHaveBeenCalledWith(testError);
+		expect((await getFile("1"))?.cloudPath).toBe("originals/1/1");
+	});
+
+	test("should not overwrite or move a file whose cloudpath changes after it is looked up", async () => {
+		await db.query(
+			"UPDATE file SET cloudpath = 'originals/1/1' WHERE fileid = 1",
+		);
+		mockSqlCall(
+			db,
+			"admin.queries.get_original_file",
+			{ fileId: "1" },
+			{
+				resolve: {
+					rows: [
+						{
+							fileId: "1",
+							format: "file.format.original",
+							cloudPath: "1",
+							recordDownloadName: "Renamed File.jpg",
+						},
+					],
+				},
+			},
+		);
+
+		const response = await agent
+			.post(endpoint)
+			.send({ fileIds: ["1"] })
+			.expect(500);
+
+		expect(response.body).toEqual({
+			updatedFileIds: [],
+			skippedFiles: [],
+			fileIdsWithErrors: ["1"],
+			fileIdsWithUndeletedOldObjects: [],
+		});
+		expect(logger.error).toHaveBeenCalledWith(
+			new Error("Cloudpath of file 1 changed during update"),
+		);
+		expect(s3Service.copyObject).not.toHaveBeenCalled();
+		expect(s3Service.deleteObject).not.toHaveBeenCalled();
+		const file = await getFile("1");
+		expect(file?.cloudPath).toBe("originals/1/1");
+		expect(file?.fileUrl).toBe("https://cdn.permanent.org/old-file-url");
+	});
+
+	test("should report an error if looking up the file fails", async () => {
+		const testError = new Error("Out of cheese - redo from start");
+		vi.spyOn(db, "sql").mockRejectedValue(testError);
+
+		const response = await agent
+			.post(endpoint)
+			.send({ fileIds: ["1"] })
+			.expect(500);
+
+		expect(response.body).toEqual({
+			updatedFileIds: [],
+			skippedFiles: [],
+			fileIdsWithErrors: ["1"],
+			fileIdsWithUndeletedOldObjects: [],
+		});
+		expect(logger.error).toHaveBeenCalledWith(testError);
+		expect(s3Service.copyObject).not.toHaveBeenCalled();
 	});
 });

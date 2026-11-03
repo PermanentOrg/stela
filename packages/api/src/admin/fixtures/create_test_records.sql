@@ -21,7 +21,7 @@ VALUES
   2,
   2,
   'public_file.jpg',
-  'public_file.jpg',
+  'Renamed File.jpg',
   'status.generic.ok',
   'type.record.image'
 ),

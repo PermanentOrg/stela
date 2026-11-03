@@ -52,3 +52,22 @@ export const validateRecalculateRecordThumbnailRequest: (
 		throw validation.error;
 	}
 };
+
+export const validateModernizeOriginalFileCloudpathsRequest: (
+	data: unknown,
+) => asserts data is { fileIds: string[] } = (
+	data: unknown,
+): asserts data is { fileIds: string[] } => {
+	const validation = Joi.object()
+		.keys({
+			fileIds: Joi.array()
+				.items(Joi.string().pattern(/^\d+$/v))
+				.min(1)
+				.unique()
+				.required(),
+		})
+		.validate(data);
+	if (validation.error !== undefined) {
+		throw validation.error;
+	}
+};

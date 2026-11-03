@@ -370,6 +370,13 @@ Configuration in `eslint.config.mjs`:
 - **No unused vars:** Prefix with `_` to mark intentionally unused (args, vars, caught errors)
 - **Test files:** Magic numbers allowed, `max-lines` disabled, `@typescript-eslint/require-await` disabled
 
+### Never Disable Lint Rules
+
+Do not disable lint rules, for individual lines (`eslint-disable-next-line`, `eslint-disable-line`), blocks, or whole files. When the linter objects, restructure the code so it complies. For example:
+
+- `no-await-in-loop` when work must run sequentially: chain the work with `array.reduce(async (previous, item) => { await previous; ... }, Promise.resolve())`
+- `@typescript-eslint/no-misused-promises` when mocking an AWS SDK client's `send` (whose callback-style overloads make the implementation look void-returning): pass a plain `vi.fn()` to `mockImplementation` and configure the `vi.fn()`'s behavior separately, as the `file_copier` and `access_copy_attacher` tests do
+
 ## Code Style Conventions
 
 - **Named exports only** — no default exports anywhere
@@ -417,4 +424,6 @@ export const handler: SQSHandler = async (event: SQSEvent) => {
 - Middleware-derived values live on `req.metadata`, not `req.body`; never read auth or IP values from the body
 - The codebase uses `http-errors` for creating typed HTTP errors that the global error handler catches
 - `@stela/logger` wraps Winston and is used across all packages
+- S3 operations in `@stela/api` go through `s3Service` in `packages/api/src/s3.ts` (copy, including multipart copy for objects over 5 GiB, and delete); tests stub it with `vi.spyOn(s3Service, ...)`
+- Original files are stored at `originals/<fileId>/<fileId>` (prefixed with `_<DevName>/` in local environments) because Archivematica can only ingest folders; legacy originals stored at `<fileId>` can be migrated with `POST /api/v2/admin/file/modernize_cloudpaths`
 - Infrastructure is managed with Terraform in `/terraform/` (separate configs for test and prod clusters)
