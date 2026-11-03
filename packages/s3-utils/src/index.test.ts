@@ -1,9 +1,11 @@
 import { getSignedUrl } from "aws-cloudfront-sign";
 import { describe, expect, test, vi } from "vitest";
 import {
+	buildContentDisposition,
 	constructSignedCdnUrl,
 	getS3ObjectFromS3Message,
 	getS3BucketFromS3Message,
+	NON_PRINTABLE_ASCII,
 } from "./index.js";
 
 vi.mock("aws-cloudfront-sign");
@@ -28,9 +30,54 @@ describe("constructSignedCDNURL", () => {
 		const testFileName = "test-file.txt";
 		constructSignedCdnUrl(testKey, testFileName);
 
+		const expectedUrl = new URL(`${mockCloudfrontUrl}${testKey}`);
+		expectedUrl.searchParams.append(
+			"response-content-disposition",
+			`attachment; filename="${testFileName}"`,
+		);
+
 		expect(getSignedUrl).toHaveBeenCalledWith(
-			`${mockCloudfrontUrl}${testKey}?response-content-disposition=${testFileName}`,
+			expectedUrl.toString(),
 			expect.anything(),
+		);
+	});
+});
+
+describe("buildContentDisposition", () => {
+	test("wraps a plain ASCII name in a simple disposition", () => {
+		expect(buildContentDisposition("report.pdf")).toBe(
+			'attachment; filename="report.pdf"',
+		);
+	});
+
+	test("leaves a name containing spaces unchanged", () => {
+		expect(buildContentDisposition("my report.pdf")).toBe(
+			'attachment; filename="my report.pdf"',
+		);
+	});
+
+	test("uses the extended parameter for a non-Latin name", () => {
+		const fileName = "Контракт.pdf";
+		const disposition = buildContentDisposition(fileName);
+
+		expect(disposition).toContain('filename="________.pdf"');
+		expect(disposition).toContain(
+			"filename*=UTF-8''%D0%9A%D0%BE%D0%BD%D1%82%D1%80%D0%B0%D0%BA%D1%82.pdf",
+		);
+		expect(disposition).not.toMatch(NON_PRINTABLE_ASCII);
+	});
+
+	test("neutralises quotes and backslashes", () => {
+		expect(buildContentDisposition('a"b\\c.txt')).toContain(
+			'filename="a_b_c.txt"',
+		);
+	});
+
+	test("percent-encodes characters outside the RFC 5987 attr-char set", () => {
+		const disposition = buildContentDisposition("(«quoted»).txt");
+
+		expect(disposition).toContain(
+			"filename*=UTF-8''%28%C2%ABquoted%C2%BB%29.txt",
 		);
 	});
 });
