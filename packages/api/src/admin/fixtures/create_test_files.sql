@@ -1,0 +1,106 @@
+INSERT INTO
+file (
+  fileid,
+  format,
+  archiveid,
+  fileurl,
+  downloadurl,
+  urldt,
+  status,
+  type,
+  cloudpath,
+  createddt,
+  updateddt
+)
+VALUES
+(
+  1,
+  'file.format.original',
+  1,
+  'https://cdn.permanent.org/old-file-url',
+  'https://cdn.permanent.org/old-download-url',
+  '2023-01-01',
+  'status.generic.ok',
+  'type.file.image.jpg',
+  '1',
+  '2022-01-01',
+  '2022-01-01'
+),
+(
+  2,
+  'file.format.original',
+  1,
+  'https://cdn.permanent.org/old-file-url',
+  'https://cdn.permanent.org/old-download-url',
+  '2023-01-01',
+  'status.generic.ok',
+  'type.file.image.jpg',
+  '_Liam/2',
+  '2022-01-01',
+  '2022-01-01'
+),
+(
+  3,
+  'file.format.original',
+  1,
+  'https://cdn.permanent.org/old-file-url',
+  'https://cdn.permanent.org/old-download-url',
+  '2023-01-01',
+  'status.generic.ok',
+  'type.file.image.jpg',
+  'originals/3/3',
+  '2022-01-01',
+  '2022-01-01'
+),
+(
+  4,
+  'file.format.converted',
+  1,
+  'https://cdn.permanent.org/old-file-url',
+  'https://cdn.permanent.org/old-download-url',
+  '2023-01-01',
+  'status.generic.ok',
+  'type.file.image.jpg',
+  '4',
+  '2022-01-01',
+  '2022-01-01'
+),
+(
+  5,
+  'file.format.original',
+  1,
+  'https://cdn.permanent.org/old-file-url',
+  'https://cdn.permanent.org/old-download-url',
+  '2023-01-01',
+  'status.generic.ok',
+  'type.file.image.jpg',
+  NULL,
+  '2022-01-01',
+  '2022-01-01'
+),
+(
+  6,
+  'file.format.original',
+  1,
+  'https://cdn.permanent.org/old-file-url',
+  'https://cdn.permanent.org/old-download-url',
+  '2023-01-01',
+  'status.generic.ok',
+  'type.file.image.jpg',
+  'unexpected/path',
+  '2022-01-01',
+  '2022-01-01'
+),
+(
+  7,
+  'file.format.original',
+  1,
+  'https://cdn.permanent.org/old-file-url',
+  'https://cdn.permanent.org/old-download-url',
+  '2023-01-01',
+  'status.generic.ok',
+  'type.file.image.jpg',
+  '7',
+  '2022-01-01',
+  '2022-01-01'
+);
