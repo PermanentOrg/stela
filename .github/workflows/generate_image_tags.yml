@@ -30,6 +30,8 @@ on:
         value: ${{ jobs.generate_image_tags.outputs.EVENT_SEND_IMAGE_TAG }}
       FILE_COPIER_LAMBDA_IMAGE_TAG:
         value: ${{ jobs.generate_image_tags.outputs.FILE_COPIER_LAMBDA_IMAGE_TAG }}
+      THUMBNAIL_GENERATOR_LAMBDA_IMAGE_TAG:
+        value: ${{ jobs.generate_image_tags.outputs.THUMBNAIL_GENERATOR_LAMBDA_IMAGE_TAG }}
 jobs:
   generate_image_tags:
     runs-on: ubuntu-24.04
@@ -45,6 +47,7 @@ jobs:
       METADATA_ATTACHER_LAMBDA_IMAGE_TAG: ${{ steps.generate_metadata_attacher_lambda_image_tag.outputs.METADATA_ATTACHER_LAMBDA_IMAGE_TAG }}
       EVENT_SEND_IMAGE_TAG: ${{ steps.generate_event_send_image_tag.outputs.EVENT_SEND_IMAGE_TAG }}
       FILE_COPIER_LAMBDA_IMAGE_TAG: ${{ steps.generate_file_copier_lambda_image_tag.outputs.FILE_COPIER_LAMBDA_IMAGE_TAG }}
+      THUMBNAIL_GENERATOR_LAMBDA_IMAGE_TAG: ${{ steps.generate_thumbnail_generator_lambda_image_tag.outputs.THUMBNAIL_GENERATOR_LAMBDA_IMAGE_TAG }}
     steps:
       - uses: actions/checkout@v7
       - name: Set ECR domain env var
@@ -105,3 +108,6 @@ jobs:
       - name: Generate File Copier Lambda Image Tag
         id: generate_file_copier_lambda_image_tag
         run: echo "FILE_COPIER_LAMBDA_IMAGE_TAG=$ECR_DOMAIN/stela:file_copier_lambda-$TAG_SUFFIX-$ABBREVIATED_COMMIT_HASH" >> "$GITHUB_OUTPUT"
+      - name: Generate Thumbnail Generator Lambda Image Tag
+        id: generate_thumbnail_generator_lambda_image_tag
+        run: echo "THUMBNAIL_GENERATOR_LAMBDA_IMAGE_TAG=$ECR_DOMAIN/stela:thumbnail_generator_lambda-$TAG_SUFFIX-$ABBREVIATED_COMMIT_HASH" >> "$GITHUB_OUTPUT"

@@ -1,0 +1,72 @@
+INSERT INTO
+file (
+  fileid,
+  archiveid,
+  size,
+  format,
+  cloudpath,
+  status,
+  createddt,
+  updateddt
+)
+VALUES
+(
+  100,
+  1,
+  1024,
+  'file.format.original',
+  'originals/100/100',
+  'status.generic.ok',
+  CURRENT_TIMESTAMP,
+  CURRENT_TIMESTAMP
+),
+(
+  101,
+  1,
+  2048,
+  'file.format.converted',
+  'converted/101/101',
+  'status.generic.ok',
+  CURRENT_TIMESTAMP,
+  CURRENT_TIMESTAMP
+),
+(
+  200,
+  1,
+  209715201,
+  'file.format.original',
+  'originals/200/200',
+  'status.generic.ok',
+  CURRENT_TIMESTAMP,
+  CURRENT_TIMESTAMP
+),
+(
+  300,
+  1,
+  1024,
+  'file.format.original',
+  'originals/300/300',
+  'status.generic.ok',
+  CURRENT_TIMESTAMP,
+  CURRENT_TIMESTAMP
+),
+(
+  400,
+  1,
+  1024,
+  'file.format.original',
+  'originals/400/400',
+  'status.generic.ok',
+  CURRENT_TIMESTAMP,
+  CURRENT_TIMESTAMP
+),
+(
+  500,
+  1,
+  1024,
+  'file.format.original',
+  '_DevName/originals/500/500',
+  'status.generic.ok',
+  CURRENT_TIMESTAMP,
+  CURRENT_TIMESTAMP
+);

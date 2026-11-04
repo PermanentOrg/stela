@@ -36,6 +36,9 @@ on:
       FILE_COPIER_LAMBDA_IMAGE_TAG:
         type: string
         required: false
+      THUMBNAIL_GENERATOR_LAMBDA_IMAGE_TAG:
+        type: string
+        required: false
 jobs:
   run_tests:
     uses: ./.github/workflows/test.yml
@@ -61,6 +64,7 @@ jobs:
       METADATA_ATTACHER_LAMBDA_IMAGE_TAG: ${{ inputs.METADATA_ATTACHER_LAMBDA_IMAGE_TAG }}
       EVENT_SEND_IMAGE_TAG: ${{ inputs.EVENT_SEND_IMAGE_TAG }}
       FILE_COPIER_LAMBDA_IMAGE_TAG: ${{ inputs.FILE_COPIER_LAMBDA_IMAGE_TAG }}
+      THUMBNAIL_GENERATOR_LAMBDA_IMAGE_TAG: ${{ inputs.THUMBNAIL_GENERATOR_LAMBDA_IMAGE_TAG }}
 
   deploy:
     needs:
@@ -81,6 +85,7 @@ jobs:
       METADATA_ATTACHER_LAMBDA_IMAGE_TAG: ${{ inputs.METADATA_ATTACHER_LAMBDA_IMAGE_TAG || needs.generate_image_tags.outputs.METADATA_ATTACHER_LAMBDA_IMAGE_TAG }}
       EVENT_SEND_IMAGE_TAG: ${{ inputs.EVENT_SEND_IMAGE_TAG || needs.generate_image_tags.outputs.EVENT_SEND_IMAGE_TAG }}
       FILE_COPIER_LAMBDA_IMAGE_TAG: ${{ inputs.FILE_COPIER_LAMBDA_IMAGE_TAG || needs.generate_image_tags.outputs.FILE_COPIER_LAMBDA_IMAGE_TAG }}
+      THUMBNAIL_GENERATOR_LAMBDA_IMAGE_TAG: ${{ inputs.THUMBNAIL_GENERATOR_LAMBDA_IMAGE_TAG || needs.generate_image_tags.outputs.THUMBNAIL_GENERATOR_LAMBDA_IMAGE_TAG }}
     defaults:
       run:
         working-directory: ./terraform/test_cluster
@@ -109,6 +114,7 @@ jobs:
             \"metadata-attacher-staging-lambda\"     = \"$METADATA_ATTACHER_LAMBDA_IMAGE_TAG\",
             \"record-thumbnail-staging-lambda\"      = \"$RECORD_THUMBNAIL_LAMBDA_IMAGE_TAG\",
             \"stela-staging\"                        = \"$API_IMAGE_TAG\",
+            \"thumbnail-generator-staging-lambda\"   = \"$THUMBNAIL_GENERATOR_LAMBDA_IMAGE_TAG\",
             \"thumbnail-refresh-staging\"            = \"$THUMBNAIL_REFRESH_IMAGE_TAG\",
             \"trigger-archivematica-staging-lambda\" = \"$TRIGGER_ARCHIVEMATICA_IMAGE_TAG\"
           }"

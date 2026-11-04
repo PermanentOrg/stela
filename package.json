@@ -28,7 +28,8 @@
 		"./packages/access_copy_attacher",
 		"./packages/trigger_archivematica",
 		"./packages/metadata_attacher",
-		"./packages/file_copier"
+		"./packages/file_copier",
+		"./packages/thumbnail_generator"
 	],
 	"repository": {
 		"type": "git",

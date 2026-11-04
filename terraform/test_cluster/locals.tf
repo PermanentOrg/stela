@@ -9,6 +9,7 @@ locals {
     "metadata-attacher-dev-lambda",
     "record-thumbnail-dev-lambda",
     "stela-dev",
+    "thumbnail-generator-dev-lambda",
     "thumbnail-refresh-dev",
     "trigger-archivematica-dev-lambda",
   ]
@@ -22,6 +23,7 @@ locals {
     "metadata-attacher-staging-lambda",
     "record-thumbnail-staging-lambda",
     "stela-staging",
+    "thumbnail-generator-staging-lambda",
     "thumbnail-refresh-staging",
     "trigger-archivematica-staging-lambda",
   ]
@@ -52,6 +54,8 @@ locals {
     metadata-attacher-staging-lambda     = try(data.aws_lambda_function.metadata_attacher_staging_lambda[0].image_uri, null)
     record-thumbnail-dev-lambda          = try(data.aws_lambda_function.record_thumbnail_dev_lambda[0].image_uri, null)
     record-thumbnail-staging-lambda      = try(data.aws_lambda_function.record_thumbnail_staging_lambda[0].image_uri, null)
+    thumbnail-generator-dev-lambda       = try(data.aws_lambda_function.thumbnail_generator_dev_lambda[0].image_uri, null)
+    thumbnail-generator-staging-lambda   = try(data.aws_lambda_function.thumbnail_generator_staging_lambda[0].image_uri, null)
     trigger-archivematica-dev-lambda     = try(data.aws_lambda_function.trigger_archivematica_dev_lambda[0].image_uri, null)
     trigger-archivematica-staging-lambda = try(data.aws_lambda_function.trigger_archivematica_staging_lambda[0].image_uri, null)
   }
