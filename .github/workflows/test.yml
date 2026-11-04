@@ -30,6 +30,8 @@ jobs:
             needs_devenv: true
           - package: file_copier
             needs_devenv: true
+          - package: thumbnail_generator
+            needs_devenv: true
           - package: thumbnail_refresh
             needs_devenv: true
           - package: file_url_refresh

@@ -88,6 +88,11 @@ variable "file_copier_lambda_image" {
   type        = string
 }
 
+variable "thumbnail_generator_lambda_image" {
+  description = "Tag of thumbnail generator lambda image to deploy"
+  type        = string
+}
+
 variable "prod_security_group_id" {
   description = "ID of the Production security group"
   type        = string
