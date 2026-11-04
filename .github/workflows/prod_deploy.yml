@@ -25,6 +25,7 @@ jobs:
       METADATA_ATTACHER_LAMBDA_IMAGE_TAG: ${{ needs.generate_image_tags.outputs.METADATA_ATTACHER_LAMBDA_IMAGE_TAG }}
       EVENT_SEND_IMAGE_TAG: ${{ needs.generate_image_tags.outputs.EVENT_SEND_IMAGE_TAG }}
       FILE_COPIER_LAMBDA_IMAGE_TAG: ${{ needs.generate_image_tags.outputs.FILE_COPIER_LAMBDA_IMAGE_TAG }}
+      THUMBNAIL_GENERATOR_LAMBDA_IMAGE_TAG: ${{ needs.generate_image_tags.outputs.THUMBNAIL_GENERATOR_LAMBDA_IMAGE_TAG }}
     secrets: inherit
 
   deploy_prod:
@@ -45,6 +46,7 @@ jobs:
       METADATA_ATTACHER_LAMBDA_IMAGE_TAG: ${{ needs.generate_image_tags.outputs.METADATA_ATTACHER_LAMBDA_IMAGE_TAG }}
       EVENT_SEND_IMAGE_TAG: ${{ needs.generate_image_tags.outputs.EVENT_SEND_IMAGE_TAG }}
       FILE_COPIER_LAMBDA_IMAGE_TAG: ${{ needs.generate_image_tags.outputs.FILE_COPIER_LAMBDA_IMAGE_TAG }}
+      THUMBNAIL_GENERATOR_LAMBDA_IMAGE_TAG: ${{ needs.generate_image_tags.outputs.THUMBNAIL_GENERATOR_LAMBDA_IMAGE_TAG }}
     defaults:
       run:
         working-directory: ./terraform/prod_cluster
@@ -73,4 +75,5 @@ jobs:
           -var="trigger_archivematica_lambda_image=$TRIGGER_ARCHIVEMATICA_IMAGE_TAG" \
           -var="metadata_attacher_lambda_image=$METADATA_ATTACHER_LAMBDA_IMAGE_TAG" \
           -var="event_send_image=$EVENT_SEND_IMAGE_TAG" \
-          -var="file_copier_lambda_image=$FILE_COPIER_LAMBDA_IMAGE_TAG"
+          -var="file_copier_lambda_image=$FILE_COPIER_LAMBDA_IMAGE_TAG" \
+          -var="thumbnail_generator_lambda_image=$THUMBNAIL_GENERATOR_LAMBDA_IMAGE_TAG"

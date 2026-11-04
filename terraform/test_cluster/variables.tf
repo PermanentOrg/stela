@@ -319,6 +319,11 @@ variable "dev_s3_bucket" {
   type        = string
 }
 
+variable "dev_s3_bucket_arn" {
+  description = "ARN of the S3 bucket where files are stored in dev"
+  type        = string
+}
+
 variable "dev_backblaze_bucket" {
   description = "Name of the Backblaze bucket where files are stored in dev"
   type        = string
@@ -326,6 +331,11 @@ variable "dev_backblaze_bucket" {
 
 variable "staging_s3_bucket" {
   description = "Name of the S3 bucket where files are stored in staging"
+  type        = string
+}
+
+variable "staging_s3_bucket_arn" {
+  description = "ARN of the S3 bucket where files are stored in staging"
   type        = string
 }
 
