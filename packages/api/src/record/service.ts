@@ -198,6 +198,30 @@ const getRecordLocationId = async (
 	return row.locationId;
 };
 
+const validateLocationIsInRecordArchive = async (
+	recordId: string,
+	locationId: bigint,
+	client: TinyPg,
+): Promise<void> => {
+	const result = await client
+		.sql<{ isInArchive: boolean }>(
+			"record.queries.is_location_in_record_archive",
+			{
+				recordId,
+				locationId,
+			},
+		)
+		.catch((err: unknown) => {
+			logger.error(err);
+			throw new createError.InternalServerError("Failed to look up location");
+		});
+	if (result.rows[0]?.isInArchive !== true) {
+		throw new createError.BadRequest(
+			"locationId must refer to a location already used in the record's archive",
+		);
+	}
+};
+
 export const patchRecord = async (
 	recordId: string,
 	callerEmail: string,
@@ -207,6 +231,13 @@ export const patchRecord = async (
 
 	return await db.transaction(async (transactionDb) => {
 		let { locationId } = recordData;
+		if (locationId !== undefined && locationId !== null) {
+			await validateLocationIsInRecordArchive(
+				recordId,
+				locationId,
+				transactionDb,
+			);
+		}
 		if (recordData.location !== undefined) {
 			const currentLocationId = await getRecordLocationId(
 				recordId,
