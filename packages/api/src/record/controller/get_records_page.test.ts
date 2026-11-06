@@ -399,6 +399,58 @@ describe("GET /records", () => {
 			.expect(500);
 		expect(logger.error).toHaveBeenCalledWith(testError);
 	});
+
+	describe("with an account whose stored email has uppercase letters", () => {
+		beforeEach(async () => {
+			await runFixtures(db, ["record.fixtures.create_test_mixed_case_account"]);
+			mockExtractUserEmailFromAuthToken("mixed.case@permanent.org");
+		});
+
+		test("expect to return a private record in an archive the account is a member of", async () => {
+			const response = await agent
+				.get("/api/v2/records?recordIds[]=10002&pageSize=100")
+				.expect(200);
+			const { body } = response as { body: GetRecordsResponse };
+			expect(body.items).toHaveLength(1);
+			expect(body.items[0]?.recordId).toEqual("10002");
+			expect(body.items[0]?.accessRole).toEqual("viewer");
+		});
+
+		test("expect to return a private record shared with an archive the account is a member of", async () => {
+			const response = await agent
+				.get("/api/v2/records?recordIds[]=10006&pageSize=100")
+				.expect(200);
+			const { body } = response as { body: GetRecordsResponse };
+			expect(body.items).toHaveLength(1);
+			expect(body.items[0]?.recordId).toEqual("10006");
+			expect(body.items[0]?.accessRole).toEqual("viewer");
+		});
+	});
+
+	describe("with an inactive account that has the caller's email in a different case", () => {
+		beforeEach(async () => {
+			await runFixtures(db, [
+				"record.fixtures.create_test_inactive_duplicate_account",
+			]);
+			mockExtractUserEmailFromAuthToken("duplicate@permanent.org");
+		});
+
+		test("expect not to return a private record through the inactive account's archive membership", async () => {
+			const response = await agent
+				.get("/api/v2/records?recordIds[]=10002&pageSize=100")
+				.expect(200);
+			const { body } = response as { body: GetRecordsResponse };
+			expect(body.items).toHaveLength(0);
+		});
+
+		test("expect not to return a private record through a share with the inactive account's archive", async () => {
+			const response = await agent
+				.get("/api/v2/records?recordIds[]=10006&pageSize=100")
+				.expect(200);
+			const { body } = response as { body: GetRecordsResponse };
+			expect(body.items).toHaveLength(0);
+		});
+	});
 });
 
 describe("GET /records accessCopyStatus and thumbnailUrls.width256Status", () => {
