@@ -328,7 +328,8 @@ all_records AS (
           INNER JOIN account
             ON
               account_archive.accountid = account.accountid
-              AND account.primaryemail = :accountEmail
+              AND LOWER(account.primaryemail) = LOWER(:accountEmail)
+              AND account.status = 'status.auth.ok'
           WHERE
             account_archive.archiveid = record.archiveid
             AND account_archive.status = 'status.generic.ok'
@@ -473,7 +474,7 @@ all_records AS (
       WHERE
         :accountEmail IS NOT NULL
         AND account_archive.archiveid = record.archiveid
-        AND account.primaryemail = :accountEmail
+        AND LOWER(account.primaryemail) = LOWER(:accountEmail)
         AND account_archive.status = 'status.generic.ok'
         AND account.status = 'status.auth.ok'
     ) AS "archiveAccessRole",
@@ -500,7 +501,7 @@ all_records AS (
       INNER JOIN account
         ON
           account_archive.accountid = account.accountid
-          AND account.primaryemail = :accountEmail
+          AND LOWER(account.primaryemail) = LOWER(:accountEmail)
           AND account.status = 'status.auth.ok'
       WHERE
         access.status = 'status.generic.ok'
@@ -580,8 +581,14 @@ all_records AS (
     ON record.recordid = candidate_records.recordid
   WHERE
     (
-      record_account.primaryemail = :accountEmail
-      OR share_account.primaryemail = :accountEmail
+      (
+        LOWER(record_account.primaryemail) = LOWER(:accountEmail)
+        AND record_account.status = 'status.auth.ok'
+      )
+      OR (
+        LOWER(share_account.primaryemail) = LOWER(:accountEmail)
+        AND share_account.status = 'status.auth.ok'
+      )
       OR (record.publicdt IS NOT NULL AND record.publicdt <= NOW())
       OR (
         :shareToken::TEXT IS NOT NULL

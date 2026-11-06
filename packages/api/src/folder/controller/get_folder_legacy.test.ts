@@ -429,4 +429,59 @@ describe("GET /folder (deprecated alias, no pagination)", () => {
 		vi.spyOn(db, "sql").mockRejectedValue(new Error("test error"));
 		await agent.get("/api/v2/folder?folderIds[]=2").expect(500);
 	});
+
+	describe("with an account whose stored email has uppercase letters", () => {
+		beforeEach(async () => {
+			await runFixtures(db, ["folder.fixtures.create_test_mixed_case_account"]);
+		});
+
+		test("should return a private folder when the token email is lowercase", async () => {
+			mockExtractUserEmailFromAuthToken("mixed.case@permanent.org");
+			const response = await agent
+				.get("/api/v2/folder?folderIds[]=2")
+				.expect(200);
+			const {
+				body: { items: folders },
+			} = response as { body: { items: Folder[] } };
+			expect(folders.length).toEqual(1);
+			expect(folders[0]?.folderId).toEqual("2");
+			expect(folders[0]?.accessRole).toEqual("owner");
+		});
+	});
+
+	describe("with a deleted account that is still an archive member", () => {
+		beforeEach(async () => {
+			await runFixtures(db, ["folder.fixtures.create_test_deleted_account"]);
+		});
+
+		test("should not return a private folder to the deleted account", async () => {
+			mockExtractUserEmailFromAuthToken("deleted.member@permanent.org");
+			const response = await agent
+				.get("/api/v2/folder?folderIds[]=2")
+				.expect(200);
+			const {
+				body: { items: folders },
+			} = response as { body: { items: Folder[] } };
+			expect(folders.length).toEqual(0);
+		});
+	});
+
+	describe("with an inactive account that has the caller's email in a different case", () => {
+		beforeEach(async () => {
+			await runFixtures(db, [
+				"folder.fixtures.create_test_mixed_case_duplicate_account",
+			]);
+		});
+
+		test("should not duplicate the folder", async () => {
+			const response = await agent
+				.get("/api/v2/folder?folderIds[]=2")
+				.expect(200);
+			const {
+				body: { items: folders },
+			} = response as { body: { items: Folder[] } };
+			expect(folders.length).toEqual(1);
+			expect(folders[0]?.folderId).toEqual("2");
+		});
+	});
 });

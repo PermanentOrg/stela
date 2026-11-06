@@ -79,6 +79,8 @@ describe("GET /folder/{id}/children", () => {
 
 	afterEach(async () => {
 		await clearDatabase();
+		vi.restoreAllMocks();
+		vi.clearAllMocks();
 	});
 
 	test("should return 200 on a valid request", async () => {
@@ -492,5 +494,33 @@ describe("GET /folder/{id}/children", () => {
 	test("should return 500 if the database call fails", async () => {
 		vi.spyOn(db, "sql").mockRejectedValue(new Error("test error"));
 		await agent.get("/api/v2/folders/10/children?pageSize=1").expect(500);
+	});
+
+	describe("with an account whose stored email has uppercase letters", () => {
+		beforeEach(async () => {
+			await runFixtures(db, ["folder.fixtures.create_test_mixed_case_account"]);
+		});
+
+		test("should return private children when the token email is lowercase", async () => {
+			mockExtractUserEmailFromAuthToken("mixed.case@permanent.org");
+			const response = await agent
+				.get("/api/v2/folders/10/children?pageSize=100")
+				.expect(200);
+			const {
+				body: { items: children },
+			} = response as { body: { items: FolderChildItem[] } };
+			expect(children.length).toEqual(2);
+			const [folder, record] = children;
+			expect(folder !== undefined && "folderId" in folder).toBe(true);
+			if (folder !== undefined && "folderId" in folder) {
+				expect(folder.folderId).toEqual("2");
+				expect(folder.accessRole).toEqual("owner");
+			}
+			expect(record !== undefined && "recordId" in record).toBe(true);
+			if (record !== undefined && "recordId" in record) {
+				expect(record.recordId).toEqual("8");
+				expect(record.accessRole).toEqual("owner");
+			}
+		});
 	});
 });
