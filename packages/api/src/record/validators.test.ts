@@ -77,6 +77,30 @@ describe("validatePatchRecordRequest", () => {
 		}
 	});
 
+	test("should accept null for nested location fields", () => {
+		let error = null;
+		try {
+			validatePatchRecordRequest({
+				location: {
+					name: null,
+					sublocation: null,
+					city: null,
+					state: null,
+					postalCode: null,
+					country: null,
+					latitude: null,
+					longitude: null,
+					altitudeMeters: null,
+					precision: null,
+				},
+			});
+		} catch (err) {
+			error = err;
+		} finally {
+			expect(error).toBeNull();
+		}
+	});
+
 	test("should reject an empty location object", () => {
 		let error = null;
 		try {

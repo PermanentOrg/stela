@@ -386,6 +386,22 @@ describe("patch folder", () => {
 			});
 		});
 
+		test("expect a nested location field set to null to clear only that field", async () => {
+			await agent
+				.patch("/api/v2/folders/2")
+				.send({ location: { city: null } })
+				.expect(200);
+
+			const locationResult = await db.query(
+				"SELECT name, city, locality FROM locn WHERE locnid = 1",
+			);
+			expect(locationResult.rows[0]).toEqual({
+				name: "Jean Valjean's House",
+				city: null,
+				locality: null,
+			});
+		});
+
 		test("expect a nested location to create a new location when folder has none", async () => {
 			const response = await agent
 				.patch("/api/v2/folders/1")
