@@ -124,3 +124,24 @@ export const updateLocation = async (
 		throw new createError.NotFound(`Location ${locationId} not found`);
 	}
 };
+
+export const copyLocation = async (
+	locationId: string,
+	client: TinyPg = db,
+): Promise<string> => {
+	const result = await client
+		.sql<{ locationId: string }>("location.queries.copy_location", {
+			locationId,
+		})
+		.catch((err: unknown) => {
+			logger.error(err);
+			throw new createError.InternalServerError("Failed to copy location");
+		});
+	const {
+		rows: [copied],
+	} = result;
+	if (copied === undefined) {
+		throw new createError.NotFound(`Location ${locationId} not found`);
+	}
+	return copied.locationId;
+};

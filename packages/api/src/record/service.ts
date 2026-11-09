@@ -23,7 +23,11 @@ import { shareLinkService } from "../share_link/service.js";
 import type { ShareLink } from "../share_link/models.js";
 import { getFolders } from "../folder/service/get_folder.js";
 import { type Folder, PrettyFolderType } from "../folder/models.js";
-import { insertLocation, updateLocation } from "../location/service.js";
+import {
+	copyLocation,
+	insertLocation,
+	updateLocation,
+} from "../location/service.js";
 import { ShareStatus } from "../share/models.js";
 import type { Caller } from "../models.js";
 
@@ -346,10 +350,20 @@ export const createRecordCopy = async (
 			throw new createError.BadRequest("Not enough storage to make a copy");
 		}
 
+		const originalLocationId = await getRecordLocationId(
+			record.recordId,
+			transactionDb,
+		);
+		const copiedLocationId =
+			originalLocationId === null
+				? null
+				: await copyLocation(originalLocationId, transactionDb);
+
 		const {
 			rows: [recordCopy],
 		} = await transactionDb
 			.sql<{ recordId: string }>("record.queries.copy_record", {
+				locationId: copiedLocationId,
 				destinationArchiveId: destinationFolder.archive.id,
 				destinationFolderId: destinationFolder.folderId,
 				originalRecordId: record.recordId,
