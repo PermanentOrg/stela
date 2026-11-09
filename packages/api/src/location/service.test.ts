@@ -1,7 +1,12 @@
 import { afterEach, describe, expect, test, vi } from "vitest";
 import { logger } from "@stela/logger";
 import { db } from "../database.js";
-import { copyLocation, insertLocation, updateLocation } from "./service.js";
+import {
+	copyLocation,
+	insertLocation,
+	saveItemLocation,
+	updateLocation,
+} from "./service.js";
 import type { LocationInput } from "./models.js";
 
 vi.mock("../database");
@@ -137,5 +142,24 @@ describe("copyLocation", () => {
 		await expect(copyLocation("1")).rejects.toMatchObject({
 			statusCode: 404,
 		});
+	});
+});
+
+describe("saveItemLocation", () => {
+	afterEach(() => {
+		vi.restoreAllMocks();
+		vi.clearAllMocks();
+	});
+
+	test("expect 500 if the shared location lookup fails", async () => {
+		const testError = new Error("test error");
+		vi.spyOn(db, "sql").mockImplementation(async () => {
+			throw testError;
+		});
+
+		await expect(saveItemLocation("1", baseLocation)).rejects.toMatchObject({
+			statusCode: 500,
+		});
+		expect(logger.error).toHaveBeenCalledWith(testError);
 	});
 });

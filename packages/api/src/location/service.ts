@@ -145,3 +145,33 @@ export const copyLocation = async (
 	}
 	return copied.locationId;
 };
+
+const isLocationShared = async (
+	locationId: string,
+	client: TinyPg,
+): Promise<boolean> => {
+	const result = await client
+		.sql<{ isShared: boolean }>("location.queries.is_location_shared", {
+			locationId,
+		})
+		.catch((err: unknown) => {
+			logger.error(err);
+			throw new createError.InternalServerError("Failed to look up location");
+		});
+	return result.rows[0]?.isShared ?? false;
+};
+
+export const saveItemLocation = async (
+	currentLocationId: string | null,
+	location: LocationInput,
+	client: TinyPg = db,
+): Promise<string> => {
+	if (currentLocationId === null) {
+		return await insertLocation(location, client);
+	}
+	const locationId = (await isLocationShared(currentLocationId, client))
+		? await copyLocation(currentLocationId, client)
+		: currentLocationId;
+	await updateLocation(locationId, location, client);
+	return locationId;
+};

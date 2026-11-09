@@ -23,11 +23,7 @@ import { shareLinkService } from "../share_link/service.js";
 import type { ShareLink } from "../share_link/models.js";
 import { getFolders } from "../folder/service/get_folder.js";
 import { type Folder, PrettyFolderType } from "../folder/models.js";
-import {
-	copyLocation,
-	insertLocation,
-	updateLocation,
-} from "../location/service.js";
+import { copyLocation, saveItemLocation } from "../location/service.js";
 import { ShareStatus } from "../share/models.js";
 import type { Caller } from "../models.js";
 
@@ -216,18 +212,13 @@ export const patchRecord = async (
 				recordId,
 				transactionDb,
 			);
-			if (currentLocationId === null) {
-				locationId = BigInt(
-					await insertLocation(recordData.location, transactionDb),
-				);
-			} else {
-				await updateLocation(
+			locationId = BigInt(
+				await saveItemLocation(
 					currentLocationId,
 					recordData.location,
 					transactionDb,
-				);
-				locationId = BigInt(currentLocationId);
-			}
+				),
+			);
 		}
 
 		const result = await transactionDb
