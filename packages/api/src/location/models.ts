@@ -1,16 +1,16 @@
 export type LocationPrecision = "approximate" | "uncertain" | "unknown";
 
 export interface LocationInput {
-	name?: string;
-	sublocation?: string;
-	city?: string;
-	state?: string;
-	postalCode?: string;
-	country?: string;
-	latitude?: number;
-	longitude?: number;
-	altitudeMeters?: number;
-	precision?: LocationPrecision;
+	name?: string | null;
+	sublocation?: string | null;
+	city?: string | null;
+	state?: string | null;
+	postalCode?: string | null;
+	country?: string | null;
+	latitude?: number | null;
+	longitude?: number | null;
+	altitudeMeters?: number | null;
+	precision?: LocationPrecision | null;
 	timezone?: string | null;
 }
 
