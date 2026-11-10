@@ -35,6 +35,7 @@ jobs:
       METADATA_ATTACHER_LAMBDA_IMAGE_TAG: ${{ needs.generate_image_tags.outputs.METADATA_ATTACHER_LAMBDA_IMAGE_TAG }}
       EVENT_SEND_IMAGE_TAG: ${{ needs.generate_image_tags.outputs.EVENT_SEND_IMAGE_TAG }}
       FILE_COPIER_LAMBDA_IMAGE_TAG: ${{ needs.generate_image_tags.outputs.FILE_COPIER_LAMBDA_IMAGE_TAG }}
+      THUMBNAIL_GENERATOR_LAMBDA_IMAGE_TAG: ${{ needs.generate_image_tags.outputs.THUMBNAIL_GENERATOR_LAMBDA_IMAGE_TAG }}
     defaults:
       run:
         working-directory: ./terraform/test_cluster
@@ -63,6 +64,7 @@ jobs:
             \"metadata-attacher-dev-lambda\"     = \"$METADATA_ATTACHER_LAMBDA_IMAGE_TAG\",
             \"record-thumbnail-dev-lambda\"      = \"$RECORD_THUMBNAIL_LAMBDA_IMAGE_TAG\",
             \"stela-dev\"                        = \"$API_IMAGE_TAG\",
+            \"thumbnail-generator-dev-lambda\"   = \"$THUMBNAIL_GENERATOR_LAMBDA_IMAGE_TAG\",
             \"thumbnail-refresh-dev\"            = \"$THUMBNAIL_REFRESH_IMAGE_TAG\",
             \"trigger-archivematica-dev-lambda\" = \"$TRIGGER_ARCHIVEMATICA_IMAGE_TAG\"
           }"

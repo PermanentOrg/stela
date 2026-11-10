@@ -1,0 +1,50 @@
+{
+	"name": "@stela/thumbnail_generator",
+	"version": "1.0.0",
+	"description": "A lambda to quickly generate width-256 thumbnails for new image records",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/PermanentOrg/stela.git"
+	},
+	"author": "Permanent.org",
+	"license": "AGPL-3.0",
+	"bugs": {
+		"url": "https://github.com/PermanentOrg/stela/issues"
+	},
+	"homepage": "https://permanent.org",
+	"engines": {
+		"node": ">=24.0"
+	},
+	"main": "dist/index.js",
+	"scripts": {
+		"check-types": "tsc --noEmit",
+		"check-format": "prettier --check src",
+		"eslint": "eslint --max-warnings 0 ./src --ext .ts",
+		"lint-sql": "(cd ../..; docker run -i --rm -v $PWD:/sql sqlfluff/sqlfluff:3.4.2 lint --dialect postgres --nocolor packages/thumbnail_generator/src/queries/ packages/thumbnail_generator/src/fixtures/)",
+		"lint": "npm run check-format && npm run check-types && npm run eslint && npm run lint-sql",
+		"build": "rm -rf dist/* && tsc -p tsconfig.build.json && tscp -p tsconfig.tscp.json",
+		"start": "node dist/index.js",
+		"clear-database": "psql postgresql://postgres:permanent@localhost:5432 -c 'DROP DATABASE IF EXISTS test_permanent;'",
+		"create-database": "psql postgresql://postgres:permanent@localhost:5432 -c 'CREATE DATABASE test_permanent;'",
+		"set-up-database": "docker exec --env='PGPASSWORD=permanent' permanent-database-1 pg_dump -U postgres permanent --schema-only | psql postgresql://postgres:permanent@localhost:5432/test_permanent",
+		"test": "npm run clear-database && npm run create-database && npm run set-up-database && vitest run"
+	},
+	"dependencies": {
+		"@aws-sdk/client-s3": "^3.1140.0",
+		"@sentry/aws-serverless": "^11.0.0",
+		"@sentry/node": "^11.0.0",
+		"@sentry/profiling-node": "^11.0.0",
+		"@stela/event_utils": "^1.0.0",
+		"@stela/logger": "^1.0.0",
+		"@stela/s3-utils": "^1.0.0",
+		"dotenv": "^17.4.2",
+		"heic-decode": "^2.1.0",
+		"require-env-variable": "^4.0.2",
+		"sharp": "^0.35.5",
+		"tinypg": "^7.0.1"
+	},
+	"devDependencies": {
+		"@types/aws-lambda": "^8.10.159"
+	},
+	"type": "module"
+}

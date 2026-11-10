@@ -35,6 +35,9 @@ on:
       FILE_COPIER_LAMBDA_IMAGE_TAG:
         type: string
         required: false
+      THUMBNAIL_GENERATOR_LAMBDA_IMAGE_TAG:
+        type: string
+        required: false
 jobs:
   generate_image_tags:
     if: inputs.API_IMAGE_TAG == ''
@@ -73,6 +76,8 @@ jobs:
             image_tag_var: EVENT_SEND_IMAGE_TAG
           - package: file_copier
             image_tag_var: FILE_COPIER_LAMBDA_IMAGE_TAG
+          - package: thumbnail_generator
+            image_tag_var: THUMBNAIL_GENERATOR_LAMBDA_IMAGE_TAG
     steps:
       - uses: actions/checkout@v7
       - name: Build Image

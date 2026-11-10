@@ -88,6 +88,11 @@ variable "file_copier_lambda_image" {
   type        = string
 }
 
+variable "thumbnail_generator_lambda_image" {
+  description = "Tag of thumbnail generator lambda image to deploy"
+  type        = string
+}
+
 variable "prod_security_group_id" {
   description = "ID of the Production security group"
   type        = string
@@ -246,6 +251,11 @@ variable "aws_account_id" {
 
 variable "s3_bucket" {
   description = "The name of the S3 bucket where files are stored"
+  type        = string
+}
+
+variable "s3_bucket_arn" {
+  description = "The ARN of the S3 bucket where files are stored"
   type        = string
 }
 

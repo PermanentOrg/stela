@@ -1,0 +1,42 @@
+# Monorepo Dockerfile - must be built from repository root:
+#   docker build -f packages/thumbnail_generator/Dockerfile .
+FROM public.ecr.aws/lambda/nodejs:24 as builder
+WORKDIR /usr/local/apps/stela/
+
+COPY package.json ./
+COPY package-lock.json ./
+COPY tsconfig.build.json ./
+COPY tsconfig.json ./
+COPY vitest.shared.ts ./
+COPY packages ./packages
+COPY patches ./patches
+
+RUN npm install
+RUN npm install -ws
+RUN npm run build -ws
+
+
+FROM public.ecr.aws/lambda/nodejs:24 as final
+
+ARG AWS_RDS_CERT_BUNDLE
+
+WORKDIR ${LAMBDA_TASK_ROOT}
+
+RUN mkdir /etc/ca-certificates
+RUN echo -e $AWS_RDS_CERT_BUNDLE > /etc/ca-certificates/rds-us-west-2-ca-bundle.pem
+
+COPY --from=builder /usr/local/apps/stela/packages/thumbnail_generator/dist ./packages/thumbnail_generator/dist
+COPY --from=builder /usr/local/apps/stela/packages/thumbnail_generator/package.json ./packages/thumbnail_generator/package.json
+COPY --from=builder /usr/local/apps/stela/packages/logger/dist ./packages/logger/dist
+COPY --from=builder /usr/local/apps/stela/packages/logger/package.json ./packages/logger/package.json
+COPY --from=builder /usr/local/apps/stela/packages/event_utils/dist ./packages/event_utils/dist
+COPY --from=builder /usr/local/apps/stela/packages/event_utils/package.json ./packages/event_utils/package.json
+COPY --from=builder /usr/local/apps/stela/packages/s3-utils/dist ./packages/s3-utils/dist
+COPY --from=builder /usr/local/apps/stela/packages/s3-utils/package.json ./packages/s3-utils/package.json
+COPY --from=builder /usr/local/apps/stela/package.json ./package.json
+COPY --from=builder /usr/local/apps/stela/package-lock.json ./package-lock.json
+
+RUN npm cache clean --force
+RUN npm install --workspace @stela/thumbnail_generator
+
+CMD ["packages/thumbnail_generator/dist/index.handler"]
