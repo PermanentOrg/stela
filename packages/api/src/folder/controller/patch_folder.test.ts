@@ -225,6 +225,7 @@ describe("patch folder", () => {
 				displayTime: undefined,
 				setDisplayTimeToNull: false,
 				locationId: null,
+				setLocationIdToNull: false,
 				timezone: undefined,
 				setTimezoneToNull: false,
 			},
@@ -275,6 +276,7 @@ describe("patch folder", () => {
 				displayTime: undefined,
 				setDisplayTimeToNull: false,
 				locationId: null,
+				setLocationIdToNull: false,
 				timezone: undefined,
 				setTimezoneToNull: false,
 			},
@@ -384,6 +386,39 @@ describe("patch folder", () => {
 				name: "Jean Valjean's House",
 				city: "Marseille",
 			});
+		});
+
+		test("expect a null location to remove the folder's location and timezone", async () => {
+			await db.query(
+				"UPDATE folder SET timezone = 'Europe/Paris' WHERE folderid = 2",
+			);
+
+			await agent
+				.patch("/api/v2/folders/2")
+				.send({ location: null })
+				.expect(200);
+
+			const folderResult = await db.query(
+				`SELECT locnid AS "locationId", timezone FROM folder WHERE folderid = :folderId`,
+				{ folderId: 2 },
+			);
+			expect(folderResult.rows[0]).toEqual({
+				locationId: null,
+				timezone: null,
+			});
+		});
+
+		test("expect a folder's location to be kept when location is not sent", async () => {
+			await agent
+				.patch("/api/v2/folders/2")
+				.send({ displayDate: "2024-09-26T15:09:52.000Z" })
+				.expect(200);
+
+			const folderResult = await db.query(
+				`SELECT locnid AS "locationId" FROM folder WHERE folderid = :folderId`,
+				{ folderId: 2 },
+			);
+			expect(folderResult.rows[0]).toEqual({ locationId: "1" });
 		});
 
 		test("expect a nested location to create a new location when folder has none", async () => {

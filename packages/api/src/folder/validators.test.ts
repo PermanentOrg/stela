@@ -87,6 +87,17 @@ describe("validatePatchFolderRequest", () => {
 		}
 	});
 
+	test("should accept a null location", () => {
+		let error = null;
+		try {
+			validatePatchFolderRequest({ location: null });
+		} catch (err) {
+			error = err;
+		} finally {
+			expect(error).toBeNull();
+		}
+	});
+
 	test("should reject an empty location object", () => {
 		let error = null;
 		try {
