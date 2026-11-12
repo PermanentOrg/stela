@@ -50,8 +50,10 @@ locationInput:
   description: |
     Geographic location data for an item (folder or record). Sent without an id;
     the server creates a new location row if the item has none, or updates the
-    existing one if it does. Fields left out keep their current values; a field
-    sent as null is cleared. At least one field must be provided.
+    existing one if it does. If other items also use that location row, the
+    server updates a copy of it instead, so only this item's location changes.
+    Fields left out keep their current values; a field sent as null is cleared.
+    At least one field must be provided.
   type: object
   minProperties: 1
   additionalProperties: false

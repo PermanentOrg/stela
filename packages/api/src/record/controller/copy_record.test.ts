@@ -9,7 +9,6 @@ import {
 	vi,
 } from "vitest";
 import type { NextFunction } from "express";
-import { when } from "vitest-when";
 import createError from "http-errors";
 import { logger } from "@stela/logger";
 import { app } from "../../app.js";
@@ -183,6 +182,63 @@ describe("POST /record/{recordId}/copies", () => {
 			body: { data: record },
 		} = response as { body: { data: ArchiveRecord } };
 		expect(record.location.timezone).toEqual("Europe/Paris");
+	});
+
+	test("expect copied record to get its own copy of the original record's location", async () => {
+		const response = await agent
+			.post("/api/v2/records/10008/copies")
+			.send({ destinationFolderId: "34" })
+			.expect(200);
+		const {
+			body: { data: record },
+		} = response as { body: { data: ArchiveRecord } };
+
+		const result = await db.query<{ locationId: string }>(
+			`SELECT locnid::text AS "locationId" FROM record WHERE recordid = :recordId`,
+			{ recordId: record.recordId },
+		);
+		const copiedLocationId = result.rows[0]?.locationId;
+		expect(copiedLocationId).toBeDefined();
+		expect(copiedLocationId).not.toEqual("1");
+		expect(record.location.name).toEqual("Jean Valjean's House");
+		expect(record.location.city).toEqual("Paris");
+	});
+
+	test("expect editing a copied record's location to leave the original's location unchanged", async () => {
+		const response = await agent
+			.post("/api/v2/records/10008/copies")
+			.send({ destinationFolderId: "34" })
+			.expect(200);
+		const {
+			body: { data: record },
+		} = response as { body: { data: ArchiveRecord } };
+
+		await agent
+			.patch(`/api/v2/records/${record.recordId}`)
+			.send({ location: { city: "Lyon" } })
+			.expect(200);
+
+		const originalLocation = await db.query(
+			"SELECT city FROM locn WHERE locnid = 1",
+		);
+		expect(originalLocation.rows[0]).toEqual({ city: "Paris" });
+	});
+
+	test("expect copying a record without a location to leave the copy without one", async () => {
+		await db.query("UPDATE record SET locnid = NULL WHERE recordid = 10008");
+		const response = await agent
+			.post("/api/v2/records/10008/copies")
+			.send({ destinationFolderId: "34" })
+			.expect(200);
+		const {
+			body: { data: record },
+		} = response as { body: { data: ArchiveRecord } };
+
+		const result = await db.query(
+			`SELECT locnid AS "locationId" FROM record WHERE recordid = :recordId`,
+			{ recordId: record.recordId },
+		);
+		expect(result.rows[0]).toEqual({ locationId: null });
 	});
 
 	test("expect 403 if copying to public workspace without manager role", async () => {
@@ -493,15 +549,14 @@ describe("POST /record/{recordId}/copies", () => {
 		mockSqlCall(
 			db,
 			"record.queries.copy_record",
-			{
+			expect.objectContaining({
 				destinationArchiveId: "1",
 				destinationFolderId: "2",
 				originalRecordId: "10008",
 				callerEmail: "test@permanent.org",
 				destinationIsPublic: false,
 				callerIp: "127.0.0.1",
-				callerUserAgent: undefined,
-			},
+			}),
 			{ reject: testError },
 		);
 		await agent
@@ -515,15 +570,14 @@ describe("POST /record/{recordId}/copies", () => {
 		mockSqlCall(
 			db,
 			"record.queries.copy_record",
-			{
+			expect.objectContaining({
 				destinationArchiveId: "1",
 				destinationFolderId: "2",
 				originalRecordId: "10008",
 				callerEmail: "test@permanent.org",
 				destinationIsPublic: false,
 				callerIp: "127.0.0.1",
-				callerUserAgent: undefined,
-			},
+			}),
 			{ resolve: { rows: [] } },
 		);
 		await agent
@@ -534,32 +588,19 @@ describe("POST /record/{recordId}/copies", () => {
 	});
 
 	test("expect 500 if copy cannot be found after its creation", async () => {
-		const fakeCopiedRecordId = "99999";
-		const dbSpy = vi.spyOn(db, "sql");
-		when(dbSpy)
-			.calledWith("record.queries.copy_record", {
-				destinationArchiveId: "1",
-				destinationFolderId: "2",
-				originalRecordId: "10008",
-				callerEmail: "test@permanent.org",
-				destinationIsPublic: false,
-				callerIp: "127.0.0.1",
-				callerUserAgent: undefined,
-			})
-			.thenDo(
-				vi.fn().mockResolvedValue({ rows: [{ recordId: fakeCopiedRecordId }] }),
-			);
-		when(dbSpy)
-			.calledWith("record.queries.get_records", {
-				recordIds: [fakeCopiedRecordId],
-				archiveId: null,
-				accountEmail: "test@permanent.org",
-				shareToken: undefined,
-			})
-			.thenDo(vi.fn().mockResolvedValue({ rows: [] }));
+		const copiedRecordIds: unknown = expect.not.arrayContaining(["10008"]);
+		mockSqlCall(
+			db,
+			"record.queries.get_records",
+			expect.objectContaining({ recordIds: copiedRecordIds }),
+			{ resolve: { rows: [] } },
+		);
 		await agent
 			.post("/api/v2/records/10008/copies")
 			.send({ destinationFolderId: "2" })
 			.expect(500);
+		expect(logger.error).toHaveBeenCalledWith(
+			expect.stringContaining("Cannot find newly created record copy"),
+		);
 	});
 });
