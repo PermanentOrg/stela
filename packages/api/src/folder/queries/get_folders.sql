@@ -187,7 +187,8 @@ account_by_archive AS (
       account.accountid = account_archive.accountid
       AND account_archive.status = 'status.generic.ok'
   WHERE
-    account.primaryemail = :email
+    LOWER(account.primaryemail) = LOWER(:email)
+    AND account.status = 'status.auth.ok'
 ),
 
 account_by_share AS (
@@ -206,7 +207,8 @@ account_by_share AS (
     ON
       account_archive.archiveid = access.archiveid
   WHERE
-    account.primaryemail = :email
+    LOWER(account.primaryemail) = LOWER(:email)
+    AND account.status = 'status.auth.ok'
     AND access.status = 'status.generic.ok'
     AND account_archive.status = 'status.generic.ok'
 ),
@@ -243,7 +245,8 @@ all_folders AS (
           INNER JOIN account
             ON
               account_archive.accountid = account.accountid
-              AND account.primaryemail = :email
+              AND LOWER(account.primaryemail) = LOWER(:email)
+              AND account.status = 'status.auth.ok'
           WHERE
             account_archive.archiveid = folder.archiveid
             AND account_archive.status = 'status.generic.ok'
@@ -335,7 +338,7 @@ all_folders AS (
       WHERE
         :email IS NOT NULL
         AND account_archive.archiveid = folder.archiveid
-        AND account.primaryemail = :email
+        AND LOWER(account.primaryemail) = LOWER(:email)
         AND account_archive.status = 'status.generic.ok'
         AND account.status = 'status.auth.ok'
       ORDER BY account_archive.account_archiveid
@@ -364,7 +367,7 @@ all_folders AS (
       INNER JOIN account
         ON
           account_archive.accountid = account.accountid
-          AND account.primaryemail = :email
+          AND LOWER(account.primaryemail) = LOWER(:email)
           AND account.status = 'status.auth.ok'
       WHERE
         access.status = 'status.generic.ok'
@@ -439,7 +442,7 @@ all_folders AS (
         AND folder.publicdt <= NOW()
       )
       OR (
-        account_by_archive.primaryemail = :email
+        LOWER(account_by_archive.primaryemail) = LOWER(:email)
         AND account_by_archive.primaryemail IS NOT NULL
       )
       OR (
@@ -449,7 +452,7 @@ all_folders AS (
         )
       )
       OR (
-        account_by_share.primaryemail = :email
+        LOWER(account_by_share.primaryemail) = LOWER(:email)
         AND account_by_share.primaryemail IS NOT NULL
       )
     )
