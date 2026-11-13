@@ -236,6 +236,17 @@ resource "kubernetes_deployment" "stela_dev" {
           }
 
           env {
+            name = "MIXPANEL_TOKEN"
+            value_from {
+              secret_key_ref {
+                name     = "dev-secrets"
+                key      = "MIXPANEL_TOKEN"
+                optional = false
+              }
+            }
+          }
+
+          env {
             name = "NEW_RELIC_LICENSE_KEY"
             value_from {
               secret_key_ref {

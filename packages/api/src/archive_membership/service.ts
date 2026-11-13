@@ -14,7 +14,7 @@ import type {
 	UpdateArchiveMembershipRequest,
 } from "./models.js";
 import type { Caller } from "../models.js";
-import { createEventInTransaction } from "../event/service.js";
+import { transactionWithEvents } from "../event/service.js";
 
 interface PermissionsDataRow {
 	archiveId: string;
@@ -93,7 +93,7 @@ const updateArchiveMembership = async (
 			: archiveMembershipRoleToAccessRole(requestData.accessRole);
 	const dbStatus = requestData.status === "ok" ? "status.generic.ok" : null;
 
-	await db.transaction(async (transactionDb) => {
+	await transactionWithEvents(async (transactionDb, recordEvent) => {
 		const updateResult = await transactionDb
 			.sql<{
 				id: string;
@@ -112,23 +112,20 @@ const updateArchiveMembership = async (
 			throw new createError.NotFound("Archive membership not found");
 		}
 
-		await createEventInTransaction(
-			{
-				userSubjectFromAuthToken: caller.subject,
-				userEmailFromAuthToken: caller.email,
-				entity: "archive_membership",
-				action: "update",
-				version: 1,
-				entityId: id,
-				ip: caller.ip,
-				userAgent: caller.userAgent,
-				body: {
-					newAccessRole: requestData.accessRole,
-					newStatus: requestData.status,
-				},
+		await recordEvent({
+			userSubjectFromAuthToken: caller.subject,
+			userEmailFromAuthToken: caller.email,
+			entity: "archive_membership",
+			action: "update",
+			version: 1,
+			entityId: id,
+			ip: caller.ip,
+			userAgent: caller.userAgent,
+			body: {
+				newAccessRole: requestData.accessRole,
+				newStatus: requestData.status,
 			},
-			transactionDb,
-		);
+		});
 	});
 
 	const updatedResult = await db
@@ -204,7 +201,7 @@ const deleteArchiveMembership = async (
 ): Promise<void> => {
 	await validateDeleteArchiveMembershipPermissions(id, caller.email);
 
-	await db.transaction(async (transactionDb) => {
+	await transactionWithEvents(async (transactionDb, recordEvent) => {
 		const deleteResult = await transactionDb
 			.sql<DeletedArchiveMembershipRow>(
 				"archive_membership.queries.delete_archive_membership",
@@ -225,22 +222,19 @@ const deleteArchiveMembership = async (
 			rows: [deletedArchiveMembership],
 		} = deleteResult;
 
-		await createEventInTransaction(
-			{
-				userSubjectFromAuthToken: caller.subject,
-				userEmailFromAuthToken: caller.email,
-				entity: "archive_membership",
-				action: "delete",
-				version: 1,
-				entityId: id,
-				ip: caller.ip,
-				userAgent: caller.userAgent,
-				body: {
-					deletedArchiveMembership,
-				},
+		await recordEvent({
+			userSubjectFromAuthToken: caller.subject,
+			userEmailFromAuthToken: caller.email,
+			entity: "archive_membership",
+			action: "delete",
+			version: 1,
+			entityId: id,
+			ip: caller.ip,
+			userAgent: caller.userAgent,
+			body: {
+				deletedArchiveMembership,
 			},
-			transactionDb,
-		);
+		});
 	});
 };
 

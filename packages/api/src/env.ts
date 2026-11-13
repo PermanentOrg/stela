@@ -23,5 +23,6 @@ requireEnv("CLOUDFRONT_KEY_PAIR_ID");
 requireEnv("CLOUDFRONT_PRIVATE_KEY");
 requireEnv("LOW_PRIORITY_TOPIC_ARN");
 requireEnv("EVENT_TOPIC_ARN");
+requireEnv("MIXPANEL_TOKEN");
 requireEnv("SITE_URL");
 requireEnv("STRIPE_SECRET_KEY");

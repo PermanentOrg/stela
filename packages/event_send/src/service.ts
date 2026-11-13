@@ -1,58 +1,15 @@
 import { logger } from "@stela/logger";
-import { UAParser } from "ua-parser-js";
 import { publisherClient } from "@stela/publisher-utils";
+import {
+	type EventRow,
+	toEventMessage,
+	trackMixpanelEvent,
+} from "@stela/event_utils";
 import { mixpanelClient } from "./mixpanel.js";
 import { db } from "./database.js";
 
 const EVENT_BATCH_SIZE = 100;
 const MAX_SEND_ATTEMPTS = 3;
-
-interface Analytics {
-	event: string;
-	distinctId: string;
-	data: Record<string, unknown>;
-}
-
-interface EventBody {
-	analytics?: Analytics;
-	[key: string]: unknown;
-}
-
-interface EventRow {
-	id: string;
-	entity: string;
-	action: string;
-	version: number;
-	actorType: string;
-	actorId: string;
-	entityId: string;
-	ip: string | null;
-	userAgent: string | null;
-	body: EventBody;
-}
-
-const trackMixpanelEvent = (event: EventRow): void => {
-	const {
-		body: { analytics },
-	} = event;
-	if (analytics === undefined) {
-		return;
-	}
-	try {
-		const { browser, os, device } = UAParser(event.userAgent ?? undefined);
-		const analyticsData: { [key: string]: unknown; distinct_id?: string } = {
-			...analytics.data,
-			distinct_id: analytics.distinctId,
-		};
-		({ name: analyticsData["$browser"] } = browser);
-		({ name: analyticsData["$os"] } = os);
-		({ type: analyticsData["$device"] } = device);
-		({ ip: analyticsData["ip"] } = event);
-		mixpanelClient.track(analytics.event, analyticsData);
-	} catch (err: unknown) {
-		logger.error(err);
-	}
-};
 
 const recordSendAttempts = async (
 	allEventIds: string[],
@@ -88,25 +45,10 @@ const sendEventBatch = async (
 		return { fetchedCount: 0, failedEventIds: [] };
 	}
 
-	const messages = events.rows.map((event) => ({
-		id: event.id,
-		body: JSON.stringify({
-			id: event.id,
-			entity: event.entity,
-			action: event.action,
-			version: event.version,
-			actorType: event.actorType,
-			actorId: event.actorId,
-			entityId: event.entityId,
-			ip: event.ip,
-			userAgent: event.userAgent,
-			body: event.body,
-		}),
-		attributes: { Entity: event.entity, Action: event.action },
-	}));
+	const messages = events.rows.map(toEventMessage);
 
 	for (const event of events.rows) {
-		trackMixpanelEvent(event);
+		trackMixpanelEvent(event, mixpanelClient);
 	}
 
 	const eventIds = events.rows.map((event) => event.id);

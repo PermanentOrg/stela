@@ -24,7 +24,9 @@
 		"build": "rm -rf dist/* && tsc -p tsconfig.build.json"
 	},
 	"dependencies": {
-		"ajv": "^8.18.0"
+		"@stela/logger": "^1.0.0",
+		"ajv": "^8.18.0",
+		"ua-parser-js": "^2.0.10"
 	},
 	"type": "module"
 }
