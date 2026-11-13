@@ -6,7 +6,7 @@ import { createFeatureService } from "./service/create.js";
 import { updateFeatureService } from "./service/update.js";
 import { deleteFeatureService } from "./service/delete.js";
 import {
-	extractUserIsAdminFromAuthToken,
+	extractUserOrAdminFromAuthToken,
 	verifyAdminAuthentication,
 } from "../middleware/index.js";
 import {
@@ -21,7 +21,7 @@ export const featureController = Router();
 
 featureController.get(
 	"/",
-	extractUserIsAdminFromAuthToken,
+	extractUserOrAdminFromAuthToken,
 	async (req: Request, res: Response, next: NextFunction): Promise<void> => {
 		try {
 			const featureFlags = await featureService.getFeatureFlags(

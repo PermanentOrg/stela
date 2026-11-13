@@ -5,10 +5,7 @@ import { app } from "../../app.js";
 import { db } from "../../database.js";
 import { ArchiveMembershipRole, type Archive } from "../models.js";
 import { runFixtures } from "../../../test/run_fixtures.js";
-import {
-	mockExtractUserIsAdminFromAuthToken,
-	mockExtractUserEmailFromAuthToken,
-} from "../../../test/middleware_mocks.js";
+import { mockExtractUserOrAdminFromAuthToken } from "../../../test/middleware_mocks.js";
 
 vi.mock("../../database");
 vi.mock("@stela/logger");
@@ -44,8 +41,7 @@ describe("searchArchives", () => {
 	});
 
 	test("should search archives without authentication and return only public archives", async () => {
-		mockExtractUserIsAdminFromAuthToken(false);
-		mockExtractUserEmailFromAuthToken(undefined);
+		mockExtractUserOrAdminFromAuthToken();
 		const result = await agent
 			.get("/api/v2/archive?searchQuery=Rando&pageSize=1")
 			.expect(200);
@@ -96,8 +92,7 @@ describe("searchArchives", () => {
 	});
 
 	test("should not return deleted archives", async () => {
-		mockExtractUserIsAdminFromAuthToken(false);
-		mockExtractUserEmailFromAuthToken(undefined);
+		mockExtractUserOrAdminFromAuthToken();
 		const result = await agent
 			.get("/api/v2/archive?searchQuery=Janet&pageSize=10")
 			.expect(200);
@@ -109,8 +104,10 @@ describe("searchArchives", () => {
 	});
 
 	test("should return owner information for admin-authenticated requests", async () => {
-		mockExtractUserIsAdminFromAuthToken(true);
-		mockExtractUserEmailFromAuthToken(undefined);
+		mockExtractUserOrAdminFromAuthToken({
+			kind: "admin",
+			email: "admin@permanent.org",
+		});
 
 		const result = await agent
 			.get("/api/v2/archive?searchQuery=Jay&pageSize=10")
@@ -126,8 +123,10 @@ describe("searchArchives", () => {
 	});
 
 	test("should return callers private archives if caller is authenticated non-admin", async () => {
-		mockExtractUserIsAdminFromAuthToken(false);
-		mockExtractUserEmailFromAuthToken("test@permanent.org");
+		mockExtractUserOrAdminFromAuthToken({
+			kind: "user",
+			email: "test@permanent.org",
+		});
 
 		const result = await agent
 			.get("/api/v2/archive?searchQuery=Rando&pageSize=10")
@@ -141,8 +140,10 @@ describe("searchArchives", () => {
 	});
 
 	test("should not return callers private archives if caller is authenticated admin", async () => {
-		mockExtractUserIsAdminFromAuthToken(true);
-		mockExtractUserEmailFromAuthToken(undefined);
+		mockExtractUserOrAdminFromAuthToken({
+			kind: "admin",
+			email: "admin@permanent.org",
+		});
 
 		const result = await agent
 			.get("/api/v2/archive?searchQuery=Rando&pageSize=10")
@@ -156,8 +157,7 @@ describe("searchArchives", () => {
 	});
 
 	test("should populate archive description when present", async () => {
-		mockExtractUserIsAdminFromAuthToken(false);
-		mockExtractUserEmailFromAuthToken(undefined);
+		mockExtractUserOrAdminFromAuthToken();
 
 		const result = await agent
 			.get("/api/v2/archive?searchQuery=Jay&pageSize=10")
@@ -175,14 +175,12 @@ describe("searchArchives", () => {
 	});
 
 	test("should return 400 if neither searchQuery nor callerMembershipRole is provided", async () => {
-		mockExtractUserIsAdminFromAuthToken(false);
-		mockExtractUserEmailFromAuthToken(undefined);
+		mockExtractUserOrAdminFromAuthToken();
 		await agent.get("/api/v2/archive?pageSize=10").expect(400);
 	});
 
 	test("should throw InternalServerError if database query fails", async () => {
-		mockExtractUserIsAdminFromAuthToken(false);
-		mockExtractUserEmailFromAuthToken(undefined);
+		mockExtractUserOrAdminFromAuthToken();
 		const testError = new Error("error: out of cheese - redo from start");
 		vi.spyOn(db, "sql").mockRejectedValueOnce(testError);
 		await agent.get("/api/v2/archive?searchQuery=test&pageSize=10").expect(500);
@@ -190,8 +188,10 @@ describe("searchArchives", () => {
 	});
 
 	test("should filter by single callerMembershipRole and return archives with that role", async () => {
-		mockExtractUserIsAdminFromAuthToken(false);
-		mockExtractUserEmailFromAuthToken("test@permanent.org");
+		mockExtractUserOrAdminFromAuthToken({
+			kind: "user",
+			email: "test@permanent.org",
+		});
 
 		const result = await agent
 			.get(
@@ -213,8 +213,10 @@ describe("searchArchives", () => {
 	});
 
 	test("should filter by multiple callerMembershipRole values with OR logic", async () => {
-		mockExtractUserIsAdminFromAuthToken(false);
-		mockExtractUserEmailFromAuthToken("test+1@permanent.org");
+		mockExtractUserOrAdminFromAuthToken({
+			kind: "user",
+			email: "test+1@permanent.org",
+		});
 
 		const result = await agent
 			.get(
@@ -232,8 +234,7 @@ describe("searchArchives", () => {
 	});
 
 	test("should return 401 if callerMembershipRole is provided without authentication", async () => {
-		mockExtractUserIsAdminFromAuthToken(false);
-		mockExtractUserEmailFromAuthToken(undefined);
+		mockExtractUserOrAdminFromAuthToken();
 
 		const result = await agent
 			.get(
@@ -247,8 +248,10 @@ describe("searchArchives", () => {
 	});
 
 	test("should return 400 for invalid callerMembershipRole value", async () => {
-		mockExtractUserIsAdminFromAuthToken(false);
-		mockExtractUserEmailFromAuthToken("test@permanent.org");
+		mockExtractUserOrAdminFromAuthToken({
+			kind: "user",
+			email: "test@permanent.org",
+		});
 
 		await agent
 			.get("/api/v2/archive?callerMembershipRole=invalid_role&pageSize=10")
@@ -257,8 +260,10 @@ describe("searchArchives", () => {
 	});
 
 	test("should filter by both searchQuery and callerMembershipRole", async () => {
-		mockExtractUserIsAdminFromAuthToken(false);
-		mockExtractUserEmailFromAuthToken("test@permanent.org");
+		mockExtractUserOrAdminFromAuthToken({
+			kind: "user",
+			email: "test@permanent.org",
+		});
 
 		const result = await agent
 			.get(
@@ -276,8 +281,10 @@ describe("searchArchives", () => {
 	});
 
 	test("should not include callerMembershipRole in response when not filtering by callerMembershipRole", async () => {
-		mockExtractUserIsAdminFromAuthToken(false);
-		mockExtractUserEmailFromAuthToken("test@permanent.org");
+		mockExtractUserOrAdminFromAuthToken({
+			kind: "user",
+			email: "test@permanent.org",
+		});
 
 		const result = await agent
 			.get("/api/v2/archive?searchQuery=Jack&pageSize=10")

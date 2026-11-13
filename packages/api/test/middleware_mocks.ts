@@ -7,7 +7,7 @@ import {
 	verifyAdminAuthentication,
 	verifyUserOrAdminOrDelegatedCallAuthentication,
 	extractIp,
-	extractUserIsAdminFromAuthToken,
+	extractUserOrAdminFromAuthToken,
 } from "../src/middleware/index.js";
 import type * as authentication from "../src/middleware/authentication.js";
 
@@ -82,11 +82,14 @@ export const mockVerifyAdminAuthentication = (
 	);
 };
 
-export const mockExtractUserIsAdminFromAuthToken = (isAdmin: boolean): void => {
-	vi.mocked(extractUserIsAdminFromAuthToken).mockImplementation(
+export const mockExtractUserOrAdminFromAuthToken = (auth?: {
+	kind: "user" | "admin";
+	email: string;
+}): void => {
+	vi.mocked(extractUserOrAdminFromAuthToken).mockImplementation(
 		async (req: Request<unknown, unknown, unknown>, __, next: NextFunction) => {
-			if (isAdmin) {
-				setAuth(req, { kind: "admin", email: "admin@permanent.org" });
+			if (auth !== undefined) {
+				setAuth(req, auth);
 			}
 			next();
 		},

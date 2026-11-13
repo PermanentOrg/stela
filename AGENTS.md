@@ -330,8 +330,8 @@ Key patterns:
 - `verifyUserAuthentication` — validates auth token, sets `req.metadata.auth` to `{ kind: "user", email, subject }`
 - `verifyAdminAuthentication` — validates admin auth token, sets `req.metadata.auth` to `{ kind: "admin", email, subject }`
 - `verifyUserOrAdminAuthentication` / `verifyUserOrAdminOrDelegatedCallAuthentication` — accept either kind of token (or a delegated call secret)
-- `extractUserEmailFromAuthToken` — optional auth extraction (doesn't reject if missing); sets `req.metadata.auth.email` and `req.metadata.auth.kind` to `user` when a valid token is present
-- `extractUserIsAdminFromAuthToken` — sets `req.metadata.auth.kind` to `"admin"` and sets `req.metadata.auth.email` when a valid admin token is present
+- `extractUserEmailFromAuthToken` — optional user auth: no token passes through; a valid user token sets `req.metadata.auth` to `{ kind: "user", email }`; any other token is rejected with 401
+- `extractUserOrAdminFromAuthToken` — optional user-or-admin auth: no token passes through; a valid user or admin token sets `req.metadata.auth` to `{ kind, email }`; any other token is rejected with 401
 - `extractShareTokenFromHeaders` — sets `req.metadata.auth.shareToken` from the `X-Permanent-Share-Token` header
 - `extractIp` — sets `req.metadata.clientIp`
 

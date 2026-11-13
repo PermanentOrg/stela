@@ -6,7 +6,7 @@ import {
 	verifyAdminAuthentication,
 	verifyUserOrAdminAuthentication,
 	verifyUserOrAdminOrDelegatedCallAuthentication,
-	extractUserIsAdminFromAuthToken,
+	extractUserOrAdminFromAuthToken,
 	extractShareTokenFromHeaders,
 } from "./authentication.js";
 import { fusionAuthClient } from "../fusionauth.js";
@@ -570,33 +570,39 @@ describe("extractUserEmailFromAuthToken", () => {
 		expect(request.metadata?.auth?.email).toBeUndefined();
 	});
 
-	test("Request metadata has undefined email if auth token is invalid", async () => {
+	test("returns 401 and sets no email if auth token is invalid", async () => {
 		const request = createRequest({
 			headers: { Authorization: "Bearer test" },
 		});
 		vi.spyOn(fusionAuthClient, "introspectAccessToken").mockImplementation(
 			async () => failedIntrospectionResponse,
 		);
-		await extractUserEmailFromAuthToken(request, createResponse(), vi.fn());
+		const next = vi.fn();
+		await extractUserEmailFromAuthToken(request, createResponse(), next);
 		const auth = request.metadata?.auth;
-		expect(request.body).toEqual({});
 		expect(auth?.email).toBeUndefined();
+		expect(next).toHaveBeenCalledWith(
+			expect.objectContaining({ statusCode: 401 }),
+		);
 	});
 
-	test("Request metadata has undefined email if auth token is expired", async () => {
+	test("returns 401 and sets no email if auth token is expired", async () => {
 		const request = createRequest({
 			headers: { Authorization: "Bearer test" },
 		});
 		vi.spyOn(fusionAuthClient, "introspectAccessToken").mockImplementation(
 			async () => expiredTokenIntrospectionResponse,
 		);
-		await extractUserEmailFromAuthToken(request, createResponse(), vi.fn());
+		const next = vi.fn();
+		await extractUserEmailFromAuthToken(request, createResponse(), next);
 		const auth = request.metadata?.auth;
-		expect(request.body).toEqual({});
 		expect(auth?.email).toBeUndefined();
+		expect(next).toHaveBeenCalledWith(
+			expect.objectContaining({ statusCode: 401 }),
+		);
 	});
 
-	test("Request metadata has undefined email if all introspect calls throw errors", async () => {
+	test("returns 401 and sets no email if all introspect calls throw errors", async () => {
 		const request = createRequest({
 			headers: { Authorization: "Bearer test" },
 		});
@@ -605,10 +611,13 @@ describe("extractUserEmailFromAuthToken", () => {
 				throw new Error("unauthenticated");
 			},
 		);
-		await extractUserEmailFromAuthToken(request, createResponse(), vi.fn());
+		const next = vi.fn();
+		await extractUserEmailFromAuthToken(request, createResponse(), next);
 		const auth = request.metadata?.auth;
-		expect(request.body).toEqual({});
 		expect(auth?.email).toBeUndefined();
+		expect(next).toHaveBeenCalledWith(
+			expect.objectContaining({ statusCode: 401 }),
+		);
 	});
 
 	test("Request metadata will have email if the first auth token is invalid but the second one is valid", async () => {
@@ -683,41 +692,92 @@ describe("extractUserEmailFromAuthToken", () => {
 		await extractUserEmailFromAuthToken(request, createResponse(), next);
 		expect(next).toHaveBeenCalledWith(testError);
 	});
+
+	test("returns 401 if the token is only valid for the admin application", async () => {
+		const request = createRequest({
+			headers: { Authorization: "Bearer test" },
+		});
+		vi.spyOn(fusionAuthClient, "introspectAccessToken")
+			.mockImplementationOnce(async () => failedIntrospectionResponse)
+			.mockImplementationOnce(async () => failedIntrospectionResponse)
+			.mockImplementationOnce(async () => successfulIntrospectionResponse);
+		const next = vi.fn();
+		await extractUserEmailFromAuthToken(request, createResponse(), next);
+		expect(request.metadata?.auth?.email).toBeUndefined();
+		expect(next).toHaveBeenCalledWith(
+			expect.objectContaining({ statusCode: 401 }),
+		);
+	});
 });
 
-describe("extractUserIsAdminFromAuthToken", () => {
-	test("is admin will be true if there is an valid auth token", async () => {
+describe("extractUserOrAdminFromAuthToken", () => {
+	test("sets user auth if the token is valid for a user application", async () => {
 		const request = createRequest({
 			headers: { Authorization: "Bearer test" },
 		});
 		vi.spyOn(fusionAuthClient, "introspectAccessToken").mockImplementationOnce(
 			async () => successfulIntrospectionResponse,
 		);
-		await extractUserIsAdminFromAuthToken(request, createResponse(), vi.fn());
-		const auth = request.metadata?.auth;
-		expect(request.body).toEqual({});
-		expect(auth?.kind).toBe("admin");
+		const next = vi.fn();
+		await extractUserOrAdminFromAuthToken(request, createResponse(), next);
+		expect(request.metadata?.auth?.kind).toBe("user");
+		expect(request.metadata?.auth?.email).toBe(testEmail);
+		expect(next).toHaveBeenCalledWith();
 	});
 
-	test("is admin will be false if there is no auth token", async () => {
-		const request = createRequest({ headers: { Authorization: "" } });
-		await extractUserIsAdminFromAuthToken(request, createResponse(), vi.fn());
-		const auth = request.metadata?.auth;
-		expect(request.body).toEqual({});
-		expect(auth?.kind).not.toBe("admin");
-	});
-
-	test("is admin will be false if there is an invalid auth token", async () => {
+	test("sets admin auth if the token is only valid for the admin application", async () => {
 		const request = createRequest({
 			headers: { Authorization: "Bearer test" },
 		});
-		vi.spyOn(fusionAuthClient, "introspectAccessToken").mockImplementationOnce(
+		vi.spyOn(fusionAuthClient, "introspectAccessToken")
+			.mockImplementationOnce(async () => failedIntrospectionResponse)
+			.mockImplementationOnce(async () => failedIntrospectionResponse)
+			.mockImplementationOnce(async () => successfulIntrospectionResponse);
+		const next = vi.fn();
+		await extractUserOrAdminFromAuthToken(request, createResponse(), next);
+		expect(request.metadata?.auth?.kind).toBe("admin");
+		expect(request.metadata?.auth?.email).toBe(testEmail);
+		expect(next).toHaveBeenCalledWith();
+	});
+
+	test("sets no auth if there is no auth token", async () => {
+		const request = createRequest({ headers: { Authorization: "" } });
+		const next = vi.fn();
+		await extractUserOrAdminFromAuthToken(request, createResponse(), next);
+		expect(request.metadata?.auth?.kind).toBeUndefined();
+		expect(next).toHaveBeenCalledWith();
+	});
+
+	test("returns 401 if the token is not valid for any application", async () => {
+		const request = createRequest({
+			headers: { Authorization: "Bearer test" },
+		});
+		vi.spyOn(fusionAuthClient, "introspectAccessToken").mockImplementation(
 			async () => failedIntrospectionResponse,
 		);
-		await extractUserIsAdminFromAuthToken(request, createResponse(), vi.fn());
-		const auth = request.metadata?.auth;
-		expect(request.body).toEqual({});
-		expect(auth?.kind).not.toBe("admin");
+		const next = vi.fn();
+		await extractUserOrAdminFromAuthToken(request, createResponse(), next);
+		expect(request.metadata?.auth?.kind).toBeUndefined();
+		expect(next).toHaveBeenCalledWith(
+			expect.objectContaining({ statusCode: 401 }),
+		);
+	});
+
+	test("will throw a 429 if it recieves one from an introspect call", async () => {
+		const request = createRequest({
+			headers: { Authorization: "Bearer test" },
+		});
+		const testError = Object.assign(new Error("Rate Limit Exceeded"), {
+			statusCode: 429,
+		});
+		vi.spyOn(fusionAuthClient, "introspectAccessToken").mockImplementation(
+			async () => {
+				throw testError;
+			},
+		);
+		const next = vi.fn();
+		await extractUserOrAdminFromAuthToken(request, createResponse(), next);
+		expect(next).toHaveBeenCalledWith(testError);
 	});
 });
 

@@ -40,6 +40,8 @@ feature-flags:
                         format: date-time
       "400":
         $ref: "../errors.yaml#/400"
+      "401":
+        $ref: "../errors.yaml#/401"
       "500":
         $ref: "../errors.yaml#/500"
   post:
