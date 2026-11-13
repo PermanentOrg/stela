@@ -14,12 +14,12 @@ import createError from "http-errors";
 import { db } from "../database.js";
 import { app } from "../app.js";
 import {
-	extractUserIsAdminFromAuthToken,
+	extractUserOrAdminFromAuthToken,
 	verifyAdminAuthentication,
 } from "../middleware/index.js";
 import {
 	mockVerifyAdminAuthentication,
-	mockExtractUserIsAdminFromAuthToken,
+	mockExtractUserOrAdminFromAuthToken,
 } from "../../test/middleware_mocks.js";
 
 vi.mock("../database");
@@ -45,7 +45,7 @@ describe("GET /feature-flags", () => {
 	beforeEach(async () => {
 		await clearDatabase();
 		await loadFixtures();
-		mockExtractUserIsAdminFromAuthToken(false);
+		mockExtractUserOrAdminFromAuthToken();
 	});
 
 	afterEach(async () => {
@@ -65,7 +65,10 @@ describe("GET /feature-flags", () => {
 	});
 
 	test("should log the error if the database call fails when calling user is admin", async () => {
-		mockExtractUserIsAdminFromAuthToken(true);
+		mockExtractUserOrAdminFromAuthToken({
+			kind: "admin",
+			email: "admin@permanent.org",
+		});
 		const testError = new Error("SQL error");
 		vi.spyOn(db, "sql").mockRejectedValueOnce(testError);
 
@@ -74,7 +77,7 @@ describe("GET /feature-flags", () => {
 	});
 
 	test("should not treat the caller as an admin based on the request body", async () => {
-		vi.mocked(extractUserIsAdminFromAuthToken).mockImplementation(
+		vi.mocked(extractUserOrAdminFromAuthToken).mockImplementation(
 			async (_, __, next: NextFunction) => {
 				next();
 			},
@@ -95,7 +98,10 @@ describe("GET /feature-flags", () => {
 	});
 
 	test("should return list of all feature flags if user is admin", async () => {
-		mockExtractUserIsAdminFromAuthToken(true);
+		mockExtractUserOrAdminFromAuthToken({
+			kind: "admin",
+			email: "admin@permanent.org",
+		});
 
 		const expected = {
 			items: [

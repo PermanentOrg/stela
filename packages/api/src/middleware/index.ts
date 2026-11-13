@@ -4,7 +4,7 @@ export {
 	verifyUserOrAdminAuthentication,
 	verifyUserOrAdminOrDelegatedCallAuthentication,
 	extractUserEmailFromAuthToken,
-	extractUserIsAdminFromAuthToken,
+	extractUserOrAdminFromAuthToken,
 	extractShareTokenFromHeaders,
 } from "./authentication.js";
 export { extractIp } from "./extract_ip.js";

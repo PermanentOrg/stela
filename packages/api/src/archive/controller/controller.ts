@@ -4,8 +4,7 @@ import { HTTP_STATUS } from "@pdc/http-status-codes";
 import {
 	verifyUserAuthentication,
 	verifyAdminAuthentication,
-	extractUserIsAdminFromAuthToken,
-	extractUserEmailFromAuthToken,
+	extractUserOrAdminFromAuthToken,
 	extractIp,
 } from "../../middleware/index.js";
 import {
@@ -56,8 +55,7 @@ archiveController.post(
 
 archiveController.get(
 	"/",
-	extractUserIsAdminFromAuthToken,
-	extractUserEmailFromAuthToken,
+	extractUserOrAdminFromAuthToken,
 	async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			validateSearchQuery(req.query);

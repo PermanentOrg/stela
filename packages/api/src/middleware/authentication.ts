@@ -218,6 +218,21 @@ const verifyUserOrAdminAuthentication = async (
 	}
 };
 
+const getOptionalUserEmailFromAuthToken = async (
+	authenticationToken: string,
+): Promise<string> =>
+	await getOptionalValueFromAuthToken(authenticationToken, emailKey, [
+		process.env["FUSIONAUTH_BACKEND_APPLICATION_ID"] ?? "",
+		process.env["FUSIONAUTH_SFTP_APPLICATION_ID"] ?? "",
+	]);
+
+const getOptionalAdminEmailFromAuthToken = async (
+	authenticationToken: string,
+): Promise<string> =>
+	await getOptionalValueFromAuthToken(authenticationToken, emailKey, [
+		process.env["FUSIONAUTH_ADMIN_APPLICATION_ID"] ?? "",
+	]);
+
 const extractUserEmailFromAuthToken = async (
 	req: Request<unknown, unknown, unknown>,
 	_: Response,
@@ -226,17 +241,12 @@ const extractUserEmailFromAuthToken = async (
 	try {
 		const authenticationToken = getAuthTokenFromRequest(req);
 		if (authenticationToken !== "") {
-			const email = await getOptionalValueFromAuthToken(
-				authenticationToken,
-				emailKey,
-				[
-					process.env["FUSIONAUTH_BACKEND_APPLICATION_ID"] ?? "",
-					process.env["FUSIONAUTH_SFTP_APPLICATION_ID"] ?? "",
-				],
-			);
-			if (email !== "") {
-				setAuth(req, { kind: "user", email });
+			const email =
+				await getOptionalUserEmailFromAuthToken(authenticationToken);
+			if (email === "") {
+				throw new createError.Unauthorized("Invalid token");
 			}
+			setAuth(req, { kind: "user", email });
 		}
 		next();
 	} catch (err) {
@@ -244,7 +254,7 @@ const extractUserEmailFromAuthToken = async (
 	}
 };
 
-const extractUserIsAdminFromAuthToken = async (
+const extractUserOrAdminFromAuthToken = async (
 	req: Request<unknown, unknown, unknown>,
 	_: Response,
 	next: NextFunction,
@@ -252,13 +262,17 @@ const extractUserIsAdminFromAuthToken = async (
 	try {
 		const authenticationToken = getAuthTokenFromRequest(req);
 		if (authenticationToken !== "") {
-			const email = await getOptionalValueFromAuthToken(
-				authenticationToken,
-				emailKey,
-				[process.env["FUSIONAUTH_ADMIN_APPLICATION_ID"] ?? ""],
-			);
-			if (email !== "") {
-				setAuth(req, { kind: "admin", email });
+			const userEmail =
+				await getOptionalUserEmailFromAuthToken(authenticationToken);
+			if (userEmail === "") {
+				const adminEmail =
+					await getOptionalAdminEmailFromAuthToken(authenticationToken);
+				if (adminEmail === "") {
+					throw new createError.Unauthorized("Invalid token");
+				}
+				setAuth(req, { kind: "admin", email: adminEmail });
+			} else {
+				setAuth(req, { kind: "user", email: userEmail });
 			}
 		}
 		next();
@@ -308,6 +322,6 @@ export {
 	verifyUserOrAdminAuthentication,
 	verifyUserOrAdminOrDelegatedCallAuthentication,
 	extractUserEmailFromAuthToken,
-	extractUserIsAdminFromAuthToken,
+	extractUserOrAdminFromAuthToken,
 	extractShareTokenFromHeaders,
 };
