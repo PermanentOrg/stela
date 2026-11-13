@@ -51,3 +51,4 @@ const recordSubmitEventSchema: JSONSchemaType<RecordSubmitEvent> = {
 };
 
 export const validateRecordSubmitEvent = ajv.compile(recordSubmitEventSchema);
+export * from "./send.js";

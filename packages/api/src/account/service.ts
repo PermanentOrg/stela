@@ -7,7 +7,7 @@ import { logger } from "@stela/logger";
 import { db } from "../database.js";
 import { MailchimpMarketing } from "../mailchimp.js";
 import { ACCESS_ROLE, EVENT_ACTION, EVENT_ENTITY, GB } from "../constants.js";
-import { createEvent } from "../event/service.js";
+import { transactionWithEvents } from "../event/service.js";
 import type { CreateEventRequest } from "../event/models.js";
 
 import type {
@@ -198,7 +198,7 @@ const leaveArchive = async (
 ): Promise<{
 	accountArchiveId: string;
 }> =>
-	await db.transaction(async (transactionDb) => {
+	await transactionWithEvents(async (transactionDb, recordEvent) => {
 		const accountArchiveResult =
 			await transactionDb.sql<GetAccountArchiveResult>(
 				"account.queries.get_account_archive",
@@ -252,7 +252,7 @@ const leaveArchive = async (
 			userSubjectFromAuthToken: caller.subject,
 		};
 
-		await createEvent(eventData);
+		await recordEvent(eventData);
 
 		return deleteResult.rows[0];
 	});

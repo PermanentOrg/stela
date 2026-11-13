@@ -5,7 +5,6 @@ import { when } from "vitest-when";
 import { db } from "../../database.js";
 import { EVENT_ACTION, EVENT_ACTOR, EVENT_ENTITY } from "../../constants.js";
 import { app } from "../../app.js";
-import { createEvent } from "../../event/service.js";
 import { runFixtures } from "../../../test/run_fixtures.js";
 import {
 	mockVerifyUserAuthentication,
@@ -14,7 +13,8 @@ import {
 
 vi.mock("../../database");
 vi.mock("../../middleware");
-vi.mock("../../event/service");
+vi.mock("@stela/publisher-utils");
+vi.mock("../../mixpanel");
 
 const loadFixtures = async (): Promise<void> => {
 	await runFixtures(db, [
@@ -89,7 +89,8 @@ describe("leaveArchive", () => {
 
 		await agent.delete("/api/v2/accounts/archive/1").expect(204);
 
-		expect(createEvent).toHaveBeenCalled();
+		const eventsAfterLeave = await db.query(selectEventRow);
+		expect(eventsAfterLeave.rows.length).toBe(1);
 	});
 
 	test("should return a bad request error if the request is invalid", async () => {

@@ -10,14 +10,18 @@ import {
 } from "vitest";
 import type { NextFunction } from "express";
 import createError from "http-errors";
+import { publisherClient } from "@stela/publisher-utils";
 import { db } from "../database.js";
+import { mixpanelClient } from "../mixpanel.js";
 import { app } from "../app.js";
 import {
 	verifyUserAuthentication,
 	verifyUserOrAdminOrDelegatedCallAuthentication,
 } from "../middleware/index.js";
 import type { ChecklistItem } from "./models.js";
+import { transactionWithEvents } from "./service.js";
 import { runFixtures } from "../../test/run_fixtures.js";
+import { mockSqlCall } from "../../test/mock_sql.js";
 import {
 	mockVerifyUserOrAdminOrDelegatedCallAuthentication,
 	mockVerifyUserAuthentication,
@@ -27,6 +31,7 @@ import {
 vi.mock("../database");
 vi.mock("../middleware");
 vi.mock("@stela/publisher-utils");
+vi.mock("../mixpanel");
 
 const testSubject = "fcb2b59b-df07-4e79-ad20-bf7f067a965e";
 const testEmail = "test+1@permanent.org";
@@ -40,6 +45,18 @@ describe("POST /event", () => {
 		await db.query("TRUNCATE event CASCADE");
 	};
 
+	const getSendStatus = async (): Promise<
+		{ isSent: boolean; sendAttempts: string } | undefined
+	> => {
+		const result = await db.query<{ isSent: boolean; sendAttempts: string }>(
+			`SELECT is_sent AS "isSent", send_attempts AS "sendAttempts"
+			FROM event WHERE actor_id = :actorId`,
+			{ actorId: testSubject },
+		);
+		expect(result.rows).toHaveLength(1);
+		return result.rows[0];
+	};
+
 	beforeEach(async () => {
 		mockVerifyUserOrAdminOrDelegatedCallAuthentication(
 			testEmail,
@@ -48,6 +65,10 @@ describe("POST /event", () => {
 			undefined,
 		);
 		mockExtractIp(testIp);
+		vi.mocked(publisherClient.batchPublishMessages).mockResolvedValue({
+			messagesSent: 1,
+			failedMessages: [],
+		});
 	});
 
 	afterEach(async () => {
@@ -417,6 +438,156 @@ describe("POST /event", () => {
 		expect(result.rows).toHaveLength(1);
 	});
 
+	test("should publish the event to the event topic", async () => {
+		await agent
+			.post("/api/v2/event")
+			.send({
+				entity: "account",
+				action: "create",
+				version: 1,
+				entityId: "123",
+				userAgent: "test-agent",
+				body: { key: "value" },
+			})
+			.expect(200);
+
+		const result = await db.query<{ id: string }>(
+			"SELECT id FROM event WHERE actor_id = :actorId",
+			{ actorId: testSubject },
+		);
+		const eventId = result.rows[0]?.id;
+		expect(eventId).toBeDefined();
+
+		expect(publisherClient.batchPublishMessages).toHaveBeenCalledTimes(1);
+		const [topicArn, messages] =
+			vi.mocked(publisherClient.batchPublishMessages).mock.calls[0] ?? [];
+		expect(topicArn).toBe(process.env["EVENT_TOPIC_ARN"] ?? "");
+		expect(messages).toHaveLength(1);
+		const [message] = messages ?? [];
+		expect(message?.id).toBe(eventId);
+		expect(message?.attributes).toEqual({
+			Entity: "account",
+			Action: "create",
+		});
+		expect(JSON.parse(message?.body ?? "{}")).toEqual({
+			id: eventId,
+			entity: "account",
+			action: "create",
+			version: 1,
+			actorType: "user",
+			actorId: testSubject,
+			entityId: "123",
+			ip: testIp,
+			userAgent: "test-agent",
+			body: { key: "value" },
+		});
+	});
+
+	test("should send analytics data to Mixpanel", async () => {
+		await agent
+			.post("/api/v2/event")
+			.send({
+				entity: "account",
+				action: "create",
+				version: 1,
+				entityId: "123",
+				body: {
+					analytics: {
+						event: "Sign Up",
+						distinctId: "local:123",
+						data: { key: "value" },
+					},
+				},
+			})
+			.expect(200);
+
+		expect(mixpanelClient.track).toHaveBeenCalledWith(
+			"Sign Up",
+			expect.objectContaining({ key: "value", distinct_id: "local:123" }),
+		);
+	});
+
+	test("should mark the event as sent if publishing succeeds", async () => {
+		await agent
+			.post("/api/v2/event")
+			.send({
+				entity: "account",
+				action: "create",
+				version: 1,
+				entityId: "123",
+				body: {},
+			})
+			.expect(200);
+
+		expect(await getSendStatus()).toEqual({ isSent: true, sendAttempts: "1" });
+	});
+
+	test("should record a failed send attempt if SNS rejects the message", async () => {
+		vi.mocked(publisherClient.batchPublishMessages).mockImplementationOnce(
+			async (_, messages) => ({
+				messagesSent: 0,
+				failedMessages: messages.map((message) => message.id),
+			}),
+		);
+		await agent
+			.post("/api/v2/event")
+			.send({
+				entity: "account",
+				action: "create",
+				version: 1,
+				entityId: "123",
+				body: {},
+			})
+			.expect(200);
+
+		expect(await getSendStatus()).toEqual({
+			isSent: false,
+			sendAttempts: "1",
+		});
+	});
+
+	test("should record a failed send attempt if publishing throws", async () => {
+		vi.mocked(publisherClient.batchPublishMessages).mockRejectedValueOnce(
+			new Error("SNS error"),
+		);
+		await agent
+			.post("/api/v2/event")
+			.send({
+				entity: "account",
+				action: "create",
+				version: 1,
+				entityId: "123",
+				body: {},
+			})
+			.expect(200);
+
+		expect(await getSendStatus()).toEqual({
+			isSent: false,
+			sendAttempts: "1",
+		});
+	});
+
+	test("should still return 200 if recording the send attempt fails", async () => {
+		mockSqlCall(db, "event.queries.record_send_attempts", expect.anything(), {
+			reject: new Error("SQL error"),
+		});
+		await agent
+			.post("/api/v2/event")
+			.send({
+				entity: "account",
+				action: "create",
+				version: 1,
+				entityId: "123",
+				body: {},
+			})
+			.expect(200);
+
+		expect(await getSendStatus()).toEqual({
+			isSent: false,
+			sendAttempts: "0",
+		});
+	});
+
 	test("should return 500 error if database call fails", async () => {
 		vi.spyOn(db, "sql").mockImplementation(() => {
 			throw new Error("SQL error");
@@ -475,6 +646,67 @@ describe("POST /event", () => {
 				body: {},
 			})
 			.expect(400);
+	});
+});
+
+describe("transactionWithEvents", () => {
+	const eventData = {
+		userSubjectFromAuthToken: testSubject,
+		entity: "account",
+		action: "create",
+		version: 1,
+		entityId: "123",
+		ip: testIp,
+		body: {},
+	};
+
+	beforeEach(() => {
+		vi.mocked(publisherClient.batchPublishMessages).mockResolvedValue({
+			messagesSent: 1,
+			failedMessages: [],
+		});
+	});
+
+	afterEach(async () => {
+		await db.query("TRUNCATE event CASCADE");
+		vi.restoreAllMocks();
+		vi.clearAllMocks();
+	});
+
+	test("should not publish events if the transaction rolls back", async () => {
+		await expect(
+			transactionWithEvents(async (_, recordEvent) => {
+				await recordEvent(eventData);
+				throw new Error("rollback");
+			}),
+		).rejects.toThrow("rollback");
+
+		expect(publisherClient.batchPublishMessages).not.toHaveBeenCalled();
+		const result = await db.query("SELECT id FROM event");
+		expect(result.rows).toHaveLength(0);
+	});
+
+	test("should publish all of a transaction's events in one batch after commit", async () => {
+		const result = await transactionWithEvents(async (_, recordEvent) => {
+			await recordEvent(eventData);
+			await recordEvent({ ...eventData, entityId: "456" });
+			expect(publisherClient.batchPublishMessages).not.toHaveBeenCalled();
+			return "done";
+		});
+
+		expect(result).toBe("done");
+		expect(publisherClient.batchPublishMessages).toHaveBeenCalledTimes(1);
+		const [, messages] =
+			vi.mocked(publisherClient.batchPublishMessages).mock.calls[0] ?? [];
+		expect(messages).toHaveLength(2);
+	});
+
+	test("should not publish anything if no events were recorded", async () => {
+		await transactionWithEvents(
+			async (transactionDb) => await transactionDb.query("SELECT 1"),
+		);
+
+		expect(publisherClient.batchPublishMessages).not.toHaveBeenCalled();
 	});
 });
 
