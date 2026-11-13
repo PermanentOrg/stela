@@ -8,6 +8,7 @@ import {
 	validateRecalculateFolderThumbnailsRequest,
 	validateRecalculateRecordThumbnailRequest,
 	validateAccountSetNullSubjectsRequest,
+	validateModernizeOriginalFileCloudpathsRequest,
 } from "./validators.js";
 
 export const adminController = Router();
@@ -63,6 +64,32 @@ adminController.post(
 			validateRecalculateRecordThumbnailRequest(req.params);
 			await adminService.recalculateRecordThumbnail(req.params.recordId);
 			res.status(HTTP_STATUS.SUCCESSFUL.OK).json({});
+		} catch (err) {
+			next(err);
+		}
+	},
+);
+
+adminController.post(
+	"/file/modernize_cloudpaths",
+	verifyAdminAuthentication,
+	async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+		try {
+			validateAdminAuthentication(req.metadata?.auth);
+			validateModernizeOriginalFileCloudpathsRequest(req.body);
+			const results = await adminService.modernizeOriginalFileCloudpaths(
+				req.body.fileIds,
+			);
+			if (
+				results.fileIdsWithErrors.length > 0 ||
+				results.fileIdsWithUndeletedOldObjects.length > 0
+			) {
+				res
+					.status(HTTP_STATUS.SERVER_ERROR.INTERNAL_SERVER_ERROR)
+					.json(results);
+			} else {
+				res.status(HTTP_STATUS.SUCCESSFUL.OK).json(results);
+			}
 		} catch (err) {
 			next(err);
 		}

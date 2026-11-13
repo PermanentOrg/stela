@@ -37,6 +37,8 @@ COPY --from=builder /usr/local/apps/stela/packages/publisher-utils/dist ./packag
 COPY --from=builder /usr/local/apps/stela/packages/publisher-utils/package.json ./packages/publisher-utils/package.json
 COPY --from=builder /usr/local/apps/stela/packages/permanent_models/dist ./packages/permanent_models/dist
 COPY --from=builder /usr/local/apps/stela/packages/permanent_models/package.json ./packages/permanent_models/package.json
+COPY --from=builder /usr/local/apps/stela/packages/s3-utils/dist ./packages/s3-utils/dist
+COPY --from=builder /usr/local/apps/stela/packages/s3-utils/package.json ./packages/s3-utils/package.json
 COPY --from=builder /usr/local/apps/stela/package.json ./package.json
 COPY --from=builder /usr/local/apps/stela/package-lock.json ./package-lock.json
 

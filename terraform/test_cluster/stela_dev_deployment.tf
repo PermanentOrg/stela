@@ -204,6 +204,38 @@ resource "kubernetes_deployment" "stela_dev" {
           }
 
           env {
+            name  = "S3_BUCKET"
+            value = var.dev_s3_bucket
+          }
+
+          env {
+            name  = "CLOUDFRONT_URL"
+            value = var.dev_cloudfront_url
+          }
+
+          env {
+            name = "CLOUDFRONT_KEY_PAIR_ID"
+            value_from {
+              secret_key_ref {
+                name     = "dev-secrets"
+                key      = "CLOUDFRONT_KEY_PAIR_ID"
+                optional = false
+              }
+            }
+          }
+
+          env {
+            name = "CLOUDFRONT_PRIVATE_KEY"
+            value_from {
+              secret_key_ref {
+                name     = "dev-secrets"
+                key      = "CLOUDFRONT_PRIVATE_KEY"
+                optional = false
+              }
+            }
+          }
+
+          env {
             name = "NEW_RELIC_LICENSE_KEY"
             value_from {
               secret_key_ref {
