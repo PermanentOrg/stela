@@ -124,7 +124,7 @@ describe("PATCH /records", () => {
 	test("expect location id is updated", async () => {
 		await agent
 			.patch("/api/v2/records/10001")
-			.send({ locationId: 123 })
+			.send({ locationId: 1 })
 			.expect(200);
 
 		const result = await db.query(
@@ -134,7 +134,49 @@ describe("PATCH /records", () => {
 			},
 		);
 
-		expect(result.rows[0]).toEqual({ locationId: "123" });
+		expect(result.rows[0]).toEqual({ locationId: "1" });
+	});
+
+	test("expect 400 if location id refers to a location used only in another archive", async () => {
+		await db.query(
+			`INSERT INTO locn (locnid, city, status, type)
+			VALUES (2, 'Lyon', 'status.generic.ok', 'type.generic.placeholder')`,
+		);
+		await db.query("UPDATE record SET locnid = 2 WHERE recordid = 10005");
+
+		await agent
+			.patch("/api/v2/records/10001")
+			.send({ locationId: 2 })
+			.expect(400);
+
+		const result = await db.query(
+			`SELECT locnid AS "locationId" FROM record WHERE recordId = :recordId`,
+			{ recordId: 10001 },
+		);
+		expect(result.rows[0]).toStrictEqual({ locationId: null });
+	});
+
+	test("expect 400 if location id refers to a location that does not exist", async () => {
+		await agent
+			.patch("/api/v2/records/10001")
+			.send({ locationId: 999999 })
+			.expect(400);
+	});
+
+	test("expect 500 if the location archive lookup fails", async () => {
+		const testError = new Error("test error");
+		mockSqlCall(
+			db,
+			"record.queries.is_location_in_record_archive",
+			{ recordId: "10001", locationId: 1 },
+			{ reject: testError },
+		);
+
+		await agent
+			.patch("/api/v2/records/10001")
+			.send({ locationId: 1 })
+			.expect(500);
+		expect(logger.error).toHaveBeenCalledWith(testError);
 	});
 
 	test("expect location id is updated when set to null", async () => {
@@ -250,7 +292,7 @@ describe("PATCH /records", () => {
 
 		await agent
 			.patch("/api/v2/records/10001")
-			.send({ locationId: 123 })
+			.send({ locationId: 1 })
 			.expect(500);
 
 		expect(logger.error).toHaveBeenCalledWith(testError);
@@ -275,10 +317,20 @@ describe("PATCH /records", () => {
 				}),
 			);
 		when(dbSpy)
+			.calledWith("record.queries.is_location_in_record_archive", {
+				recordId: "10001",
+				locationId: 1,
+			})
+			.thenResolve({
+				command: "",
+				row_count: 1,
+				rows: [{ isInArchive: true }],
+			});
+		when(dbSpy)
 			.calledWith("record.queries.update_record", {
 				recordId: "10001",
 				displayName: undefined,
-				locationId: 123,
+				locationId: 1,
 				setLocationIdToNull: false,
 				description: undefined,
 				setDescriptionToNull: false,
@@ -291,7 +343,7 @@ describe("PATCH /records", () => {
 
 		await agent
 			.patch("/api/v2/records/10001")
-			.send({ locationId: 123 })
+			.send({ locationId: 1 })
 			.expect(500);
 
 		expect(logger.error).toHaveBeenCalledWith(testError);
@@ -304,7 +356,7 @@ describe("PATCH /records", () => {
 		);
 		await agent
 			.patch("/api/v2/records/10001")
-			.send({ locationId: 123 })
+			.send({ locationId: 1 })
 			.expect(403);
 	});
 
@@ -315,7 +367,7 @@ describe("PATCH /records", () => {
 		);
 		await agent
 			.patch("/api/v2/records/10001")
-			.send({ locationId: 123 })
+			.send({ locationId: 1 })
 			.expect(404);
 	});
 
@@ -337,10 +389,20 @@ describe("PATCH /records", () => {
 				}),
 			);
 		when(dbSpy)
+			.calledWith("record.queries.is_location_in_record_archive", {
+				recordId: "10001",
+				locationId: 1,
+			})
+			.thenResolve({
+				command: "",
+				row_count: 1,
+				rows: [{ isInArchive: true }],
+			});
+		when(dbSpy)
 			.calledWith("record.queries.update_record", {
 				recordId: "10001",
 				displayName: undefined,
-				locationId: 123,
+				locationId: 1,
 				setLocationIdToNull: false,
 				description: undefined,
 				setDescriptionToNull: false,
@@ -353,7 +415,7 @@ describe("PATCH /records", () => {
 
 		await agent
 			.patch("/api/v2/records/10001")
-			.send({ locationId: 123 })
+			.send({ locationId: 1 })
 			.expect(404);
 	});
 
@@ -398,7 +460,7 @@ describe("PATCH /records", () => {
 			.send({
 				displayName: "All Fields Name",
 				description: "All fields description",
-				locationId: 456,
+				locationId: 1,
 			})
 			.expect(200);
 
@@ -412,7 +474,7 @@ describe("PATCH /records", () => {
 		expect(result.rows[0]).toEqual({
 			displayname: "All Fields Name",
 			description: "All fields description",
-			locationId: "456",
+			locationId: "1",
 		});
 	});
 
