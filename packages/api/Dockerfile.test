@@ -13,6 +13,7 @@ COPY patches ./patches
 COPY packages/api/package.json ./packages/api/package.json
 COPY packages/logger ./packages/logger
 COPY packages/publisher-utils ./packages/publisher-utils
+COPY packages/event_utils ./packages/event_utils
 COPY packages/permanent_models ./packages/permanent_models
 COPY packages/s3-utils ./packages/s3-utils
 
