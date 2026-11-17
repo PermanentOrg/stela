@@ -1,7 +1,6 @@
 import createError from "http-errors";
 import { logger } from "@stela/logger";
-import { db } from "../../database.js";
-import { createEventInTransaction } from "../../event/service.js";
+import { transactionWithEvents } from "../../event/service.js";
 import { createDefaultFolders } from "../../folder/service/create_default_folders.js";
 import { processPendingInvites } from "../../invite/service.js";
 import { sendShareInvitationAcceptanceNotification } from "../../email/index.js";
@@ -19,8 +18,8 @@ export const createArchive = async (
 	},
 	callerData: Caller,
 ): Promise<Archive> => {
-	const { archiveId, acceptedInviteIds } = await db.transaction(
-		async (transactionDb) => {
+	const { archiveId, acceptedInviteIds } = await transactionWithEvents(
+		async (transactionDb, recordEvent) => {
 			await transactionDb.sql("archive.queries.acquire_create_archive_lock");
 			const archiveResult = await transactionDb
 				.sql<{
@@ -76,20 +75,17 @@ export const createArchive = async (
 				transactionDb,
 			);
 
-			await createEventInTransaction(
-				{
-					userSubjectFromAuthToken: callerData.subject,
-					userEmailFromAuthToken: callerData.email,
-					entity: "archive",
-					action: "create",
-					version: 1,
-					entityId: newArchive.archiveId,
-					ip: callerData.ip,
-					userAgent: callerData.userAgent,
-					body: { name: requestData.name, type: requestData.type },
-				},
-				transactionDb,
-			);
+			await recordEvent({
+				userSubjectFromAuthToken: callerData.subject,
+				userEmailFromAuthToken: callerData.email,
+				entity: "archive",
+				action: "create",
+				version: 1,
+				entityId: newArchive.archiveId,
+				ip: callerData.ip,
+				userAgent: callerData.userAgent,
+				body: { name: requestData.name, type: requestData.type },
+			});
 
 			return {
 				archiveId: newArchive.archiveId,

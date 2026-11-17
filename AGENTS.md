@@ -19,7 +19,7 @@ This is an npm workspace monorepo (workspaces defined in the root `package.json`
 | `@stela/api`                 | Main Express API server — the primary package where most development happens |
 | `@stela/logger`              | Centralized logging via Winston                                              |
 | `@stela/permanent_models`    | Shared TypeScript models and data types                                      |
-| `@stela/event_utils`         | Event validation utilities                                                   |
+| `@stela/event_utils`         | Event validation, SNS message building and Mixpanel tracking for events      |
 | `@stela/file-utils`          | File manipulation utilities                                                  |
 | `@stela/s3-utils`            | AWS S3 integration utilities                                                 |
 | `@stela/archivematica-utils` | Archivematica integration utilities                                          |
@@ -190,6 +190,7 @@ Key conventions:
 - The SQL file path is dot-notation: `domain.queries.file_name` maps to `packages/api/src/domain/queries/file_name.sql`
 - Errors are logged then re-thrown as HTTP errors
 - Access control checks happen in the service layer
+- Events are written only through `transactionWithEvents` (or `createEvent` for a standalone event) from `event/service.ts`. Use it in place of `db.transaction` and call the `recordEvent` function it passes in; events are published to SNS after the transaction commits, and the `event_send` cron retries any that fail
 
 ### Validation Pattern
 

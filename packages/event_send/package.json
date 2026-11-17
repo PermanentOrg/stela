@@ -31,13 +31,13 @@
 	"dependencies": {
 		"@sentry/node": "^11.0.0",
 		"@sentry/profiling-node": "^11.0.0",
+		"@stela/event_utils": "^1.0.0",
 		"@stela/logger": "^1.0.0",
 		"@stela/publisher-utils": "^1.0.0",
 		"dotenv": "^17.4.2",
 		"mixpanel": "^0.20.0",
 		"require-env-variable": "^4.0.2",
-		"tinypg": "^7.0.1",
-		"ua-parser-js": "^2.0.10"
+		"tinypg": "^7.0.1"
 	},
 	"type": "module"
 }
