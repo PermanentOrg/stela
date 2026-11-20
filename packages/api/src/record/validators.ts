@@ -70,7 +70,7 @@ export const validatePatchRecordRequest: (
 	const validation = Joi.object()
 		.keys({
 			locationId: Joi.number().integer().optional().allow(null),
-			location: locationInputSchema.optional(),
+			location: locationInputSchema.optional().allow(null),
 			description: Joi.string().optional().allow(null),
 			displayName: Joi.string().min(1).optional(),
 			displayTime: Joi.string()

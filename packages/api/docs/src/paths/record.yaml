@@ -124,7 +124,13 @@ records/{id}:
                   Deprecated. Prefer `location` instead, which lets clients send
                   nested location data without managing location IDs directly.
               location:
-                $ref: "../models/location.yaml#/locationInput"
+                type: object
+                nullable: true
+                allOf:
+                  - $ref: "../models/location.yaml#/locationInput"
+                description: |
+                  Location data for the record. Send null to remove the record's
+                  location.
               description:
                 type: string
               displayTime:

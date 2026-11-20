@@ -137,20 +137,20 @@ describe("PATCH /records", () => {
 		expect(result.rows[0]).toEqual({ locationId: "123" });
 	});
 
-	test("expect location id is updated when set to null", async () => {
+	test("expect location id and timezone are cleared when location id is set to null", async () => {
 		await agent
 			.patch("/api/v2/records/10008")
 			.send({ locationId: null })
 			.expect(200);
 
 		const result = await db.query(
-			`SELECT locnid AS "locationId" FROM record WHERE recordId = :recordId`,
+			`SELECT locnid AS "locationId", timezone FROM record WHERE recordId = :recordId`,
 			{
 				recordId: 10008,
 			},
 		);
 
-		expect(result.rows[0]).toStrictEqual({ locationId: null });
+		expect(result.rows[0]).toStrictEqual({ locationId: null, timezone: null });
 	});
 
 	test("expect description is updated when set to null", async () => {
@@ -591,6 +591,19 @@ describe("PATCH /records", () => {
 			"SELECT city FROM locn WHERE locnid = 1",
 		);
 		expect(sharedLocation.rows[0]).toEqual({ city: "Paris" });
+	});
+
+	test("expect a null location to remove the record's location and timezone", async () => {
+		await agent
+			.patch("/api/v2/records/10008")
+			.send({ location: null })
+			.expect(200);
+
+		const recordResult = await db.query(
+			`SELECT locnid AS "locationId", timezone FROM record WHERE recordid = :recordId`,
+			{ recordId: 10008 },
+		);
+		expect(recordResult.rows[0]).toEqual({ locationId: null, timezone: null });
 	});
 
 	test("expect a nested location to create a new location when record has none", async () => {
