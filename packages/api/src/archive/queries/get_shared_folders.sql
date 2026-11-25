@@ -13,7 +13,9 @@ all_shared_folders AS (
   FROM folder_link
   INNER JOIN share ON folder_link.folder_linkid = share.folder_linkid
   INNER JOIN archive_access ON folder_link.archiveid = archive_access.archiveid
-  WHERE share.status = 'status.generic.ok'
+  WHERE
+    share.status = 'status.generic.ok'
+    AND folder_link.folderid IS NOT NULL
 ),
 
 ranked_shared_folders AS (
