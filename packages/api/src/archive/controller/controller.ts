@@ -241,6 +241,30 @@ archiveController.get(
 );
 
 archiveController.get(
+	"/:archiveId/records/shared",
+	verifyUserAuthentication,
+	async (req: Request, res: Response, next: NextFunction) => {
+		try {
+			const auth = req.metadata?.auth;
+			validateUserAuthentication(auth);
+			validateArchiveIdFromParams(req.params);
+			validatePaginationParameters(req.query);
+			const response = await archiveService.getSharedRecords(
+				req.params.archiveId,
+				auth.email,
+				{
+					pageSize: req.query.pageSize,
+					cursor: req.query.cursor,
+				},
+			);
+			res.json(response);
+		} catch (err) {
+			next(err);
+		}
+	},
+);
+
+archiveController.get(
 	"/:archiveId/received-shares",
 	verifyUserAuthentication,
 	async (req: Request, res: Response, next: NextFunction) => {
