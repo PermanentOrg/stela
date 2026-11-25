@@ -4,6 +4,7 @@ import { makeFeatured } from "./make_featured.js";
 import { unfeature } from "./unfeature.js";
 import { getFeatured } from "./get_featured.js";
 import { getSharedFolders } from "./get_shared_folders.js";
+import { getSharedRecords } from "./get_shared_records.js";
 import { getReceivedShares } from "./get_received_shares.js";
 import { backfillLedger } from "./backfill_ledger.js";
 import { searchArchives } from "./search_archives.js";
@@ -19,6 +20,7 @@ export const archiveService = {
 	unfeature,
 	getFeatured,
 	getSharedFolders,
+	getSharedRecords,
 	getReceivedShares,
 	backfillLedger,
 	searchArchives,
