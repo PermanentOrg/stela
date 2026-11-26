@@ -161,6 +161,9 @@ const isLocationShared = async (
 	return result.rows[0]?.isShared ?? false;
 };
 
+export const hasLocnFields = (location: LocationInput): boolean =>
+	MODERN_LOCATION_FIELDS.some((field) => location[field] !== undefined);
+
 export const saveItemLocation = async (
 	currentLocationId: string | null,
 	location: LocationInput,
