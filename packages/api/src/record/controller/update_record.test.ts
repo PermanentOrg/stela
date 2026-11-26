@@ -646,6 +646,22 @@ describe("PATCH /records", () => {
 		expect(record.location.timezone).toEqual("Europe/Marseille");
 	});
 
+	test("expect a timezone-only location to not create a location row", async () => {
+		await agent
+			.patch("/api/v2/records/10001")
+			.send({ location: { timezone: "Europe/Paris" } })
+			.expect(200);
+
+		const recordResult = await db.query(
+			`SELECT locnid AS "locationId", timezone FROM record WHERE recordid = :recordId`,
+			{ recordId: 10001 },
+		);
+		expect(recordResult.rows[0]).toEqual({
+			locationId: null,
+			timezone: "Europe/Paris",
+		});
+	});
+
 	test("expect 400 error if location and locationId are both provided", async () => {
 		await agent
 			.patch("/api/v2/records/10001")

@@ -507,6 +507,22 @@ describe("patch folder", () => {
 			expect(folder.location?.timezone).toEqual("Europe/Marseille");
 		});
 
+		test("expect a timezone-only location to not create a location row", async () => {
+			await agent
+				.patch("/api/v2/folders/1")
+				.send({ location: { timezone: "Europe/Paris" } })
+				.expect(200);
+
+			const folderResult = await db.query(
+				`SELECT locnid AS "locationId", timezone FROM folder WHERE folderid = :folderId`,
+				{ folderId: 1 },
+			);
+			expect(folderResult.rows[0]).toEqual({
+				locationId: null,
+				timezone: "Europe/Paris",
+			});
+		});
+
 		test("expect 400 error if location is an empty object", async () => {
 			await agent.patch("/api/v2/folders/1").send({ location: {} }).expect(400);
 		});
